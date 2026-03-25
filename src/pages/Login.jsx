@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+    const { login } = useAuth();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -13,11 +14,8 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
-            const { data } = await api.post('/auth/login', formData);
-            localStorage.setItem('token', data.data.token);
-            localStorage.setItem('name', data.data.name);
+            await login(formData.email, formData.password);
             navigate('/');
-            window.location.reload();
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
         } finally {
@@ -77,8 +75,8 @@ const Login = () => {
                 </form>
 
                 <div className="mt-8 pt-8 border-t border-background-light text-center text-sm">
-                    <span className="text-text-muted">New here? </span>
-                    <Link to="/register" className="text-primary-light font-medium hover:text-primary transition-colors underline underline-offset-4">Create an account</Link>
+                    <span className="text-text-muted">Not registered? </span>
+                    <Link to="/register" className="text-primary-light font-medium hover:text-primary transition-colors underline underline-offset-4">Create your instance</Link>
                 </div>
             </div>
         </div>

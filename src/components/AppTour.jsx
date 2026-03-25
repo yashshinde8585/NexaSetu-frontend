@@ -1,0 +1,87 @@
+import React, { useState, useEffect } from 'react';
+import { Joyride, STATUS } from 'react-joyride';
+import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
+
+const AppTour = () => {
+    const { user } = useAuth();
+    const location = useLocation();
+    const [run, setRun] = useState(false);
+
+    // Only run on the dashboard for now
+    useEffect(() => {
+        if (!user) return;
+        
+        const hasSeenTour = localStorage.getItem(`nexasetu_tour_${user.email}`);
+        if (!hasSeenTour && location.pathname === '/dashboard') {
+            // Small delay to ensure elements are rendered
+            const timer = setTimeout(() => {
+                setRun(true);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [user, location.pathname]);
+
+    const steps = React.useMemo(() => [
+        {
+            target: '#kpi-cards',
+            content: 'Track your overall progress here.',
+            disableBeacon: true,
+        },
+        {
+            target: '#new-project-btn',
+            content: 'Start by creating your first project.',
+        },
+        {
+            target: '#portfolio-nav-link',
+            content: 'Click here to see AI recommendations.',
+        },
+    ], []);
+
+    const handleJoyrideCallback = (data) => {
+        const { status } = data;
+        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+            setRun(false);
+            if (user) {
+                localStorage.setItem(`nexasetu_tour_${user.email}`, 'true');
+            }
+        }
+    };
+
+    return (
+        <Joyride
+            steps={steps}
+            run={run}
+            continuous
+            showProgress
+            showSkipButton
+            callback={handleJoyrideCallback}
+            styles={{
+                options: {
+                    arrowColor: '#1E293B',
+                    backgroundColor: '#1E293B',
+                    overlayColor: 'rgba(0, 0, 0, 0.75)',
+                    primaryColor: '#3B82F6',
+                    textColor: '#ffffff',
+                    zIndex: 1000,
+                },
+                tooltipContainer: {
+                    textAlign: 'left',
+                },
+                buttonNext: {
+                    backgroundColor: '#3B82F6',
+                    borderRadius: '8px',
+                    fontWeight: 'bold',
+                },
+                buttonBack: {
+                    color: '#94A3B8',
+                },
+                buttonSkip: {
+                    color: '#94A3B8',
+                },
+            }}
+        />
+    );
+};
+
+export default AppTour;
