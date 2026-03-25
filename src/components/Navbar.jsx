@@ -1,44 +1,51 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import ProfileDropdown from './ProfileDropdown';
 
 const Navbar = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
-    const token = localStorage.getItem('token');
-    const name = localStorage.getItem('name');
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('name');
-        navigate('/login');
-        window.location.reload();
-    };
+    const navLinkStyle = ({ isActive }) => 
+        `text-sm font-bold transition-all px-3 py-2 rounded-lg ${
+            isActive 
+            ? 'text-white bg-white/10' 
+            : 'text-text-muted hover:text-white hover:bg-white/5'
+        } hidden sm:block`;
 
     return (
-        <nav className="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 text-slate-100">
-            <Link to="/" className="text-xl font-bold tracking-tight hover:text-blue-400 transition-colors">
-                NexaSetu
-            </Link>
-            
-            <div className="flex gap-6 items-center">
-                {!token ? (
+        <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-sm transition-all">
+            <div className="flex items-center gap-6">
+                {!user ? (
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                            <span className="text-xl font-black italic">N</span>
+                        </div>
+                        <span className="text-lg font-black tracking-tighter text-white">NexaSetu</span>
+                    </Link>
+                ) : (
                     <>
-                        <Link to="/login" className="text-sm font-medium hover:text-blue-400 transition-colors">
+                        <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/5 px-2 py-1 rounded">Project Workspace</div>
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
+                            <span className="text-text-muted">/</span> {window.location.pathname === '/portfolio' ? 'Strategic Portfolio' : 'Default Dashboard'}
+                        </div>
+                    </>
+                )}
+            </div>
+            
+            <div className="flex gap-4 items-center">
+                {!user ? (
+                    <>
+                        <Link to="/login" className="text-sm font-bold text-text-muted hover:text-white transition-colors">
                             Login
                         </Link>
-                        <Link to="/register" className="text-sm font-medium hover:text-blue-400 transition-colors border border-blue-500/50 px-4 py-1.5 rounded-xl hover:bg-blue-500/10 transition-all">
+                        <Link to="/register" className="text-sm font-bold text-background bg-white hover:bg-gray-200 px-4 py-1.5 rounded-lg transition-all">
                             Register
                         </Link>
                     </>
                 ) : (
                     <div className="flex items-center gap-4">
-                        <span className="text-sm font-semibold text-blue-400">
-                            {name}
-                        </span>
-                        <button 
-                            onClick={handleLogout}
-                            className="text-sm font-medium bg-red-600/10 text-red-400 px-4 py-1.5 rounded-lg hover:bg-red-600/20 transition-all active:scale-95"
-                        >
-                            Logout
-                        </button>
+                        <ProfileDropdown />
                     </div>
                 )}
             </div>
