@@ -1,21 +1,26 @@
 import api from './axios';
 
 export const connectGithub = async (accessToken) => {
-    return await api.post('/github/connect', { accessToken });
+    const response = await api.post('/github/connect', { accessToken });
+    return response.data;
 };
 
 export const getRepositories = async () => {
-    return await api.get('/github/repositories');
+    const response = await api.get('/github/repositories');
+    return response.data;
 };
 
 export const linkProject = async (projectId, repoInfo) => {
-    return await api.post('/github/link-project', { projectId, repoInfo });
+    const response = await api.post('/github/link-project', { projectId, repoInfo });
+    return response.data;
 };
 
 export const getActivitySuggestions = async (projectId) => {
-    return await api.get(`/github/activity-suggestions/${projectId}`);
+    const response = await api.get(`/github/activity-suggestions/${projectId}`);
+    return response.data;
 };
 
 export const approveTasks = async (projectId, tasks) => {
-    return await api.post('/github/approve-tasks', { projectId, tasks });
+    const response = await api.post('/github/approve-tasks', { projectId, tasks });
+    return response.data;
 };
