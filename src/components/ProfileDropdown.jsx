@@ -43,23 +43,23 @@ const ProfileDropdown = () => {
             {/* Toggle Button */}
             <button 
                 onClick={toggleDropdown}
-                className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-white/5 transition-all outline-hidden active:scale-95 duration-200 cursor-pointer"
+                className="flex items-center gap-3 p-1 sm:p-1.5 sm:pr-4 rounded-full bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.02] hover:border-white/10 shadow-sm transition-all outline-hidden active:scale-95 duration-300 cursor-pointer"
             >
-                <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary/30 to-secondary/30 flex items-center justify-center border border-white/10 shadow-lg ring-2 ring-primary/10 overflow-hidden">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary/40 to-[#4F46E5]/40 flex items-center justify-center border border-white/20 shadow-[0_0_10px_rgba(var(--color-primary),0.2)] overflow-hidden">
                     {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                     ) : (
-                        <span className="text-primary font-bold text-xs uppercase">
+                        <span className="text-white font-black text-xs uppercase drop-shadow-md">
                             {user.name.charAt(0)}
                         </span>
                     )}
                 </div>
-                <div className="hidden sm:flex flex-col items-start leading-none gap-1">
-                    <span className="text-sm font-bold text-white/90">
+                <div className="hidden sm:flex flex-col items-start leading-[1.1] gap-0.5">
+                    <span className="text-[13px] font-bold text-white/90 tracking-wide">
                         {user.name}
                     </span>
-                    <span className="text-[10px] text-primary uppercase tracking-widest font-black">
-                        {user.role}
+                    <span className="text-[8px] text-primary/80 uppercase tracking-widest font-black">
+                        {user.jobTitle || (user.role && user.role.replace('_', ' '))}
                     </span>
                 </div>
             </button>
@@ -86,20 +86,36 @@ const ProfileDropdown = () => {
 
                     {/* Menu Items */}
                     <div className="p-2 space-y-0.5">
-                        <DropdownItem icon={<User size={18} strokeWidth={2.2} />} label="Profile" />
-                        <DropdownItem icon={<Settings size={18} strokeWidth={2.2} />} label="Account settings" />
+                        <DropdownItem 
+                            icon={<User size={18} strokeWidth={2.2} />} 
+                            label="Profile" 
+                            onClick={() => {
+                                setIsOpen(false);
+                                navigate('/profile');
+                            }}
+                        />
+                        <DropdownItem 
+                            icon={<Settings size={18} strokeWidth={2.2} />} 
+                            label="Account settings" 
+                            onClick={() => {
+                                setIsOpen(false);
+                                navigate('/settings');
+                            }}
+                        />
                         <DropdownItem 
                             icon={<Contrast size={18} strokeWidth={2.2} />} 
                             label="Theme" 
+                            onClick={() => {
+                                setIsOpen(false);
+                                navigate('/theme');
+                            }}
                             trailing={<ChevronRight size={16} className="text-text-muted/40 group-hover:text-white/60 transition-colors" />}
                         />
-                        <DropdownItem icon={<Maximize size={18} strokeWidth={2.2} />} label="Open Quickstart" />
                     </div>
 
                     <div className="h-[1px] bg-white/5 mx-2 my-1" />
 
                     <div className="p-2 space-y-0.5">
-                        <DropdownItem icon={<Users size={18} strokeWidth={2.2} />} label="Switch account" />
                         <button 
                             onClick={handleLogout}
                             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-status-error/80 hover:bg-status-error/10 hover:text-status-error transition-all group duration-200 cursor-pointer"

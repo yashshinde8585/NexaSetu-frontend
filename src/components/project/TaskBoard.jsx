@@ -10,7 +10,7 @@ const TaskBoard = ({ groupedTasks, user, columns, handleStatusChange }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-stretch">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
       {columns.map(column => {
         const currentTasks = groupedTasks[column.id] || [];
         const totalPages = Math.ceil(currentTasks.length / ITEMS_PER_PAGE) || 1;
@@ -19,10 +19,10 @@ const TaskBoard = ({ groupedTasks, user, columns, handleStatusChange }) => {
         const paginatedTasks = currentTasks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
         return (
-          <div key={column.id} className="bg-background-dark/50 rounded-xl border border-background-light/20 flex flex-col min-h-[400px]">
-            <div className={`sticky top-40 z-30 bg-background/90 backdrop-blur-md pt-4 px-4 pb-2 border-b-2 rounded-t-xl flex justify-between items-end text-sm font-bold uppercase tracking-wider shadow-sm ${column.color}`}>
+          <div key={column.id} className="bg-background-dark/50 rounded-2xl border border-white/5 flex flex-col min-h-[400px] overflow-hidden">
+            <div className={`sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl pt-5 px-5 pb-3 border-b-2 flex justify-between items-end text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${column.color}`}>
               <span>{column.title}</span>
-              <span className="text-text-muted text-[10px] bg-background-light px-2 py-0.5 rounded-full">{currentTasks.length}</span>
+              <span className="text-text-muted text-[10px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">{currentTasks.length}</span>
             </div>
             <div className="p-4 space-y-3 flex-grow">
               {paginatedTasks.map(task => (

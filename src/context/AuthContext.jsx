@@ -78,14 +78,26 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const completeOnboarding = React.useCallback(async () => {
+    try {
+      const res = await api.patch('/auth/complete-tour');
+      setUser(res.data.data.user);
+      return res.data;
+    } catch (err) {
+      console.error('Onboarding update failed:', err);
+      throw err;
+    }
+  }, []);
+
   const value = React.useMemo(() => ({
     user,
     loading,
     login,
     register,
     activateInvite,
-    logout
-  }), [user, loading, login, register, activateInvite, logout]);
+    logout,
+    completeOnboarding
+  }), [user, loading, login, register, activateInvite, logout, completeOnboarding]);
 
   return (
     <AuthContext.Provider value={value}>

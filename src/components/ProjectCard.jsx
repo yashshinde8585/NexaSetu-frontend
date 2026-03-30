@@ -41,12 +41,12 @@ const ProjectCard = ({ project }) => {
   return (
     <Link
       to={`/project/${_id}`}
-      className="group relative bg-[#1E1E2E] rounded-3xl p-6 border border-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-2xl hover:shadow-black/50 overflow-hidden"
+      className="group relative bg-[#1E1E2E] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-2xl hover:shadow-black/50 overflow-hidden"
     >
       {/* Background Glow based on health */}
       <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40 ${healthUI.glow}`}></div>
       
-      <div className="flex justify-between items-start mb-6">
+      <div className={`flex justify-between items-start ${project.variant === 'strategic' ? 'mb-8' : 'mb-6'}`}>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
              <div className={`w-2 h-2 rounded-full animate-pulse ${healthUI.glow}`}></div>
@@ -55,28 +55,30 @@ const ProjectCard = ({ project }) => {
                 {riskLevel} Risk
              </span>
           </div>
-          <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300 truncate max-w-[180px]">
-            {name}
+          <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-primary transition-colors duration-300 truncate max-w-[180px]">
+            {name.replace(/👋 Welcome to/g, '').trim() || name}
           </h3>
         </div>
         
         {/* Health Score Badge */}
-        <div className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl border ${healthUI.border} ${healthUI.bg} backdrop-blur-md`}>
-          <span className={`text-xl font-black ${healthUI.color}`}>{healthScore}</span>
+        <div className={`flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${healthUI.border} ${healthUI.bg} backdrop-blur-md`}>
+          <span className={`text-lg sm:text-xl font-black ${healthUI.color}`}>{healthScore}</span>
           <span className="text-[7px] font-bold uppercase opacity-60">Health</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-text-muted uppercase font-bold mb-1">Total Tasks</p>
-          <p className="text-xl font-black text-white">{totalTasks}</p>
+      {project.variant !== 'strategic' && (
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/5">
+            <p className="text-[9px] sm:text-[10px] text-text-muted uppercase font-bold mb-1">Total Tasks</p>
+            <p className="text-lg sm:text-xl font-black text-white">{totalTasks}</p>
+          </div>
+          <div className="bg-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/5">
+            <p className="text-[9px] sm:text-[10px] text-text-muted uppercase font-bold mb-1">Completed</p>
+            <p className="text-lg sm:text-xl font-black text-status-success">{completedTasks}</p>
+          </div>
         </div>
-        <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-text-muted uppercase font-bold mb-1">Completed</p>
-          <p className="text-xl font-black text-status-success">{completedTasks}</p>
-        </div>
-      </div>
+      )}
 
       <div className="space-y-4">
         {/* Progress Bar Container */}
@@ -97,23 +99,25 @@ const ProjectCard = ({ project }) => {
         </div>
 
         {/* Status Pills */}
-        <div className="flex flex-wrap gap-2 pt-2">
-          {inProgressTasks > 0 && (
-            <span className="px-2 py-0.5 rounded-md bg-status-warning/10 text-status-warning text-[9px] font-bold uppercase border border-status-warning/20">
-              {inProgressTasks} In Progress
-            </span>
-          )}
-          {pendingTasks > 0 && (
-            <span className="px-2 py-0.5 rounded-md bg-status-info/10 text-status-info text-[9px] font-bold uppercase border border-status-info/20">
-              {pendingTasks} To Do
-            </span>
-          )}
-          {aiGeneratedTasks > 0 && (
-            <span className="px-2 py-0.5 rounded-md bg-secondary/10 text-secondary text-[9px] font-bold uppercase border border-secondary/20">
-              {aiGeneratedTasks} AI Assisted
-            </span>
-          )}
-        </div>
+        {project.variant !== 'strategic' && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {inProgressTasks > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-status-warning/10 text-status-warning text-[9px] font-bold uppercase border border-status-warning/20">
+                {inProgressTasks} In Progress
+              </span>
+            )}
+            {pendingTasks > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-status-info/10 text-status-info text-[9px] font-bold uppercase border border-status-info/20">
+                {pendingTasks} To Do
+              </span>
+            )}
+            {aiGeneratedTasks > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-secondary/10 text-secondary text-[9px] font-bold uppercase border border-secondary/20">
+                {aiGeneratedTasks} AI Assisted
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Hover Arrow */}

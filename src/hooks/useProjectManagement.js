@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getProject, getProjectAnalytics } from '../api/projectService';
+import { getProject, getProjectAnalytics, updateProject } from '../api/projectService';
 import { getTasksByProject, createTask, updateTaskStatus } from '../api/taskService';
+import { getSprints } from '../api/sprintService';
 import { extractTaskFromText } from '../api/aiService';
 import * as githubService from '../api/githubService';
 
@@ -14,10 +15,12 @@ export const useProjectManagement = (id, user) => {
     const [showGithubPanel, setShowGithubPanel] = useState(false);
     const [aiInput, setAiInput] = useState('');
     const [aiSuggestion, setAiSuggestion] = useState(null);
-    const [newTask, setNewTask] = useState({ title: '', description: '', status: 'todo' });
+    const [newTask, setNewTask] = useState({ title: '', description: '', status: 'todo', sprint: '' });
     const [githubToken, setGithubToken] = useState('');
     const [githubSuggestions, setGithubSuggestions] = useState([]);
     const [githubConnected, setGithubConnected] = useState(false);
+
+    const [selectedSprintId, setSelectedSprintId] = useState(null);
 
     // Queries
     const projectQuery = useQuery({
@@ -26,13 +29,18 @@ export const useProjectManagement = (id, user) => {
     });
 
     const tasksQuery = useQuery({
-        queryKey: ['tasks', id],
-        queryFn: () => getTasksByProject(id).then(res => res.data.tasks)
+        queryKey: ['tasks', id, selectedSprintId],
+        queryFn: () => getTasksByProject(id, selectedSprintId).then(res => res.data.tasks)
     });
 
     const analyticsQuery = useQuery({
-        queryKey: ['analytics', id],
-        queryFn: () => getProjectAnalytics(id).then(res => res.data.analytics)
+        queryKey: ['analytics', id, selectedSprintId],
+        queryFn: () => getProjectAnalytics(id, selectedSprintId).then(res => res.data.analytics)
+    });
+
+    const sprintsQuery = useQuery({
+        queryKey: ['sprints'],
+        queryFn: () => getSprints().then(res => res.data.data.sprints || [])
     });
 
     const reposQuery = useQuery({
@@ -45,30 +53,40 @@ export const useProjectManagement = (id, user) => {
 
     // Mutations
     const createTaskMutation = useMutation({
-        mutationFn: (task) => createTask({ ...task, project: id }),
+        mutationFn: (task) => {
+            const currentSprintId = task.sprint || selectedSprintId || projectQuery.data?.sprint?._id || projectQuery.data?.sprint;
+            return createTask({ ...task, project: id, sprint: currentSprintId });
+        },
         onSuccess: () => {
             setShowTaskForm(false);
             setAiSuggestion(null);
-            setNewTask({ title: '', description: '', status: 'todo' });
-            queryClient.invalidateQueries(['tasks', id]);
-            queryClient.invalidateQueries(['analytics', id]);
+            setNewTask({ title: '', description: '', status: 'todo', sprint: '' });
+            queryClient.invalidateQueries({ queryKey: ['tasks', id, selectedSprintId] });
+            queryClient.invalidateQueries({ queryKey: ['analytics', id, selectedSprintId] });
+            queryClient.invalidateQueries({ queryKey: ['sprint-stats'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
         }
     });
 
     const statusMutation = useMutation({
         mutationFn: ({ taskId, status }) => updateTaskStatus(taskId, status),
         onMutate: async ({ taskId, status }) => {
-            await queryClient.cancelQueries(['tasks', id]);
-            const previousTasks = queryClient.getQueryData(['tasks', id]);
-            queryClient.setQueryData(['tasks', id], old => old.map(t => t._id === taskId ? { ...t, status } : t));
+            const queryKey = ['tasks', id, selectedSprintId];
+            await queryClient.cancelQueries({ queryKey });
+            const previousTasks = queryClient.getQueryData(queryKey);
+            queryClient.setQueryData(queryKey, old => old?.map(t => t._id === taskId ? { ...t, status } : t));
             return { previousTasks };
         },
         onError: (err, variables, context) => {
-            queryClient.setQueryData(['tasks', id], context.previousTasks);
+            if (context?.previousTasks) {
+                queryClient.setQueryData(['tasks', id, selectedSprintId], context.previousTasks);
+            }
         },
         onSettled: () => {
-            queryClient.invalidateQueries(['tasks', id]);
-            queryClient.invalidateQueries(['analytics', id]);
+            queryClient.invalidateQueries({ queryKey: ['tasks', id, selectedSprintId] });
+            queryClient.invalidateQueries({ queryKey: ['analytics', id, selectedSprintId] });
+            queryClient.invalidateQueries({ queryKey: ['sprint-stats'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
         }
     });
 
@@ -76,7 +94,12 @@ export const useProjectManagement = (id, user) => {
     const aiExtractMutation = useMutation({
         mutationFn: (text) => extractTaskFromText(text),
         onSuccess: (res) => {
-            setAiSuggestion(res.data.suggestion);
+            const suggestion = res.data.suggestion;
+            // Automatically assign the project's current sprint if exists
+            if (projectQuery.data?.sprint) {
+                suggestion.sprint = projectQuery.data.sprint._id || projectQuery.data.sprint;
+            }
+            setAiSuggestion(suggestion);
             setAiInput('');
         }
     });
@@ -106,6 +129,17 @@ export const useProjectManagement = (id, user) => {
             setGithubSuggestions(prev => prev.filter(s => !approvedTasks.some(at => at.githubId === s.githubId)));
             queryClient.invalidateQueries(['tasks', id]);
             queryClient.invalidateQueries(['analytics', id]);
+            queryClient.invalidateQueries(['sprint-stats']);
+            queryClient.invalidateQueries(['dashboard-stats']);
+        }
+    });
+
+    const updateProjectMutation = useMutation({
+        mutationFn: (data) => updateProject(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['project', id]);
+            queryClient.invalidateQueries(['sprint-stats']);
+            queryClient.invalidateQueries(['dashboard-stats']);
         }
     });
 
@@ -128,8 +162,11 @@ export const useProjectManagement = (id, user) => {
         project: projectQuery.data,
         tasks: tasksQuery.data,
         analytics: analyticsQuery.data,
-        isLoading: projectQuery.isLoading || tasksQuery.isLoading,
-        error: projectQuery.error || tasksQuery.error || createTaskMutation.error,
+        sprints: sprintsQuery.data || [],
+        isLoading: projectQuery.isLoading || tasksQuery.isLoading || sprintsQuery.isLoading,
+        error: projectQuery.error || tasksQuery.error || sprintsQuery.error || createTaskMutation.error,
+        selectedSprintId,
+        setSelectedSprintId,
         
         // UI Controls
         ui: {
@@ -141,6 +178,7 @@ export const useProjectManagement = (id, user) => {
         // Operations
         statusMutation,
         createTaskMutation,
+        updateProjectMutation,
         groupedTasks,
         
         // AI State/Action
