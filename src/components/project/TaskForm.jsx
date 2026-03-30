@@ -22,6 +22,19 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask }) => {
               />
           </div>
           <div>
+              <label className="block text-sm font-medium mb-1 tracking-tight">Mission Cycle / Sprint (Optional)</label>
+              <select
+                  className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer"
+                  value={newTask.sprint || ''}
+                  onChange={(e) => setNewTask({ ...newTask, sprint: e.target.value })}
+              >
+                  <option value="">No Active Cycle</option>
+                  {(sprints || []).map(sprint => (
+                      <option key={sprint._id} value={sprint._id}>{sprint.name}</option>
+                  ))}
+              </select>
+          </div>
+          <div>
               <label className="block text-sm font-medium mb-1 tracking-tight">Description (Optional)</label>
               <textarea
                   className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"

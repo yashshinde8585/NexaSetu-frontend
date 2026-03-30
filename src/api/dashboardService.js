@@ -1,5 +1,5 @@
 import api from './axios';
 
-export const getDashboardStats = async () => {
-    return await api.get('/dashboard/stats');
+export const getDashboardStats = async (params = {}) => {
+    return await api.get('/dashboard/stats', { params });
 };

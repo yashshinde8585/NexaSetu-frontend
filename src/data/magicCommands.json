@@ -1,0 +1,88 @@
+{
+  "WORKSPACE_ADMIN": [
+    {
+      "id": 1,
+      "label": "Strategic Overview",
+      "prompt": "Summarize portfolio orchestration status",
+      "category": "Intelligence"
+    },
+    {
+      "id": 2,
+      "label": "Risk Analysis",
+      "prompt": "List all projects with critical health scores",
+      "category": "Risk"
+    },
+    {
+      "id": 3,
+      "label": "Resource Allocation",
+      "prompt": "Identify resource imbalances across missions",
+      "category": "Operations"
+    },
+    {
+      "id": 4,
+      "label": "Budget Drift",
+      "prompt": "Show projects exceeding financial thresholds",
+      "category": "Finance"
+    },
+    {
+      "id": 5,
+      "label": "Personnel Registry",
+      "prompt": "Audit team distribution across active projects",
+      "category": "Operations"
+    }
+  ],
+  "TECH_LEAD": [
+    {
+      "id": 6,
+      "label": "Mission Health",
+      "prompt": "Analyze velocity and health of my active missions",
+      "category": "Intelligence"
+    },
+    {
+      "id": 7,
+      "label": "Squad Blockers",
+      "prompt": "Show all overdue tasks in my assigned team",
+      "category": "Risk"
+    },
+    {
+      "id": 8,
+      "label": "Personnel Capacity",
+      "prompt": "Summarize my team's bandwidth and workload",
+      "category": "Operations"
+    }
+  ],
+  "TEAM_MEMBER": [
+    {
+      "id": 9,
+      "label": "My Roadblocks",
+      "prompt": "List my high-priority overdue tasks",
+      "category": "Intelligence"
+    },
+    {
+      "id": 10,
+      "label": "Growth Pulse",
+      "prompt": "Summarize my completed mission impact",
+      "category": "Performance"
+    },
+    {
+      "id": 11,
+      "label": "Upcoming Milestones",
+      "prompt": "Show my tasks due in the next 48 hours",
+      "category": "Operations"
+    }
+  ],
+  "GLOBAL": [
+    {
+      "id": 12,
+      "label": "System Telemetry",
+      "prompt": "Status check on all Nexa platform nodes",
+      "category": "System"
+    },
+    {
+      "id": 13,
+      "label": "Recent Audit",
+      "prompt": "Show last 5 strategic actions taken by Nexa",
+      "category": "Audit"
+    }
+  ]
+}

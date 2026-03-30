@@ -15,7 +15,13 @@ export const getProject = async (projectId) => {
     return response.data;
 };
 
-export const getProjectAnalytics = async (projectId) => {
-    const response = await api.get(`/projects/${projectId}/analytics`);
+export const getProjectAnalytics = async (projectId, sprintId = null) => {
+    const url = sprintId ? `/projects/${projectId}/analytics?sprintId=${sprintId}` : `/projects/${projectId}/analytics`;
+    const response = await api.get(url);
+    return response.data;
+};
+
+export const updateProject = async (projectId, projectData) => {
+    const response = await api.patch(`/projects/${projectId}`, projectData);
     return response.data;
 };

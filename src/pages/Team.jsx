@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Mail, Shield, ShieldCheck, UserPlus, Trash2, Clock, CheckCircle, Search, Filter } from 'lucide-react';
+import { Users, Mail, Shield, ShieldCheck, UserPlus, Trash2, Clock, CheckCircle, Search, Filter, ChevronDown, Box, Rocket } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import InviteModal from '../components/InviteModal';
+
+import { useNavigate } from 'react-router-dom';
+
+import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
 
 const Team = () => {
     const { user } = useAuth();
+    const { hasPermission } = usePermissions();
+    const navigate = useNavigate();
     const [team, setTeam] = useState({ members: [], invitations: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
+        // Enforce Direct Mission Access for Tech Leads
+        // If a Tech Lead has a primary project assignment, redirect them directly 
+        // to that team's page instead of showing the hub list.
+        const isTechLead = user?.role === 'TECH_LEAD' || user?.jobTitle?.toUpperCase().includes('LEAD');
+        const primaryProjectId = user?.assignedProjectId?._id || user?.assignedProjectId;
+        
+        if (isTechLead && primaryProjectId) {
+            navigate(`/team/project/${primaryProjectId}`, { replace: true });
+            return;
+        }
+
         fetchTeam();
-    }, []);
+    }, [user, navigate]);
 
     const fetchTeam = async () => {
         try {
@@ -31,11 +46,10 @@ const Team = () => {
 
     const getRoleBadge = (role) => {
         switch (role) {
-            case 'ADMIN': return 'bg-primary/10 text-primary border-primary/20';
-            case 'MANAGER': return 'bg-status-success/10 text-status-success border-status-success/20';
-            case 'DEV': return 'bg-white/5 text-white/60 border-white/5';
-            case 'INTERN': return 'bg-status-warning/10 text-status-warning border-status-warning/20';
-            default: return 'bg-white/5 text-white/40';
+            case 'WORKSPACE_ADMIN': return 'bg-primary/10 text-primary border-primary/20';
+            case 'WORKSPACE_MANAGER': return 'bg-status-success/10 text-status-success border-status-success/20';
+            case 'RESTRICTED': return 'bg-status-warning/10 text-status-warning border-status-warning/20';
+            default: return 'bg-white/5 text-white/60 border-white/5';
         }
     };
 
@@ -43,137 +57,185 @@ const Team = () => {
         month: 'short', day: 'numeric', year: 'numeric' 
     });
 
-    const filteredMembers = team.members.filter(m => 
-        m.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        m.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Group members by project
+    const groupedMembers = team.members.reduce((acc, member) => {
+        const projectId = member.assignedProjectId?._id || 'unassigned';
+        const projectName = member.assignedProjectId?.name || 'Unassigned Operations';
+        
+        if (!acc[projectId]) {
+            acc[projectId] = { name: projectName, members: [] };
+        }
+        acc[projectId].members.push(member);
+        return acc;
+    }, {});
 
     return (
-        <div className="p-8 pb-32 max-w-7xl mx-auto animate-in fade-in duration-700">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                            <Users size={24} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Executive Header - Scaled Down */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10 px-1">
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center border border-primary/20 shrink-0">
+                            <Users size={20} />
                         </div>
-                        <h1 className="text-3xl font-black text-white tracking-tighter italic uppercase">Personnel <span className="text-primary italic">Hub</span></h1>
+                        <div className="px-2.5 py-0.5 bg-white/5 border border-white/10 rounded-full text-[7px] font-black uppercase tracking-[0.2em] text-white/40">
+                            Strategic Management
+                        </div>
                     </div>
-                    <p className="text-text-muted text-sm font-medium">Govern your strategic human assets and pending recruitment pipelines.</p>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-widest italic uppercase leading-none">
+                        Personnel <span className="text-primary not-italic">Hub</span>
+                    </h1>
+                    <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-3 max-w-md opacity-50">
+                        Orchestrate teams and govern recruitment through a unified command interface.
+                    </p>
                 </div>
 
-                {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
-                    <button 
-                        onClick={() => setIsInviteOpen(true)}
-                        className="px-6 py-3 bg-primary hover:bg-primary-light text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center gap-2 active:scale-95"
-                    >
-                        <UserPlus size={16} /> Deploy Invitations
-                    </button>
-                )}
+                <div className="flex items-center gap-3">
+                    {hasPermission(PERMISSIONS.INVITE_USERS) && (
+                        <button 
+                            onClick={() => navigate('/team/add')}
+                            className="group px-6 py-3 bg-primary hover:bg-primary-light text-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-xl shadow-primary/20 transition-all flex items-center gap-2 active:scale-95"
+                        >
+                            <UserPlus size={14} /> Deploy Member
+                        </button>
+                    )}
+                </div>
             </div>
 
             {error && (
-                <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-3 rounded-xl mb-8 flex items-center gap-2">
+                <div className="bg-status-error/5 border border-status-error/20 text-status-error px-5 py-3 rounded-xl mb-8 flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest backdrop-blur-xl">
                     <span className="text-lg">⚠️</span> {error}
                 </div>
             )}
 
-            {/* Controls */}
-            <div className="flex gap-4 mb-8">
+            {/* Tactical Controls */}
+            <div className="flex flex-col md:flex-row gap-4 mb-8 px-1">
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors" size={16} />
                     <input 
                         type="text" 
-                        placeholder="Search by name or email pipeline..."
-                        className="w-full bg-white/5 border border-white/5 text-white rounded-2xl pl-12 pr-6 py-3 focus:outline-none focus:border-primary/40 transition-all text-sm font-medium"
+                        placeholder="Search personnel..."
+                        className="w-full bg-white/[0.02] border border-white/5 text-white rounded-xl pl-12 pr-6 py-4 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all text-xs font-medium placeholder:text-white/10"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <button className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white rounded-2xl border border-white/5 transition-all text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                    <Filter size={16} /> Filters
-                </button>
             </div>
 
-            {/* Active Members Grid */}
+            {/* Personnel Grid */}
             <div className="space-y-4 mb-16">
-                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Active Strategic Units</div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredMembers.map((member) => (
-                        <div key={member.email} className="group relative p-6 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-3xl transition-all h-full">
-                            <div className="absolute top-4 right-4">
-                                <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.1em] rounded-lg border shadow-lg ${getRoleBadge(member.role)}`}>
-                                    {member.role}
-                                </span>
-                            </div>
-                            
-                            <div className="flex items-start gap-4 mb-6">
-                                <div className="w-12 h-12 bg-linear-to-br from-white/10 to-transparent rounded-2xl flex items-center justify-center text-xl font-black text-white border border-white/5 group-hover:scale-110 transition-transform">
-                                    {member.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-white tracking-tight">{member.name}</h3>
-                                    <div className="flex items-center gap-1.5 text-text-muted text-[10px] font-medium mt-0.5">
-                                        <Mail size={12} className="text-white/20" /> {member.email}
+                <div className="flex items-center justify-between px-1 mb-6">
+                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">Active Mission Teams</div>
+                    <div className="h-[1px] flex-1 mx-6 bg-white/5" />
+                    <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Units: {team.members.length}</div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Object.entries(groupedMembers).length === 0 && !loading && (
+                        <div className="col-span-full py-20 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[40px]">
+                           <Users size={60} className="mx-auto text-white/5 mb-6" />
+                           <h3 className="text-xl font-black text-white mb-1 uppercase tracking-tighter italic">Workspace Zero</h3>
+                           <p className="text-text-muted text-xs max-w-xs mx-auto opacity-30">No strategic personnel detected.</p>
+                        </div>
+                    )}
+
+                    {Object.entries(groupedMembers).map(([projectId, group]) => {
+                        if (projectId === 'unassigned') return null;
+
+                        const filteredGroupMembers = group.members.filter(m => 
+                            m.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            m.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+
+                        if (searchTerm && filteredGroupMembers.length === 0) return null;
+
+                        return (
+                            <div 
+                                key={projectId} 
+                                onClick={() => navigate(`/team/project/${projectId}`)}
+                                className="group relative bg-white/[0.02] hover:bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-3xl p-6 transition-all duration-300 hover:translate-y-[-4px] cursor-pointer overflow-hidden backdrop-blur-sm"
+                            >
+                                <div className="flex flex-col gap-6 h-full">
+                                    <div className="flex justify-between items-start">
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 ${projectId === 'unassigned' ? 'bg-white/5 text-white/20' : 'bg-primary/5 text-primary'}`}>
+                                            {projectId === 'unassigned' ? <Users size={20} /> : <Box size={20} strokeWidth={2} />}
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-white/5 text-white/10 group-hover:text-primary transition-all">
+                                            <ChevronDown size={16} className="-rotate-90" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-base font-bold text-white tracking-tight uppercase truncate mb-1">{group.name}</h3>
+                                        <div className="inline-flex items-center gap-1.5 text-[9px] font-black text-white/30 uppercase tracking-widest">
+                                            <Shield size={10} /> {group.members.length} Personnel
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-auto border-t border-white/5 pt-4 flex items-center justify-between">
+                                        <div className="flex -space-x-2">
+                                            {group.members.slice(0, 4).map((m, i) => (
+                                                <div key={i} className="w-8 h-8 rounded-full bg-linear-to-br from-white/10 to-transparent border-2 border-[#0B0F1A] flex items-center justify-center text-[9px] font-black text-white uppercase shadow-sm">
+                                                    {m.name.charAt(0)}
+                                                </div>
+                                            ))}
+                                            {group.members.length > 4 && (
+                                                <div className="w-8 h-8 rounded-full bg-white/5 border-2 border-[#0B0F1A] flex items-center justify-center text-[8px] font-black text-white/40 backdrop-blur-md">
+                                                    +{group.members.length - 4}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span></span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                                <div className="flex items-center gap-1.5 text-text-muted text-[9px] font-black uppercase tracking-widest">
-                                    <Clock size={12} /> Joined {formatDate(member.createdAt)}
-                                </div>
-                                <button className="p-2 text-white/5 hover:text-white/40 hover:bg-white/5 rounded-lg transition-all">
-                                    <ShieldCheck size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
-            {/* Pending Invitations */}
+            {/* Pending Pipeline Deployments - Scaled Down */}
             {team.invitations.length > 0 && (
-                <div className="space-y-4">
-                    <div className="text-[10px] font-black text-status-warning/40 uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
-                        <Rocket size={12} className="animate-pulse" /> Pending Pipeline Deployments
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 px-1">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="text-[8px] font-black text-status-warning/60 uppercase tracking-[0.4em]">Pending Pipeline Queue</div>
+                        <div className="h-[1px] flex-1 bg-status-warning/10" />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {team.invitations.map((invite) => (
-                            <div key={invite.email} className="p-5 bg-status-warning/[0.03] border border-status-warning/10 rounded-2xl flex justify-between items-center group hover:bg-status-warning/[0.05] transition-all">
-                                <div className="flex items-center gap-4">
+                            <div key={invite.email} className="p-5 bg-status-warning/[0.02] border border-status-warning/10 rounded-2xl flex flex-col gap-4 group hover:bg-status-warning/[0.04] transition-all duration-300">
+                                <div className="flex justify-between items-start">
                                     <div className="w-10 h-10 bg-status-warning/10 text-status-warning rounded-xl flex items-center justify-center border border-status-warning/20">
-                                        <Mail size={18} />
+                                        <Mail size={16} />
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-bold text-white">{invite.email}</span>
-                                            <span className="px-2 py-0.5 bg-status-warning/10 text-status-warning border border-status-warning/20 text-[8px] font-black uppercase tracking-widest rounded-md">Pending</span>
-                                        </div>
-                                        <div className="text-[10px] font-medium text-text-muted mt-0.5 flex items-center gap-1.5 uppercase tracking-wide">
-                                            Role: <span className="text-white/60">{invite.role}</span> · Expires: {formatDate(invite.expiresAt)}
-                                        </div>
+                                    <div className="px-2 py-0.5 bg-status-warning/10 border border-status-warning/20 text-[7px] font-black text-status-warning uppercase tracking-widest rounded-md">
+                                        Initiating
                                     </div>
                                 </div>
-                                <button className="p-2.5 bg-white/5 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all opacity-0 group-hover:opacity-100">
-                                    <Trash2 size={16} />
-                                </button>
+                                
+                                <div className="overflow-hidden">
+                                    <h4 className="text-xs font-bold text-white truncate mb-0.5">{invite.email}</h4>
+                                    <div className="text-[9px] font-black text-white/20 uppercase tracking-widest flex items-center gap-1.5">
+                                        Target: <span className="text-white/60">{invite.projectId?.name || 'GLOBAL'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                    <div className="px-2 py-0.5 bg-white/5 rounded-md text-[8px] font-black text-white/40 uppercase tracking-widest border border-white/5">
+                                        {invite.role}
+                                    </div>
+                                    <button className="p-2 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-40 group-hover:opacity-100">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Empty State */}
-            {!loading && team.members.length === 0 && (
-                <div className="py-20 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[40px]">
-                   <Users size={64} className="mx-auto text-white/5 mb-6" />
-                   <h3 className="text-xl font-bold text-white mb-2">Workspace Zero</h3>
-                   <p className="text-text-muted text-sm max-w-xs mx-auto">No strategic personnel detected. Deploy invitations to populate your instance.</p>
-                </div>
-            )}
 
-            <InviteModal isOpen={isInviteOpen} onClose={() => { setIsInviteOpen(false); fetchTeam(); }} />
         </div>
     );
 };

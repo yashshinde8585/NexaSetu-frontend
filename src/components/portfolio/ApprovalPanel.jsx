@@ -14,7 +14,7 @@ const ApprovalPanel = ({ actions, handleApprove, handleReject }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-6 tracking-tight">
         {actions.map(action => (
           <div key={action._id} className="bg-background-dark/60 border border-white/5 p-6 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center gap-6 group/item hover:border-primary/30 transition-all">
             <div className="flex-1 space-y-2">

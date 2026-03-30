@@ -5,8 +5,14 @@ export const createTask = async (taskData) => {
     return response.data;
 };
 
-export const getTasksByProject = async (projectId) => {
-    const response = await api.get(`/tasks/project/${projectId}`);
+export const getTasksByProject = async (projectId, sprintId = null) => {
+    const url = sprintId ? `/tasks/project/${projectId}?sprintId=${sprintId}` : `/tasks/project/${projectId}`;
+    const response = await api.get(url);
+    return response.data;
+};
+
+export const getMyTasks = async () => {
+    const response = await api.get('/tasks/my-tasks');
     return response.data;
 };
 

@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 const ActivityFeed = ({ recentActivity = [] }) => {
   return (
-    <div className="lg:col-span-4 space-y-8">
-      <div className="bg-background-light/10 rounded-xl p-5 border border-white/5 sticky top-24">
+    <div className="space-y-8">
+      <div className="bg-background-light/10 rounded-2xl p-6 border border-white/5">
         <h2 className="text-sm font-black uppercase tracking-[0.2em] text-text-muted/60 mb-6 flex items-center gap-2">
           <Activity size={14} className="text-primary" /> Live Feed
         </h2>

@@ -24,10 +24,10 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-background-dark p-6">
-            <div className="w-full max-w-md bg-background border border-background-light rounded-3xl p-8 shadow-2xl animate-in zoom-in duration-500">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-text tracking-tight mb-2">Welcome Back</h2>
+        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-background-dark p-4 sm:p-8">
+            <div className="w-full max-w-md bg-background border border-background-light rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl animate-in zoom-in duration-500">
+                <div className="text-center mb-8 sm:mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tighter mb-2 italic uppercase">Welcome Back</h2>
                     <p className="text-text-muted">Log in to your NexaSetu account</p>
                 </div>
 
@@ -51,7 +51,7 @@ const Login = () => {
                         </div>
                         <input 
                             type="password" 
-                            className="w-full bg-background-dark border border-background-light text-text rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-text-muted/50"
+                            className="w-full h-11 sm:h-12 bg-background-dark border border-background-light text-text rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-text-muted/50 text-sm"
                             placeholder="Enter your password"
                             required 
                             value={formData.password}
@@ -68,9 +68,9 @@ const Login = () => {
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="w-full py-3.5 px-4 bg-primary hover:bg-primary-light disabled:opacity-50 text-text font-semibold rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full h-11 sm:h-12 bg-primary hover:bg-primary-light disabled:opacity-50 text-text font-black uppercase tracking-widest text-[10px] sm:text-xs rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        {loading ? 'Logging in...' : 'Sign In'}
+                        {loading ? 'Initiating...' : 'Authorize Instance'}
                     </button>
                 </form>
 
