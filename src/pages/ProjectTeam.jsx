@@ -24,6 +24,7 @@ const ProjectTeam = () => {
                 let filtered = [];
 
                 if (projectId === 'unassigned') {
+                    projectName = 'Unassigned Members';
                     filtered = allMembers.filter(m => !m.assignedProjectId);
                 } else {
                     filtered = allMembers.filter(m => m.assignedProjectId?._id === projectId);
@@ -109,15 +110,15 @@ const ProjectTeam = () => {
                             {projectId === 'unassigned' ? <Users size={24} /> : <Box size={24} />}
                         </div>
                         <div>
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter italic uppercase">
+                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight uppercase">
                                 {data.projectName}
                             </h1>
-                            <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-1">Personnel deployment overview for this mobilization.</p>
+                            <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-1">Review team members and roles assigned to this project.</p>
                         </div>
                     </div>
 
                     <div className="hidden md:flex flex-col items-end">
-                        <div className="text-2xl font-black text-white italic">{data.members.length} Units</div>
+                        <div className="text-2xl font-black text-white">{data.members.length} Members</div>
                     </div>
                 </div>
             </div>
@@ -127,7 +128,7 @@ const ProjectTeam = () => {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors" size={18} />
                 <input
                     type="text"
-                    placeholder="Filter personnel..."
+                    placeholder="Search team members..."
                     className="w-full h-12 sm:h-14 bg-white/5 border border-white/5 text-white rounded-xl sm:rounded-2xl pl-12 pr-6 py-4 focus:outline-none focus:border-primary/40 transition-all text-xs sm:text-sm font-medium"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,7 +151,7 @@ const ProjectTeam = () => {
                                 </div>
                                 <div className="overflow-hidden">
                                     <h3 className="font-bold text-base sm:text-lg text-white tracking-tight truncate leading-tight mb-0.5">{member.name}</h3>
-                                    <div className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 opacity-80">{member.jobTitle || 'Personnel Unit'}</div>
+                                    <div className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 opacity-80">{member.jobTitle || 'Team Member'}</div>
                                     <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-medium truncate">
                                         <Mail size={12} className="text-white/10" /> {member.email}
                                     </div>
@@ -176,8 +177,8 @@ const ProjectTeam = () => {
             {!loading && filteredMembers.length === 0 && (
                 <div className="py-20 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[40px]">
                     <Users size={64} className="mx-auto text-white/5 mb-6" />
-                    <h3 className="text-xl font-bold text-white mb-2">Squad Null</h3>
-                    <p className="text-text-muted text-sm max-w-xs mx-auto">No personnel matching your criteria in this mobilization.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">No Members Found</h3>
+                    <p className="text-text-muted text-sm max-w-xs mx-auto">No team members matching your criteria were found in this project.</p>
                 </div>
             )}
         </div>

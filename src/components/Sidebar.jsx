@@ -15,9 +15,9 @@ const Sidebar = ({ isOpen, onClose }) => {
   if (location.pathname === '/pricing') return null;
   
   const navItems = [
-    { name: 'Overview', path: '/dashboard', icon: <LayoutDashboard size={20} />, permission: null },
-    { name: 'Team', path: '/team', icon: <Users size={20} />, permission: PERMISSIONS.INVITE_USERS }, // Re-using permission for now
-    { name: 'Workspace Settings', path: '/workspace-settings', icon: <Building size={20} />, permission: PERMISSIONS.MANAGE_ROLES },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} />, permission: null },
+    { name: 'Team Members', path: '/team', icon: <Users size={20} />, permission: PERMISSIONS.INVITE_USERS }, // Re-using permission for now
+    { name: 'Settings', path: '/workspace-settings', icon: <Building size={20} />, permission: PERMISSIONS.MANAGE_ROLES },
     { name: 'Billing', path: '#', icon: <CreditCard size={20} />, permission: PERMISSIONS.MANAGE_BILLING, disabled: true },
   ].filter(item => !item.permission || hasPermission(item.permission));
 
@@ -84,10 +84,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         ))}
 
         <div className="pt-6">
-            <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">Project Orchestration</div>
+            <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">Management</div>
             {[
-                { name: 'Tickets', path: `/project/${TICKETS_PROJECT_ID}`, icon: <Box size={18} /> },
-                { name: 'Project Information', path: '/project-info', icon: <Settings size={18} /> }
+                { name: 'Tasks & Tickets', path: `/project/${TICKETS_PROJECT_ID}`, icon: <Box size={18} /> },
+                { name: 'Project Details', path: '/project-info', icon: <Settings size={18} /> }
             ].map((item) => (
                 <NavLink
                     key={item.name}
@@ -128,7 +128,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <span className="p-1 px-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <UserPlus size={16} />
             </span>
-            Add Team Member
+            Invite Members
           </Link>
         )}
       </nav>

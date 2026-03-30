@@ -43,16 +43,16 @@ const Velocity = () => {
                     <div className="w-20 h-20 rounded-[2rem] bg-primary flex items-center justify-center text-white mb-8 shadow-2xl shadow-primary/40 group-hover:scale-110 transition-transform duration-700">
                         <Rocket size={40} fill="currentColor" />
                     </div>
-                    <h1 className="text-5xl sm:text-7xl font-black text-white italic tracking-tighter uppercase mb-4">Velocity Pulse</h1>
+                    <h1 className="text-5xl sm:text-7xl font-extrabold text-white tracking-tight uppercase mb-4">Performance Velocity</h1>
                     <div className="flex items-baseline gap-4">
-                        <span className="text-8xl sm:text-9xl font-black text-transparent bg-clip-text bg-linear-to-b from-white to-white/20 tracking-tighter italic">
+                        <span className="text-8xl sm:text-9xl font-black text-transparent bg-clip-text bg-linear-to-b from-white to-white/20 tracking-tight">
                             {velocityScore}%
                         </span>
                         <div className="text-left">
-                           <div className="text-status-success font-black text-xl italic flex items-center gap-1">
+                           <div className="text-status-success font-black text-xl flex items-center gap-1">
                                <TrendingUp size={20} /> +2.4%
                            </div>
-                           <div className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Execution Baseline</div>
+                           <div className="text-text-muted text-[10px] font-black uppercase tracking-widest opacity-40">Performance Baseline</div>
                         </div>
                     </div>
                 </div>
@@ -63,10 +63,10 @@ const Velocity = () => {
                 <div className="glass-dark border border-white/5 p-10 rounded-[2.5rem] space-y-8 relative group">
                     <div className="flex justify-between items-center">
                         <div className="space-y-1">
-                            <h3 className="text-xl font-black text-white italic flex items-center gap-2">
-                                <Bot size={20} className="text-secondary" /> AI Synergy Matrix
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Bot size={20} className="text-secondary" /> AI Integration Overview
                             </h3>
-                            <p className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-60">Human-Agent Collaboration Index</p>
+                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest opacity-60">Task Automation Ratio</p>
                         </div>
                     </div>
                     
@@ -91,8 +91,8 @@ const Velocity = () => {
                             </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-3xl font-black text-white italic leading-none">{aiImpact.ai}</span>
-                            <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-1">AI Cycles</span>
+                            <span className="text-3xl font-black text-white leading-none">{aiImpact.ai}</span>
+                            <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-1">AI Tasks</span>
                         </div>
                     </div>
 
@@ -103,7 +103,7 @@ const Velocity = () => {
                                     <div className="w-2 h-2 rounded-full shadow-lg" style={{ backgroundColor: d.color }} />
                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{d.name}</span>
                                 </div>
-                                <div className="text-xl font-black text-white/40 ml-4 italic">{d.value} <span className="text-[8px] lowercase">tasks</span></div>
+                                <div className="text-xl font-black text-white/40 ml-4">{d.value} <span className="text-[8px] lowercase">tasks</span></div>
                             </div>
                         ))}
                     </div>
@@ -112,10 +112,10 @@ const Velocity = () => {
                 {/* Project Strike-Rate */}
                 <div className="glass-dark border border-white/5 p-10 rounded-[2.5rem] space-y-8 relative group">
                      <div className="space-y-1">
-                        <h3 className="text-xl font-black text-white italic flex items-center gap-2">
-                            <Target size={20} className="text-primary" /> Sector Precision
+                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                            <Target size={20} className="text-primary" /> Project Completion
                         </h3>
-                        <p className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-60">Personal vs Global Completion Rates</p>
+                        <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest opacity-60">Individual vs Workspace Performance</p>
                     </div>
 
                     <div className="h-64">
@@ -135,8 +135,8 @@ const Velocity = () => {
                     </div>
 
                     <div className="flex justify-center items-center gap-8 text-[9px] font-bold uppercase tracking-widest text-text-muted/40">
-                        <div className="flex items-center gap-2"><div className="w-3 h-1.5 bg-secondary rounded-sm" /> My Direct Execution</div>
-                        <div className="flex items-center gap-2"><div className="w-3 h-1.5 bg-primary/30 rounded-sm" /> Global Fleet Avg</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-1.5 bg-secondary rounded-sm" /> Individual Performance</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-1.5 bg-primary/30 rounded-sm" /> Workspace Average</div>
                     </div>
                 </div>
             </div>
@@ -146,23 +146,23 @@ const Velocity = () => {
                 <div className="space-y-4 text-center sm:text-left">
                     <div className="flex items-center gap-3 justify-center sm:justify-start">
                         <Target className="text-primary" size={24} />
-                        <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">Execution Health</h2>
+                        <h2 className="text-3xl font-extrabold text-white tracking-tight uppercase">Delivery Health</h2>
                     </div>
                     <p className="text-text-muted max-w-xl font-medium leading-relaxed">
-                        Your velocity is currently <span className="text-status-success font-black italic">Outstanding</span>. 
-                        You have completed <span className="text-white font-black">{personal.completed}</span> missions this cycle, 
-                        outperforming the workspace average by <span className="text-secondary font-black">12.4%</span>.
+                        Your completion velocity is currently <span className="text-status-success font-bold">Outstanding</span>. 
+                        You have completed <span className="text-white font-bold">{personal.completed}</span> tasks this cycle, 
+                        outperforming the workspace average by <span className="text-secondary font-bold">12.4%</span>.
                     </p>
                 </div>
                 <div className="flex gap-10">
                     <div className="text-center">
-                        <div className="text-4xl font-black text-white italic tracking-tighter">{personal.completed}</div>
-                        <div className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-60">Triumphed</div>
+                        <div className="text-4xl font-black text-white tracking-tight">{personal.completed}</div>
+                        <div className="text-[10px] text-text-muted font-bold uppercase tracking-widest opacity-60">Completed</div>
                     </div>
                     <div className="w-px h-16 bg-white/10" />
                     <div className="text-center">
-                        <div className="text-4xl font-black text-white italic tracking-tighter">{personal.active}</div>
-                        <div className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-60">Operational</div>
+                        <div className="text-4xl font-black text-white tracking-tight">{personal.active}</div>
+                        <div className="text-[10px] text-text-muted font-bold uppercase tracking-widest opacity-60">Active Tasks</div>
                     </div>
                 </div>
             </div>
