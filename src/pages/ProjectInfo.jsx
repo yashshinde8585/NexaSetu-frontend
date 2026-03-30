@@ -139,12 +139,12 @@ const ProjectInfo = () => {
                     <div className="w-full max-w-md bg-[#1E1E2E] border border-white/10 rounded-3xl p-8 shadow-2xl shadow-primary/20 animate-in zoom-in-95 duration-300">
                         <div className="flex items-center gap-3 mb-6">
                             <Rocket className="text-primary" size={24} />
-                            <h3 className="text-xl font-bold text-white tracking-tight">Deploy Tactical Cycle</h3>
+                            <h3 className="text-xl font-bold text-white tracking-tight">Create New Sprint</h3>
                         </div>
                         
                         <form onSubmit={submitSprint} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Mission Ident</label>
+                                <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Sprint Name</label>
                                 <input 
                                     type="text" 
                                     className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
@@ -157,7 +157,7 @@ const ProjectInfo = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Commencement</label>
+                                    <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Start Date</label>
                                     <input 
                                         type="date" 
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
@@ -167,7 +167,7 @@ const ProjectInfo = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Finality</label>
+                                    <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">End Date</label>
                                     <input 
                                         type="date" 
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
@@ -184,14 +184,14 @@ const ProjectInfo = () => {
                                     disabled={createSprintLoading}
                                     className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                                 >
-                                    {createSprintLoading ? 'Synchronizing...' : 'Initialize Cycle'}
+                                    {createSprintLoading ? 'Saving...' : 'Create Sprint'}
                                 </button>
                                 <button 
                                     type="button" 
                                     onClick={() => setShowSprintForm(false)}
                                     className="px-6 bg-white/5 hover:bg-white/10 text-text-muted font-bold rounded-2xl transition-all border border-white/5"
                                 >
-                                    Abort
+                                    Cancel
                                 </button>
                             </div>
                         </form>
@@ -209,13 +209,13 @@ const ProjectInfo = () => {
                                     onClick={() => setShowForm(true)}
                                     className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center gap-3 text-xs uppercase tracking-widest transform hover:-translate-y-0.5"
                                 >
-                                    <span className="text-lg font-light">+</span> Initiate Mission
+                                    <span className="text-lg font-light">+</span> Create Project
                                 </button>
                             ) : (
                                 <form onSubmit={handleCreateProject} className="flex items-center gap-3 w-full max-w-md animate-in fade-in slide-in-from-left-4 duration-500">
                                     <input
                                         type="text"
-                                        placeholder="Mission Designation..."
+                                        placeholder="Project Name..."
                                         className="flex-1 bg-white/[0.03] text-white border border-white/10 px-5 py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-xs transition-all font-bold"
                                         value={newProjectName}
                                         onChange={(e) => setNewProjectName(e.target.value)}
@@ -226,22 +226,20 @@ const ProjectInfo = () => {
                                         type="submit"
                                         className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-primary/20"
                                     >
-                                        Deploy
+                                        Create
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setShowForm(false)}
                                         className="bg-white/5 hover:bg-white/10 text-text-muted px-5 py-3 rounded-2xl text-[10px] uppercase font-bold tracking-widest transition-all border border-white/5"
                                     >
-                                        Abort
+                                        Cancel
                                     </button>
                                 </form>
                             )}
                         </div>
                      )}
                 </div>
-                
-
             </header>
 
             {/* Sprint Results Section */}
@@ -250,9 +248,9 @@ const ProjectInfo = () => {
                     <div>
                         <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
                             <Rocket className="text-primary" size={26} />
-                            Strategic Sprint Matrix
+                            Sprint Management
                         </h2>
-                        <p className="text-text-muted text-sm font-medium mt-1 opacity-70">Orchestrating mission deliverables across high-velocity cycles.</p>
+                        <p className="text-text-muted text-sm font-medium mt-1 opacity-70">Manage your project timelines and team velocity.</p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -275,7 +273,7 @@ const ProjectInfo = () => {
                                     <button 
                                         onClick={handleAddSprint}
                                         className="w-10 h-10 text-text-muted/40 hover:text-primary transition-all flex items-center justify-center rounded-xl hover:bg-white/5"
-                                        title="Set New Tactical Cycle"
+                                        title="Create New Sprint"
                                     >
                                         <span className="text-xl">+</span>
                                     </button>
@@ -323,14 +321,14 @@ const ProjectInfo = () => {
                                 <span className="text-sm font-bold text-white/90">
                                     {new Date(selectedSprint.startDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </span>
-                                <span className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-60">Start Vector</span>
+                                <span className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-60">Start Date</span>
                             </div>
 
                             <div className="col-span-6 md:col-span-2 flex flex-col justify-center">
                                 <span className="text-sm font-bold text-white/90">
                                     {Math.max(1, Math.ceil((new Date(selectedSprint.endDate) - new Date(selectedSprint.startDate)) / (1000 * 60 * 60 * 24)))} Days
                                 </span>
-                                <span className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-60">Timeframe</span>
+                                <span className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-60">Duration</span>
                             </div>
 
                             <div className="col-span-12 md:col-span-2 flex items-center justify-end">
@@ -370,10 +368,10 @@ const ProjectInfo = () => {
                     <div className="mt-6 pt-6 border-t border-white/5">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {[
-                                { label: 'Open Missions', count: sprintMetrics.open, color: 'text-status-error', icon: '🎯' },
-                                { label: 'Active Investigation', count: sprintMetrics.active, color: 'text-status-warning', icon: '🔍' },
-                                { label: 'Fix Verification', count: sprintMetrics.review, color: 'text-secondary', icon: '⚙️' },
-                                { label: 'Mission Finalized', count: sprintMetrics.completed, color: 'text-status-success', icon: '🎉' },
+                                { label: 'Open Tasks', count: sprintMetrics.open, color: 'text-status-error', icon: '🎯' },
+                                { label: 'In Progress', count: sprintMetrics.active, color: 'text-status-warning', icon: '🔍' },
+                                { label: 'In Review', count: sprintMetrics.review, color: 'text-secondary', icon: '⚙️' },
+                                { label: 'Completed', count: sprintMetrics.completed, color: 'text-status-success', icon: '🎉' },
                             ].map((step, idx) => (
                                 <div key={idx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
                                     <div className="flex items-center gap-3">
@@ -398,9 +396,9 @@ const ProjectInfo = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/60 flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                                    Operational Personnel Pulse
+                                    Team Workload Overview
                                 </h4>
-                                <span className="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded tracking-tighter">Tactical Distribution</span>
+                                <span className="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded tracking-tighter">Velocity Pulse</span>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {sprintStats.metrics.workload.map((wp, idx) => (
@@ -410,7 +408,7 @@ const ProjectInfo = () => {
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black text-white/80 group-hover:text-white transition-colors">{wp.name}</span>
-                                            <span className="text-[9px] font-bold text-text-muted/40 group-hover:text-text-muted/60 transition-colors uppercase tracking-widest leading-none">{wp.count} Directives</span>
+                                            <span className="text-[9px] font-bold text-text-muted/40 group-hover:text-text-muted/60 transition-colors uppercase tracking-widest leading-none">{wp.count} Tasks</span>
                                         </div>
                                     </div>
                                 ))}
@@ -427,9 +425,9 @@ const ProjectInfo = () => {
                         <div className="bg-[#1E1E2E]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
                         <div className="flex justify-between items-center mb-10">
                             <div>
-                                <h3 className="text-lg font-black text-white">Mission Health Heatmap</h3>
+                                <h3 className="text-lg font-black text-white">Project Status Overview</h3>
                                 <p className="text-xs text-text-muted mt-1">
-                                    {selectedSprintId ? 'Tactical status for active cycle units' : 'Real-time status of all workspace projects'}
+                                    {selectedSprintId ? 'Status for projects in active sprint' : 'Real-time status of all workspace projects'}
                                 </p>
                             </div>
                             <div className="flex gap-2">
@@ -480,7 +478,7 @@ const ProjectInfo = () => {
                                                         }}
                                                         className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20 hover:bg-primary/20 transition-all"
                                                     >
-                                                        Sync to Cycle
+                                                        Add to Sprint
                                                     </button>
                                                 )}
                                                 <div className="text-right">
@@ -520,7 +518,7 @@ const ProjectInfo = () => {
                                                 <input 
                                                     type="text"
                                                     className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-[10px] font-medium text-white focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 transition-all placeholder:opacity-30"
-                                                    placeholder="Directive Title..."
+                                                    placeholder="Task Title..."
                                                     value={quickTicketTitle}
                                                     onChange={e => setQuickTicketTitle(e.target.value)}
                                                     autoFocus
@@ -531,7 +529,7 @@ const ProjectInfo = () => {
                                                     disabled={createTicketLoading}
                                                     className="bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-black uppercase tracking-widest px-4 rounded-xl border border-primary/20 transition-all disabled:opacity-50"
                                                 >
-                                                    {createTicketLoading ? '...' : 'Deploy'}
+                                                    {createTicketLoading ? '...' : 'Create'}
                                                 </button>
                                             </form>
                                         </div>
@@ -540,7 +538,7 @@ const ProjectInfo = () => {
                             ))}
                             {(projects || []).length === 0 && (
                                 <div className="p-8 text-center text-text-muted italic opacity-40 text-xs font-bold uppercase tracking-widest bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">
-                                    No missions available in workspace
+                                    No projects available in workspace
                                 </div>
                             )}
                         </div>
@@ -554,7 +552,7 @@ const ProjectInfo = () => {
                     <div className="bg-background w-full max-w-2xl rounded-xl border border-white/10 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-4">
                         <div className="p-6 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
                             <div>
-                                <h2 className="text-xl font-black text-primary uppercase tracking-tighter">Tactical Cycle Results</h2>
+                                <h2 className="text-xl font-black text-primary uppercase tracking-tighter">Sprint Summary</h2>
                                 <p className="text-xs text-text-muted font-mono">{finalSummary.sprint} Overview</p>
                             </div>
                             <button onClick={() => setFinalSummary(null)} className="text-text-muted hover:text-white">×</button>
@@ -587,7 +585,7 @@ const ProjectInfo = () => {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4">Top Operational Personnel</h3>
+                                <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4">Top Contributors</h3>
                                 <div className="space-y-3">
                                     {finalSummary.topContributors.map((c, i) => (
                                         <div key={i} className="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/5">
@@ -597,7 +595,7 @@ const ProjectInfo = () => {
                                                 </div>
                                                 <span className="text-sm font-bold text-white">{c.name}</span>
                                             </div>
-                                            <span className="text-xs text-primary font-mono font-bold">{c.missions} Missions Finalized</span>
+                                            <span className="text-xs text-primary font-mono font-bold">{c.missions} Tasks Completed</span>
                                         </div>
                                     ))}
                                 </div>

@@ -61,10 +61,10 @@ const MyTasks = () => {
             {/* Header Content */}
             <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight uppercase">
-                    My Directives
+                    My Tasks
                 </h1>
                 <p className="text-text-muted text-sm md:text-base font-medium opacity-60 leading-relaxed max-w-2xl">
-                    Executing mission critical sub-tasks across all active sectors.
+                    Manage and track your assigned tasks across all active projects.
                 </p>
             </div>
 
@@ -74,7 +74,7 @@ const MyTasks = () => {
                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" size={16} />
                      <input 
                         type="text" 
-                        placeholder="Search by mission or task..."
+                        placeholder="Search by project or task..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all"
@@ -93,7 +93,11 @@ const MyTasks = () => {
                                 filter === f ? 'bg-primary/20 border border-primary/30 text-primary shadow-lg shadow-primary/10' : 'text-text-muted hover:text-white hover:bg-white/5'
                             }`}
                         >
-                            {f.replace('_', ' ')}
+                            {f === 'active' ? 'Active' : 
+                             f === 'completed' ? 'Completed' : 
+                             f === 'due' ? 'Overdue' : 
+                             f === 'todo' ? 'To Do' : 
+                             f === 'in_progress' ? 'In Progress' : 'All Tasks'}
                         </button>
                     ))}
                 </div>
@@ -113,7 +117,7 @@ const MyTasks = () => {
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <MapPin size={10} className="text-primary" />
-                                        <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none">{task.project?.name || 'Isolated Cell'}</span>
+                                        <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none">{task.project?.name || 'General'}</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-primary transition-colors">{task.title}</h3>
                                 </div>
@@ -136,7 +140,7 @@ const MyTasks = () => {
                                 }`}>
                                     <Clock size={14} />
                                     <span className="text-[10px] font-bold uppercase tracking-widest">
-                                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Target Set'}
+                                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Due Date'}
                                     </span>
                                 </div>
 
@@ -145,7 +149,7 @@ const MyTasks = () => {
                                         <button 
                                             onClick={() => handleStatusChange(task._id, 'in_progress')}
                                             className="p-2 border border-white/5 bg-white/5 rounded-xl hover:bg-secondary hover:text-white transition-all text-text-muted"
-                                            title="Initialize Progression"
+                                            title="Start Task"
                                         >
                                             <CLOCK_LOADER size={18} />
                                         </button>
@@ -153,7 +157,7 @@ const MyTasks = () => {
                                     <button 
                                         onClick={() => handleStatusChange(task._id, 'done')}
                                         className="p-2 border border-white/5 bg-white/5 rounded-xl hover:bg-status-success hover:text-white transition-all text-text-muted"
-                                        title="Seal Mission"
+                                        title="Complete Task"
                                     >
                                         <CheckCircle2 size={18} />
                                     </button>
@@ -164,8 +168,16 @@ const MyTasks = () => {
                 )) : (
                     <div className="col-span-full py-32 text-center glass border border-dashed border-white/5 rounded-[3rem]">
                         <CheckCircle2 className="w-16 h-16 text-status-success mx-auto mb-6 opacity-20" />
-                        <h3 className="text-2xl font-black text-white italic">Zero Delta Detected</h3>
-                        <p className="text-text-muted font-bold uppercase tracking-widest text-xs mt-2">All assigned directives have been cleared.</p>
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight">
+                            {filter === 'due' ? 'No Overdue Tasks' : 
+                             filter === 'completed' ? 'No Completed Tasks' : 
+                             filter === 'active' ? 'No Active Tasks' : 'All Clear'}
+                        </h3>
+                        <p className="text-text-muted font-bold uppercase tracking-widest text-[10px] mt-2">
+                            {filter === 'due' ? 'All your pending items are currently on schedule.' : 
+                             filter === 'completed' ? 'You haven\'t finalized any tasks in this view yet.' : 
+                             'Your workspace is fully synchronized and up to date.'}
+                        </p>
                     </div>
                 )}
             </div>

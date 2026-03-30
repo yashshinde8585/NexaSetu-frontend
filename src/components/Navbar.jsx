@@ -19,7 +19,7 @@ const Navbar = ({ onToggleSidebar }) => {
         } hidden sm:block`;
 
     return (
-        <nav className="sticky top-0 z-40 flex items-start justify-between px-4 sm:px-8 py-3 sm:py-4 bg-background-dark/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+        <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 py-3 sm:py-4 bg-background-dark/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
             {user ? (
                 <>
                     {/* Left Column: Breadcrumb */}

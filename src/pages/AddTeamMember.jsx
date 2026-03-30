@@ -17,7 +17,8 @@ import {
     ArrowLeft,
     Sparkles,
     Target,
-    Zap
+    Zap,
+    Copy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getProjects } from '../api/projectService';
@@ -43,6 +44,7 @@ const AddTeamMember = () => {
     const [status, setStatus] = useState('idle');
     const [error, setError] = useState('');
     const [results, setResults] = useState(null);
+    const [copiedField, setCopiedField] = useState(null);
 
     const isTechLead = user?.role === 'TECH_LEAD' || user?.jobTitle?.toUpperCase().includes('TECH LEAD');
     const filteredRoles = isTechLead 
@@ -127,46 +129,99 @@ const AddTeamMember = () => {
         }
     };
 
-    const provisionedUnits = results?.sent || results?.data?.sent || [];
+    const provisionedUnits = results?.provisionedUsers || results?.data?.provisionedUsers || [];
 
     if (status === 'success') {
+        const copyToClipboard = (text, fieldId) => {
+            navigator.clipboard.writeText(text);
+            setCopiedField(fieldId);
+            setTimeout(() => setCopiedField(null), 2000);
+        };
+
         return (
             <div className="min-h-[calc(100vh-64px)] bg-background-dark p-8 flex items-center justify-center animate-in fade-in zoom-in duration-500">
-                <div className="max-w-xl w-full bg-white/[0.02] border border-white/5 rounded-[40px] p-12 text-center backdrop-blur-3xl shadow-[0_0_100px_rgba(var(--color-primary),0.1)]">
-                    <div className="w-16 h-16 bg-status-success/20 text-status-success rounded-xl flex items-center justify-center mx-auto mb-8 border border-status-success/30 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                        <CheckCircle size={32} />
+                <div className="max-w-2xl w-full bg-[#121826]/30 border border-white/5 rounded-[40px] p-10 md:p-14 text-center backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+                    
+                    <div className="w-20 h-20 bg-status-success/10 text-status-success rounded-[2rem] flex items-center justify-center mx-auto mb-10 border border-status-success/20 shadow-xl shadow-status-success/5">
+                        <CheckCircle size={40} strokeWidth={1.5} />
                     </div>
-                    <h2 className="text-2xl font-black text-white mb-2 tracking-tighter uppercase italic">
-                        Personnel <span className="text-primary not-italic">Provisioned</span>
+                    
+                    <h2 className="text-3xl font-black text-white mb-3 tracking-tight uppercase">
+                        Members <span className="text-primary">Invited</span>
                     </h2>
-                    <p className="text-text-muted text-xs mb-8 opacity-60">Strategic units deployed successfully.</p>
+                    <p className="text-text-muted text-sm font-medium mb-12 opacity-50">New accounts have been provisioned successfully.</p>
 
-                    <div className="grid grid-cols-1 gap-3 mb-10 text-left max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-4 mb-14 text-left max-h-[320px] overflow-y-auto pr-4 custom-scrollbar">
                         {provisionedUnits.map((res, i) => (
-                            <div key={i} className="bg-white/5 border border-white/5 p-4 rounded-xl flex items-center justify-between group">
-                                <div>
-                                    <div className="text-white font-bold text-xs">{res.email}</div>
-                                    <div className="text-primary/60 text-[9px] font-mono uppercase tracking-widest mt-0.5">PWD: {res.email}</div>
+                            <div key={i} className="bg-white/5 border border-white/5 rounded-3xl p-6 hover:bg-white/[0.08] transition-all group/res overflow-hidden relative">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 opacity-0 group-hover/res:opacity-100 transition-opacity"></div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                                    <div className="space-y-2">
+                                        <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Email Address</div>
+                                        <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 group-hover/res:bg-white/5 transition-all">
+                                            <span className="text-xs font-bold text-white truncate mr-3">{res.email}</span>
+                                            <button 
+                                                onClick={() => copyToClipboard(res.email, `email-${i}`)}
+                                                className={`transition-colors active:scale-95 ${copiedField === `email-${i}` ? 'text-status-success' : 'text-white/20 hover:text-primary'}`}
+                                                title="Copy Email"
+                                            >
+                                                {copiedField === `email-${i}` ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Temporary Password</div>
+                                        <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 group-hover/res:bg-white/5 transition-all">
+                                            <span className="text-xs font-mono font-bold text-primary truncate mr-3">{res.email}</span>
+                                            <button 
+                                                onClick={() => copyToClipboard(res.email, `pwd-${i}`)}
+                                                className={`transition-colors active:scale-95 ${copiedField === `pwd-${i}` ? 'text-status-success' : 'text-white/20 hover:text-primary'}`}
+                                                title="Copy Password"
+                                            >
+                                                {copiedField === `pwd-${i}` ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="px-2.5 py-0.5 bg-status-success/10 text-status-success text-[8px] font-black uppercase tracking-[0.2em] rounded-md border border-status-success/20">
-                                    Active
+
+                                <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></div>
+                                        <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Account Ready</span>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            const emailText = `Hi ${res.name || 'there'},\n\nYou've been invited to join the NexaSetu workspace.\n\nLogin: ${res.email}\nTemp Password: ${res.email}\nDashboard: ${window.location.origin}/login\n\nPlease change your password after logging in.`;
+                                            copyToClipboard(emailText, `invite-${i}`);
+                                        }}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white'}`}
+                                    >
+                                        {copiedField === `invite-${i}` ? <CheckCircle size={12} /> : <Send size={12} />}
+                                        {copiedField === `invite-${i}` ? 'Invitation Copied!' : 'Copy Invitation Email'}
+                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <button 
                             onClick={() => navigate('/team')}
-                            className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl border border-white/10 transition-all"
+                            className="flex-1 py-5 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-white/10 transition-all active:scale-95 flex items-center justify-center gap-2"
                         >
-                            Return to Hub
+                            <ArrowLeft size={16} /> Return to Team
                         </button>
                         <button 
-                            onClick={() => { setStatus('idle'); setInvites([{ name: '', email: '', role: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', projectId: '' }]); }}
-                            className="flex-1 py-4 bg-primary text-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
+                            onClick={() => { 
+                                setStatus('idle'); 
+                                setInvites([{ name: '', email: '', role: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', projectId: '' }]); 
+                                setResults(null);
+                            }}
+                            className="flex-1 py-5 bg-primary text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                         >
-                            Next Personnel
+                            <Plus size={18} /> Invite More
                         </button>
                     </div>
                 </div>
@@ -219,7 +274,7 @@ const AddTeamMember = () => {
 
                                 <div className="space-y-6">
                                     <div className="relative">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2 mb-2 block">Strategic Role</label>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em] ml-2 mb-2 block">Role</label>
                                         <div className="relative group/input">
                                             <select 
                                                 className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
@@ -232,7 +287,7 @@ const AddTeamMember = () => {
                                         </div>
                                     </div>
                                     <div className="relative">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2 mb-2 block">Mission Assignment</label>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em] ml-2 mb-2 block">Project Assignment</label>
                                         <div className="relative group/input">
                                             <select 
                                                 className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
@@ -253,7 +308,7 @@ const AddTeamMember = () => {
                                     <UserPlus size={24} />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <div className="text-[11px] font-black text-white uppercase tracking-widest leading-none">{invite.name || 'NEW_UNIT'}</div>
+                                    <div className="text-[11px] font-black text-white uppercase tracking-widest leading-none">{invite.name || 'New Member'}</div>
                                     <div className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-none">{invite.jobTitle}</div>
                                 </div>
                             </div>
@@ -281,11 +336,11 @@ const AddTeamMember = () => {
                             >
                                 {status === 'loading' ? (
                                     <>
-                                        <Loader2 className="animate-spin text-white" size={18} /> DEPLOYING...
+                                        <Loader2 className="animate-spin text-white" size={18} /> SENDING...
                                     </>
                                 ) : (
                                     <>
-                                        <Target size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" /> DEPLOY TEAM MEMBER
+                                        <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" /> SEND INVITATION
                                     </>
                                 )}
                                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
