@@ -74,19 +74,12 @@ const Team = () => {
             {/* Executive Header - Scaled Down */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10 px-1">
                 <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center border border-primary/20 shrink-0">
-                            <Users size={20} />
-                        </div>
-                        <div className="px-2.5 py-0.5 bg-white/5 border border-white/10 rounded-full text-[7px] font-black uppercase tracking-[0.2em] text-white/40">
-                            Strategic Management
-                        </div>
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-widest italic uppercase leading-none">
-                        Personnel <span className="text-primary not-italic">Hub</span>
+
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-none">
+                        Internal <span className="text-primary">Teams</span>
                     </h1>
-                    <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-3 max-w-md opacity-50">
-                        Orchestrate teams and govern recruitment through a unified command interface.
+                    <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-3 max-w-md opacity-60">
+                        Manage project assignments, workspace roles, and workforce distribution.
                     </p>
                 </div>
 
@@ -96,7 +89,7 @@ const Team = () => {
                             onClick={() => navigate('/team/add')}
                             className="group px-6 py-3 bg-primary hover:bg-primary-light text-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-xl shadow-primary/20 transition-all flex items-center gap-2 active:scale-95"
                         >
-                            <UserPlus size={14} /> Deploy Member
+                            <UserPlus size={14} /> Add Member
                         </button>
                     )}
                 </div>
@@ -125,9 +118,9 @@ const Team = () => {
             {/* Personnel Grid */}
             <div className="space-y-4 mb-16">
                 <div className="flex items-center justify-between px-1 mb-6">
-                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">Active Mission Teams</div>
+                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">Managed Teams</div>
                     <div className="h-[1px] flex-1 mx-6 bg-white/5" />
-                    <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Units: {team.members.length}</div>
+                    <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.1em]">Members: {team.members.length}</div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -198,7 +191,7 @@ const Team = () => {
             {team.invitations.length > 0 && (
                 <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 px-1">
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="text-[8px] font-black text-status-warning/60 uppercase tracking-[0.4em]">Pending Pipeline Queue</div>
+                        <div className="text-[8px] font-black text-status-warning/60 uppercase tracking-[0.4em]">Pending Invitations</div>
                         <div className="h-[1px] flex-1 bg-status-warning/10" />
                     </div>
                     

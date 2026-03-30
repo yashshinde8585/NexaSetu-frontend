@@ -53,7 +53,7 @@ const Profile = () => {
 
     return (
         <div className="p-6 md:p-10 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Tactical Header */}
+            {/* Profile Header */}
             <div className="relative max-w-5xl mx-auto">
                 <div className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-transparent opacity-50 rounded-[40px] pointer-events-none"></div>
                 <div className="relative flex flex-col md:flex-row items-center md:items-start gap-10 p-10 bg-[#121826]/40 backdrop-blur-3xl border border-white/5 rounded-[40px] shadow-2xl overflow-hidden group">
@@ -67,7 +67,7 @@ const Profile = () => {
                                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-full" />
                             ) : (
                                 <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center border border-white/5">
-                                    <span className="text-5xl font-black text-white italic">{user.name.charAt(0)}</span>
+                                    <span className="text-5xl font-extrabold text-white">{user.name.charAt(0)}</span>
                                 </div>
                             )}
                         </div>
@@ -80,16 +80,16 @@ const Profile = () => {
                     <div className="flex-1 text-center md:text-left space-y-4">
                         <div>
                             <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-                                <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">
+                                <h1 className="text-4xl font-extrabold text-white uppercase tracking-tight leading-none">
                                     {user.name}
                                 </h1>
                                 <div className={`inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-widest ${visuals.color}`}>
-                                    <BadgeCheck size={10} /> Unit ID: {user._id.slice(-6).toUpperCase()}
+                                    <BadgeCheck size={10} /> Member ID: {user._id.slice(-6).toUpperCase()}
                                 </div>
                             </div>
                             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                                <div className={`text-base font-black uppercase tracking-[0.2em] italic ${visuals.color}`}>
-                                    {user.jobTitle || 'Personnel Unit'}
+                                <div className={`text-base font-bold uppercase tracking-[0.2em] ${visuals.color}`}>
+                                    {user.jobTitle || 'Team Member'}
                                 </div>
                                 <div className="h-1 w-1 bg-white/20 rounded-full hidden md:block"></div>
                                 <div className="flex items-center gap-2 text-text-muted text-sm font-medium">
@@ -99,10 +99,10 @@ const Profile = () => {
                         </div>
 
                         <div className="pt-6 border-t border-white/5 grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <StatBlock label="Access Tier" value={user.role.replace('_', ' ')} color={visuals.color} />
-                            <StatBlock label="Mobilization" value={new Date(user.createdAt).toLocaleDateString()} />
-                            <StatBlock label="Assignment" value="Global Hub" />
-                            <StatBlock label="Health Status" value="Online" status="online" />
+                            <StatBlock label="User Role" value={user.role.replace('_', ' ')} color={visuals.color} />
+                            <StatBlock label="Joined Date" value={new Date(user.createdAt).toLocaleDateString()} />
+                            <StatBlock label="Location" value="Global Hub" />
+                            <StatBlock label="Status" value="Online" status="online" />
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ const SectionHeader = ({ icon, title, danger }) => (
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${danger ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-white/5 border-white/10 text-primary'}`}>
             {icon}
         </div>
-        <h2 className="text-lg font-black text-white italic uppercase tracking-tighter">
+        <h2 className="text-lg font-bold text-white uppercase tracking-tight">
             {title}
         </h2>
     </div>

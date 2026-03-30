@@ -4,7 +4,7 @@ const ProjectAnalyticsBar = ({ analytics }) => {
   if (!analytics) return null;
 
   return (
-    <div className="sticky top-14 z-40 bg-background/80 backdrop-blur-md pb-6 pt-2 mb-4 -mx-4 px-4 border-b border-white/5 transition-all duration-300">
+    <div className="sticky top-[68px] sm:top-[72px] z-40 bg-background/80 backdrop-blur-md pb-6 pt-2 mb-4 -mx-4 px-4 border-b border-white/5 transition-all duration-300">
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { label: 'Completion Rate', value: `${analytics.completionRate}%`, color: 'text-primary' },

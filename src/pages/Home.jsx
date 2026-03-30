@@ -29,13 +29,13 @@ const Home = () => {
             {/* Hero Section */}
             <header className="relative z-10 pt-40 pb-32 px-6 max-w-7xl mx-auto text-center">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-[1.1] animate-in slide-in-from-bottom-8 duration-700">
-                    Orchestrate Your <br />
-                    <span className="text-gradient">Portfolio Intelligence</span>
+                    Empower Your <br />
+                    <span className="text-gradient">Team Productivity</span>
                 </h1>
 
                 <p className="max-w-3xl mx-auto text-text-muted text-lg md:text-xl font-medium mb-12 animate-in fade-in duration-1000 delay-300 leading-relaxed">
-                    NexaSetu bridges the gap between strategic vision and technical execution. 
-                    Manage multi-project ecosystems with AI-driven clarity and enterprise-grade security.
+                    NexaSetu streamlines project workflows and team collaboration. 
+                    Manage your entire project portfolio with AI-powered task assistance and complete security.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-5 justify-center items-center animate-in fade-in duration-1000 delay-500">
@@ -56,10 +56,10 @@ const Home = () => {
             </header>
 
             {/* Features Grid */}
-            <section className="py-32 px-6 max-w-7xl mx-auto">
+            <section id="features" className="py-32 px-6 max-w-7xl mx-auto">
                 <div className="text-center mb-20">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for Modern <span className="text-gradient">Team Synergy</span></h2>
-                    <p className="text-text-muted max-w-2xl mx-auto text-lg leading-relaxed">Everything you need to orchestrate complex project landscapes without the overhead.</p>
+                    <h2 className="text-3xl md:text-5xl font-bold mb-6">Modern <span className="text-gradient">Project Management</span></h2>
+                    <p className="text-text-muted max-w-2xl mx-auto text-lg leading-relaxed">Everything you need to manage complex projects and teams without the friction.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -70,8 +70,8 @@ const Home = () => {
                     />
                     <FeatureCard 
                         icon={<Shield className="text-secondary" size={28} />}
-                        title="Granular RBAC"
-                        description="Enterprise-grade security with tailored views for Executives, Tech Leads, and Developers. Secure project isolation."
+                        title="Team Permissions"
+                        description="Enterprise-grade security with tailored views for Admins, Project Leads, and Developers. Secure workspace management."
                     />
                     <FeatureCard 
                         icon={<GitBranch className="text-primary-light" size={28} />}
@@ -85,8 +85,8 @@ const Home = () => {
                     />
                     <FeatureCard 
                         icon={<Layers className="text-status-warning" size={28} />}
-                        title="Resource Mapping"
-                        description="Visualize team load and resource allocation. Balanced orchestration for high-density engineering environments."
+                        title="Resource Management"
+                        description="Visualize team load and resource allocation. Optimized management for fast-moving engineering environments."
                     />
                     <FeatureCard 
                         icon={<Rocket className="text-primary" size={28} />}
@@ -147,8 +147,8 @@ const Home = () => {
             {/* Pricing Section */}
             <section id="pricing" className="py-32 px-6 max-w-7xl mx-auto">
                 <div className="text-center mb-20">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6">Transparent <span className="text-gradient">Strategic Tiers</span></h2>
-                    <p className="text-text-muted max-w-2xl mx-auto font-medium">Select the scale of orchestration required for your mission.</p>
+                    <h2 className="text-3xl md:text-5xl font-bold mb-6">Simple <span className="text-gradient">Pricing Plans</span></h2>
+                    <p className="text-text-muted max-w-2xl mx-auto font-medium">Choose the best plan for your team's growth and productivity.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
@@ -158,9 +158,9 @@ const Home = () => {
                             <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-white/40 mb-6 group-hover:scale-110 transition-transform">
                                 <Layout size={24} />
                             </div>
-                            <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em] mb-4">Solo Pro</h3>
+                            <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em] mb-4">Free Plan</h3>
                             <div className="text-5xl font-bold mb-2">$0</div>
-                            <p className="text-text-muted text-sm italic">For independent engineers</p>
+                            <p className="text-text-muted text-sm">For independent developers</p>
                         </div>
                         <ul className="space-y-4 mb-10 flex-1">
                             <li className="flex items-center gap-3 text-sm font-medium"><CheckCircle size={16} className="text-primary" /> 1 Active Workspace</li>
@@ -182,9 +182,9 @@ const Home = () => {
                             <div className="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
                                 <Sparkles size={28} />
                             </div>
-                            <h3 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-4">Architecture Pro</h3>
+                            <h3 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-4">Professional Plan</h3>
                             <div className="text-5xl font-bold mb-2">$49<span className="text-lg text-text-muted font-medium">/mo</span></div>
-                            <p className="text-text-muted text-sm italic">For growing engineering teams</p>
+                            <p className="text-text-muted text-sm">For growing engineering teams</p>
                         </div>
                         <ul className="space-y-4 mb-10 flex-1">
                             <li className="flex items-center gap-3 text-sm font-bold"><CheckCircle size={16} className="text-primary" /> Unlimited Projects</li>
@@ -206,9 +206,9 @@ const Home = () => {
                             <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-white/40 mb-6 group-hover:scale-110 transition-transform">
                                 <Globe size={24} />
                             </div>
-                            <h3 className="text-sm font-bold text-primary-light uppercase tracking-[0.2em] mb-4">Enterprise</h3>
+                            <h3 className="text-sm font-bold text-primary-light uppercase tracking-[0.2em] mb-4">Enterprise Plan</h3>
                             <div className="text-5xl font-bold mb-2">Custom</div>
-                            <p className="text-text-muted text-sm italic">For global infrastructure</p>
+                            <p className="text-text-muted text-sm">For large-scale organizations</p>
                         </div>
                         <ul className="space-y-4 mb-10 flex-1">
                             <li className="flex items-center gap-3 text-sm font-medium"><CheckCircle size={16} className="text-primary" /> Multi-Cloud Deployments</li>
@@ -232,10 +232,10 @@ const Home = () => {
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
                     
                     <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 relative z-10">
-                        Ready to orchestrate <br />your future?
+                        Ready to transform <br />your workflow?
                     </h2>
                     <p className="text-text-muted mb-12 max-w-2xl mx-auto relative z-10 text-lg md:text-xl font-medium leading-relaxed">
-                        Join 500+ high-velocity engineering organizations using NexaSetu to maintain complex project ecosystems without the friction.
+                        Join 500+ fast-moving teams using NexaSetu to maintain complex project workflows without the friction.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                         <Link 
@@ -260,7 +260,7 @@ const Home = () => {
                     <div className="col-span-1 md:col-span-2">
                         <Link to="/" className="flex items-center gap-2 mb-6 group w-fit">
                             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                                <span className="text-2xl font-black italic">N</span>
+                                <span className="text-2xl font-black">N</span>
                             </div>
                             <span className="text-2xl font-bold tracking-tighter text-white">NexaSetu</span>
                         </Link>
@@ -271,19 +271,15 @@ const Home = () => {
                     <div>
                         <h4 className="text-white font-bold mb-6 text-lg">Product</h4>
                         <ul className="space-y-4 text-text-muted font-medium">
-                            <li><Link to="/features" className="hover:text-primary transition-colors">Features</Link></li>
-                            <li><Link to="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                            <li><Link to="/docs" className="hover:text-primary transition-colors">Documentation</Link></li>
-                        <li><Link to="/roadmap" className="hover:text-primary transition-colors">Roadmap</Link></li>
+                            <li><button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-primary transition-colors cursor-pointer">Features</button></li>
+                            <li><button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-primary transition-colors cursor-pointer">Pricing</button></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="text-white font-bold mb-6 text-lg">Company</h4>
                         <ul className="space-y-4 text-text-muted font-medium">
-                            <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-                            <li><Link to="/careers" className="hover:text-primary transition-colors">Careers</Link></li>
-                            <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
-                            <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+                            <li><Link to="/register" className="hover:text-primary transition-colors">Get Started</Link></li>
+                            <li><Link to="/login" className="hover:text-primary transition-colors">Sign In</Link></li>
                         </ul>
                     </div>
                 </div>

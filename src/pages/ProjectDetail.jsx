@@ -37,10 +37,10 @@ const ProjectDetail = () => {
     const isTicketView = id === TICKETS_PROJECT_ID;
 
     const columns = isTicketView ? [
-        { id: 'todo', title: 'Open Tickets', color: 'border-status-error text-status-error' },
-        { id: 'in_progress', title: 'Investigation', color: 'border-status-warning text-status-warning' },
-        { id: 'in_review', title: 'Fix Pending', color: 'border-secondary text-secondary' },
-        { id: 'done', title: 'Resolved', color: 'border-status-success text-status-success' }
+        { id: 'todo', title: 'To Do', color: 'border-status-error text-status-error' },
+        { id: 'in_progress', title: 'In Progress', color: 'border-status-warning text-status-warning' },
+        { id: 'in_review', title: 'In Review', color: 'border-secondary text-secondary' },
+        { id: 'done', title: 'Done', color: 'border-status-success text-status-success' }
     ] : [
         { id: 'todo', title: 'To-do', color: 'border-status-info text-status-info' },
         { id: 'in_progress', title: 'In Progress', color: 'border-status-warning text-status-warning' },
@@ -70,12 +70,14 @@ const ProjectDetail = () => {
                     </div>
                     <div className="flex flex-col min-w-0">
                         <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter text-white/90 truncate max-w-[200px] sm:max-w-md">
-                            {isTicketView ? 'Critical Issue Tracker' : project?.name}
+                            {project?.name}
                         </h1>
                         <div className="flex items-center gap-4">
-                            <span className="text-[9px] sm:text-[10px] font-black text-text-muted uppercase tracking-wider">
-                                {isTicketView ? 'Strategic Monitoring' : `Lead: ${project?.createdBy?.name}`}
-                            </span>
+                            {project?.createdBy?.name && (
+                                <span className="text-[9px] sm:text-[10px] font-black text-text-muted uppercase tracking-wider">
+                                    Lead: {project.createdBy.name}
+                                </span>
+                            )}
                             {!isTicketView && user?.role !== 'INTERN' && (
                                 <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                                     <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-widest">Sprint</span>
@@ -107,13 +109,13 @@ const ProjectDetail = () => {
                         onClick={() => ui.setShowAiInput(!ui.showAiInput)} 
                         className={`flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-secondary hover:bg-secondary-light text-white font-bold text-xs sm:text-sm rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 ${ui.showAiInput ? 'ring-2 ring-primary' : ''}`}
                     >
-                        <span>✨</span> <span className="hidden sm:inline">{isTicketView ? 'AI Diagnosis' : 'AI Extractions'}</span><span className="sm:hidden">AI</span>
+                        <span className="hidden sm:inline">{isTicketView ? 'AI Task Generator' : 'AI Analysis'}</span><span className="sm:hidden">AI</span>
                     </button>
                     <button 
                         onClick={() => ui.setShowTaskForm(!ui.showTaskForm)} 
                         className="flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-primary hover:bg-primary-dark text-white font-bold text-xs sm:text-sm rounded-xl transition duration-200 shadow-md whitespace-nowrap"
                     >
-                        {ui.showTaskForm ? 'Cancel' : (isTicketView ? 'Report Issue' : 'Add Task')}
+                        {ui.showTaskForm ? 'Cancel' : (isTicketView ? 'Create Ticket' : 'Add Task')}
                     </button>
                 </div>
             </div>
@@ -155,7 +157,7 @@ const ProjectDetail = () => {
 
             {ui.showTaskForm && <TaskForm sprints={sprints} newTask={newTask} setNewTask={setNewTask} handleCreateTask={(task) => createTaskMutation.mutate(task)} />}
 
-            <ProjectAnalyticsBar analytics={analytics} />
+            {!isTicketView && <ProjectAnalyticsBar analytics={analytics} />}
 
             <TaskBoard 
                 groupedTasks={groupedTasks} 
