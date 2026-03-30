@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
+import { TICKETS_PROJECT_ID } from '../utils/constants';
 
 // Sub-components
 import ProjectAnalyticsBar from '../components/project/ProjectAnalyticsBar';
@@ -26,12 +27,21 @@ const ProjectDetail = () => {
         groupedTasks,
         ai,
         github,
+        sprints,
+        updateProjectMutation,
         newTask,
         setNewTask,
         queryClient
     } = useProjectManagement(id, user);
 
-    const columns = [
+    const isTicketView = id === TICKETS_PROJECT_ID;
+
+    const columns = isTicketView ? [
+        { id: 'todo', title: 'Open Tickets', color: 'border-status-error text-status-error' },
+        { id: 'in_progress', title: 'Investigation', color: 'border-status-warning text-status-warning' },
+        { id: 'in_review', title: 'Fix Pending', color: 'border-secondary text-secondary' },
+        { id: 'done', title: 'Resolved', color: 'border-status-success text-status-success' }
+    ] : [
         { id: 'todo', title: 'To-do', color: 'border-status-info text-status-info' },
         { id: 'in_progress', title: 'In Progress', color: 'border-status-warning text-status-warning' },
         { id: 'in_review', title: 'In Review', color: 'border-secondary text-secondary' },
@@ -45,43 +55,65 @@ const ProjectDetail = () => {
     );
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {error && <div className="bg-status-error/20 border border-status-error text-status-error px-4 py-3 rounded mb-4">{error}</div>}
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8">
+            {error && (
+                <div className="bg-status-error/20 border border-status-error text-status-error px-4 py-3 rounded mb-4 animate-in fade-in duration-300">
+                    <span className="font-bold uppercase text-[10px] tracking-widest block mb-1">Access Failure</span>
+                    <p className="text-xs">{error.message || (typeof error === 'object' ? JSON.stringify(error) : error)}</p>
+                </div>
+            )}
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary/20 to-secondary/20 border border-white/10 flex items-center justify-center text-primary font-bold text-lg shadow-lg">
-                        {project?.name?.charAt(0).toUpperCase()}
+                <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-linear-to-br from-primary/20 to-secondary/20 border border-white/10 flex items-center justify-center text-primary font-bold text-lg sm:text-xl shadow-lg shrink-0">
+                        {isTicketView ? '🎟️' : project?.name?.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex flex-col min-w-0">
-                        <h1 className="text-2xl font-black tracking-tighter text-white/90 truncate max-w-md">
-                            {project?.name}
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter text-white/90 truncate max-w-[200px] sm:max-w-md">
+                            {isTicketView ? 'Critical Issue Tracker' : project?.name}
                         </h1>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black text-text-muted uppercase tracking-wider">Lead: {project?.createdBy?.name}</span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-[9px] sm:text-[10px] font-black text-text-muted uppercase tracking-wider">
+                                {isTicketView ? 'Strategic Monitoring' : `Lead: ${project?.createdBy?.name}`}
+                            </span>
+                            {!isTicketView && user?.role !== 'INTERN' && (
+                                <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+                                    <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-widest">Sprint</span>
+                                    <select 
+                                        className="bg-transparent text-[10px] font-bold text-primary focus:outline-none cursor-pointer hover:underline"
+                                        value={project?.sprint || ''}
+                                        onChange={(e) => updateProjectMutation.mutate({ sprint: e.target.value })}
+                                    >
+                                        <option value="" className="bg-[#1E1E2E]">None</option>
+                                        {(sprints || []).map(s => (
+                                            <option key={s._id} value={s._id} className="bg-[#1E1E2E]">{s.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    {user?.role !== 'INTERN' && (
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
+                    {user?.role !== 'INTERN' && !isTicketView && (
                         <button 
                             onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)} 
-                            className={`bg-background-light hover:bg-background-dark text-text-muted hover:text-primary font-bold py-2 px-6 rounded transition duration-200 border border-background-dark/30 shadow-md flex items-center gap-2 ${ui.showGithubPanel ? 'ring-2 ring-primary border-primary' : ''}`}
+                            className={`flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-background-light hover:bg-background-dark text-text-muted hover:text-primary font-bold text-xs sm:text-sm rounded-xl transition duration-200 border border-background-dark/30 shadow-md flex items-center justify-center gap-2 ${ui.showGithubPanel ? 'ring-2 ring-primary border-primary' : ''}`}
                         >
-                            <span className="text-lg">🐙</span> Github {project?.githubRepo ? '· ' + project.githubRepo.repo : ''}
+                            <span className="text-base sm:text-lg"></span> <span className="hidden sm:inline">Github</span> {project?.githubRepo ? '· ' + project.githubRepo.repo : ''}
                         </button>
                     )}
                     <button 
                         onClick={() => ui.setShowAiInput(!ui.showAiInput)} 
-                        className={`bg-secondary hover:bg-secondary-light text-white font-bold py-2 px-6 rounded transition duration-200 shadow-md flex items-center gap-2 ${ui.showAiInput ? 'ring-2 ring-primary' : ''}`}
+                        className={`flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-secondary hover:bg-secondary-light text-white font-bold text-xs sm:text-sm rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 ${ui.showAiInput ? 'ring-2 ring-primary' : ''}`}
                     >
-                        ✨ AI Extractions
+                        <span>✨</span> <span className="hidden sm:inline">{isTicketView ? 'AI Diagnosis' : 'AI Extractions'}</span><span className="sm:hidden">AI</span>
                     </button>
                     <button 
                         onClick={() => ui.setShowTaskForm(!ui.showTaskForm)} 
-                        className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded transition duration-200 shadow-md"
+                        className="flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-primary hover:bg-primary-dark text-white font-bold text-xs sm:text-sm rounded-xl transition duration-200 shadow-md whitespace-nowrap"
                     >
-                        {ui.showTaskForm ? 'Cancel' : 'Add Task'}
+                        {ui.showTaskForm ? 'Cancel' : (isTicketView ? 'Report Issue' : 'Add Task')}
                     </button>
                 </div>
             </div>
@@ -116,10 +148,12 @@ const ProjectDetail = () => {
                     aiSuggestion={ai.suggestion}
                     setAiSuggestion={ai.setSuggestion}
                     handleCreateTask={(task) => createTaskMutation.mutate(task)}
+                    project={project}
+                    sprints={sprints}
                 />
             )}
 
-            {ui.showTaskForm && <TaskForm newTask={newTask} setNewTask={setNewTask} handleCreateTask={(task) => createTaskMutation.mutate(task)} />}
+            {ui.showTaskForm && <TaskForm sprints={sprints} newTask={newTask} setNewTask={setNewTask} handleCreateTask={(task) => createTaskMutation.mutate(task)} />}
 
             <ProjectAnalyticsBar analytics={analytics} />
 

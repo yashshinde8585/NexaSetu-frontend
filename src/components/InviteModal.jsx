@@ -4,13 +4,18 @@ import { getProjects } from '../api/projectService';
 import { inviteBulkMembers } from '../api/teamService';
 
 const ROLE_OPTIONS = [
-    { value: 'MANAGER', label: 'Manager', description: 'Can manage projects & team' },
-    { value: 'DEV', label: 'Developer', description: 'Can view tasks & push code' },
-    { value: 'INTERN', label: 'Intern', description: 'Restricted learning access' }
+    { value: 'WORKSPACE_ADMIN', jobTitle: 'CTO', label: 'CTO', description: 'Executive technical oversight' },
+    { value: 'WORKSPACE_ADMIN', jobTitle: 'VP Engineering', label: 'VP Engineering', description: 'Strategic engineering leadership' },
+    { value: 'WORKSPACE_ADMIN', jobTitle: 'Director', label: 'Director', description: 'Departmental management' },
+    { value: 'WORKSPACE_MANAGER', jobTitle: 'Engineering Manager', label: 'Engineering Manager', description: 'Team execution & planning' },
+    { value: 'WORKSPACE_MANAGER', jobTitle: 'Tech Lead', label: 'Tech Lead', description: 'Technical architecture & guidance' },
+    { value: 'PROJECT_MEMBER', jobTitle: 'Senior Engineer', label: 'Senior Engineer', description: 'Core feature ownership' },
+    { value: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', label: 'Software Engineer', description: 'Feature development' },
+    { value: 'RESTRICTED', jobTitle: 'Intern', label: 'Intern', description: 'Restricted learning access' }
 ];
 
 const InviteModal = ({ isOpen, onClose }) => {
-    const [invites, setInvites] = useState([{ name: '', email: '', role: 'DEV', projectId: '' }]);
+    const [invites, setInvites] = useState([{ name: '', email: '', role: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', projectId: '' }]);
     const [projects, setProjects] = useState([]);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [status, setStatus] = useState('idle');
@@ -29,14 +34,14 @@ const InviteModal = ({ isOpen, onClose }) => {
                 }
             };
             fetchProjectsData();
-            setInvites([{ name: '', email: '', role: 'DEV', projectId: '' }]);
+            setInvites([{ name: '', email: '', role: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', projectId: '' }]);
             setStatus('idle');
             setResults(null);
         }
     }, [isOpen]);
 
     const addRow = () => {
-        setInvites([...invites, { name: '', email: '', role: 'DEV', projectId: '' }]);
+        setInvites([...invites, { name: '', email: '', role: 'PROJECT_MEMBER', jobTitle: 'Software Engineer', projectId: '' }]);
     };
 
     const removeRow = (index) => {
@@ -48,6 +53,23 @@ const InviteModal = ({ isOpen, onClose }) => {
     const updateRow = (index, field, value) => {
         const newInvites = [...invites];
         newInvites[index][field] = value;
+        setInvites(newInvites);
+    };
+
+    const handleRoleChange = (index, roleValue) => {
+        const option = ROLE_OPTIONS.find(o => o.value === roleValue); // Note: This might pick first matching role enum. Need to refine if multiple titles have same role.
+        // Actually, let's use jobTitle as the key for clarity in the select if needed, OR keep it as is.
+        // The value of select is already ROLE_OPTIONS[idx].value (which is systemRole).
+        // Let's change the value to something unique if we want exact mapping.
+        // I'll use jobTitle as the identifier in the select value.
+    };
+
+    // Refined update logic for double mapping
+    const handleJobTitleChange = (idx, jobTitle) => {
+        const option = ROLE_OPTIONS.find(o => o.jobTitle === jobTitle);
+        const newInvites = [...invites];
+        newInvites[idx].jobTitle = jobTitle;
+        newInvites[idx].role = option.value;
         setInvites(newInvites);
     };
 
@@ -68,7 +90,9 @@ const InviteModal = ({ isOpen, onClose }) => {
 
         try {
             const res = await inviteBulkMembers(validInvites);
-            setResults(res.data);
+            // Ensure we handle both direct data and wrapped data responses
+            const resultsData = res?.data || res;
+            setResults(resultsData);
             setStatus('success');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to dispatch invitations.');
@@ -77,6 +101,10 @@ const InviteModal = ({ isOpen, onClose }) => {
     };
 
     if (!isOpen) return null;
+
+    // Robust extraction for UI mapping
+    const provisionedUnits = results?.sent || results?.data?.sent || [];
+    const failedUnits = results?.failed || results?.data?.failed || [];
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-background-dark/80 backdrop-blur-sm animate-in fade-in duration-300">
@@ -111,9 +139,12 @@ const InviteModal = ({ isOpen, onClose }) => {
                         <div className="mx-8 bg-white/[0.02] border border-white/5 rounded-2xl p-4 mb-10 overflow-hidden">
                             <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3 text-left ml-2">Active Strategic Credentials</div>
                             <div className="space-y-2.5 max-h-[120px] overflow-y-auto pr-2 custom-scrollbar">
-                                {results?.sent?.map((res, i) => (
+                                {provisionedUnits.length === 0 && (
+                                    <div className="text-[10px] text-text-muted font-bold py-4 italic">Processing credential records...</div>
+                                )}
+                                {provisionedUnits.map((res, i) => (
                                     <div key={i} className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5 group hover:bg-white/10 transition-all">
-                                        <div className="flex flex-col items-start gap-1">
+                                        <div className="flex flex-col items-start gap-1 text-left">
                                             <span className="text-xs font-bold text-white tracking-tight">{res.email}</span>
                                             <span className="text-[10px] text-primary/60 font-medium italic">Password: {res.email}</span>
                                         </div>
@@ -127,11 +158,11 @@ const InviteModal = ({ isOpen, onClose }) => {
                             <button 
                                 type="button"
                                 onClick={() => {
-                                    const hubUrl = window.location.origin + '/login';
-                                    const credList = results?.sent?.map(res => `- ${res.email} (Password: ${res.email})`).join('\n');
-                                    const text = `Welcome to the squad! Your NexaSetu accounts have been provisioned. \n\nAccess the Hub: ${hubUrl} \nTemporary Password: Use your Email address. \n\nProvisioned Units:\n${credList}\n\nSee you in the workspace! 🛰️`;
+                                    const hubUrl = window.location.origin;
+                                    const credList = provisionedUnits.map(res => `- ${res.email} (Password: ${res.email})`).join('\n');
+                                    const text = `Welcome to the squad! Your NexaSetu accounts have been provisioned. \n\nAccess the Hub: ${hubUrl}/login \nTemporary Password: Use your Email address. \n\nProvisioned Units:\n${credList || 'Manual confirmation required via dashboard'}\n\nSee you in the workspace! 🛰️`;
                                     navigator.clipboard.writeText(text);
-                                    alert('Full Credential List copied to clipboard!');
+                                    alert('Full Onboarding Brief copied to clipboard!');
                                 }}
                                 className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2"
                             >
@@ -192,10 +223,10 @@ const InviteModal = ({ isOpen, onClose }) => {
                                                 <div className="relative">
                                                     <select 
                                                         className="w-full bg-white/5 border border-white/5 text-white/60 rounded-2xl px-5 py-3 focus:outline-none focus:border-primary/40 transition-all font-bold text-[10px] uppercase tracking-widest appearance-none cursor-pointer"
-                                                        value={invite.role}
-                                                        onChange={(e) => updateRow(idx, 'role', e.target.value)}
+                                                        value={invite.jobTitle}
+                                                        onChange={(e) => handleJobTitleChange(idx, e.target.value)}
                                                     >
-                                                        {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                                        {ROLE_OPTIONS.map(r => <option key={r.jobTitle} value={r.jobTitle} className="bg-[#1E1E2E] text-white">{r.label}</option>)}
                                                     </select>
                                                     <Shield className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10" size={12} />
                                                 </div>
@@ -205,8 +236,8 @@ const InviteModal = ({ isOpen, onClose }) => {
                                                         value={invite.projectId}
                                                         onChange={(e) => updateRow(idx, 'projectId', e.target.value)}
                                                     >
-                                                        <option value="">No Project Assignment</option>
-                                                        {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+                                                        <option value="" className="bg-[#1E1E2E] text-white">No Project Assignment</option>
+                                                        {projects.map(p => <option key={p._id} value={p._id} className="bg-[#1E1E2E] text-white">{p.name}</option>)}
                                                     </select>
                                                     <Rocket className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10" size={12} />
                                                 </div>

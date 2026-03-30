@@ -4,23 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 
 const AppTour = () => {
-    const { user } = useAuth();
+    const { user, completeOnboarding } = useAuth();
     const location = useLocation();
     const [run, setRun] = useState(false);
 
-    // Only run on the dashboard for now
+    // Only run on the dashboard for now, using persistent backend status
     useEffect(() => {
         if (!user) return;
         
-        const hasSeenTour = localStorage.getItem(`nexasetu_tour_${user.email}`);
-        if (!hasSeenTour && location.pathname === '/dashboard') {
+        // Use the persistent hasSeenTour status from the user profile instead of localStorage
+        if (!user.hasSeenTour && location.pathname === '/dashboard') {
             // Small delay to ensure elements are rendered
             const timer = setTimeout(() => {
                 setRun(true);
             }, 1000);
             return () => clearTimeout(timer);
         }
-    }, [user, location.pathname]);
+    }, [user?.hasSeenTour, location.pathname]);
 
     const steps = React.useMemo(() => [
         {
@@ -38,12 +38,17 @@ const AppTour = () => {
         },
     ], []);
 
-    const handleJoyrideCallback = (data) => {
+    const handleJoyrideCallback = async (data) => {
         const { status } = data;
         if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
             setRun(false);
-            if (user) {
-                localStorage.setItem(`nexasetu_tour_${user.email}`, 'true');
+            if (user && !user.hasSeenTour) {
+                // Update persistent status on the server
+                try {
+                    await completeOnboarding();
+                } catch (err) {
+                    console.error("Failed to persist onboarding status");
+                }
             }
         }
     };
