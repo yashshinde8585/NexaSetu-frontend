@@ -2,9 +2,21 @@ import React from 'react';
 
 const TaskCard = ({ task, user, columns, handleStatusChange }) => {
   return (
-    <div key={task._id} className="bg-background-light p-4 rounded-lg shadow border border-background-dark/20 hover:border-primary/30 transition-all duration-300">
-      <div className="flex justify-between items-start mb-1 gap-2">
-        <h4 className="font-semibold text-text leading-tight">{task.title}</h4>
+    <div key={task._id} className="bg-background-light p-4 rounded-lg shadow border border-background-dark/20 hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
+      <div className="flex justify-between items-start mb-2 gap-4">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">
+              {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
+            </span>
+            {task.sprintInfo && (
+              <span className="text-[7px] font-black bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-text-muted/60 uppercase tracking-tighter">
+                {task.sprintInfo.name}
+              </span>
+            )}
+          </div>
+          <h4 className="font-semibold text-text leading-tight">{task.title}</h4>
+        </div>
         {task.delayStatus !== 'On Track' && (
           <span className={`shrink-0 text-[7px] font-black border px-1.5 py-0.5 rounded uppercase ${
             task.delayStatus === 'Delayed' ? 'bg-status-error/10 text-status-error border-status-error/20' :
@@ -24,18 +36,18 @@ const TaskCard = ({ task, user, columns, handleStatusChange }) => {
         </div>
       )}
       {task.status === 'done' && task.actualDuration !== null && (
-        <div className="mt-3 py-1.5 border-t border-white/5 text-[10px] text-status-success font-bold flex items-center gap-1 opacity-80">
-          ⏱️ Completed in {task.actualDuration} minutes
+        <div className="mt-3 py-1.5 border-t border-white/5 text-[10px] text-status-success font-bold flex items-center gap-1 opacity-80 uppercase tracking-tighter">
+          Completed in {task.actualDuration} minutes
         </div>
       )}
       {task.source === 'github' && (
         <div className="mt-2 text-[9px] font-bold text-primary flex items-center gap-1 opacity-70 border border-primary/20 bg-primary/5 w-fit px-2 py-0.5 rounded" title="Auto-created from GitHub">
-          🐙 GitHub
+          GitHub
         </div>
       )}
       {task.timelineHistory?.length > 0 && (
         <div className="mt-2 text-[9px] font-bold text-status-warning flex items-center gap-1 opacity-90 animate-pulse">
-          ⏳ Rescheduled by AI Scheduler
+          Rescheduled by AI Scheduler
         </div>
       )}
       <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap justify-between items-center gap-3">
@@ -70,7 +82,7 @@ const TaskCard = ({ task, user, columns, handleStatusChange }) => {
               'bg-secondary text-white hover:bg-secondary-light ring-1 ring-secondary/20'
             }`}
           >
-            <span>{task.status === 'todo' ? '⚡ Start' : (task.status === 'in_progress' ? '🔍 Review' : '🚀 Complete')}</span>
+            <span>{task.status === 'todo' ? 'Start' : (task.status === 'in_progress' ? 'Review' : 'Complete')}</span>
           </button>
         )}
       </div>
