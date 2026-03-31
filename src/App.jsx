@@ -21,7 +21,6 @@ import Velocity from './pages/Velocity';
 import Navbar from './components/Navbar';
 import MagicResults from './components/MagicResults';
 import Sidebar from './components/Sidebar';
-import AppTour from './components/AppTour';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useAuth } from './context/AuthContext';
 import { usePermissions, PERMISSIONS } from './hooks/usePermissions';
@@ -51,7 +50,6 @@ function App() {
 
   return (
     <div className="bg-background min-h-screen">
-      <AppTour />
       {user && <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />}
       <div className={`transition-all duration-300 min-h-screen flex flex-col ${user && !isPricing ? 'md:ml-64' : ''}`}>
         <Navbar onToggleSidebar={toggleSidebar} />

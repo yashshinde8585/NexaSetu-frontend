@@ -66,7 +66,7 @@ const ProjectDetail = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div className="flex items-center gap-3 sm:gap-5 min-w-0">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-linear-to-br from-primary/20 to-secondary/20 border border-white/10 flex items-center justify-center text-primary font-bold text-lg sm:text-xl shadow-lg shrink-0">
-                        {isTicketView ? '🎟️' : project?.name?.charAt(0).toUpperCase()}
+                        {isTicketView ? 'T' : project?.name?.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex flex-col min-w-0">
                         <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter text-white/90 truncate max-w-[200px] sm:max-w-md">

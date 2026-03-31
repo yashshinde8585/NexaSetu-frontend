@@ -22,22 +22,22 @@ const Theme = () => {
     const themes = [
         { 
             id: 'obsidian', 
-            name: 'Obsidian Node', 
-            desc: 'High-contrast tactical darkness with neon highlights.',
+            name: 'Dark Mode', 
+            desc: 'High-contrast dark interface with clean highlights.',
             colors: ['#0B0F1A', '#3b82f6', '#10b981'],
             preview: 'bg-slate-950 shadow-blue-500/20'
         },
         { 
             id: 'amber', 
-            name: 'Amber Deck', 
-            desc: 'Retro-futuristic tactical display with warm tones.',
+            name: 'Amber Theme', 
+            desc: 'Modern professional display with warm amber tones.',
             colors: ['#1A0F0B', '#f59e0b', '#ef4444'],
             preview: 'bg-stone-950 shadow-amber-500/20'
         },
         { 
             id: 'ghost', 
-            name: 'Ghost Light', 
-            desc: 'Clean, minimalist tactical interface for precision ops.',
+            name: 'Light Mode', 
+            desc: 'Clean, minimalist light interface for better readability.',
             colors: ['#F8FAFC', '#64748b', '#0369a1'],
             preview: 'bg-white shadow-slate-200/50',
             light: true
@@ -56,19 +56,12 @@ const Theme = () => {
         <div className="p-6 md:p-10 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Theme Executive Header */}
             <div className="mb-12">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center border border-primary/20">
-                        <Palette size={20} />
-                    </div>
-                    <div className="px-2.5 py-0.5 bg-white/5 border border-white/10 rounded-full text-[7px] font-black uppercase tracking-[0.2em] text-white/40">
-                        Visual Orchestration
-                    </div>
-                </div>
-                <h1 className="text-4xl font-black text-white tracking-widest italic uppercase leading-none">
-                    Theme <span className="text-primary not-italic">Engine</span>
+
+                <h1 className="text-4xl font-extrabold text-white tracking-tight uppercase leading-none">
+                    Theme <span className="text-primary">Settings</span>
                 </h1>
                 <p className="text-text-muted text-xs font-medium mt-3 max-w-md opacity-50">
-                    Synchronize your tactical interface with your operational environment through a custom-built theme matrix.
+                    Customize your workspace appearance with our professional theme presets and accent colors.
                 </p>
             </div>
 
@@ -77,8 +70,8 @@ const Theme = () => {
                 <div className="lg:col-span-2 space-y-10">
                     <div className="bg-[#121826]/30 backdrop-blur-3xl border border-white/5 rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-                        <h2 className="text-xl font-black text-white uppercase italic tracking-tighter mb-8 flex items-center gap-3">
-                            <Monitor size={22} className="text-primary" /> Active Theme Preset
+                        <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-3">
+                            <Monitor size={22} className="text-primary" /> Select Theme
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,7 +101,7 @@ const Theme = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="text-base font-black text-white uppercase tracking-tight italic mb-2 group-hover:translate-x-1 transition-transform">
+                                    <h3 className="text-base font-bold text-white uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform">
                                         {t.name}
                                     </h3>
                                     <p className="text-[10px] text-text-muted opacity-40 group-hover:opacity-60 transition-opacity">
@@ -126,8 +119,8 @@ const Theme = () => {
                     </div>
 
                     <div className="bg-[#121826]/30 backdrop-blur-3xl border border-white/5 rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
-                        <h2 className="text-xl font-black text-white uppercase italic tracking-tighter mb-8 flex items-center gap-3">
-                            <Sparkles size={22} className="text-primary" /> High-Precision Accents
+                        <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-3">
+                            <Sparkles size={22} className="text-primary" /> Accent Colors
                         </h2>
                         
                         <div className="flex flex-wrap gap-4">
@@ -149,10 +142,10 @@ const Theme = () => {
                         </div>
                         
                         <div className="mt-8 p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
-                            <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-3">Live Simulation Preview</div>
+                            <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Preview</div>
                             <div className="flex items-center gap-4">
-                                <button className={`px-4 py-2 bg-${accentColor}-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-${accentColor}-500/20`}>Unit Button</button>
-                                <div className={`px-4 py-2 border border-${accentColor}-500/30 text-${accentColor}-500 rounded-lg text-[10px] font-black uppercase tracking-widest`}>Strategic Text</div>
+                                <button className={`px-4 py-2 bg-${accentColor}-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-${accentColor}-500/20`}>Button Action</button>
+                                <div className={`px-4 py-2 border border-${accentColor}-500/30 text-${accentColor}-500 rounded-lg text-[10px] font-black uppercase tracking-widest`}>Sample Text</div>
                                 <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
                                     <div className={`h-full bg-${accentColor}-500 w-3/4 shadow-[0_0_10px_rgba(var(--color-primary),0.5)]`}></div>
                                 </div>
@@ -165,10 +158,10 @@ const Theme = () => {
                 <div className="space-y-8">
                     <div className="bg-[#121826]/30 border border-white/5 rounded-[32px] p-8">
                         <div className="flex items-center gap-3 mb-8">
-                            <div className="w-10 h-10 bg-white/5 border border-white/10 text-primary rounded-xl flex items-center justify-center italic font-black">
-                                M
+                            <div className="w-10 h-10 bg-white/5 border border-white/10 text-primary rounded-xl flex items-center justify-center font-black">
+                                T
                             </div>
-                            <h3 className="text-base font-black text-white uppercase italic tracking-tighter">Theme Sync</h3>
+                            <h3 className="text-base font-bold text-white uppercase tracking-tight">System Sync</h3>
                         </div>
 
                         <div className="space-y-4">
@@ -179,15 +172,15 @@ const Theme = () => {
                     </div>
 
                     <div className="bg-primary/5 border border-primary/10 rounded-[32px] p-8">
-                        <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4">Tactical Status</div>
+                        <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4">System Status</div>
                         <div className="space-y-4">
                             <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
-                                <span className="text-white/40">Active Node</span>
-                                <span className="text-white italic">Obsidian-v2.1</span>
+                                <span className="text-white/40">Current Theme</span>
+                                <span className="text-white">Dark Mode</span>
                             </div>
                             <div className="flex justify-between text-xs font-bold uppercase tracking-tight">
-                                <span className="text-white/40">Visual Integrity</span>
-                                <span className="text-status-success italic">99.8% Synchronized</span>
+                                <span className="text-white/40">Configuration</span>
+                                <span className="text-status-success">Optimized</span>
                             </div>
                             <div className="h-1.5 w-full bg-[#0B0F1A] rounded-full overflow-hidden mt-2">
                                 <div className="h-full bg-primary w-full shadow-[0_0_15px_rgba(var(--color-primary),0.5)]"></div>
@@ -200,7 +193,7 @@ const Theme = () => {
             {/* Action Bar */}
             <div className="mt-12 pt-8 flex items-center justify-end gap-4 border-t border-white/5">
                 <button className="px-10 py-4 bg-primary hover:bg-primary-light text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
-                    Synchronize Profile Theme
+                    Save Theme Settings
                 </button>
             </div>
         </div>
