@@ -483,7 +483,9 @@ const ProjectInfo = () => {
                                                 )}
                                                 <div className="text-right">
                                                     <div className="text-lg font-black text-white">{project.percentage}%</div>
-                                                    <div className="text-[9px] text-text-muted font-bold capitalize">Completion</div>
+                                                    <div className="text-[9px] text-text-muted font-bold capitalize">
+                                                        {project.completedTasks || 0} / {project.totalTasks || 0} Tickets
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

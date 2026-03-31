@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Briefcase, Users, Activity, ShieldAlert } from 'lucide-react';
+import { Search, Users, Activity, ShieldAlert } from 'lucide-react';
 
 const ProjectOverviewList = ({ 
   projects = [], 
@@ -26,7 +26,7 @@ const ProjectOverviewList = ({
       {/* Integrated Header Toolbar */}
       <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 px-8 py-6 border-b border-white/5">
         <h2 className="text-xl font-bold flex items-center gap-2 shrink-0 text-white tracking-tight">
-          <Briefcase className="text-primary" size={20} /> Project Overview
+           Project Overview
         </h2>
         
         <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto flex-1 justify-end">
@@ -68,7 +68,6 @@ const ProjectOverviewList = ({
       ) : filteredProjects.length === 0 ? (
         <div className="p-12 sm:p-20 text-center flex flex-col items-center justify-center space-y-8 group">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20">
-            <Briefcase className="w-10 h-10" />
           </div>
           <div className="space-y-2">
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">No matching projects found.</h3>

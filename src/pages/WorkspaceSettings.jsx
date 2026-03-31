@@ -40,9 +40,9 @@ const WorkspaceSettings = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Configuration Deck */}
+                {/* Settings Content */}
                 <div className="lg:col-span-2 space-y-10">
-                    {/* General Deck */}
+                    {/* General Settings */}
                     <div className="bg-[#121826]/30 backdrop-blur-3xl border border-white/5 rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
                         <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-3">
@@ -50,13 +50,13 @@ const WorkspaceSettings = () => {
                         </h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <TacticalField 
+                            <SettingsField 
                                 label="Workspace Name" 
                                 value={workspaceName} 
                                 onChange={(e) => setWorkspaceName(e.target.value)} 
                                 icon={<Building size={18} />} 
                             />
-                            <TacticalField 
+                            <SettingsField 
                                 label="Workspace URL Slug" 
                                 value={slug} 
                                 onChange={(e) => setSlug(e.target.value)} 
@@ -79,49 +79,49 @@ const WorkspaceSettings = () => {
                         </div>
                     </div>
 
-                    {/* Governance Deck */}
+                    {/* Permissions Settings */}
                     <div className="bg-[#121826]/30 backdrop-blur-3xl border border-white/5 rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                         <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-3">
                             <Shield size={22} className="text-status-success" /> Permissions & Access
                         </h2>
 
                         <div className="space-y-6">
-                            <ToggleProtocol 
+                            <ToggleSetting 
                                 title="Public Discovery" 
                                 desc="Allow users to find and request to join this workspace via the URL." 
                                 enabled 
                             />
-                            <ToggleProtocol 
-                                title="Domain Restricted" 
+                            <ToggleSetting 
+                                title="Email Domain Restrictions" 
                                 desc="Only allow users from specific email domains to join." 
                                 enabled={false}
                             />
-                            <ToggleProtocol 
-                                title="Auto-Provisioning" 
+                            <ToggleSetting 
+                                title="Template Automation" 
                                 desc="Automatically assign default project templates to new members." 
                                 enabled 
                             />
                         </div>
                     </div>
 
-                    {/* Integration Hub */}
+                    {/* Integrations Hub */}
                     <div className="bg-[#121826]/30 backdrop-blur-3xl border border-white/5 rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                         <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-3">
-                            <Cpu size={22} className="text-primary" /> External Integrations
+                            <Cpu size={22} className="text-primary" /> App Integrations
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <IntegrationNode icon={<GitBranch />} name="GitHub" status="CONNECTED" />
-                            <IntegrationNode icon={<MessageSquare />} name="Slack" status="OFFLINE" danger />
-                            <IntegrationNode icon={<Database />} name="AWS S3 Storage" status="STABLE" />
+                            <IntegrationCard icon={<GitBranch />} name="GitHub" status="CONNECTED" />
+                            <IntegrationCard icon={<MessageSquare />} name="Slack" status="OFFLINE" danger />
+                            <IntegrationCard icon={<Database />} name="AWS S3" status="STABLE" />
                         </div>
                     </div>
                 </div>
 
-                {/* Status Meta Deck */}
+                {/* Workspace Stats */}
                 <div className="space-y-8">
                     <div className="bg-[#121826]/30 border border-white/5 rounded-[32px] p-8 flex flex-col items-center text-center">
-                        <div className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mb-6">Workspace Usage</div>
+                        <div className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mb-6">Resource Usage</div>
                         <div className="relative w-32 h-32 mb-6">
                             <svg className="w-full h-full rotate-[-90deg]">
                                 <circle cx="64" cy="64" r="60" fill="none" stroke="currentColor" strokeWidth="8" className="text-white/5" />
@@ -129,7 +129,7 @@ const WorkspaceSettings = () => {
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-2xl font-bold text-white">80%</span>
-                                <span className="text-[7px] font-bold text-primary uppercase">Active</span>
+                                <span className="text-[7px] font-bold text-primary uppercase">Usage</span>
                             </div>
                         </div>
                         <p className="text-[10px] text-text-muted opacity-40">Workspace activity and setup are currently optimal.</p>
@@ -146,7 +146,7 @@ const WorkspaceSettings = () => {
                             </div>
                             <div className="p-4 bg-white/5 border border-white/5 rounded-2xl relative group cursor-pointer active:scale-95 transition-all">
                                 <div className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1.5 flex justify-between items-center px-1">
-                                    Admin Secret <Lock size={10} className="text-status-warning" />
+                                    Workspace Key <Lock size={10} className="text-status-warning" />
                                 </div>
                                 <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">••••••••••••••••</div>
                             </div>
@@ -177,7 +177,7 @@ const WorkspaceSettings = () => {
     );
 };
 
-const TacticalField = ({ label, value, onChange, icon, prefix }) => (
+const SettingsField = ({ label, value, onChange, icon, prefix }) => (
     <div className="relative group/field">
         <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2 mb-2 block">{label}</label>
         <div className="relative flex items-center">
@@ -199,7 +199,7 @@ const TacticalField = ({ label, value, onChange, icon, prefix }) => (
     </div>
 );
 
-const ToggleProtocol = ({ title, desc, enabled }) => (
+const ToggleSetting = ({ title, desc, enabled }) => (
     <div className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/5 rounded-3xl group hover:bg-white/[0.04] transition-all">
         <div className="flex-1 pr-6">
             <h4 className="text-xs font-bold text-white uppercase tracking-tight mb-1">{title}</h4>
@@ -211,7 +211,7 @@ const ToggleProtocol = ({ title, desc, enabled }) => (
     </div>
 );
 
-const IntegrationNode = ({ icon, name, status, danger }) => (
+const IntegrationCard = ({ icon, name, status, danger }) => (
     <div className="p-5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-3xl group transition-all flex flex-col items-center text-center">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border transition-all ${danger ? 'bg-red-500/10 border-red-500/20 text-red-400 group-hover:scale-110' : 'bg-white/5 border-white/10 text-white group-hover:scale-110 group-hover:text-primary group-hover:border-primary/40'}`}>
             {React.cloneElement(icon, { size: 24 })}
