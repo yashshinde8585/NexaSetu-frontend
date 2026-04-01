@@ -1,13 +1,13 @@
 import React from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
-import { Rocket } from 'lucide-react';
+import { FileText, Download, ChevronRight, ChevronDown } from 'lucide-react';
 
 const ProjectInfo = () => {
     const { user } = useAuth();
-    const { 
-        projects, 
-        workload, 
+    const {
+        projects,
+        workload,
         isLoading,
         newProjectName,
         setNewProjectName,
@@ -24,17 +24,19 @@ const ProjectInfo = () => {
         createTicket,
         createTicketLoading,
         linkProjectToSprint: handleLinkProject,
-        getFinalSummary
+        getFinalSummary,
+        downloadSprintReport
     } = useDashboard(user);
 
     const [finalSummary, setFinalSummary] = React.useState(null);
     const [finalizing, setFinalizing] = React.useState(false);
+    const [showWorkload, setShowWorkload] = React.useState(true);
 
     const [showSprintForm, setShowSprintForm] = React.useState(false);
     const [quickTicketProject, setQuickTicketProject] = React.useState(null);
     const [quickTicketTitle, setQuickTicketTitle] = React.useState('');
-    const [sprintData, setSprintData] = React.useState({ 
-        name: '', 
+    const [sprintData, setSprintData] = React.useState({
+        name: '',
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     });
@@ -52,7 +54,7 @@ const ProjectInfo = () => {
             const pSprintId = (p.sprint?._id || p.sprint)?.toString();
             return pSprintId === selectedSprintId?.toString();
         });
-        
+
         // If high-resolution sprint stats are available from the backend, use them for the global matrix
         if (sprintStats) {
             return {
@@ -86,12 +88,12 @@ const ProjectInfo = () => {
 
 
     const canCreate = (
-        user?.role === 'WORKSPACE_ADMIN' || 
-        user?.role === 'ADMIN' || 
-        user?.role === 'WORKSPACE_MANAGER' || 
+        user?.role === 'WORKSPACE_ADMIN' ||
+        user?.role === 'ADMIN' ||
+        user?.role === 'WORKSPACE_MANAGER' ||
         user?.role === 'MANAGER'
-      ) && 
-      !['TECH_LEAD', 'SENIOR_ENGINEER', 'SOFTWARE_ENGINEER', 'INTERN'].includes(user?.role);
+    ) &&
+        !['TECH_LEAD', 'SENIOR_ENGINEER', 'SOFTWARE_ENGINEER', 'INTERN'].includes(user?.role);
 
     const handleAddSprint = () => {
         setShowSprintForm(true);
@@ -102,6 +104,43 @@ const ProjectInfo = () => {
         createSprint(sprintData, {
             onSuccess: () => setShowSprintForm(false)
         });
+    };
+
+    const handleDownload = async () => {
+        if (!selectedSprintId) return;
+        try {
+            const data = await downloadSprintReport(selectedSprintId);
+
+            // Generate CSV
+            let csv = `SPRINT REPORT: ${data.sprint.name}\n`;
+            csv += `Period: ${new Date(data.sprint.startDate).toLocaleDateString()} - ${new Date(data.sprint.endDate).toLocaleDateString()}\n`;
+            csv += `Status: ${data.sprint.status.toUpperCase()}\n\n`;
+
+            csv += `PROJECTS\n`;
+            csv += `Name,Status,Completion,Total Tickets,Completed\n`;
+            data.projects.forEach(p => {
+                csv += `"${p.name}",${p.status},${p.percentage}%,${p.totalTasks},${p.completedTasks}\n`;
+            });
+
+            csv += `\nTASKS\n`;
+            csv += `Title,Project,Assigned To,Status,Due Date,Priority\n`;
+            data.tasks.forEach(t => {
+                csv += `"${t.title.replace(/"/g, '""')}","${t.project}",${t.assignedTo},${t.status},${t.dueDate ? new Date(t.dueDate).toLocaleDateString() : 'None'},${t.priority}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Sprint_Report_${data.sprint.name.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } catch (err) {
+            console.error('Failed to download report:', err);
+            alert('Failed to generate report. Please try again.');
+        }
     };
 
     const selectedSprint = React.useMemo(() => {
@@ -136,20 +175,19 @@ const ProjectInfo = () => {
             {/* Sprint Creation Modal */}
             {showSprintForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="w-full max-w-md bg-[#1E1E2E] border border-white/10 rounded-3xl p-8 shadow-2xl shadow-primary/20 animate-in zoom-in-95 duration-300">
+                    <div className="w-full max-w-md bg-[#1E1E2E] border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl shadow-primary/20 animate-in zoom-in-95 duration-300">
                         <div className="flex items-center gap-3 mb-6">
-                            <Rocket className="text-primary" size={24} />
                             <h3 className="text-xl font-bold text-white tracking-tight">Create New Sprint</h3>
                         </div>
-                        
+
                         <form onSubmit={submitSprint} className="space-y-6">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Sprint Name</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                     value={sprintData.name}
-                                    onChange={e => setSprintData({...sprintData, name: e.target.value})}
+                                    onChange={e => setSprintData({ ...sprintData, name: e.target.value })}
                                     placeholder="e.g. Gamma Sprint"
                                     required
                                 />
@@ -158,36 +196,36 @@ const ProjectInfo = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Start Date</label>
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
                                         value={sprintData.startDate}
-                                        onChange={e => setSprintData({...sprintData, startDate: e.target.value})}
+                                        onChange={e => setSprintData({ ...sprintData, startDate: e.target.value })}
                                         required
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">End Date</label>
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
                                         value={sprintData.endDate}
-                                        onChange={e => setSprintData({...sprintData, endDate: e.target.value})}
+                                        onChange={e => setSprintData({ ...sprintData, endDate: e.target.value })}
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="flex gap-4 pt-4">
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={createSprintLoading}
                                     className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                                 >
                                     {createSprintLoading ? 'Saving...' : 'Create Sprint'}
                                 </button>
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     onClick={() => setShowSprintForm(false)}
                                     className="px-6 bg-white/5 hover:bg-white/10 text-text-muted font-bold rounded-2xl transition-all border border-white/5"
                                 >
@@ -202,7 +240,7 @@ const ProjectInfo = () => {
             {/* Header Section */}
             <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-6 border-b border-white/5">
                 <div className="flex-1">
-                     {canCreate && (
+                    {canCreate && (
                         <div className="flex items-center gap-4">
                             {!showForm ? (
                                 <button
@@ -238,7 +276,7 @@ const ProjectInfo = () => {
                                 </form>
                             )}
                         </div>
-                     )}
+                    )}
                 </div>
             </header>
 
@@ -246,8 +284,7 @@ const ProjectInfo = () => {
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
                     <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-                            <Rocket className="text-primary" size={26} />
+                        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-3">
                             Sprint Management
                         </h2>
                         <p className="text-text-muted text-sm font-medium mt-1 opacity-70">Manage your project timelines and team velocity.</p>
@@ -256,21 +293,20 @@ const ProjectInfo = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto no-scrollbar max-w-full">
                             {(sprints || []).map((sprint) => (
-                               <button
-                                 key={sprint._id}
-                                 onClick={() => setSelectedSprintId(sprint._id)}
-                                 className={`px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all whitespace-nowrap ${
-                                   selectedSprintId === sprint._id 
-                                   ? 'bg-primary/20 border border-primary/20 text-primary shadow-lg shadow-primary/10' 
-                                   : 'text-text-muted/60 hover:text-white hover:bg-white/5'
-                                 }`}
-                               >
-                                 {sprint.name}
-                               </button>
+                                <button
+                                    key={sprint._id}
+                                    onClick={() => setSelectedSprintId(sprint._id)}
+                                    className={`px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all whitespace-nowrap ${selectedSprintId === sprint._id
+                                        ? 'bg-primary/20 border border-primary/20 text-primary shadow-lg shadow-primary/10'
+                                        : 'text-text-muted/60 hover:text-white hover:bg-white/5'
+                                        }`}
+                                >
+                                    {sprint.name}
+                                </button>
                             ))}
                             {canCreate && (
                                 <div className="flex items-center gap-2 border-l border-white/5 ml-2 pl-2">
-                                    <button 
+                                    <button
                                         onClick={handleAddSprint}
                                         className="w-10 h-10 text-text-muted/40 hover:text-primary transition-all flex items-center justify-center rounded-xl hover:bg-white/5"
                                         title="Create New Sprint"
@@ -278,7 +314,7 @@ const ProjectInfo = () => {
                                         <span className="text-xl">+</span>
                                     </button>
                                     {selectedSprintId && (
-                                        <button 
+                                        <button
                                             onClick={async () => {
                                                 setFinalizing(true);
                                                 try {
@@ -332,13 +368,12 @@ const ProjectInfo = () => {
                             </div>
 
                             <div className="col-span-12 md:col-span-2 flex items-center justify-end">
-                                <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${
-                                    selectedSprint.derivedStatus === 'active'
-                                    ? 'bg-status-success/10 text-status-success border-status-success/20 shadow-status-success/10' 
+                                <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${selectedSprint.derivedStatus === 'active'
+                                    ? 'bg-status-success/10 text-status-success border-status-success/20 shadow-status-success/10'
                                     : selectedSprint.derivedStatus === 'completed'
-                                        ? 'bg-primary/10 text-primary border-primary/20 shadow-primary/10' 
+                                        ? 'bg-primary/10 text-primary border-primary/20 shadow-primary/10'
                                         : 'bg-white/5 text-text-muted border-white/10 shadow-white/5'
-                                }`}>
+                                    }`}>
                                     {selectedSprint.derivedStatus?.toUpperCase()}
                                 </span>
                             </div>
@@ -368,14 +403,13 @@ const ProjectInfo = () => {
                     <div className="mt-6 pt-6 border-t border-white/5">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {[
-                                { label: 'Open Tasks', count: sprintMetrics.open, color: 'text-status-error', icon: '🎯' },
-                                { label: 'In Progress', count: sprintMetrics.active, color: 'text-status-warning', icon: '🔍' },
-                                { label: 'In Review', count: sprintMetrics.review, color: 'text-secondary', icon: '⚙️' },
-                                { label: 'Completed', count: sprintMetrics.completed, color: 'text-status-success', icon: '🎉' },
+                                { label: 'Open Tasks', count: sprintMetrics.open, color: 'text-status-error' },
+                                { label: 'In Progress', count: sprintMetrics.active, color: 'text-status-warning' },
+                                { label: 'In Review', count: sprintMetrics.review, color: 'text-secondary' },
+                                { label: 'Completed', count: sprintMetrics.completed, color: 'text-status-success' },
                             ].map((step, idx) => (
                                 <div key={idx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="text-xl grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">{step.icon}</div>
                                         <div>
                                             <div className="text-[9px] font-black uppercase tracking-widest text-text-muted opacity-60 group-hover:opacity-100 transition-opacity">{step.label}</div>
                                             <div className="flex items-baseline gap-1.5 mt-0.5">
@@ -391,24 +425,38 @@ const ProjectInfo = () => {
                     </div>
 
                     {/* Tactical Personnel Distribution */}
-                    {sprintStats?.metrics?.workload?.length > 0 && (
-                        <div className="mt-6 pt-6 border-t border-white/5">
-                            <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/60 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                                    Team Workload Overview
-                                </h4>
-                                <span className="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded tracking-tighter">Velocity Pulse</span>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
+                    <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/5">
+                        <h4
+                            onClick={() => setShowWorkload(!showWorkload)}
+                            className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/60 flex items-center gap-2 cursor-pointer hover:text-white transition-colors select-none"
+                        >
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Tactical Capabilities & Pulse
+                            {showWorkload ? <ChevronDown className="w-3 h-3 ml-1" /> : <ChevronRight className="w-3 h-3 ml-1" />}
+                        </h4>
+                        {selectedSprintId && (
+                            <button
+                                onClick={handleDownload}
+                                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 transition-all group"
+                            >
+                                <FileText className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Download Report</span>
+                                <Download className="w-3 h-3 text-text-muted" />
+                            </button>
+                        )}
+                    </div>
+
+                    {showWorkload && sprintStats?.metrics?.workload?.length > 0 && (
+                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {sprintStats.metrics.workload.map((wp, idx) => (
-                                    <div key={idx} className="bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 flex items-center gap-3 hover:bg-white/[0.06] transition-all hover:-translate-y-0.5 shadow-sm group">
-                                        <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary border border-primary/20 uppercase tracking-tighter">
+                                    <div key={idx} className="bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 hover:bg-white/[0.06] transition-all hover:-translate-y-0.5 shadow-sm group">
+                                        <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-[11px] font-black text-primary border border-primary/20 uppercase tracking-tighter">
                                             {wp.name.charAt(0)}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-white/80 group-hover:text-white transition-colors">{wp.name}</span>
-                                            <span className="text-[9px] font-bold text-text-muted/40 group-hover:text-text-muted/60 transition-colors uppercase tracking-widest leading-none">{wp.count} Tasks</span>
+                                            <span className="text-[11px] font-black text-white/80 group-hover:text-white transition-colors">{wp.name}</span>
+                                            <span className="text-[9px] font-bold text-text-muted/40 group-hover:text-text-muted/60 transition-colors uppercase tracking-widest leading-none mt-0.5">{wp.count} Tasks</span>
                                         </div>
                                     </div>
                                 ))}
@@ -419,133 +467,132 @@ const ProjectInfo = () => {
 
 
 
+
                 <div className="grid grid-cols-1 gap-8">
                     {/* Mission Heatmap */}
                     <div className="space-y-6">
                         <div className="bg-[#1E1E2E]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                        <div className="flex justify-between items-center mb-10">
-                            <div>
-                                <h3 className="text-lg font-black text-white">Project Status Overview</h3>
-                                <p className="text-xs text-text-muted mt-1">
-                                    {selectedSprintId ? 'Status for projects in active sprint' : 'Real-time status of all workspace projects'}
-                                </p>
+                            <div className="flex justify-between items-center mb-10">
+                                <div>
+                                    <h3 className="text-lg font-black text-white">Project Status Overview</h3>
+                                    <p className="text-xs text-text-muted mt-1">
+                                        {selectedSprintId ? 'Status for projects in active sprint' : 'Real-time status of all workspace projects'}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <span className="text-[10px] px-2 py-1 bg-status-success/10 text-status-success border border-status-success/20 rounded font-black">STABLE</span>
+                                    <span className="text-[10px] px-2 py-1 bg-status-warning/10 text-status-warning border border-status-warning/20 rounded font-black">AT RISK</span>
+                                </div>
                             </div>
-                            <div className="flex gap-2">
-                                <span className="text-[10px] px-2 py-1 bg-status-success/10 text-status-success border border-status-success/20 rounded font-black">STABLE</span>
-                                <span className="text-[10px] px-2 py-1 bg-status-warning/10 text-status-warning border border-status-warning/20 rounded font-black">AT RISK</span>
-                            </div>
-                        </div>
 
-                        <div className="space-y-6">
-                            {(projects || []).map(project => (
-                                <div key={project._id} className={`group p-4 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-2xl transition-all ${
-                                    selectedSprintId && (project.sprint === selectedSprintId || project.sprint?._id === selectedSprintId)
-                                    ? 'ring-1 ring-primary/30 border-primary/20 bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)]'
-                                    : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100'
-                                }`}>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-2 h-2 rounded-full ${project.percentage >= 80 ? 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.5)]' : project.percentage >= 40 ? 'bg-status-warning' : 'bg-status-error animate-pulse'}`} />
-                                            <div>
-                                                <h4 className="font-bold text-white group-hover:text-primary transition-colors">{project.name}</h4>
-                                                <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold mt-0.5">{project.status || 'Active'}</p>
+                            <div className="space-y-6">
+                                {(projects || []).map(project => (
+                                    <div key={project._id} className={`group p-4 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-2xl transition-all ${selectedSprintId && (project.sprint === selectedSprintId || project.sprint?._id === selectedSprintId)
+                                        ? 'ring-1 ring-primary/30 border-primary/20 bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)]'
+                                        : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100'
+                                        }`}>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-2 h-2 rounded-full ${project.percentage >= 80 ? 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.5)]' : project.percentage >= 40 ? 'bg-status-warning' : 'bg-status-error animate-pulse'}`} />
+                                                <div>
+                                                    <h4 className="font-bold text-white group-hover:text-primary transition-colors">{project.name}</h4>
+                                                    <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold mt-0.5">{project.status || 'Active'}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-2">
-                                            <div className="flex items-center gap-3">
-                                                {selectedSprintId && (project.sprint === selectedSprintId || project.sprint?._id === selectedSprintId) && (
-                                                    <button 
-                                                        onClick={() => {
-                                                            setQuickTicketProject(quickTicketProject === project._id ? null : project._id);
-                                                            setQuickTicketTitle('');
-                                                        }}
-                                                        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all border ${
-                                                            quickTicketProject === project._id 
-                                                            ? 'bg-status-success text-white border-status-success shadow-lg shadow-status-success/20' 
-                                                            : 'bg-white/5 text-text-muted border-white/5 hover:border-primary/40 hover:text-primary'
-                                                        }`}
-                                                        title="Quick Directive"
-                                                    >
-                                                        <span className="text-lg font-light">{quickTicketProject === project._id ? '×' : '+'}</span>
-                                                    </button>
-                                                )}
-                                                {selectedSprintId && ((project.sprint?._id || project.sprint)?.toString() !== selectedSprintId.toString()) && (
-                                                    <button 
-                                                        onClick={() => {
-                                                            const queryClient = new (require('@tanstack/react-query').QueryClient)(); // This is a bit hacky, better use the instance
-                                                            // Instead, I'll use a local handler in ProjectInfo
-                                                            handleLinkProject(project._id);
-                                                        }}
-                                                        className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20 hover:bg-primary/20 transition-all"
-                                                    >
-                                                        Add to Sprint
-                                                    </button>
-                                                )}
-                                                <div className="text-right">
-                                                    <div className="text-lg font-black text-white">{project.percentage}%</div>
-                                                    <div className="text-[9px] text-text-muted font-bold capitalize">
-                                                        {project.completedTasks || 0} / {project.totalTasks || 0} Tickets
+                                            <div className="flex flex-col items-end gap-2">
+                                                <div className="flex items-center gap-3">
+                                                    {selectedSprintId && (project.sprint === selectedSprintId || project.sprint?._id === selectedSprintId) && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setQuickTicketProject(quickTicketProject === project._id ? null : project._id);
+                                                                setQuickTicketTitle('');
+                                                            }}
+                                                            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all border ${quickTicketProject === project._id
+                                                                ? 'bg-status-success text-white border-status-success shadow-lg shadow-status-success/20'
+                                                                : 'bg-white/5 text-text-muted border-white/5 hover:border-primary/40 hover:text-primary'
+                                                                }`}
+                                                            title="Quick Directive"
+                                                        >
+                                                            <span className="text-lg font-light">{quickTicketProject === project._id ? '×' : '+'}</span>
+                                                        </button>
+                                                    )}
+                                                    {selectedSprintId && ((project.sprint?._id || project.sprint)?.toString() !== selectedSprintId.toString()) && (
+                                                        <button
+                                                            onClick={() => {
+                                                                const queryClient = new (require('@tanstack/react-query').QueryClient)(); // This is a bit hacky, better use the instance
+                                                                // Instead, I'll use a local handler in ProjectInfo
+                                                                handleLinkProject(project._id);
+                                                            }}
+                                                            className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20 hover:bg-primary/20 transition-all"
+                                                        >
+                                                            Add to Sprint
+                                                        </button>
+                                                    )}
+                                                    <div className="text-right">
+                                                        <div className="text-lg font-black text-white">{project.percentage}%</div>
+                                                        <div className="text-[9px] text-text-muted font-bold capitalize">
+                                                            {project.completedTasks || 0} / {project.totalTasks || 0} Tickets
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
-                                        <div 
-                                            className={`h-full transition-all duration-1000 ${project.percentage >= 80 ? 'bg-status-success' : project.percentage >= 40 ? 'bg-primary' : 'bg-status-error'}`}
-                                            style={{ width: `${project.percentage}%` }}
-                                        />
-                                    </div>
 
-                                    {quickTicketProject === project._id && (
-                                        <div className="mt-4 pt-4 border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
-                                            <form 
-                                                className="flex gap-2"
-                                                onSubmit={(e) => {
-                                                    e.preventDefault();
-                                                    if (!quickTicketTitle.trim()) return;
-                                                    createTicket({ 
-                                                        title: quickTicketTitle.trim(), 
-                                                        project: project._id, 
-                                                        sprint: selectedSprintId 
-                                                    }, {
-                                                        onSuccess: () => {
-                                                            setQuickTicketTitle('');
-                                                            setQuickTicketProject(null);
-                                                        }
-                                                    });
-                                                }}
-                                            >
-                                                <input 
-                                                    type="text"
-                                                    className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-[10px] font-medium text-white focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 transition-all placeholder:opacity-30"
-                                                    placeholder="Task Title..."
-                                                    value={quickTicketTitle}
-                                                    onChange={e => setQuickTicketTitle(e.target.value)}
-                                                    autoFocus
-                                                    required
-                                                />
-                                                <button 
-                                                    type="submit"
-                                                    disabled={createTicketLoading}
-                                                    className="bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-black uppercase tracking-widest px-4 rounded-xl border border-primary/20 transition-all disabled:opacity-50"
-                                                >
-                                                    {createTicketLoading ? '...' : 'Create'}
-                                                </button>
-                                            </form>
+                                        <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                            <div
+                                                className={`h-full transition-all duration-1000 ${project.percentage >= 80 ? 'bg-status-success' : project.percentage >= 40 ? 'bg-primary' : 'bg-status-error'}`}
+                                                style={{ width: `${project.percentage}%` }}
+                                            />
                                         </div>
-                                    )}
-                                </div>
-                            ))}
-                            {(projects || []).length === 0 && (
-                                <div className="p-8 text-center text-text-muted italic opacity-40 text-xs font-bold uppercase tracking-widest bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">
-                                    No projects available in workspace
-                                </div>
-                            )}
+
+                                        {quickTicketProject === project._id && (
+                                            <div className="mt-4 pt-4 border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
+                                                <form
+                                                    className="flex gap-2"
+                                                    onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        if (!quickTicketTitle.trim()) return;
+                                                        createTicket({
+                                                            title: quickTicketTitle.trim(),
+                                                            project: project._id,
+                                                            sprint: selectedSprintId
+                                                        }, {
+                                                            onSuccess: () => {
+                                                                setQuickTicketTitle('');
+                                                                setQuickTicketProject(null);
+                                                            }
+                                                        });
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-[10px] font-medium text-white focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 transition-all placeholder:opacity-30"
+                                                        placeholder="Task Title..."
+                                                        value={quickTicketTitle}
+                                                        onChange={e => setQuickTicketTitle(e.target.value)}
+                                                        autoFocus
+                                                        required
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        disabled={createTicketLoading}
+                                                        className="bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-black uppercase tracking-widest px-4 rounded-xl border border-primary/20 transition-all disabled:opacity-50"
+                                                    >
+                                                        {createTicketLoading ? '...' : 'Create'}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                                {(projects || []).length === 0 && (
+                                    <div className="p-8 text-center text-text-muted italic opacity-40 text-xs font-bold uppercase tracking-widest bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">
+                                        No projects available in workspace
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </div>
             {/* Sprint Results Modal */}
@@ -559,7 +606,7 @@ const ProjectInfo = () => {
                             </div>
                             <button onClick={() => setFinalSummary(null)} className="text-text-muted hover:text-white">×</button>
                         </div>
-                        
+
                         <div className="p-8 max-h-[70vh] overflow-y-auto">
                             <div className="flex gap-4 mb-8">
                                 <div className="flex-1 bg-white/5 p-4 rounded-lg border border-white/5 text-center">
@@ -605,8 +652,8 @@ const ProjectInfo = () => {
                         </div>
 
                         <div className="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
-                            <button 
-                                onClick={() => setFinalSummary(null)} 
+                            <button
+                                onClick={() => setFinalSummary(null)}
                                 className="flex-1 py-3 text-xs font-black uppercase tracking-widest bg-white/5 text-text-muted rounded-lg hover:bg-white/10 transition-all"
                             >
                                 Acknowledge & Archive

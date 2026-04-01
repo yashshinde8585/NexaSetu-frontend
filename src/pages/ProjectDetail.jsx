@@ -10,10 +10,13 @@ import GithubPanel from '../components/project/GithubPanel';
 import AIExtractionPanel from '../components/project/AIExtractionPanel';
 import TaskBoard from '../components/project/TaskBoard';
 import TaskForm from '../components/project/TaskForm';
+import { useNavigate } from 'react-router-dom';
+import { Search, Filter, User } from 'lucide-react';
 
 const ProjectDetail = () => {
     const { user } = useAuth();
     const { id } = useParams();
+    const navigate = useNavigate();
     
     // Leverage the new Orchestration Hook
     const {
@@ -33,6 +36,26 @@ const ProjectDetail = () => {
         setNewTask,
         queryClient
     } = useProjectManagement(id, user);
+
+    const [searchTerm, setSearchTerm] = React.useState('');
+
+    const filteredGroupedTasks = React.useMemo(() => {
+        if (!searchTerm.trim()) return groupedTasks;
+        
+        const term = searchTerm.toLowerCase();
+        const filterFn = (t) => 
+            t.title?.toLowerCase().includes(term) || 
+            t.description?.toLowerCase().includes(term) ||
+            t.assignedUser?.name?.toLowerCase().includes(term) ||
+            t.taskNumber?.toString().includes(term);
+
+        return {
+            todo: groupedTasks.todo.filter(filterFn),
+            in_progress: groupedTasks.in_progress.filter(filterFn),
+            in_review: groupedTasks.in_review.filter(filterFn),
+            done: groupedTasks.done.filter(filterFn)
+        };
+    }, [groupedTasks, searchTerm]);
 
     const isTicketView = id === TICKETS_PROJECT_ID;
 
@@ -97,7 +120,7 @@ const ProjectDetail = () => {
                     </div>
                 </div>
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                    {user?.role !== 'INTERN' && !isTicketView && (
+                    {['CTO', 'VP Engineering', 'Engineering Manager', 'Tech Lead'].includes(user?.jobTitle) && !isTicketView && (
                         <button 
                             onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)} 
                             className={`flex-1 sm:flex-none h-11 px-4 sm:px-6 bg-background-light hover:bg-background-dark text-text-muted hover:text-primary font-bold text-xs sm:text-sm rounded-xl transition duration-200 border border-background-dark/30 shadow-md flex items-center justify-center gap-2 ${ui.showGithubPanel ? 'ring-2 ring-primary border-primary' : ''}`}
@@ -120,7 +143,7 @@ const ProjectDetail = () => {
                 </div>
             </div>
 
-            {ui.showGithubPanel && (
+            {ui.showGithubPanel && ['CTO', 'VP Engineering', 'Engineering Manager', 'Tech Lead'].includes(user?.jobTitle) && (
                 <GithubPanel 
                     project={project} 
                     githubConnected={github.connected} 
@@ -159,11 +182,34 @@ const ProjectDetail = () => {
 
             {!isTicketView && <ProjectAnalyticsBar analytics={analytics} />}
 
+            {/* Global Search & Filter Bar */}
+            <div className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-text-muted/40 group-focus-within:text-primary transition-colors">
+                    <Search size={18} />
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="Search by title, description, assignee, or ticket number..."
+                    className="w-full h-14 pl-12 pr-4 bg-white/[0.03] border border-white/5 rounded-2xl text-sm text-white placeholder:text-text-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all shadow-inner"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                    <button 
+                        onClick={() => setSearchTerm('')}
+                        className="absolute inset-y-0 right-4 flex items-center text-text-muted/40 hover:text-white transition-colors"
+                    >
+                        <span className="text-[10px] font-bold uppercase tracking-widest bg-white/5 px-2 py-1 rounded">Clear</span>
+                    </button>
+                )}
+            </div>
+
             <TaskBoard 
-                groupedTasks={groupedTasks} 
+                groupedTasks={filteredGroupedTasks} 
                 user={user} 
                 columns={columns} 
                 handleStatusChange={(taskId, status) => statusMutation.mutate({ taskId, status })} 
+                onTaskClick={(task) => navigate(`/task/${task._id}`)}
             />
         </div>
     );

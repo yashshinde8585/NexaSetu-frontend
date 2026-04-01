@@ -6,7 +6,6 @@ import { inviteBulkMembers } from '../api/teamService';
 const ROLE_OPTIONS = [
     { value: 'WORKSPACE_ADMIN', jobTitle: 'CTO', label: 'CTO', description: 'Executive technical oversight' },
     { value: 'WORKSPACE_ADMIN', jobTitle: 'VP Engineering', label: 'VP Engineering', description: 'Strategic engineering leadership' },
-    { value: 'WORKSPACE_ADMIN', jobTitle: 'Director', label: 'Director', description: 'Departmental management' },
     { value: 'WORKSPACE_MANAGER', jobTitle: 'Engineering Manager', label: 'Engineering Manager', description: 'Team execution & planning' },
     { value: 'WORKSPACE_MANAGER', jobTitle: 'Tech Lead', label: 'Tech Lead', description: 'Technical architecture & guidance' },
     { value: 'PROJECT_MEMBER', jobTitle: 'Senior Engineer', label: 'Senior Engineer', description: 'Core feature ownership' },

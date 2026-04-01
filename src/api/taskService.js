@@ -11,8 +11,8 @@ export const getTasksByProject = async (projectId, sprintId = null) => {
     return response.data;
 };
 
-export const getMyTasks = async () => {
-    const response = await api.get('/tasks/my-tasks');
+export const getMyTasks = async (scope = 'personal') => {
+    const response = await api.get(`/tasks/my-tasks?scope=${scope}`);
     return response.data;
 };
 
@@ -23,5 +23,10 @@ export const updateTaskStatus = async (taskId, status) => {
 
 export const updateTask = async (taskId, taskData) => {
     const response = await api.patch(`/tasks/${taskId}`, taskData);
+    return response.data;
+};
+
+export const getTaskById = async (taskId) => {
+    const response = await api.get(`/tasks/${taskId}`);
     return response.data;
 };

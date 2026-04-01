@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createProject, updateProject } from '../api/projectService';
 import { getDashboardStats } from '../api/dashboardService';
-import { getSprints, getSprintStats, createSprint, finalizeSprint } from '../api/sprintService';
+import { getSprints, getSprintStats, createSprint, finalizeSprint, getSprintReport } from '../api/sprintService';
 import { executeMagicCommand } from '../api/magicService';
 import { getPendingActions, approveAction, rejectAction } from '../api/actionService';
 import { createTask } from '../api/taskService';
@@ -68,19 +68,19 @@ export const useDashboard = (user) => {
       queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
     }
   });
-  
+
   const createTaskMutation = useMutation({
     mutationFn: async ({ title, project, sprint }) => {
-        // 1. Create the task
-        const res = await createTask({ title, project, sprint, status: 'todo' });
-        
-        // 2. Ensure project is synced to this sprint if it isn't already
-        // This ensures the project appears in the Sprint Heatmap and its tasks are counted
-        if (sprint) {
-            await updateProject(project, { sprint });
-        }
-        
-        return res;
+      // 1. Create the task
+      const res = await createTask({ title, project, sprint, status: 'todo' });
+
+      // 2. Ensure project is synced to this sprint if it isn't already
+      // This ensures the project appears in the Sprint Heatmap and its tasks are counted
+      if (sprint) {
+        await updateProject(project, { sprint });
+      }
+
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
@@ -107,7 +107,7 @@ export const useDashboard = (user) => {
     }
 
     // Leads, Engineers, and Interns only see projects where they are members
-    return rawProjects.filter(p => 
+    return rawProjects.filter(p =>
       p.members?.some(m => (m._id || m).toString() === user?._id?.toString())
     );
   }, [statsQuery.data?.projects, user]);
@@ -136,7 +136,8 @@ export const useDashboard = (user) => {
     sprintStats: sprintStatsQuery.data,
     sprintStatsLoading: sprintStatsQuery.isLoading,
     aiImpact: statsQuery.data?.aiImpact,
-    personal: statsQuery.data?.personal || { active: 0, completed: 0, total: 0 },
+    summary: statsQuery.data?.summary || { todo: 0, in_progress: 0, in_review: 0, done: 0, total: 0 },
+    personal: statsQuery.data?.personal || { todo: 0, in_progress: 0, in_review: 0, done: 0, active: 0, completed: 0, total: 0 },
     recentActivity: statsQuery.data?.recentActivity,
     isLoading: statsQuery.isLoading || sprintsQuery.isLoading || actionsQuery.isLoading,
     error: statsQuery.error || sprintsQuery.error,
@@ -162,8 +163,12 @@ export const useDashboard = (user) => {
     createTicket: createTaskMutation.mutate,
     createTicketLoading: createTaskMutation.isLoading,
     getFinalSummary: async (id) => {
-        const res = await (finalizeSprint)(id);
-        return res.data.data;
+      const res = await (finalizeSprint)(id);
+      return res.data.data;
+    },
+    downloadSprintReport: async (id) => {
+      const res = await getSprintReport(id);
+      return res.data.data;
     },
     actionsLoading: actionsQuery.isLoading
   };

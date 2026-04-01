@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 
-const TaskBoard = ({ groupedTasks, user, columns, handleStatusChange }) => {
+const TaskBoard = ({ groupedTasks, user, columns, handleStatusChange, onTaskClick }) => {
   const [pageState, setPageState] = useState({});
   const ITEMS_PER_PAGE = 10;
 
@@ -26,7 +26,7 @@ const TaskBoard = ({ groupedTasks, user, columns, handleStatusChange }) => {
             </div>
             <div className="p-4 space-y-3 flex-grow">
               {paginatedTasks.map(task => (
-                <TaskCard key={task._id} task={task} user={user} columns={columns} handleStatusChange={handleStatusChange} />
+                <TaskCard key={task._id} task={task} user={user} columns={columns} handleStatusChange={handleStatusChange} onTaskClick={onTaskClick} />
               ))}
             </div>
             {totalPages > 1 && (

@@ -3,7 +3,9 @@ import { Search, Users, Activity, ShieldAlert } from 'lucide-react';
 
 const ProjectOverviewList = ({ 
   projects = [], 
-  isLoading 
+  isLoading,
+  onProjectSelect,
+  selectedProjectId
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -24,7 +26,7 @@ const ProjectOverviewList = ({
   return (
     <div className="bg-background-light/30 border border-white/5 overflow-visible glass-dark shadow-2xl rounded-3xl">
       {/* Integrated Header Toolbar */}
-      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 px-8 py-6 border-b border-white/5">
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 px-5 py-4 md:px-8 md:py-6 border-b border-white/5">
         <h2 className="text-xl font-bold flex items-center gap-2 shrink-0 text-white tracking-tight">
            Project Overview
         </h2>
@@ -89,7 +91,10 @@ const ProjectOverviewList = ({
             {filteredProjects.map((project) => (
               <div
                 key={project._id}
-                className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-6 px-5 md:px-8 py-5 md:py-6 items-start md:items-center hover:bg-white/[0.04] transition-all group"
+                onClick={() => onProjectSelect?.(selectedProjectId === project._id ? null : project._id)}
+                className={`flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-6 px-5 md:px-8 py-5 md:py-6 items-start md:items-center hover:bg-white/[0.04] transition-all group cursor-pointer ${
+                    selectedProjectId === project._id ? 'bg-primary/5 border-l-4 border-primary' : ''
+                }`}
               >
                 {/* Project Name Column */}
                 <div className="col-span-4 flex items-center gap-5 w-full">

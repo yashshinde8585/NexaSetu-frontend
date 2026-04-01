@@ -45,7 +45,7 @@ const AIExtractionPanel = ({
                   onChange={(e) => setAiSuggestion({...aiSuggestion, assignedUser: e.target.value})}
                 >
                   <option value="">Unassigned</option>
-                  {project?.members?.map(member => (
+                  {project?.members?.filter(member => member.role !== 'WORKSPACE_ADMIN').map(member => (
                       <option key={member._id} value={member._id}>{member.name}</option>
                   ))}
                 </select>

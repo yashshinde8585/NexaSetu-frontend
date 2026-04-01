@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 import { Hexagon, Menu, Activity } from 'lucide-react';
@@ -10,11 +10,11 @@ const Navbar = ({ onToggleSidebar }) => {
     const { user } = useAuth();
     const { hasPermission } = usePermissions();
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const navLinkStyle = ({ isActive }) => 
-        `text-sm font-semibold transition-all px-3 py-2 rounded-lg ${
-            isActive 
-            ? 'text-white bg-white/10' 
+    const navLinkStyle = ({ isActive }) =>
+        `text-sm font-semibold transition-all px-3 py-2 rounded-lg ${isActive
+            ? 'text-white bg-white/10'
             : 'text-text-muted hover:text-white hover:bg-white/5'
         } hidden sm:block`;
 
@@ -24,7 +24,7 @@ const Navbar = ({ onToggleSidebar }) => {
                 <>
                     {/* Left Column: Breadcrumb */}
                     <div className="flex items-center gap-4 shrink-0 px-2 h-9 min-h-[36px]">
-                        <button 
+                        <button
                             onClick={onToggleSidebar}
                             className="p-2 -ml-2 text-text-muted hover:text-white md:hidden transition-colors"
                             aria-label="Toggle Sidebar"
@@ -32,24 +32,32 @@ const Navbar = ({ onToggleSidebar }) => {
                             <Menu size={24} />
                         </button>
                         <div className="text-xs font-semibold text-white flex items-center h-full">
-                             <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent uppercase tracking-[0.15em] pointer-events-none">
-                                 {window.location.pathname === '/portfolio' ? 'Portfolio' : 
-                                  window.location.pathname === '/team' ? 'Personnel' :
-                                  window.location.pathname === '/team/add' ? 'Registry' :
-                                  'Intelligence'}
-                             </span>
+                            <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent uppercase tracking-[0.15em] pointer-events-none">
+                                {(() => {
+                                    const path = location.pathname;
+                                    if (path === '/dashboard') return 'Dashboard';
+                                    if (path === '/portfolio') return 'Portfolio';
+                                    if (path === '/team') return 'Personnel'; // Sidebar says Personnel in Navbar? No. 
+                                    if (path === '/team/add') return 'Personnel Registry';
+                                    if (path === '/project-info') return 'Project Details';
+                                    if (path === '/my-tasks') return 'Personal Tasks';
+                                    if (path === '/velocity') return 'Tactical Velocity';
+                                    if (path === '/profile') return 'Profile';
+                                    if (path === '/settings') return 'Preferences';
+                                    if (path === '/theme') return 'Interface Themes';
+                                    if (path.startsWith('/project/')) return 'Tasks & Tickets';
+                                    return 'Intelligence';
+                                })()}
+                            </span>
                         </div>
                     </div>
 
                     {/* Center Column: MagicBar (Expanded with Permissions) */}
                     <div className="hidden md:flex flex-1 justify-center max-w-4xl px-8">
-                        {hasPermission(PERMISSIONS.USE_MAGIC_BAR) ? (
-                            <MagicBar />
-                        ) : (
-                            <div className="flex items-center gap-2 group cursor-default">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all duration-500"></div>
-                                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted/40 group-hover:text-text-muted/60 transition-colors">Strategic Operations Restricted</span>
-                            </div>
+                        {location.pathname === '/dashboard' && (
+                            hasPermission(PERMISSIONS.USE_MAGIC_BAR) && (
+                                <MagicBar />
+                            )
                         )}
                     </div>
 
@@ -69,7 +77,7 @@ const Navbar = ({ onToggleSidebar }) => {
                         </div>
                         <span className="text-xl font-bold tracking-tight text-white">NexaSetu</span>
                     </Link>
-                    
+
                     <div className="flex gap-6 items-center">
                         <Link to="/login" className="text-sm font-semibold text-text-muted hover:text-white transition-colors">
                             Sign In

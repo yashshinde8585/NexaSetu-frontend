@@ -12,9 +12,9 @@ const StatCards = ({ stats }) => {
               <span className="opacity-40 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100">{stat.icon}</span>
             </div>
             <div className="flex items-baseline gap-3">
-              <div className="text-3xl font-black tracking-tight">{stat.value}</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight">{stat.value}</div>
               {stat.trend && (
-                <span className={`text-[11px] font-black italic tracking-widest ${stat.trend.startsWith('+') ? 'text-status-success' : 'text-status-error'}`}>
+                <span className={`text-[11px] font-black italic tracking-widest ${stat.trend.startsWith('+') ? 'text-status-success' : stat.trend.includes('Overall') ? 'opacity-40' : 'text-status-error'}`}>
                   {stat.trend}
                 </span>
               )}

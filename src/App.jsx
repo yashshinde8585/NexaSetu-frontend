@@ -13,11 +13,11 @@ import AddTeamMember from './pages/AddTeamMember';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Theme from './pages/Theme';
-import WorkspaceSettings from './pages/WorkspaceSettings';
 import ProjectInfo from './pages/ProjectInfo';
 import ProjectSettings from './pages/ProjectSettings';
 import MyTasks from './pages/MyTasks';
 import Velocity from './pages/Velocity';
+import TaskDetail from './pages/TaskDetail';
 import Navbar from './components/Navbar';
 import MagicResults from './components/MagicResults';
 import Sidebar from './components/Sidebar';
@@ -68,13 +68,13 @@ function App() {
               <Route path="/project-info" element={user ? <ProjectInfo /> : <Navigate to="/login" replace />} />
               <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" replace />} />
               <Route path="/project/:id" element={user ? <ProjectDetail /> : <Navigate to="/login" replace />} />
+              <Route path="/task/:taskId" element={user ? <TaskDetail /> : <Navigate to="/login" replace />} />
               <Route path="/project/:id/settings" element={user ? <ProjectSettings /> : <Navigate to="/login" replace />} />
               <Route path="/my-tasks" element={user ? <MyTasks /> : <Navigate to="/login" replace />} />
               <Route path="/velocity" element={user ? <Velocity /> : <Navigate to="/login" replace />} />
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" replace />} />
               <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" replace />} />
               <Route path="/theme" element={user ? <Theme /> : <Navigate to="/login" replace />} />
-              <Route path="/workspace-settings" element={user ? (hasPermission(PERMISSIONS.MANAGE_ROLES) ? <WorkspaceSettings /> : <Navigate to="/dashboard" replace />) : <Navigate to="/login" replace />} />
             </Routes>
           </ErrorBoundary>
         </main>

@@ -1,8 +1,12 @@
 import React from 'react';
 
-const TaskCard = ({ task, user, columns, handleStatusChange }) => {
+const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick }) => {
   return (
-    <div key={task._id} className="bg-background-light p-4 rounded-lg shadow border border-background-dark/20 hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
+    <div 
+      key={task._id} 
+      onClick={() => onTaskClick(task)}
+      className="bg-background-light p-4 rounded-lg shadow border border-background-dark/20 hover:border-primary/30 transition-all duration-300 relative overflow-hidden cursor-pointer active:scale-[0.98]"
+    >
       <div className="flex justify-between items-start mb-2 gap-4">
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -58,7 +62,10 @@ const TaskCard = ({ task, user, columns, handleStatusChange }) => {
             return c.id !== task.status && !isRestrictedForIntern && (
               <button 
                 key={c.id}
-                onClick={() => handleStatusChange(task._id, c.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStatusChange(task._id, c.id);
+                }}
                 className="text-[8px] px-1.5 py-0.5 rounded border border-white/5 hover:border-primary/40 text-text-muted hover:text-primary transition-all uppercase font-bold bg-background-dark/20"
                 title={`Move to ${c.title}`}
               >
@@ -70,7 +77,8 @@ const TaskCard = ({ task, user, columns, handleStatusChange }) => {
         
         {task.status !== 'done' && (
           <button 
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               const next = task.status === 'todo' ? 'in_progress' : (task.status === 'in_progress' ? 'in_review' : 'done');
               handleStatusChange(task._id, next);
             }}

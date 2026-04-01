@@ -71,7 +71,7 @@ const Velocity = () => {
                     </div>
                     
                     <div className="h-64 relative">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <PieChart>
                                 <Pie
                                     data={aiData}
@@ -119,7 +119,7 @@ const Velocity = () => {
                     </div>
 
                     <div className="h-64">
-                         <ResponsiveContainer width="100%" height="100%">
+                         <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <BarChart data={projectExecutionData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                                 <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={10} axisLine={false} tickLine={false} />

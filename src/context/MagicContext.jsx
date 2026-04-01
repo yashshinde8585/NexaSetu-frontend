@@ -9,38 +9,51 @@ export const MagicProvider = ({ children }) => {
   const [activeProjects, setActiveProjects] = useState([]);
   const [dashboardContext, setDashboardContext] = useState(null);
 
-  const setGlobalResult = (result) => {
+  const setGlobalResult = React.useCallback((result) => {
     setMagicResult(result);
     setShowResults(!!result);
-  };
+  }, []);
 
-  const closeGlobalResults = () => {
+  const closeGlobalResults = React.useCallback(() => {
     setMagicResult(null);
     setShowResults(false);
-  };
+  }, []);
 
-  const triggerCommand = (command) => {
+  const triggerCommand = React.useCallback((command) => {
     setPendingCommand(command);
-  };
+  }, []);
 
-  const setProjects = (projects) => {
+  const setProjects = React.useCallback((projects) => {
     setActiveProjects(projects || []);
-  };
+  }, []);
+
+  const contextValue = React.useMemo(() => ({
+    magicResult,
+    showResults,
+    setGlobalResult,
+    closeGlobalResults,
+    triggerCommand,
+    pendingCommand,
+    setPendingCommand,
+    activeProjects,
+    setProjects,
+    dashboardContext,
+    setDashboardContext
+  }), [
+    magicResult,
+    showResults,
+    setGlobalResult,
+    closeGlobalResults,
+    triggerCommand,
+    pendingCommand,
+    activeProjects,
+    setProjects,
+    dashboardContext,
+    setDashboardContext
+  ]);
 
   return (
-    <MagicContext.Provider value={{ 
-      magicResult, 
-      showResults, 
-      setGlobalResult, 
-      closeGlobalResults, 
-      triggerCommand, 
-      pendingCommand, 
-      setPendingCommand,
-      activeProjects,
-      setProjects,
-      dashboardContext,
-      setDashboardContext
-    }}>
+    <MagicContext.Provider value={contextValue}>
       {children}
     </MagicContext.Provider>
   );

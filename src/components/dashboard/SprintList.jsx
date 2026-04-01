@@ -4,7 +4,9 @@ import { Search, Rocket } from 'lucide-react';
 const SprintList = ({ 
   sprints = [], 
   user,
-  isLoading
+  isLoading,
+  onSprintSelect,
+  selectedSprintId
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -42,9 +44,9 @@ const SprintList = ({
   return (
     <div className="bg-background-light/30 border border-white/5 overflow-visible glass-dark shadow-2xl rounded-3xl">
       {/* Integrated Header Toolbar */}
-      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 px-8 py-6 border-b border-white/5">
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 px-5 py-4 md:px-8 md:py-6 border-b border-white/5">
         <h2 className="text-xl font-bold flex items-center gap-2 shrink-0 text-white tracking-tight">
-          <Rocket className="text-primary" size={20} /> Tactical Operational Cycles
+          Tactical Operational Cycles
         </h2>
         
         <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto flex-1 justify-end">
@@ -78,11 +80,12 @@ const SprintList = ({
           </div>
         </div>
       </div>
-
+ 
       {sprints.length === 0 ? (
+
         <div className="p-12 sm:p-20 text-center flex flex-col items-center justify-center space-y-8 group">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20">
-            <Rocket className="w-10 h-10" />
+            {/* Mission Vector Icon Removed */}
           </div>
           <div className="space-y-2">
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">No active tactical cycles.</h3>
@@ -103,7 +106,10 @@ const SprintList = ({
             {filteredSprints.map((sprint) => (
               <div
                 key={sprint._id}
-                className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-6 px-5 md:px-8 py-5 md:py-6 items-start md:items-center hover:bg-white/[0.04] transition-all group"
+                onClick={() => onSprintSelect?.(selectedSprintId === sprint._id ? null : sprint._id)}
+                className={`flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-6 px-5 md:px-8 py-5 md:py-6 items-start md:items-center hover:bg-white/[0.04] transition-all group cursor-pointer ${
+                    selectedSprintId === sprint._id ? 'bg-primary/5 border-l-4 border-primary' : ''
+                }`}
               >
                 {/* Sprint Name Column */}
                 <div className="col-span-5 flex items-center gap-5 w-full">

@@ -75,7 +75,7 @@ const ProjectSettings = () => {
 
             {/* Title Section */}
             <div className="border-b border-white/5 pb-8">
-                <h1 className="text-3xl font-black text-white tracking-tighter flex items-center gap-4">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter flex items-center gap-4">
                     <Settings className="text-primary" size={28} />
                     Project configuration
                 </h1>
@@ -110,7 +110,7 @@ const ProjectSettings = () => {
 
                 {/* Main Content Area */}
                 <div className="md:col-span-2 space-y-8">
-                    <form onSubmit={handleSave} className="bg-white/[0.02] border border-white/5 p-8 space-y-6">
+                    <form onSubmit={handleSave} className="bg-white/[0.02] border border-white/5 p-5 sm:p-8 space-y-6">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">Mission Long-Name</label>
                             <input 

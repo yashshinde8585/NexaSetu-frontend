@@ -25,17 +25,20 @@ export const useProjectManagement = (id, user) => {
     // Queries
     const projectQuery = useQuery({
         queryKey: ['project', id],
-        queryFn: () => getProject(id).then(res => res.data.project)
+        queryFn: () => getProject(id).then(res => res.data.project),
+        enabled: !!id && id !== 'null'
     });
 
     const tasksQuery = useQuery({
         queryKey: ['tasks', id, selectedSprintId],
-        queryFn: () => getTasksByProject(id, selectedSprintId).then(res => res.data.tasks)
+        queryFn: () => getTasksByProject(id, selectedSprintId).then(res => res.data.tasks),
+        enabled: !!id && id !== 'null'
     });
 
     const analyticsQuery = useQuery({
         queryKey: ['analytics', id, selectedSprintId],
-        queryFn: () => getProjectAnalytics(id, selectedSprintId).then(res => res.data.analytics)
+        queryFn: () => getProjectAnalytics(id, selectedSprintId).then(res => res.data.analytics),
+        enabled: !!id && id !== 'null'
     });
 
     const sprintsQuery = useQuery({
@@ -146,9 +149,9 @@ export const useProjectManagement = (id, user) => {
     // Derived State: Grouped Tasks
     const groupedTasks = useMemo(() => {
         const userId = user?._id;
-        const visibleTasks = (user?.role === 'INTERN') 
-            ? (tasksQuery.data || []).filter(t => 
-                (t.assignedUser?._id || t.assignedUser) === userId || 
+        const visibleTasks = (user?.role === 'INTERN')
+            ? (tasksQuery.data || []).filter(t =>
+                (t.assignedUser?._id || t.assignedUser) === userId ||
                 (t.createdBy?._id || t.createdBy) === userId
             )
             : (tasksQuery.data || []);
@@ -170,20 +173,20 @@ export const useProjectManagement = (id, user) => {
         error: projectQuery.error || tasksQuery.error || sprintsQuery.error || createTaskMutation.error,
         selectedSprintId,
         setSelectedSprintId,
-        
+
         // UI Controls
         ui: {
             showTaskForm, setShowTaskForm,
             showAiInput, setShowAiInput,
             showGithubPanel, setShowGithubPanel
         },
-        
+
         // Operations
         statusMutation,
         createTaskMutation,
         updateProjectMutation,
         groupedTasks,
-        
+
         // AI State/Action
         ai: {
             input: aiInput, setInput: setAiInput,
@@ -191,7 +194,7 @@ export const useProjectManagement = (id, user) => {
             suggestion: aiSuggestion, setSuggestion: setAiSuggestion,
             extract: () => aiExtractMutation.mutate(aiInput)
         },
-        
+
         // GitHub State/Action
         github: {
             token: githubToken, setToken: setGithubToken,
@@ -206,7 +209,7 @@ export const useProjectManagement = (id, user) => {
             syncActivity: () => githubActivityMutation.mutate(),
             approveTasks: (tasks) => githubApproveMutation.mutate(tasks)
         },
-        
+
         // Other Utils
         setNewTask, newTask, queryClient
     };
