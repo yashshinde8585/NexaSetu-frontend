@@ -1,15 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axios';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import AuthService from '../api/authService';
 
 const AuthContext = createContext();
 
+// Manages global authentication state, sessions, and user connectivity methods.
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const logout = React.useCallback(async () => {
+  const logout = useCallback(async () => {
     try {
-      await api.get('/auth/logout');
+      await AuthService.logout();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
@@ -19,85 +27,98 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-        try {
-            const res = await api.get('/auth/me');
-            setUser(res.data.data.user);
-        } catch (err) {
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const res = await AuthService.getCurrentUser();
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
 
-    // Listen for global logout events from axios interceptor
+    // Binds a listener for global logout events triggered by API interceptors.
     const handleGlobalLogout = () => {
       setUser(null);
-      // Optional: window.location.href = '/login';
     };
 
     window.addEventListener('auth:logout', handleGlobalLogout);
     return () => window.removeEventListener('auth:logout', handleGlobalLogout);
   }, []);
 
-  const login = React.useCallback(async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
-      const res = await api.post('/auth/login', { email, password });
-      setUser(res.data.data.user);
-      return res.data;
+      const res = await AuthService.login(email, password);
+      setUser(res.data.user);
+      return res;
     } catch (err) {
       setUser(null);
       throw err;
     }
   }, []);
 
-  const register = React.useCallback(async (name, email, password, role = null, assignedProjectId = null, workspaceName = null, plan = 'free') => {
-    try {
-      const payload = { name, email, password };
-      if (role) payload.role = role;
-      if (assignedProjectId) payload.assignedProjectId = assignedProjectId;
-      if (workspaceName) payload.workspaceName = workspaceName;
-      if (plan) payload.plan = plan;
+  const register = useCallback(
+    async (
+      name,
+      email,
+      password,
+      role = null,
+      assignedProjectId = null,
+      workspaceName = null,
+      plan = 'free'
+    ) => {
+      try {
+        const payload = { name, email, password };
+        if (role) payload.role = role;
+        if (assignedProjectId) payload.assignedProjectId = assignedProjectId;
+        if (workspaceName) payload.workspaceName = workspaceName;
+        if (plan) payload.plan = plan;
 
-      const res = await api.post('/auth/register', payload);
-      setUser(res.data.data.user);
-      return res.data;
+        const res = await AuthService.register(payload);
+        setUser(res.data.user);
+        return res;
+      } catch (err) {
+        throw err;
+      }
+    },
+    []
+  );
+
+  const activateInvite = useCallback(async (token, name, password) => {
+    try {
+      const res = await AuthService.activateInvite(token, name, password);
+      setUser(res.data.user);
+      return res;
     } catch (err) {
       throw err;
     }
   }, []);
 
-  const activateInvite = React.useCallback(async (token, name, password) => {
+  const completeOnboarding = useCallback(async () => {
     try {
-      const res = await api.post('/auth/activate', { token, name, password });
-      setUser(res.data.data.user);
-      return res.data;
-    } catch (err) {
-      throw err;
-    }
-  }, []);
-
-  const completeOnboarding = React.useCallback(async () => {
-    try {
-      const res = await api.patch('/auth/complete-tour');
-      setUser(res.data.data.user);
-      return res.data;
+      const res = await AuthService.completeOnboarding();
+      setUser(res.data.user);
+      return res;
     } catch (err) {
       console.error('Onboarding update failed:', err);
       throw err;
     }
   }, []);
 
-  const value = React.useMemo(() => ({
-    user,
-    loading,
-    login,
-    register,
-    activateInvite,
-    logout,
-    completeOnboarding
-  }), [user, loading, login, register, activateInvite, logout, completeOnboarding]);
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      login,
+      register,
+      activateInvite,
+      logout,
+      completeOnboarding,
+    }),
+    [user, loading, login, register, activateInvite, logout, completeOnboarding]
+  );
 
   return (
     <AuthContext.Provider value={value}>
@@ -106,4 +127,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// Provides access to the current authentication context and user session details.
 export const useAuth = () => useContext(AuthContext);

@@ -1,27 +1,42 @@
 import api from './axios';
+import { API_ENDPOINTS } from '../constants';
 
-export const getProjects = async () => {
-    const response = await api.get('/projects');
+// Service for managing project-related data and operations.
+class ProjectService {
+  // Fetch all projects that the current user has access to.
+  async getProjects() {
+    const response = await api.get(API_ENDPOINTS.PROJECTS.BASE);
     return response.data;
-};
+  }
 
-export const createProject = async (projectData) => {
-    const response = await api.post('/projects', projectData);
+  // Create a new project with the provided data.
+  async createProject(projectData) {
+    const response = await api.post(API_ENDPOINTS.PROJECTS.BASE, projectData);
     return response.data;
-};
+  }
 
-export const getProject = async (projectId) => {
-    const response = await api.get(`/projects/${projectId}`);
+  // Get detailed information for a specific project.
+  async getProject(projectId) {
+    const response = await api.get(API_ENDPOINTS.PROJECTS.DETAIL(projectId));
     return response.data;
-};
+  }
 
-export const getProjectAnalytics = async (projectId, sprintId = null) => {
-    const url = sprintId ? `/projects/${projectId}/analytics?sprintId=${sprintId}` : `/projects/${projectId}/analytics`;
+  // Get analytics for a project, with an optional sprint filter.
+  async getProjectAnalytics(projectId, sprintId = null) {
+    const baseUrl = API_ENDPOINTS.PROJECTS.ANALYTICS(projectId);
+    const url = sprintId ? `${baseUrl}?sprintId=${sprintId}` : baseUrl;
     const response = await api.get(url);
     return response.data;
-};
+  }
 
-export const updateProject = async (projectId, projectData) => {
-    const response = await api.patch(`/projects/${projectId}`, projectData);
+  // Update the details of an existing project.
+  async updateProject(projectId, projectData) {
+    const response = await api.patch(
+      API_ENDPOINTS.PROJECTS.DETAIL(projectId),
+      projectData
+    );
     return response.data;
-};
+  }
+}
+
+export default new ProjectService();

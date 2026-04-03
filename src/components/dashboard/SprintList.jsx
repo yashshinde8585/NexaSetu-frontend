@@ -1,43 +1,64 @@
 import React, { useState } from 'react';
 import { Search, Rocket } from 'lucide-react';
 
-const SprintList = ({ 
-  sprints = [], 
+// A component that manages and displays a searchable list of tactical operational cycles.
+const SprintList = ({
+  sprints = [],
   user,
   isLoading,
   onSprintSelect,
-  selectedSprintId
+  selectedSprintId,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
+  // Determines the current status of a sprint based on its start and end dates.
   const deriveStatus = (sprint) => {
     if (sprint.status === 'completed') return 'completed';
-    
+
     const now = new Date();
     // Normalize to start of day for comparison
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    ).getTime();
     const start = new Date(sprint.startDate);
-    const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+    const startDate = new Date(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate()
+    ).getTime();
     const end = new Date(sprint.endDate);
-    const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime();
-    
+    const endDate = new Date(
+      end.getFullYear(),
+      end.getMonth(),
+      end.getDate()
+    ).getTime();
+
     if (today < startDate) return 'upcoming';
     if (today > endDate) return 'completed';
     return 'active';
   };
 
-  const filteredSprints = (sprints || []).filter(sprint => {
-    const matchesSearch = (sprint.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredSprints = (sprints || []).filter((sprint) => {
+    const matchesSearch = (sprint.name || '')
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const derivedStatus = deriveStatus(sprint);
-    
+
     // Status Filter Logic
-    const matchesStatus = 
-      activeFilter === 'All' ? true :
-      activeFilter === 'Upcoming' ? derivedStatus === 'upcoming' :
-      activeFilter === 'Active' ? derivedStatus === 'active' :
-      activeFilter === 'Completed' ? derivedStatus === 'completed' : true;
- 
+    const matchesStatus =
+      activeFilter === 'All'
+        ? true
+        : activeFilter === 'Upcoming'
+          ? derivedStatus === 'upcoming'
+          : activeFilter === 'Active'
+            ? derivedStatus === 'active'
+            : activeFilter === 'Completed'
+              ? derivedStatus === 'completed'
+              : true;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -48,12 +69,15 @@ const SprintList = ({
         <h2 className="text-xl font-bold flex items-center gap-2 shrink-0 text-white tracking-tight">
           Tactical Operational Cycles
         </h2>
-        
+
         <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto flex-1 justify-end">
           {/* Search Input */}
           <div className="relative w-full md:w-64 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" size={14} />
-            <input 
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors"
+              size={14}
+            />
+            <input
               type="text"
               placeholder="Locate mission cycle..."
               value={searchQuery}
@@ -65,31 +89,34 @@ const SprintList = ({
           {/* Status Pills */}
           <div className="flex p-1 bg-white/[0.02] border border-white/5 rounded-xl shrink-0">
             {['All', 'Active', 'Upcoming', 'Completed'].map((filter) => (
-               <button
-                 key={filter}
-                 onClick={() => setActiveFilter(filter)}
-                 className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
-                   activeFilter === filter 
-                   ? 'bg-white/10 text-white shadow-sm' 
-                   : 'text-text-muted hover:text-white hover:bg-white/5'
-                 }`}
-               >
-                 {filter}
-               </button>
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                  activeFilter === filter
+                    ? 'bg-white/10 text-white shadow-sm'
+                    : 'text-text-muted hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {filter}
+              </button>
             ))}
           </div>
         </div>
       </div>
- 
-      {sprints.length === 0 ? (
 
+      {sprints.length === 0 ? (
         <div className="p-12 sm:p-20 text-center flex flex-col items-center justify-center space-y-8 group">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20">
             {/* Mission Vector Icon Removed */}
           </div>
           <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">No active tactical cycles.</h3>
-            <p className="text-text-muted font-bold text-xs sm:text-sm italic opacity-60">Initialize your first sprint matrix in the Project Intel sector.</p>
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              No active tactical cycles.
+            </h3>
+            <p className="text-text-muted font-bold text-xs sm:text-sm italic opacity-60">
+              Initialize your first sprint matrix in the Project Intel sector.
+            </p>
           </div>
         </div>
       ) : (
@@ -106,9 +133,15 @@ const SprintList = ({
             {filteredSprints.map((sprint) => (
               <div
                 key={sprint._id}
-                onClick={() => onSprintSelect?.(selectedSprintId === sprint._id ? null : sprint._id)}
+                onClick={() =>
+                  onSprintSelect?.(
+                    selectedSprintId === sprint._id ? null : sprint._id
+                  )
+                }
                 className={`flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-6 px-5 md:px-8 py-5 md:py-6 items-start md:items-center hover:bg-white/[0.04] transition-all group cursor-pointer ${
-                    selectedSprintId === sprint._id ? 'bg-primary/5 border-l-4 border-primary' : ''
+                  selectedSprintId === sprint._id
+                    ? 'bg-primary/5 border-l-4 border-primary'
+                    : ''
                 }`}
               >
                 {/* Sprint Name Column */}
@@ -117,25 +150,47 @@ const SprintList = ({
                     {sprint.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-white font-black truncate group-hover:text-primary transition-colors text-sm sm:text-base tracking-tight">{sprint.name}</span>
+                    <span className="text-white font-black truncate group-hover:text-primary transition-colors text-sm sm:text-base tracking-tight">
+                      {sprint.name}
+                    </span>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">ID: {sprint._id.slice(-6).toUpperCase()}</span>
+                      <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
+                        ID: {sprint._id.slice(-6).toUpperCase()}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Commencement Date */}
                 <div className="col-span-3 flex flex-col">
-                  <span className="text-xs font-bold text-white/90">{new Date(sprint.startDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                  <span className="text-[9px] text-text-muted font-black uppercase tracking-widest mt-0.5">Start Vector</span>
+                  <span className="text-xs font-bold text-white/90">
+                    {new Date(sprint.startDate).toLocaleDateString(undefined, {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                  <span className="text-[9px] text-text-muted font-black uppercase tracking-widest mt-0.5">
+                    Start Vector
+                  </span>
                 </div>
 
                 {/* Cycle Duration */}
                 <div className="col-span-2 flex flex-col">
                   <span className="text-xs font-bold text-white/90">
-                    {Math.max(1, Math.ceil((new Date(sprint.endDate) - new Date(sprint.startDate)) / (1000 * 60 * 60 * 24)))} Days
+                    {Math.max(
+                      1,
+                      Math.ceil(
+                        (new Date(sprint.endDate) -
+                          new Date(sprint.startDate)) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    )}{' '}
+                    Days
                   </span>
-                  <span className="text-[9px] text-text-muted font-black uppercase tracking-widest mt-0.5">Timeframe</span>
+                  <span className="text-[9px] text-text-muted font-black uppercase tracking-widest mt-0.5">
+                    Timeframe
+                  </span>
                 </div>
 
                 {/* Status Column */}
@@ -143,13 +198,15 @@ const SprintList = ({
                   {(() => {
                     const status = deriveStatus(sprint);
                     return (
-                      <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm ${
-                        status === 'active'
-                        ? 'bg-status-success/10 text-status-success border-status-success/20 shadow-status-success/10' 
-                        : status === 'completed'
-                          ? 'bg-primary/10 text-primary border-primary/20 shadow-primary/10' 
-                          : 'bg-white/5 text-text-muted border-white/10 shadow-white/5'
-                      }`}>
+                      <span
+                        className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm ${
+                          status === 'active'
+                            ? 'bg-status-success/10 text-status-success border-status-success/20 shadow-status-success/10'
+                            : status === 'completed'
+                              ? 'bg-primary/10 text-primary border-primary/20 shadow-primary/10'
+                              : 'bg-white/5 text-text-muted border-white/10 shadow-white/5'
+                        }`}
+                      >
                         {status.toUpperCase()}
                       </span>
                     );

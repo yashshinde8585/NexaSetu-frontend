@@ -1,6 +1,14 @@
 import api from './axios';
+import { API_ENDPOINTS } from '../constants';
 
-export const executeMagicCommand = async (query, context = {}) => {
-    const response = await api.post('/magic/execute', { query, context });
+class MagicService {
+  async executeCommand(command, context = {}) {
+    const response = await api.post(API_ENDPOINTS.MAGIC.EXECUTE, {
+      command,
+      context,
+    });
     return response.data;
-};
+  }
+}
+
+export default new MagicService();
