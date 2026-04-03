@@ -1,26 +1,45 @@
 import api from './axios';
+import { API_ENDPOINTS } from '../constants';
 
-export const connectGithub = async (accessToken) => {
-    const response = await api.post('/github/connect', { accessToken });
+// Service for managing GitHub integration and repository connections.
+class GithubService {
+  // Connect a GitHub account using an access token.
+  async connectGithub(accessToken) {
+    const response = await api.post(API_ENDPOINTS.GITHUB.CONNECT, {
+      accessToken,
+    });
     return response.data;
-};
+  }
 
-export const getRepositories = async () => {
-    const response = await api.get('/github/repositories');
+  // List all repositories for the connected GitHub account.
+  async getRepositories() {
+    const response = await api.get(API_ENDPOINTS.GITHUB.REPOSITORIES);
     return response.data;
-};
+  }
 
-export const linkProject = async (projectId, repoInfo) => {
-    const response = await api.post('/github/link-project', { projectId, repoInfo });
+  // Link a GitHub repository to a specific project.
+  async linkProject(projectId, repoInfo) {
+    const response = await api.post(API_ENDPOINTS.GITHUB.LINK_PROJECT, {
+      projectId,
+      repoInfo,
+    });
     return response.data;
-};
+  }
 
-export const getActivitySuggestions = async (projectId) => {
-    const response = await api.get(`/github/activity-suggestions/${projectId}`);
+  // Get task suggestions based on recent commit activity.
+  async getActivitySuggestions(projectId) {
+    const response = await api.get(API_ENDPOINTS.GITHUB.SUGGESTIONS(projectId));
     return response.data;
-};
+  }
 
-export const approveTasks = async (projectId, tasks) => {
-    const response = await api.post('/github/approve-tasks', { projectId, tasks });
+  // Import and approve the suggested tasks for a project.
+  async approveTasks(projectId, tasks) {
+    const response = await api.post(API_ENDPOINTS.GITHUB.APPROVE_TASKS, {
+      projectId,
+      tasks,
+    });
     return response.data;
-};
+  }
+}
+
+export default new GithubService();

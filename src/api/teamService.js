@@ -1,13 +1,16 @@
 import api from './axios';
+import { API_ENDPOINTS } from '../constants';
 
-
-export const inviteBulkMembers = async (invites) => {
-    const response = await api.post('/team/invite-bulk', { invites });
+class TeamService {
+  async inviteBulk(data) {
+    const response = await api.post(API_ENDPOINTS.TEAM.INVITE_BULK, data);
     return response.data;
-};
+  }
 
-
-export const getTeamMembers = async () => {
-    const response = await api.get('/team/members');
+  async getMembers() {
+    const response = await api.get(API_ENDPOINTS.TEAM.MEMBERS);
     return response.data;
-};
+  }
+}
+
+export default new TeamService();

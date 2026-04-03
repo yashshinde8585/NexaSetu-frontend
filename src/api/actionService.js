@@ -1,16 +1,21 @@
 import api from './axios';
+import { API_ENDPOINTS } from '../constants';
 
-export const getPendingActions = async () => {
-    const response = await api.get('/actions/pending');
+class ActionService {
+  async getPendingActions() {
+    const response = await api.get(API_ENDPOINTS.ACTIONS.PENDING);
     return response.data;
-};
+  }
 
-export const approveAction = async (actionId) => {
-    const response = await api.post(`/actions/${actionId}/approve`);
+  async approveAction(id) {
+    const response = await api.post(API_ENDPOINTS.ACTIONS.APPROVE(id));
     return response.data;
-};
+  }
 
-export const rejectAction = async (actionId) => {
-    const response = await api.post(`/actions/${actionId}/reject`);
+  async rejectAction(id) {
+    const response = await api.post(API_ENDPOINTS.ACTIONS.REJECT(id));
     return response.data;
-};
+  }
+}
+
+export default new ActionService();
