@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createProject, updateProject } from '../api/projectService';
-import { getDashboardStats } from '../api/dashboardService';
-import { getSprints, getSprintStats, createSprint, finalizeSprint } from '../api/sprintService';
-import { executeMagicCommand } from '../api/magicService';
-import { getPendingActions, approveAction, rejectAction } from '../api/actionService';
-import { createTask } from '../api/taskService';
+import ProjectService from '../api/projectService';
+import DashboardService from '../api/dashboardService';
+import SprintService from '../api/sprintService';
+import MagicService from '../api/magicService';
+import ActionService from '../api/actionService';
+import TaskService from '../api/taskService';
+import { TASK_STATUS, USER_ROLES } from '../constants';
 
+// Manages dashboard data retrieval, project creation, and analytics state.
 export const useDashboard = (user) => {
   const queryClient = useQueryClient();
   const [newProjectName, setNewProjectName] = useState('');
@@ -14,80 +16,89 @@ export const useDashboard = (user) => {
 
   const [selectedSprintId, setSelectedSprintId] = useState(null);
 
-  // 1. Queries
   const statsQuery = useQuery({
     queryKey: ['dashboard-stats', selectedSprintId],
-    queryFn: () => getDashboardStats({ sprintId: selectedSprintId }).then(res => res.data.data)
+    queryFn: () =>
+      DashboardService.getDashboardStats({ sprintId: selectedSprintId }).then(
+        (res) => res.data
+      ),
   });
 
   const sprintsQuery = useQuery({
     queryKey: ['sprints'],
-    queryFn: () => getSprints().then(res => res.data.data.sprints || [])
+    queryFn: () =>
+      SprintService.getSprints().then((res) => res.data?.sprints || []),
   });
 
   const sprintStatsQuery = useQuery({
     queryKey: ['sprint-stats', selectedSprintId],
-    queryFn: () => getSprintStats(selectedSprintId).then(res => res.data.data),
-    enabled: !!selectedSprintId
+    queryFn: () =>
+      SprintService.getSprintStats(selectedSprintId).then((res) => res.data),
+    enabled: !!selectedSprintId,
   });
 
   const actionsQuery = useQuery({
     queryKey: ['pending-actions'],
-    queryFn: () => getPendingActions().then(res => res.data.actions),
-    enabled: !!user
+    queryFn: () =>
+      ActionService.getPendingActions().then((res) => res.data?.actions || []),
+    enabled: !!user,
   });
 
-  // 2. Mutations
   const createMutation = useMutation({
-    mutationFn: ({ name, sprintId }) => createProject({ name, sprint: sprintId }),
+    mutationFn: ({ name, sprintId }) =>
+      ProjectService.createProject({ name, sprint: sprintId }),
     onSuccess: () => {
       setNewProjectName('');
       setShowForm(false);
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-    }
+    },
   });
 
   const approveMutation = useMutation({
-    mutationFn: (id) => approveAction(id),
+    mutationFn: (id) => ActionService.approveAction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-    }
+    },
   });
 
   const createSprintMutation = useMutation({
-    mutationFn: (data) => createSprint(data),
+    mutationFn: (data) => SprintService.createSprint(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sprints'] });
-    }
+    },
   });
 
   const rejectMutation = useMutation({
-    mutationFn: (id) => rejectAction(id),
+    mutationFn: (id) => ActionService.rejectAction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
-    }
+    },
   });
-  
+
   const createTaskMutation = useMutation({
     mutationFn: async ({ title, project, sprint }) => {
-        // 1. Create the task
-        const res = await createTask({ title, project, sprint, status: 'todo' });
-        
-        // 2. Ensure project is synced to this sprint if it isn't already
-        // This ensures the project appears in the Sprint Heatmap and its tasks are counted
-        if (sprint) {
-            await updateProject(project, { sprint });
-        }
-        
-        return res;
+      const res = await TaskService.createTask({
+        title,
+        project,
+        sprint,
+        status: TASK_STATUS.TODO,
+      });
+
+      if (sprint) {
+        await ProjectService.updateProject(project, { sprint });
+      }
+
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       if (selectedSprintId) {
-        queryClient.invalidateQueries({ queryKey: ['sprint-stats', selectedSprintId] });
+        queryClient.invalidateQueries({
+          queryKey: ['sprint-stats', selectedSprintId],
+        });
       }
-    }
+    },
   });
 
   const handleCreateProject = (e) => {
@@ -96,31 +107,36 @@ export const useDashboard = (user) => {
     if (name) createMutation.mutate({ name, sprintId: selectedSprintId });
   };
 
-  // 3. Derived Logic
   const visibleProjects = useMemo(() => {
     const rawProjects = statsQuery.data?.projects || [];
-    const isGlobalViewer = user?.role === 'WORKSPACE_ADMIN' || user?.role === 'WORKSPACE_MANAGER' || user?.role === 'ADMIN' || user?.role === 'MANAGER';
+    const isGlobalViewer = [
+      USER_ROLES.WORKSPACE_ADMIN,
+      USER_ROLES.WORKSPACE_MANAGER,
+      USER_ROLES.ADMIN,
+      USER_ROLES.MANAGER,
+    ].includes(user?.role);
 
-    // Global viewers see all workspace projects
     if (isGlobalViewer) {
       return rawProjects;
     }
 
-    // Leads, Engineers, and Interns only see projects where they are members
-    return rawProjects.filter(p => 
-      p.members?.some(m => (m._id || m).toString() === user?._id?.toString())
+    return rawProjects.filter((p) =>
+      p.members?.some((m) => (m._id || m).toString() === user?._id?.toString())
     );
   }, [statsQuery.data?.projects, user]);
 
   const handleOptimizePath = async (projectName) => {
     try {
-      const res = await executeMagicCommand(`Optimize path for ${projectName}`);
-      if (res.data.actionTriggered) {
-        // Refresh data to show staged actions in Portfolio/Approval panels
+      const res = await MagicService.executeMagicCommand(
+        `Optimize path for ${projectName}`
+      );
+      if (res.actionTriggered) {
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-        alert(`AI Orchestration triggered for ${projectName}. Reassignments staged for approval.`);
+        alert(
+          `AI Orchestration triggered for ${projectName}. Reassignments staged for approval.`
+        );
       } else {
-        alert(res.data.actions[0]?.message || 'No optimizations needed currently.');
+        alert(res.actions[0]?.message || 'No optimizations needed currently.');
       }
     } catch (err) {
       console.error('Optimization failed:', err);
@@ -136,9 +152,25 @@ export const useDashboard = (user) => {
     sprintStats: sprintStatsQuery.data,
     sprintStatsLoading: sprintStatsQuery.isLoading,
     aiImpact: statsQuery.data?.aiImpact,
-    personal: statsQuery.data?.personal || { active: 0, completed: 0, total: 0 },
+    summary: statsQuery.data?.summary || {
+      [TASK_STATUS.TODO]: 0,
+      [TASK_STATUS.IN_PROGRESS]: 0,
+      [TASK_STATUS.IN_REVIEW]: 0,
+      [TASK_STATUS.DONE]: 0,
+      total: 0,
+    },
+    personal: statsQuery.data?.personal || {
+      [TASK_STATUS.TODO]: 0,
+      [TASK_STATUS.IN_PROGRESS]: 0,
+      [TASK_STATUS.IN_REVIEW]: 0,
+      [TASK_STATUS.DONE]: 0,
+      active: 0,
+      completed: 0,
+      total: 0,
+    },
     recentActivity: statsQuery.data?.recentActivity,
-    isLoading: statsQuery.isLoading || sprintsQuery.isLoading || actionsQuery.isLoading,
+    isLoading:
+      statsQuery.isLoading || sprintsQuery.isLoading || actionsQuery.isLoading,
     error: statsQuery.error || sprintsQuery.error,
     createMutation,
     newProjectName,
@@ -152,9 +184,13 @@ export const useDashboard = (user) => {
     rejectAction: rejectMutation.mutate,
     linkProjectToSprint: (projectId) => {
       if (!selectedSprintId) return;
-      updateProject(projectId, { sprint: selectedSprintId }).then(() => {
+      ProjectService.updateProject(projectId, {
+        sprint: selectedSprintId,
+      }).then(() => {
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-        queryClient.invalidateQueries({ queryKey: ['sprint-stats', selectedSprintId] });
+        queryClient.invalidateQueries({
+          queryKey: ['sprint-stats', selectedSprintId],
+        });
       });
     },
     createSprint: createSprintMutation.mutate,
@@ -162,9 +198,13 @@ export const useDashboard = (user) => {
     createTicket: createTaskMutation.mutate,
     createTicketLoading: createTaskMutation.isLoading,
     getFinalSummary: async (id) => {
-        const res = await (finalizeSprint)(id);
-        return res.data.data;
+      const res = await SprintService.finalizeSprint(id);
+      return res.data;
     },
-    actionsLoading: actionsQuery.isLoading
+    downloadSprintReport: async (id) => {
+      const res = await SprintService.getSprintReport(id);
+      return res.data;
+    },
+    actionsLoading: actionsQuery.isLoading,
   };
 };
