@@ -6,6 +6,7 @@ import useTasks from '../hooks/useTasks';
 import TaskCard from '../components/organisms/TaskCard';
 import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
+import CenteredLoading from '../components/atoms/CenteredLoading';
 
 // A task management page that allows users to filter, search, and track their assigned or workspace missions.
 const MyTasks = () => {
@@ -34,12 +35,7 @@ const MyTasks = () => {
     setSearchParams({ filter, scope });
   }, [filter, scope, setSearchParams]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (loading) return <CenteredLoading />;
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 py-10 space-y-12 animate-in fade-in duration-700">

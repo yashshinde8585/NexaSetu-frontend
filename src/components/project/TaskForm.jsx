@@ -1,7 +1,7 @@
 import React from 'react';
 
 // A form component for manually creating new tasks with specific titles, sprints, and descriptions.
-const TaskForm = ({ newTask, setNewTask, handleCreateTask }) => {
+const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
   return (
     <div className="bg-background-light p-6 rounded-lg mb-8 shadow-md border border-background-dark/30 animate-in fade-in zoom-in-95 duration-200">
       <form
@@ -53,6 +53,46 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask }) => {
               setNewTask({ ...newTask, description: e.target.value })
             }
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 tracking-tight">
+              Priority
+            </label>
+            <select
+              className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer"
+              value={newTask.priority || 'medium'}
+              onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 tracking-tight">
+              Time
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"
+                value={newTask.estimatedDuration || 30}
+                onChange={(e) => setNewTask({ ...newTask, estimatedDuration: parseInt(e.target.value) || 0 })}
+              />
+              <select
+                className="bg-background-dark border border-background-dark text-white px-2 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer text-xs"
+                value={newTask.durationUnit || 'min'}
+                onChange={(e) => setNewTask({ ...newTask, durationUnit: e.target.value })}
+              >
+                <option value="min">Min</option>
+                <option value="hours">Hrs</option>
+                <option value="days">Days</option>
+              </select>
+            </div>
+          </div>
         </div>
         <button
           type="submit"

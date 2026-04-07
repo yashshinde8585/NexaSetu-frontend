@@ -120,20 +120,77 @@ const AIExtractionPanel = ({
               </div>
             </div>
 
-            <div className="group">
-              <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                Task Description
-              </label>
-              <textarea
-                className="w-full bg-[#0F0F13] border border-white/5 text-sm font-medium text-white/80 px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all h-[134px] resize-none"
-                value={aiSuggestion.description}
-                onChange={(e) =>
-                  setAiSuggestion({
-                    ...aiSuggestion,
-                    description: e.target.value,
-                  })
-                }
-              />
+            <div className="space-y-6">
+              <div className="group">
+                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
+                  Priority
+                </label>
+                <select
+                  className="w-full bg-[#0F0F13] border border-white/5 text-xs font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer"
+                  value={aiSuggestion.priority || 'medium'}
+                  onChange={(e) =>
+                    setAiSuggestion({
+                      ...aiSuggestion,
+                      priority: e.target.value,
+                    })
+                  }
+                >
+                  <option value="low">Low Priority</option>
+                  <option value="medium">Medium Priority</option>
+                  <option value="high">High Priority</option>
+                  <option value="urgent">Urgent Priority</option>
+                </select>
+              </div>
+
+              <div className="group">
+                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
+                  Estimated Time
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="number"
+                    className="w-full bg-[#0F0F13] border border-white/5 text-sm font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all"
+                    placeholder="30"
+                    value={aiSuggestion.estimatedDuration || 30}
+                    onChange={(e) =>
+                      setAiSuggestion({
+                        ...aiSuggestion,
+                        estimatedDuration: parseInt(e.target.value) || 0,
+                      })
+                    }
+                  />
+                  <select
+                    className="w-full bg-[#0F0F13] border border-white/5 text-[10px] font-bold text-white px-4 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer uppercase tracking-widest"
+                    value={aiSuggestion.durationUnit || 'min'}
+                    onChange={(e) =>
+                      setAiSuggestion({
+                        ...aiSuggestion,
+                        durationUnit: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="min">Minutes</option>
+                    <option value="hours">Hours</option>
+                    <option value="days">Days</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="group">
+                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
+                  Task Description
+                </label>
+                <textarea
+                  className="w-full bg-[#0F0F13] border border-white/5 text-sm font-medium text-white/80 px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all h-[134px] resize-none"
+                  value={aiSuggestion.description}
+                  onChange={(e) =>
+                    setAiSuggestion({
+                      ...aiSuggestion,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
             </div>
           </div>
           <div className="flex gap-4 mt-8">

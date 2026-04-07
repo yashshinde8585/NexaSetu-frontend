@@ -45,7 +45,7 @@ const Register = () => {
       );
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.message || 'Unable to create your account. Please check your information and try again.');
     } finally {
       setLoading(false);
     }

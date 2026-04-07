@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Clock, MapPin, CheckCircle2 } from 'lucide-react';
+import { Clock, MapPin, CheckCircle2, Play } from 'lucide-react';
 import { TASK_STATUS } from '../../constants';
 
 // A card component that displays task details, status, and management actions.
@@ -33,6 +33,15 @@ const TaskCard = ({
               <MapPin size={10} className="text-primary" />
               <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none">
                 {task.project?.name || 'General'}
+              </span>
+              <span className="mx-2 text-white/5">•</span>
+              <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${
+                task.priority === 'low' ? 'text-status-success' :
+                task.priority === 'high' ? 'text-status-warning' :
+                task.priority === 'urgent' ? 'text-status-error' :
+                'text-primary'
+              }`}>
+                {task.priority || 'Medium'}
               </span>
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-primary transition-colors">
@@ -81,38 +90,20 @@ const TaskCard = ({
             }`}
           >
             <Clock size={14} />
-            <span className="text-[10px] font-bold uppercase tracking-widest">
-              {task.dueDate
-                ? new Date(task.dueDate).toLocaleDateString()
-                : 'No Due Date'}
-            </span>
-          </div>
-
-          <div className="flex gap-2">
-            {task.status !== TASK_STATUS.IN_PROGRESS && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStatusChange(task._id, TASK_STATUS.IN_PROGRESS);
-                }}
-                className="p-2 border border-white/5 bg-white/5 rounded-xl hover:bg-secondary hover:text-white transition-all text-text-muted"
-                title="Start Task"
-              >
-                <div className="animate-spin-slow">
-                  <Clock size={18} />
-                </div>
-              </button>
-            )}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onStatusChange(task._id, TASK_STATUS.DONE);
-              }}
-              className="p-2 border border-white/5 bg-white/5 rounded-xl hover:bg-status-success hover:text-white transition-all text-text-muted"
-              title="Complete Task"
-            >
-              <CheckCircle2 size={18} />
-            </button>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                {task.dueDate
+                  ? new Date(task.dueDate).toLocaleDateString()
+                  : 'No Due Date'}
+              </span>
+              {task.estimatedDuration > 0 && (
+                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.15em]">
+                  Est: {task.estimatedDuration >= 60 
+                    ? `${Math.floor(task.estimatedDuration / 60)}h${task.estimatedDuration % 60 > 0 ? ` ${task.estimatedDuration % 60}m` : ''}` 
+                    : `${task.estimatedDuration}m`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ const Login = () => {
       await login(formData.email, formData.password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.message || 'Unable to sign in. Please check your credentials and try again.');
     } finally {
       setLoading(false);
     }
@@ -62,8 +62,8 @@ const Login = () => {
               }
             />
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center pr-1 -mb-1">
+            <div className="space-y-3">
+              <div className="flex justify-between items-end pr-1 pb-1">
                 <label
                   htmlFor="password"
                   className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.2em] ml-1"

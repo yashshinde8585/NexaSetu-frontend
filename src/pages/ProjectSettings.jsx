@@ -13,6 +13,7 @@ import {
   Clock,
 } from 'lucide-react';
 import ProjectService from '../api/projectService';
+import CenteredLoading from '../components/atoms/CenteredLoading';
 
 // Allows configuration of project metadata and provides options for managing or deleting projects.
 const ProjectSettings = () => {
@@ -56,12 +57,7 @@ const ProjectSettings = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (isLoading) return <CenteredLoading />;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-8 py-10 space-y-10 animate-in fade-in duration-700">

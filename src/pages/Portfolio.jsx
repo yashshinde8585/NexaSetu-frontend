@@ -12,6 +12,7 @@ import ApprovalPanel from '../components/portfolio/ApprovalPanel';
 import SuggestionPanel from '../components/portfolio/SuggestionPanel';
 import ResourcePanel from '../components/portfolio/ResourcePanel';
 import ActivityFeed from '../components/portfolio/ActivityFeed';
+import CenteredLoading from '../components/atoms/CenteredLoading';
 
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
 
@@ -23,7 +24,7 @@ const Portfolio = () => {
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['portfolio-stats'],
     queryFn: () =>
-      DashboardService.getDashboardStats().then((res) => res.data.stats),
+      DashboardService.getDashboardStats().then((res) => res.data),
   });
 
   const { data: resources, isLoading: resLoading } = useQuery({
@@ -77,11 +78,7 @@ const Portfolio = () => {
     statsLoading || resLoading || recLoading || logsLoading || actionsLoading;
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <CenteredLoading />;
   }
 
   const projects = statsData?.projects || [];

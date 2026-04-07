@@ -9,6 +9,9 @@ import {
   UserPlus,
   CreditCard,
   Settings,
+  Target,
+  Rocket,
+  PlusSquare,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
@@ -30,9 +33,9 @@ const Sidebar = ({ isOpen, onClose }) => {
     },
     {
       name: 'Team Members',
-      path: '/teams',
+      path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
       icon: <Users size={20} />,
-      permission: PERMISSIONS.INVITE_USERS,
+      permission: null,
     },
     {
       name: 'Billing',
@@ -126,20 +129,36 @@ const Sidebar = ({ isOpen, onClose }) => {
                 icon: <Box size={18} />,
               },
               {
-                name: 'Project Details',
+                name: 'Sprint Management',
                 path: '/project-info',
                 icon: <Settings size={18} />,
               },
-            ].map((item) => (
+              {
+                name: 'Create Project',
+                path: '/project-setup',
+                icon: <PlusSquare size={18} />,
+                permission: PERMISSIONS.CREATE_PROJECT,
+              },
+            ].filter(item => {
+              const isIntern = user?.role?.toUpperCase() === 'INTERN';
+              const hasRegistryPerm = item.name === 'Sprint Management';
+              const hasSetupPerm = item.name === 'Create Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
+              const otherItems = !['Sprint Management', 'Create Project'].includes(item.name);
+              
+              return hasRegistryPerm || hasSetupPerm || otherItems;
+            })
+            .map((item) => (
               <NavLink
                 key={item.name}
                 to={item.path}
-                onClick={onClose}
+                onClick={item.disabled ? (e) => e.preventDefault() : onClose}
                 className={({ isActive }) =>
                   `relative flex items-center gap-3 px-6 py-3 text-sm font-bold transition-all group ${
-                    isActive
-                      ? 'text-white bg-linear-to-r from-secondary/10 via-secondary/5 to-transparent'
-                      : 'text-text-muted hover:text-white hover:bg-white/5'
+                    item.disabled
+                      ? 'opacity-40 cursor-not-allowed'
+                      : isActive
+                        ? 'text-white bg-linear-to-r from-secondary/10 via-secondary/5 to-transparent'
+                        : 'text-text-muted hover:text-white hover:bg-white/5'
                   }`
                 }
               >
