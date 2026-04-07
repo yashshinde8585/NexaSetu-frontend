@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
+import NotificationTray from './NotificationTray';
 import { Hexagon, Menu } from 'lucide-react';
 import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
@@ -32,15 +33,24 @@ const Navbar = ({ onToggleSidebar }) => {
                   const path = location.pathname;
                   if (path === '/dashboard') return 'Dashboard';
                   if (path === '/portfolio') return 'Portfolio';
+                  // Team Members: admins/managers go to /teams, assigned users go to /team/project/:id
                   if (path === '/teams') return 'Personnel';
+                  if (path.startsWith('/team/project/')) return 'Personnel';
                   if (path === '/team/add') return 'Personnel Registry';
-                  if (path === '/project-info') return 'Project Details';
-                  if (path === '/my-tasks') return 'Personal Tasks';
+                  // Sprint Management / Project Info
+                  if (path === '/project-info') return 'Sprint Management';
+                  if (path === '/project-setup') return 'Create Project';
+                  // Tasks & Tickets: assigned users go to /project/:id, unassigned go to /my-tasks
+                  if (path === '/my-tasks') return 'Tasks & Tickets';
                   if (path === '/velocity') return 'Tactical Velocity';
                   if (path === '/profile') return 'Profile';
                   if (path === '/settings') return 'Preferences';
                   if (path === '/theme') return 'Interface Themes';
+                  // Project detail & settings
+                  if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
                   if (path.startsWith('/project/')) return 'Tasks & Tickets';
+                  // Task detail
+                  if (path.startsWith('/task/')) return 'Task Detail';
                   return 'Intelligence';
                 })()}
               </span>
@@ -55,6 +65,7 @@ const Navbar = ({ onToggleSidebar }) => {
 
           {/* Right Column: Activities & Profile */}
           <div className="flex items-center gap-4 shrink-0 h-9 min-h-[36px]">
+            <NotificationTray />
             <ProfileDropdown />
           </div>
         </>

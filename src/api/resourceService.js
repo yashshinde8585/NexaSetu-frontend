@@ -1,10 +1,9 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 class ResourceService {
-  async getWorkload() {
-    const response = await api.get(API_ENDPOINTS.RESOURCES.WORKLOAD);
-    return response.data;
+  getWorkload() {
+    return apiClient.get(API_ENDPOINTS.RESOURCES.WORKLOAD);
   }
 }
 

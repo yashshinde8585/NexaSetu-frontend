@@ -1,49 +1,36 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 // Service for handling user authentication and session management.
 class AuthService {
   // Fetch information about the currently logged-in user.
-  async getCurrentUser() {
-    const response = await api.get(API_ENDPOINTS.AUTH.ME);
-    return response.data;
+  getCurrentUser() {
+    return apiClient.get(API_ENDPOINTS.AUTH.ME);
   }
 
   // Authenticate a user with their email and password.
-  async login(email, password) {
-    const response = await api.post(API_ENDPOINTS.AUTH.LOGIN, {
-      email,
-      password,
-    });
-    return response.data;
+  login(email, password) {
+    return apiClient.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
   }
 
   // Create a new user account with the provided details.
-  async register(data) {
-    const response = await api.post(API_ENDPOINTS.AUTH.REGISTER, data);
-    return response.data;
+  register(data) {
+    return apiClient.post(API_ENDPOINTS.AUTH.REGISTER, data);
   }
 
   // End the user's current session and log them out.
-  async logout() {
-    const response = await api.get(API_ENDPOINTS.AUTH.LOGOUT);
-    return response.data;
+  logout() {
+    return apiClient.get(API_ENDPOINTS.AUTH.LOGOUT);
   }
 
   // Activate a user account using an invitation token.
-  async activateInvite(token, name, password) {
-    const response = await api.post(API_ENDPOINTS.AUTH.ACTIVATE, {
-      token,
-      name,
-      password,
-    });
-    return response.data;
+  activateInvite(token, name, password) {
+    return apiClient.post(API_ENDPOINTS.AUTH.ACTIVATE, { token, name, password });
   }
 
   // Mark the user onboarding process as completed.
-  async completeOnboarding() {
-    const response = await api.patch(API_ENDPOINTS.AUTH.ONBOARDING);
-    return response.data;
+  completeOnboarding() {
+    return apiClient.patch(API_ENDPOINTS.AUTH.ONBOARDING);
   }
 }
 

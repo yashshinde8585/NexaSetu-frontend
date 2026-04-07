@@ -21,6 +21,9 @@ export const useProjectManagement = (id, user) => {
     description: '',
     status: TASK_STATUS.TODO,
     sprint: '',
+    priority: 'medium',
+    estimatedDuration: 30,
+    durationUnit: 'min',
   });
   const [githubToken, setGithubToken] = useState('');
   const [githubSuggestions, setGithubSuggestions] = useState([]);
@@ -54,14 +57,22 @@ export const useProjectManagement = (id, user) => {
   });
 
   const sprintsQuery = useQuery({
-    queryKey: ['sprints'],
-    queryFn: () =>
-      SprintService.getSprints().then((res) => res.data.sprints || []),
+    queryKey: ['sprints', id],
+    queryFn: async () => {
+      const res = await SprintService.getSprints();
+      const allSprints = res.data?.sprints || [];
+      // Include sprints for this project OR global sprints
+      return allSprints.filter(s => {
+        const pid = s.project?._id || s.project;
+        return !pid || pid === id;
+      });
+    },
+    enabled: !!id,
   });
 
   const reposQuery = useQuery({
     queryKey: ['github-repos'],
-    queryFn: () => GithubService.getRepositories().then((res) => res),
+    queryFn: () => GithubService.getRepositories().then((res) => res.data?.repositories || []),
     enabled: githubConnected,
     retry: false,
     onError: () => setGithubConnected(false),
@@ -74,11 +85,16 @@ export const useProjectManagement = (id, user) => {
         selectedSprintId ||
         projectQuery.data?.sprint?._id ||
         projectQuery.data?.sprint;
-      return TaskService.createTask({
-        ...task,
-        project: id,
-        sprint: currentSprintId,
-      });
+      const payload = { ...task, project: id, sprint: currentSprintId };
+      
+      // Convert to minutes based on unit
+      if (task.durationUnit === 'hours') {
+        payload.estimatedDuration = (task.estimatedDuration || 0) * 60;
+      } else if (task.durationUnit === 'days') {
+        payload.estimatedDuration = (task.estimatedDuration || 0) * 1440; // 24 * 60
+      }
+      
+      return TaskService.createTask(payload);
     },
     onSuccess: () => {
       setShowTaskForm(false);
@@ -88,6 +104,9 @@ export const useProjectManagement = (id, user) => {
         description: '',
         status: TASK_STATUS.TODO,
         sprint: '',
+        priority: 'medium',
+        estimatedDuration: 30,
+        durationUnit: 'min',
       });
       queryClient.invalidateQueries({
         queryKey: ['tasks', id, selectedSprintId],
@@ -135,11 +154,14 @@ export const useProjectManagement = (id, user) => {
   const aiExtractMutation = useMutation({
     mutationFn: (text) => AiService.extractTaskFromText(text),
     onSuccess: (res) => {
-      const suggestion = res.suggestion;
+      const suggestion = res.data?.suggestion;
+      if (!suggestion) return;
+
       if (projectQuery.data?.sprint) {
         suggestion.sprint =
           projectQuery.data.sprint._id || projectQuery.data.sprint;
       }
+      suggestion.durationUnit = 'min'; // Default unit for AI extraction
       setAiSuggestion(suggestion);
       setAiInput('');
     },
@@ -166,7 +188,7 @@ export const useProjectManagement = (id, user) => {
 
   const githubActivityMutation = useMutation({
     mutationFn: () => GithubService.getActivitySuggestions(id),
-    onSuccess: (res) => setGithubSuggestions(res || []),
+    onSuccess: (res) => setGithubSuggestions(res.data?.suggestions || []),
   });
 
   const githubApproveMutation = useMutation({
@@ -231,7 +253,8 @@ export const useProjectManagement = (id, user) => {
       projectQuery.error ||
       tasksQuery.error ||
       sprintsQuery.error ||
-      createTaskMutation.error,
+      createTaskMutation.error ||
+      aiExtractMutation.error,
     selectedSprintId,
     setSelectedSprintId,
 

@@ -1,51 +1,38 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 // Service to handle all API operations relating to task management.
 class TaskService {
   // Create a new project task with the provided data.
-  async createTask(taskData) {
-    const response = await api.post(API_ENDPOINTS.TASKS.BASE, taskData);
-    return response.data;
+  createTask(taskData) {
+    return apiClient.post(API_ENDPOINTS.TASKS.BASE, taskData);
   }
 
   // Get tasks for a project, with an optional sprint filter.
-  async getTasksByProject(projectId, sprintId = null) {
+  getTasksByProject(projectId, sprintId = null) {
     const baseUrl = API_ENDPOINTS.TASKS.BY_PROJECT(projectId);
     const url = sprintId ? `${baseUrl}?sprintId=${sprintId}` : baseUrl;
-    const response = await api.get(url);
-    return response.data;
+    return apiClient.get(url);
   }
 
   // Fetch all tasks assigned to the current user.
-  async getMyTasks(scope = 'personal') {
-    const response = await api.get(
-      `${API_ENDPOINTS.TASKS.MY_TASKS}?scope=${scope}`
-    );
-    return response.data;
+  getMyTasks(scope = 'personal') {
+    return apiClient.get(`${API_ENDPOINTS.TASKS.MY_TASKS}?scope=${scope}`);
   }
 
   // Update the status of a specific task.
-  async updateTaskStatus(taskId, status) {
-    const response = await api.patch(API_ENDPOINTS.TASKS.DETAIL(taskId), {
-      status,
-    });
-    return response.data;
+  updateTaskStatus(taskId, status) {
+    return apiClient.patch(API_ENDPOINTS.TASKS.DETAIL(taskId), { status });
   }
 
   // Update one or more fields for a specific task.
-  async updateTask(taskId, taskData) {
-    const response = await api.patch(
-      API_ENDPOINTS.TASKS.DETAIL(taskId),
-      taskData
-    );
-    return response.data;
+  updateTask(taskId, taskData) {
+    return apiClient.patch(API_ENDPOINTS.TASKS.DETAIL(taskId), taskData);
   }
 
   // Fetch the full details of a single task by its ID.
-  async getTaskById(taskId) {
-    const response = await api.get(API_ENDPOINTS.TASKS.DETAIL(taskId));
-    return response.data;
+  getTaskById(taskId) {
+    return apiClient.get(API_ENDPOINTS.TASKS.DETAIL(taskId));
   }
 }
 

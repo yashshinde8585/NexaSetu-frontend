@@ -9,12 +9,19 @@ import TaskService from '../api/taskService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
 // Manages dashboard data retrieval, project creation, and analytics state.
-export const useDashboard = (user) => {
+export const useDashboard = (user, initialSprintId = null) => {
   const queryClient = useQueryClient();
   const [newProjectName, setNewProjectName] = useState('');
   const [showForm, setShowForm] = useState(false);
 
-  const [selectedSprintId, setSelectedSprintId] = useState(null);
+  const [selectedSprintId, setSelectedSprintId] = useState(initialSprintId);
+
+  // Sync internal state with external prop if provided
+  useMemo(() => {
+    if (initialSprintId && initialSprintId !== selectedSprintId) {
+      setSelectedSprintId(initialSprintId);
+    }
+  }, [initialSprintId]);
 
   const statsQuery = useQuery({
     queryKey: ['dashboard-stats', selectedSprintId],
@@ -112,8 +119,7 @@ export const useDashboard = (user) => {
     const isGlobalViewer = [
       USER_ROLES.WORKSPACE_ADMIN,
       USER_ROLES.WORKSPACE_MANAGER,
-      USER_ROLES.ADMIN,
-      USER_ROLES.MANAGER,
+      USER_ROLES.TECH_LEAD,
     ].includes(user?.role);
 
     if (isGlobalViewer) {

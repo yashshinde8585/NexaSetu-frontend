@@ -19,7 +19,7 @@ export const useTasks = (
     setError(null);
     try {
       const res = await TaskService.getMyTasks(scope);
-      setTasks(res.tasks || []);
+      setTasks(res.data?.tasks || []);
     } catch (err) {
       console.error('Failed to fetch tasks:', err);
       setError(err.message || 'Failed to fetch tasks');

@@ -19,6 +19,7 @@ import ProjectCard from '../components/ProjectCard';
 import ApprovalPanel from '../components/portfolio/ApprovalPanel';
 
 import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
+import CenteredLoading from '../components/atoms/CenteredLoading';
 
 // import MagicBar from '../components/MagicBar';
 
@@ -173,17 +174,10 @@ const Dashboard = () => {
   }, [stats, setDashboardContext]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <CenteredLoading />;
   }
 
-  const errorMessage =
-    error?.response?.data?.message ||
-    createMutation.error?.response?.data?.message ||
-    '';
+  const errorMessage = error?.message || createMutation.error?.message || '';
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 pb-12 space-y-12">

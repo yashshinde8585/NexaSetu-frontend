@@ -1,15 +1,13 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 class TeamService {
-  async inviteBulk(data) {
-    const response = await api.post(API_ENDPOINTS.TEAM.INVITE_BULK, data);
-    return response.data;
+  inviteBulk(data) {
+    return apiClient.post(API_ENDPOINTS.TEAM.INVITE_BULK, data);
   }
 
-  async getMembers() {
-    const response = await api.get(API_ENDPOINTS.TEAM.MEMBERS);
-    return response.data;
+  getMembers() {
+    return apiClient.get(API_ENDPOINTS.TEAM.MEMBERS);
   }
 }
 
