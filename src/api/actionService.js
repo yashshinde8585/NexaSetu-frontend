@@ -1,20 +1,17 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 class ActionService {
-  async getPendingActions() {
-    const response = await api.get(API_ENDPOINTS.ACTIONS.PENDING);
-    return response.data;
+  getPendingActions() {
+    return apiClient.get(API_ENDPOINTS.ACTIONS.PENDING);
   }
 
-  async approveAction(id) {
-    const response = await api.post(API_ENDPOINTS.ACTIONS.APPROVE(id));
-    return response.data;
+  approveAction(id) {
+    return apiClient.post(API_ENDPOINTS.ACTIONS.APPROVE(id));
   }
 
-  async rejectAction(id) {
-    const response = await api.post(API_ENDPOINTS.ACTIONS.REJECT(id));
-    return response.data;
+  rejectAction(id) {
+    return apiClient.post(API_ENDPOINTS.ACTIONS.REJECT(id));
   }
 }
 

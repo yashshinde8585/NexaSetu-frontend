@@ -103,11 +103,14 @@ const AddTeamMember = () => {
     const fetchProjectsData = async () => {
       try {
         const res = await ProjectService.getProjects();
-        const projectArray = Array.isArray(res?.projects)
-          ? res.projects
-          : Array.isArray(res)
-            ? res
-            : [];
+        // The backend returns { data: { projects: [...] } }
+        const projectArray = Array.isArray(res?.data?.projects)
+          ? res.data.projects
+          : Array.isArray(res?.projects)
+            ? res.projects
+            : Array.isArray(res)
+              ? res
+              : [];
         setProjects(projectArray);
 
         // Set default project for rows that don't have one
@@ -176,7 +179,7 @@ const AddTeamMember = () => {
     setError('');
 
     try {
-      const res = await TeamService.inviteBulk(validInvites);
+      const res = await TeamService.inviteBulk({ invites: validInvites });
       setResults(res);
       setStatus('success');
     } catch (err) {
@@ -213,85 +216,47 @@ const AddTeamMember = () => {
             New accounts have been provisioned successfully.
           </p>
 
-          <div className="space-y-4 mb-14 text-left max-h-[320px] overflow-y-auto pr-4 custom-scrollbar">
-            {provisionedUnits.map((res, i) => (
-              <div
-                key={i}
-                className="bg-white/5 border border-white/5 rounded-3xl p-6 hover:bg-white/[0.08] transition-all group/res overflow-hidden relative"
-              >
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 opacity-0 group-hover/res:opacity-100 transition-opacity"></div>
+          <div className="space-y-4 mb-14 text-left max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+            {provisionedUnits.length > 0 ? (
+              provisionedUnits.map((res, i) => (
+                <div
+                  key={i}
+                  className="bg-white/5 border border-white/5 rounded-3xl p-8 hover:bg-white/[0.08] transition-all group/res overflow-hidden relative"
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 opacity-0 group-hover/res:opacity-100 transition-opacity"></div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                  <div className="space-y-2">
-                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                      Email Address
-                    </div>
-                    <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 group-hover/res:bg-white/5 transition-all">
-                      <span className="text-xs font-bold text-white truncate mr-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-1">
+                        {res.name || 'New Member'}
+                      </div>
+                      <div className="text-xs font-bold text-primary truncate max-w-[200px]">
                         {res.email}
-                      </span>
-                      <button
-                        onClick={() => copyToClipboard(res.email, `email-${i}`)}
-                        className={`transition-colors active:scale-95 ${copiedField === `email-${i}` ? 'text-status-success' : 'text-white/20 hover:text-primary'}`}
-                        title="Copy Email"
-                      >
-                        {copiedField === `email-${i}` ? (
-                          <CheckCircle size={14} />
-                        ) : (
-                          <Copy size={14} />
-                        )}
-                      </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                      Temporary Password
-                    </div>
-                    <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 group-hover/res:bg-white/5 transition-all">
-                      <span className="text-xs font-mono font-bold text-primary truncate mr-3">
-                        {res.email}
-                      </span>
-                      <button
-                        onClick={() => copyToClipboard(res.email, `pwd-${i}`)}
-                        className={`transition-colors active:scale-95 ${copiedField === `pwd-${i}` ? 'text-status-success' : 'text-white/20 hover:text-primary'}`}
-                        title="Copy Password"
-                      >
-                        {copiedField === `pwd-${i}` ? (
-                          <CheckCircle size={14} />
-                        ) : (
-                          <Copy size={14} />
-                        )}
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const emailText = `Hi ${res.name || 'there'},\n\nYou've been invited to join the NexaSetu workspace.\n\nLogin: ${res.email}\nTemp Password: ${res.email}\nDashboard: ${window.location.origin}/login\n\nPlease change your password after logging in.`;
+                        copyToClipboard(emailText, `invite-${i}`);
+                      }}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white'}`}
+                    >
+                      {copiedField === `invite-${i}` ? (
+                        <CheckCircle size={14} />
+                      ) : (
+                        <Send size={14} />
+                      )}
+                      {copiedField === `invite-${i}` ? 'Copied!' : 'Copy Invitation'}
+                    </button>
                   </div>
                 </div>
-
-                <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></div>
-                    <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">
-                      Account Ready
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      const emailText = `Hi ${res.name || 'there'},\n\nYou've been invited to join the NexaSetu workspace.\n\nLogin: ${res.email}\nTemp Password: ${res.email}\nDashboard: ${window.location.origin}/login\n\nPlease change your password after logging in.`;
-                      copyToClipboard(emailText, `invite-${i}`);
-                    }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white'}`}
-                  >
-                    {copiedField === `invite-${i}` ? (
-                      <CheckCircle size={12} />
-                    ) : (
-                      <Send size={12} />
-                    )}
-                    {copiedField === `invite-${i}`
-                      ? 'Invitation Copied!'
-                      : 'Copy Invitation Email'}
-                  </button>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-10 text-white/20 text-xs font-bold uppercase tracking-widest border border-dashed border-white/5 rounded-3xl">
+                No new members were provisioned
               </div>
-            ))}
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">

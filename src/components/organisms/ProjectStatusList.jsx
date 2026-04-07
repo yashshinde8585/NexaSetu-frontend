@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Plus, ArrowRight, Zap, Target } from 'lucide-react';
+import { Button, Input } from '../atoms';
 
-// A list component that provides a real-time status overview of all projects in the workspace.
 const ProjectStatusList = ({
   projects,
   selectedSprintId,
@@ -14,174 +15,134 @@ const ProjectStatusList = ({
   handleLinkProject,
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-8">
-      <div className="space-y-6">
-        <div className="bg-[#1E1E2E]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-          <div className="flex justify-between items-center mb-10">
-            <div>
-              <h3 className="text-lg font-black text-white px-1">
-                Project Status Overview
-              </h3>
-              <p className="text-xs text-text-muted mt-1 px-1">
-                {selectedSprintId
-                  ? 'Status for projects in active sprint'
-                  : 'Real-time status of all workspace projects'}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <span className="text-[10px] px-2 py-1 bg-status-success/10 text-status-success border border-status-success/20 rounded font-black">
-                STABLE
-              </span>
-              <span className="text-[10px] px-2 py-1 bg-status-warning/10 text-status-warning border border-status-warning/20 rounded font-black">
-                AT RISK
-              </span>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
+          <Zap size={14} className="text-secondary" />
+          Operation Registry
+        </h3>
+        <span className="text-[9px] font-bold text-text-muted/40 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">
+          {projects.length} Active Deployments
+        </span>
+      </div>
 
-          <div className="space-y-6">
-            {(projects || []).map((project) => (
-              <div
-                key={project._id}
-                className={`group p-4 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-2xl transition-all ${
-                  selectedSprintId &&
-                  (project.sprint === selectedSprintId ||
-                    project.sprint?._id === selectedSprintId)
-                    ? 'ring-1 ring-primary/30 border-primary/20 bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)]'
-                    : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100'
-                }`}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        project.percentage >= 80
-                          ? 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.5)]'
-                          : project.percentage >= 40
-                            ? 'bg-status-warning'
-                            : 'bg-status-error animate-pulse'
-                      }`}
-                    />
-                    <div>
-                      <h4 className="font-bold text-white group-hover:text-primary transition-colors">
-                        {project.name}
-                      </h4>
-                      <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold mt-0.5">
-                        {project.status || 'Active'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center gap-3">
-                      {selectedSprintId &&
-                        (project.sprint === selectedSprintId ||
-                          project.sprint?._id === selectedSprintId) && (
-                          <button
-                            onClick={() => {
-                              setQuickTicketProject(
-                                quickTicketProject === project._id
-                                  ? null
-                                  : project._id
-                              );
-                              setQuickTicketTitle('');
-                            }}
-                            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all border ${
-                              quickTicketProject === project._id
-                                ? 'bg-status-success text-white border-status-success shadow-lg shadow-status-success/20'
-                                : 'bg-white/5 text-text-muted border-white/5 hover:border-primary/40 hover:text-primary'
-                            }`}
-                            title="Quick Directive"
-                          >
-                            <span className="text-lg font-light">
-                              {quickTicketProject === project._id ? '×' : '+'}
-                            </span>
-                          </button>
-                        )}
-                      {selectedSprintId &&
-                        (project.sprint?._id || project.sprint)?.toString() !==
-                          selectedSprintId.toString() && (
-                          <button
-                            onClick={() => handleLinkProject(project._id)}
-                            className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20 hover:bg-primary/20 transition-all"
-                          >
-                            Add to Sprint
-                          </button>
-                        )}
-                      <div className="text-right">
-                        <div className="text-lg font-black text-white">
-                          {project.percentage}%
-                        </div>
-                        <div className="text-[9px] text-text-muted font-bold capitalize">
-                          {project.completedTasks || 0} /{' '}
-                          {project.totalTasks || 0} Tickets
-                        </div>
-                      </div>
+      <div className="grid grid-cols-1 gap-4">
+        {projects.map((project) => {
+          const isAssigned = selectedSprintId && (project.sprint?._id || project.sprint)?.toString() === selectedSprintId?.toString();
+          const progress = project.percentage || 0;
+          const status = progress > 80 ? 'healthy' : progress > 40 ? 'warning' : 'critical';
+
+          return (
+            <div
+              key={project._id}
+              className="group bg-white/[0.015] border border-white/5 rounded-3xl p-6 hover:bg-white/[0.04] hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center gap-8 relative overflow-hidden"
+            >
+              <div className="flex items-center gap-5 min-w-[280px]">
+                <div className="flex flex-col min-w-0">
+                  <h4 className="text-lg font-black text-white truncate group-hover:text-primary transition-colors tracking-tight">
+                    {project.name}
+                  </h4>
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="text-[9px] font-black text-text-muted/30 uppercase tracking-[0.2em] bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                      {project.key || 'NODE'}
+                    </span>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
+                      <div className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-text-muted/20'}`} />
+                      <span className="text-[8px] font-bold uppercase text-text-muted/40 tracking-widest leading-none">
+                        {isAssigned ? 'SYNCED' : 'DETACHED'}
+                      </span>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-1000 ${
-                      project.percentage >= 80
-                        ? 'bg-status-success'
-                        : project.percentage >= 40
-                          ? 'bg-primary'
-                          : 'bg-status-error'
+              <div className="flex-1 flex flex-col gap-3 relative z-10">
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-[0.3em]">Operational Track</span>
+                  <span className={`text-[10px] font-black tracking-widest ${
+                    status === 'healthy' ? 'text-status-success' : 
+                    status === 'warning' ? 'text-status-warning' : 
+                    'text-status-error'
+                  }`}>
+                    {progress}%
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-white/[0.03] rounded-full overflow-hidden border border-white/5 shadow-inner">
+                   <div 
+                    className={`h-full transition-all duration-[1500ms] ease-out ${
+                      status === 'healthy' ? 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 
+                      status === 'warning' ? 'bg-status-warning shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 
+                      'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.2)]'
                     }`}
-                    style={{ width: `${project.percentage}%` }}
-                  />
+                    style={{ width: `${progress}%` }}
+                   />
                 </div>
+              </div>
 
-                {quickTicketProject === project._id && (
-                  <div className="mt-4 pt-4 border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
-                    <form
-                      className="flex gap-2"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!quickTicketTitle.trim()) return;
-                        createTicket(
-                          {
-                            title: quickTicketTitle.trim(),
-                            project: project._id,
-                            sprint: selectedSprintId,
-                          },
-                          {
-                            onSuccess: () => {
-                              setQuickTicketTitle('');
-                              setQuickTicketProject(null);
-                            },
-                          }
-                        );
-                      }}
-                    >
-                      <input
-                        type="text"
-                        className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-[10px] font-medium text-white focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 transition-all placeholder:opacity-30"
-                        placeholder="Task Title..."
-                        value={quickTicketTitle}
-                        onChange={(e) => setQuickTicketTitle(e.target.value)}
-                        autoFocus
-                        required
-                      />
-                      <button
-                        type="submit"
-                        disabled={createTicketLoading}
-                        className="bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-black uppercase tracking-widest px-4 rounded-xl border border-primary/20 transition-all disabled:opacity-50"
+              <div className="flex items-center gap-4 shrink-0 relative z-10">
+                {isAssigned ? (
+                  <div className="flex items-center gap-2">
+                    {quickTicketProject === project._id ? (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          createTicket(project._id, selectedSprintId);
+                        }}
+                        className="flex items-center gap-2 animate-in fade-in slide-in-from-right-8 duration-300"
                       >
-                        {createTicketLoading ? '...' : 'Create'}
+                        <div className="relative">
+                          <Input
+                            placeholder="SET MISSION..."
+                            size="sm"
+                            value={quickTicketTitle}
+                            onChange={(e) => setQuickTicketTitle(e.target.value)}
+                            autoFocus
+                            className="h-10 w-56 text-[10px] font-bold bg-white/5 rounded-xl border-white/5 focus:border-primary/40 focus:bg-white/[0.08] transition-all tracking-widest uppercase"
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black text-text-muted/20 tracking-tighter">CMD+ENT</div>
+                        </div>
+                        <Button 
+                          type="submit" 
+                          size="sm" 
+                          isLoading={createTicketLoading}
+                          className="h-10 px-6 rounded-xl text-[10px] uppercase font-black tracking-widest shadow-lg shadow-primary/10"
+                        >
+                          DISPATCH
+                        </Button>
+                        <button 
+                          type="button"
+                          onClick={() => setQuickTicketProject(null)}
+                          className="px-4 py-2 text-[10px] font-black text-text-muted/40 hover:text-white transition-colors"
+                        >
+                          CANCEL
+                        </button>
+                      </form>
+                    ) : (
+                      <button
+                        onClick={() => setQuickTicketProject(project._id)}
+                        className="flex items-center gap-3 px-8 py-2.5 bg-white/[0.03] hover:bg-primary/10 hover:border-primary/20 text-text-muted hover:text-white rounded-xl border border-white/5 transition-all shadow-sm"
+                      >
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">+ QUICK TASK</span>
                       </button>
-                    </form>
+                    )}
                   </div>
+                ) : (
+                  <Button
+                    onClick={() => handleLinkProject(project._id, selectedSprintId)}
+                    variant="secondary"
+                    size="sm"
+                    className="h-11 rounded-xl px-8 text-[10px] font-black uppercase tracking-[0.3em] hover:translate-x-1 shadow-2xl active:scale-95 transition-all bg-white/[0.05] border-white/10 hover:bg-primary hover:border-primary"
+                  >
+                    SYNC TO CYCLE
+                  </Button>
                 )}
               </div>
-            ))}
-            {(projects || []).length === 0 && (
-              <div className="p-8 text-center text-text-muted italic opacity-40 text-xs font-bold uppercase tracking-widest bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">
-                No projects available in workspace
-              </div>
-            )}
-          </div>
-        </div>
+              
+              {/* Background Decorator */}
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -195,7 +156,7 @@ ProjectStatusList.propTypes = {
   quickTicketTitle: PropTypes.string.isRequired,
   setQuickTicketTitle: PropTypes.func.isRequired,
   createTicket: PropTypes.func.isRequired,
-  createTicketLoading: PropTypes.bool,
+  createTicketLoading: PropTypes.bool.isRequired,
   handleLinkProject: PropTypes.func.isRequired,
 };
 

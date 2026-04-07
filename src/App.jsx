@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Theme from './pages/Theme';
 import ProjectInfo from './pages/ProjectInfo';
+import ProjectSetup from './pages/ProjectSetup';
 import ProjectSettings from './pages/ProjectSettings';
 import MyTasks from './pages/MyTasks';
 import Velocity from './pages/Velocity';
@@ -129,6 +130,20 @@ function App() {
                 element={
                   user ? (
                     <ProjectTeam />
+                  ) : (
+                    <Navigate to={ROUTES.LOGIN} replace />
+                  )
+                }
+              />
+              <Route
+                path="/project-setup"
+                element={
+                  user ? (
+                    hasPermission(PERMISSIONS.CREATE_PROJECT) ? (
+                      <ProjectSetup />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
                   ) : (
                     <Navigate to={ROUTES.LOGIN} replace />
                   )

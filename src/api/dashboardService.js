@@ -1,10 +1,9 @@
-import api from './axios';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 class DashboardService {
-  async getDashboardStats(params = {}) {
-    const response = await api.get(API_ENDPOINTS.DASHBOARD.STATS, { params });
-    return response.data;
+  getDashboardStats(params = {}) {
+    return apiClient.get(API_ENDPOINTS.DASHBOARD.STATS, { params });
   }
 }
 

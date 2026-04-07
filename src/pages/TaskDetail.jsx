@@ -1,395 +1,252 @@
 import React from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import TaskService from '../api/taskService';
 import TeamService from '../api/teamService';
 import { useAuth } from '../context/AuthContext';
 import {
-  X,
   Calendar,
   User,
   Tag,
   Clock,
-  CheckCircle2,
   AlertCircle,
-  History,
   Code,
-  ArrowRight,
   ArrowLeft,
   UserPlus,
-  ChevronDown,
+  Rocket,
+  ChevronDown
 } from 'lucide-react';
+import TaskComments from '../components/organisms/TaskComments';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
-// Provides an in-depth view of a specific task including its history, metadata, and status transition tools.
 const TaskDetailPage = () => {
   const { taskId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isAssigning, setIsAssigning] = React.useState(false);
+  const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
+  const statusMenuRef = React.useRef(null);
 
-  const {
-    data: taskData,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: taskData, isLoading, error } = useQuery({
     queryKey: ['task', taskId],
-    queryFn: () =>
-      TaskService.getTaskById(taskId).then((res) => res.data?.task),
+    queryFn: () => TaskService.getTaskById(taskId).then((res) => res.data?.task),
   });
 
-  const { data: membersResponse = [] } = useQuery({
-    queryKey: ['team-members'],
-    queryFn: () => TeamService.getMembers(),
-    enabled: !!taskData,
-  });
-
-  const members = membersResponse?.data?.members || [];
-
-  // Initiates task allocation or self-assignment mutations
-  const assignMutation = useMutation({
-    mutationFn: (userId) =>
-      TaskService.updateTask(taskId, { assignedUser: userId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['task', taskId]);
-      setIsAssigning(false);
-    },
-  });
+  const [confirmModal, setConfirmModal] = React.useState({ isOpen: false, targetStatus: null });
 
   const statusMutation = useMutation({
-    mutationFn: ({ taskId, status }) =>
-      TaskService.updateTaskStatus(taskId, status),
+    mutationFn: ({ taskId, status }) => TaskService.updateTaskStatus(taskId, status),
     onSuccess: () => {
       queryClient.invalidateQueries(['task', taskId]);
       queryClient.invalidateQueries(['tasks']);
+      setIsStatusMenuOpen(false);
     },
   });
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  // Handle click outside for status dropdown
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
+        setIsStatusMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  if (error || !taskData)
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold text-white mb-4">Task Not Found</h2>
-        <p className="text-text-muted mb-8">
-          This task could not be retrieved. It may have been deleted or moved.
-        </p>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-primary px-8 py-3 rounded-xl font-bold text-white"
-        >
-          Go Back
-        </button>
-      </div>
-    );
+  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-64px)]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>;
+
+  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-bold text-white mb-4 uppercase tracking-tighter">Mission Terminated</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Go Back</button></div>;
 
   const columns = [
-    { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error' },
-    {
-      id: TASK_STATUS.IN_PROGRESS,
-      title: 'In Progress',
-      color: 'text-status-warning',
-    },
-    { id: TASK_STATUS.IN_REVIEW, title: 'In Review', color: 'text-secondary' },
-    { id: TASK_STATUS.DONE, title: 'Done', color: 'text-status-success' },
+    { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error', bg: 'bg-status-error/10', border: 'border-status-error/20' },
+    { id: TASK_STATUS.IN_PROGRESS, title: 'In Progress', color: 'text-status-warning', bg: 'bg-status-warning/10', border: 'border-status-warning/20' },
+    { id: TASK_STATUS.IN_REVIEW, title: 'In Review', color: 'text-secondary', bg: 'bg-secondary/10', border: 'border-secondary/20' },
+    { id: TASK_STATUS.DONE, title: 'Done', color: 'text-status-success', bg: 'bg-status-success/10', border: 'border-status-success/20' },
   ];
 
-  const getStatusColor = (status) => {
-    const col = columns.find((c) => c.id === status);
-    return col ? col.color : 'text-text-muted';
-  };
-
-  const getStatusTitle = (status) => {
-    const col = columns.find((c) => c.id === status);
-    return col ? col.title : status;
-  };
+  const getStatusColor = (status) => columns.find((c) => c.id === status)?.color || 'text-text-muted';
+  const getStatusTitle = (status) => columns.find((c) => c.id === status)?.title || status;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-110px)] flex flex-col gap-3 py-3 overflow-hidden animate-in fade-in duration-500 font-sans">
-      {/* Header Area - More Compact */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 pb-3 border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-all shadow-sm"
-            title="Back"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded uppercase tracking-wider">
-                {taskData.projectKey}-{taskData.taskNumber || '0'}
-              </span>
-              <span className="text-text-muted/40 text-[10px] px-1">•</span>
-              <span className="text-[10px] font-semibold text-text-muted">
-                {taskData.project?.name}
-              </span>
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight truncate max-w-lg">
-              {taskData.title}
-            </h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-110px)] flex flex-col gap-4 py-4 overflow-hidden animate-in fade-in duration-500">
+      {/* Precision Strategic Header */}
+      <header className="flex items-center justify-between shrink-0 pb-4 border-b border-white/5">
+        <div className="flex items-center gap-5">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all shadow-sm"><ArrowLeft size={18} /></button>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded uppercase tracking-wider border border-primary/20 shrink-0">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
+            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-xl">{taskData.title}</h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-6 self-end md:self-center">
-          <div className="flex flex-col items-end">
-            <span className="text-[8px] font-bold text-text-muted/50 uppercase tracking-[0.2em] mb-0.5">
-              Current Status
-            </span>
-            <div
-              className={`flex items-center gap-2 font-bold text-xs uppercase tracking-widest ${getStatusColor(taskData.status)}`}
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]" />
-              {getStatusTitle(taskData.status)}
+        <div className="flex items-center gap-8">
+            <div className="text-right">
+              <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] mb-1 block">Priority</span>
+              <span className={`text-[10px] font-bold flex items-center gap-1.5 justify-end uppercase tracking-widest ${
+                taskData.priority === 'low' ? 'text-status-success' :
+                taskData.priority === 'high' ? 'text-status-warning' :
+                taskData.priority === 'urgent' ? 'text-status-error' :
+                'text-primary'
+              }`}>
+                <AlertCircle size={10}/> {taskData.priority || 'Medium'}
+              </span>
             </div>
-          </div>
-        </div>
-      </header>
+            
+            <div className="w-px h-8 bg-white/5 hidden md:block" />
 
-      {/* Main Content Dashboard */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden min-h-0">
-        {/* Information Side (Left) */}
-        <div className="lg:col-span-8 flex flex-col gap-6 overflow-hidden min-h-0">
-          <section className="flex-1 flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden min-h-0 shadow-lg">
-            <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
-              <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest flex items-center gap-2">
-                <Tag size={12} className="text-primary" /> Description
-              </h3>
-              {taskData.source === 'github' && (
-                <div className="flex items-center gap-1.5 text-[8px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-md border border-secondary/20">
-                  <Code size={10} /> GitHub Linked
+            {/* Interactive Status Selector */}
+            <div className="relative" ref={statusMenuRef}>
+              <div className="text-right">
+                <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] mb-1 block mr-4">Mission State</span>
+                <button 
+                  onClick={() => setIsStatusMenuOpen(!isStatusMenuOpen)}
+                  className={`flex items-center gap-2.5 font-bold text-[10px] uppercase tracking-widest py-1.5 px-3 rounded-lg border transition-all ${getStatusColor(taskData.status)} ${columns.find(c => c.id === taskData.status)?.bg} ${columns.find(c => c.id === taskData.status)?.border} hover:bg-white/5`}
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor] animate-pulse" />
+                  {getStatusTitle(taskData.status)}
+                  <ChevronDown size={12} className={`transition-transform duration-300 ${isStatusMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              {/* High-Fidelity Dropdown Menu */}
+              {isStatusMenuOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-[#0A0B14] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-200 backdrop-blur-3xl">
+                  {columns.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        if (c.id !== taskData.status) {
+                          setConfirmModal({ isOpen: true, targetStatus: c });
+                        }
+                        setIsStatusMenuOpen(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left flex items-center justify-between group hover:bg-white/[0.03] transition-colors ${c.id === taskData.status ? 'bg-white/[0.02] cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full bg-current ${c.color} ${c.id === taskData.status ? 'shadow-[0_0_8px_currentColor]' : 'opacity-40 group-hover:opacity-100'}`} />
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${c.id === taskData.status ? c.color : 'text-white/40 group-hover:text-white'}`}>
+                          {c.title}
+                        </span>
+                      </div>
+                      {c.id === taskData.status && <div className="w-1 h-1 rounded-full bg-primary" />}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-              <article className="text-sm md:text-base text-white/90 leading-relaxed font-medium whitespace-pre-wrap max-w-3xl">
-                {taskData.description || (
-                  <p className="text-text-muted italic opacity-40 text-sm">
-                    No description available for this mission objective.
-                  </p>
-                )}
-              </article>
-            </div>
+        </div>
+      </header>
+
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden min-h-0">
+        <div className="lg:col-span-8 flex flex-col gap-6 overflow-hidden min-h-0">
+          {/* Brief Section */}
+          <section className="flex-1 flex flex-col bg-white/[0.015] border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-3xl min-h-0">
+             <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
+                <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] flex items-center gap-2.5">
+                   <Tag size={14} className="text-primary" /> Intelligence Brief
+                </h3>
+                {taskData.source === 'github' && <span className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 flex items-center gap-1.5"><Code size={12}/> GitHub Sync</span>}
+             </div>
+             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-black/5">
+                <p className="text-[15px] text-white/70 leading-relaxed font-medium whitespace-pre-wrap">{taskData.description || "No mission instructions provided."}</p>
+             </div>
           </section>
 
-          {taskData.timelineHistory?.length > 0 && (
-            <section className="h-[28%] flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden shrink-0 min-h-0 shadow-md">
-              <div className="px-6 py-3 border-b border-white/5 shrink-0 bg-white/[0.01]">
-                <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-widest flex items-center gap-2">
-                  <History size={12} className="text-status-warning" /> Activity
-                  Log
-                </h3>
+          {/* Single-Line Tactical Logistics Matrix */}
+          <section className="bg-white/[0.02] border border-white/5 p-3.5 rounded-2xl backdrop-blur-md flex flex-nowrap items-center justify-between gap-4 shrink-0 shadow-lg px-6 overflow-hidden">
+             {/* Strategist */}
+             <div className="flex items-center gap-3 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-[10px] font-bold text-primary shadow-lg">
+                    {taskData.assignedUser?.name[0].toUpperCase() || '?'}
+                </div>
+                <div className="min-w-0">
+                    <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Strategist</span>
+                    <p className="text-[10px] font-bold text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name || 'Unassigned'}</p>
+                </div>
+             </div>
+
+             <div className="w-px h-6 bg-white/5 shrink-0" />
+
+             {/* Origin */}
+             <div className="flex items-center gap-3 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 shadow-sm">
+                    <User size={13} />
+                </div>
+                <div className="min-w-0">
+                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Originator</span>
+                   <p className="text-[10px] font-bold text-white/70 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name || 'System'}</p>
+                </div>
+             </div>
+
+             <div className="w-px h-6 bg-white/5 shrink-0" />
+
+             {/* Cycle */}
+             <div className="flex items-center gap-3 shrink-0 max-w-[20%]">
+                <div className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary shadow-sm">
+                    <Calendar size={13} />
+                </div>
+                <div className="min-w-0">
+                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Objective</span>
+                   <p className="text-[10px] font-bold text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'Backlog'}</p>
+                </div>
+             </div>
+
+             <div className="w-px h-6 bg-white/5 shrink-0" />
+
+              {/* Duration Tracking */}
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-status-success/10 border border-status-success/20 flex items-center justify-center text-status-success shadow-sm">
+                    <Clock size={13} />
+                </div>
+                <div>
+                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Duration</span>
+                   <p className="text-[10px] font-bold text-white/80 tracking-tight uppercase leading-none mb-1">
+                     Est: {taskData.estimatedDuration >= 60 
+                       ? `${Math.floor(taskData.estimatedDuration / 60)}h${taskData.estimatedDuration % 60 > 0 ? ` ${taskData.estimatedDuration % 60}m` : ''}` 
+                       : `${taskData.estimatedDuration || 0}m`}
+                   </p>
+                   {taskData.estimatedDuration - (taskData.actualDuration || 0) > 0 && (
+                     <p className="text-[9px] font-bold text-status-success/80 tracking-tight uppercase leading-none opacity-60">
+                       Rem: {(() => {
+                         const rem = taskData.estimatedDuration - (taskData.actualDuration || 0);
+                         return rem >= 60 
+                           ? `${Math.floor(rem / 60)}h${rem % 60 > 0 ? ` ${rem % 60}m` : ''}` 
+                           : `${rem}m`;
+                       })()}
+                     </p>
+                   )}
+                </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-6 py-3 space-y-3 custom-scrollbar">
-                {taskData.timelineHistory.map((log, idx) => (
-                  <div
-                    key={idx}
-                    className="flex gap-3 items-start py-1 border-l border-white/5 pl-4 ml-1 relative"
-                  >
-                    <div className="absolute left-[-2px] top-2 w-1 h-1 rounded-full bg-status-warning" />
-                    <div className="flex flex-col">
-                      <p className="text-[12px] text-white/70 leading-normal">
-                        {log.reason}
-                      </p>
-                      <span className="text-[9px] text-text-muted mt-1 opacity-50 font-bold uppercase tracking-tighter">
-                        {new Date(log.timestamp).toLocaleDateString()} at{' '}
-                        {new Date(log.timestamp).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+          </section>
         </div>
 
-        {/* Controls & Metadata Side (Right) */}
-        <aside className="lg:col-span-4 flex flex-col gap-4 overflow-hidden min-h-0">
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 flex flex-col gap-4 min-h-0">
-            {/* Summary Card */}
-            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-5 space-y-5 shadow-xl shrink-0">
-              {/* Assignee */}
-              <div className="space-y-2">
-                <span className="text-[9px] font-bold text-text-muted/50 uppercase tracking-widest block">
-                  Assignee
-                </span>
-                {taskData.assignedUser ? (
-                  <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-xs font-bold text-primary border border-primary/20 shrink-0">
-                      {taskData.assignedUser.name[0].toUpperCase()}
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-white truncate">
-                        {taskData.assignedUser.name}
-                      </span>
-                      <span className="text-[9px] text-text-muted truncate opacity-60 font-medium">
-                        {taskData.assignedUser.email}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {!isAssigning ? (
-                      <div className="flex flex-col gap-2">
-                        <div className="text-[10px] text-text-muted italic py-1 px-1">
-                          Awaiting assignment
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => assignMutation.mutate(user._id)}
-                            className="flex-1 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-[9px] font-black uppercase tracking-widest border border-primary/20 transition-all flex items-center justify-center gap-2"
-                          >
-                            <UserPlus size={12} /> Claim Task
-                          </button>
-                          <button
-                            onClick={() => setIsAssigning(true)}
-                            className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/10 transition-all flex items-center justify-center gap-2"
-                          >
-                            <ChevronDown size={12} /> Assign Member
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative group/assign">
-                        <select
-                          className="w-full bg-background-dark border border-white/10 text-white rounded-xl px-3 py-2 text-[10px] font-bold uppercase tracking-widest appearance-none outline-none focus:border-primary/40 transition-all cursor-pointer"
-                          onChange={(e) =>
-                            assignMutation.mutate(e.target.value)
-                          }
-                          defaultValue=""
-                        >
-                          <option value="" disabled>
-                            Select Operative...
-                          </option>
-                          {members.map((m) => (
-                            <option
-                              key={m._id}
-                              value={m._id}
-                              className="bg-[#121826]"
-                            >
-                              {m.name} ({m.jobTitle})
-                            </option>
-                          ))}
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted/40">
-                          <ChevronDown size={12} />
-                        </div>
-                        <button
-                          onClick={() => setIsAssigning(false)}
-                          className="mt-2 text-[8px] font-black text-text-muted/40 hover:text-red-400 uppercase tracking-widest block mx-auto py-1"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Creator */}
-              <div className="space-y-2 pt-4 border-t border-white/10">
-                <span className="text-[9px] font-bold text-text-muted/50 uppercase tracking-widest block">
-                  Creator
-                </span>
-                {taskData.createdBy ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-text-muted border border-white/10 shrink-0 shadow-inner">
-                      <User size={14} />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-white/90 truncate">
-                        {taskData.createdBy.name}
-                      </span>
-                      <span className="text-[9px] text-text-muted opacity-50 font-bold uppercase tracking-tighter">
-                        {new Date(taskData.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-[10px] text-text-muted italic py-1 opacity-40">
-                    System Core
-                  </div>
-                )}
-              </div>
-
-              {/* Metadata */}
-              <div className="space-y-3 pt-4 border-t border-white/10">
-                <div className="flex justify-between items-center px-1">
-                  <span className="text-[9px] font-bold text-text-muted/50 uppercase tracking-widest">
-                    Sprint Target
-                  </span>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-white/90">
-                    <Calendar size={12} className="text-primary/70" />
-                    {taskData.sprintInfo?.name || 'Backlog'}
-                  </div>
-                </div>
-
-                {taskData.status === TASK_STATUS.DONE && (
-                  <div className="flex justify-between items-center px-1">
-                    <span className="text-[9px] font-bold text-text-muted/50 uppercase tracking-widest">
-                      Time Consumed
-                    </span>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-status-success">
-                      <Clock size={12} />
-                      {taskData.actualDuration || 0}m Recorded
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Transition Protocol */}
-            <div className="space-y-3 shrink-0 pb-2">
-              <h3 className="text-[9px] font-bold text-text-muted/40 uppercase tracking-widest pl-1">
-                Move To
-              </h3>
-              <div className="flex flex-col gap-2">
-                {columns.map((c) => {
-                  const isRestrictedForIntern =
-                    user?.role === USER_ROLES.INTERN &&
-                    c.id === TASK_STATUS.DONE;
-                  if (c.id === taskData.status || isRestrictedForIntern)
-                    return null;
-
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() =>
-                        statusMutation.mutate({
-                          taskId: taskData._id,
-                          status: c.id,
-                        })
-                      }
-                      className={`w-full py-2 px-5 rounded-xl text-[9px] font-extrabold uppercase tracking-[0.15em] border transition-all duration-300 flex justify-between items-center active:scale-[0.98] ${
-                        c.id === TASK_STATUS.TODO
-                          ? 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10'
-                          : c.id === TASK_STATUS.IN_PROGRESS
-                            ? 'bg-status-warning/10 border-status-warning/20 text-status-warning hover:bg-status-warning/20'
-                            : c.id === TASK_STATUS.IN_REVIEW
-                              ? 'bg-secondary/10 border-secondary/20 text-secondary hover:bg-secondary/20'
-                              : 'bg-status-success/10 border-status-success/20 text-status-success hover:bg-status-success/20 shadow-lg shadow-status-success/5'
-                      }`}
-                    >
-                      {c.title}
-                      <ArrowRight size={14} className="opacity-40" />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+        {/* Discussion Side */}
+        <aside className="lg:col-span-4 flex flex-col gap-6 overflow-hidden min-h-0">
+          <section className="flex-1 flex flex-col min-h-0 bg-white/[0.015] border border-white/5 rounded-[1.75rem] shadow-xl overflow-hidden">
+             <TaskComments taskId={taskId} />
+          </section>
         </aside>
       </main>
+
+      {/* Reroute Confirmation Overlay */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
+          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 shadow-full animate-in zoom-in-95 duration-500 text-center">
+             <div className="flex flex-col items-center">
+                <div className={`w-20 h-20 rounded-[1.75rem] flex items-center justify-center border-2 mb-8 shadow-large ${confirmModal.targetStatus?.bg} ${confirmModal.targetStatus?.border} ${confirmModal.targetStatus?.color}`}>
+                    <Rocket size={36} />
+                </div>
+                <h2 className="text-2xl font-bold text-white tracking-tight mb-3 uppercase">Authorize Reroute</h2>
+                <p className="text-[11px] text-white/40 font-semibold uppercase tracking-widest leading-loose mb-10 px-6">Proceed with transitioning current objective to <span className={confirmModal.targetStatus?.color}>{confirmModal.targetStatus?.title}</span> command state?</p>
+                <div className="grid grid-cols-2 gap-4 w-full">
+                   <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-white/5 text-white/30 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all active:scale-95">Abort Mission</button>
+                   <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest text-white shadow-2xl transition-all active:scale-95 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>Confirm Transition</button>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

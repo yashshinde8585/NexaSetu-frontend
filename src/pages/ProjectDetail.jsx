@@ -11,7 +11,8 @@ import AIExtractionPanel from '../components/project/AIExtractionPanel';
 import TaskBoard from '../components/project/TaskBoard';
 import TaskForm from '../components/project/TaskForm';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, User } from 'lucide-react';
+import { Search } from 'lucide-react';
+import CenteredLoading from '../components/atoms/CenteredLoading';
 
 // A detailed project view page that provides task management boards, analytics, and AI-assisted workflows.
 const ProjectDetail = () => {
@@ -39,26 +40,93 @@ const ProjectDetail = () => {
   } = useProjectManagement(id, user);
 
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [assigneeFilter, setAssigneeFilter] = React.useState('all');
+  const [dateFilter, setDateFilter] = React.useState('all');
+
+  // Derive all unique assignees from grouped tasks
+  const allAssignees = React.useMemo(() => {
+    const map = new Map();
+    const allTasks = [
+      ...groupedTasks[TASK_STATUS.TODO],
+      ...groupedTasks[TASK_STATUS.IN_PROGRESS],
+      ...groupedTasks[TASK_STATUS.IN_REVIEW],
+      ...groupedTasks[TASK_STATUS.DONE],
+    ];
+    allTasks.forEach((t) => {
+      if (t.assignedUser?._id) {
+        map.set(t.assignedUser._id, t.assignedUser);
+      }
+    });
+    return Array.from(map.values());
+  }, [groupedTasks]);
+
+  // Date range helper
+  const getDateStart = (filter) => {
+    const now = new Date();
+    if (filter === 'week') {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 7);
+      return start;
+    }
+    if (filter === 'month') {
+      const start = new Date(now);
+      start.setMonth(now.getMonth() - 1);
+      return start;
+    }
+    return null;
+  };
+
+  const hasActiveFilters =
+    assigneeFilter !== 'all' || dateFilter !== 'all' || searchTerm.trim() !== '';
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setAssigneeFilter('all');
+    setDateFilter('all');
+  };
+
+  const DATE_OPTIONS = [
+    { value: 'all', label: 'All Time' },
+    { value: 'week', label: 'This Week' },
+    { value: 'month', label: 'This Month' },
+  ];
 
   const filteredGroupedTasks = React.useMemo(() => {
-    if (!searchTerm.trim()) return groupedTasks;
+    const term = searchTerm.toLowerCase().trim();
+    const dateStart = getDateStart(dateFilter);
 
-    const term = searchTerm.toLowerCase();
-    const filterFn = (t) =>
-      t.title?.toLowerCase().includes(term) ||
-      t.description?.toLowerCase().includes(term) ||
-      t.assignedUser?.name?.toLowerCase().includes(term) ||
-      t.taskNumber?.toString().includes(term);
+    const filterFn = (t) => {
+      // Text search
+      if (term) {
+        const matches =
+          t.title?.toLowerCase().includes(term) ||
+          t.description?.toLowerCase().includes(term) ||
+          t.assignedUser?.name?.toLowerCase().includes(term) ||
+          t.taskNumber?.toString().includes(term);
+        if (!matches) return false;
+      }
+
+      // Assignee filter
+      if (assigneeFilter !== 'all') {
+        if (t.assignedUser?._id !== assigneeFilter) return false;
+      }
+
+      // Date filter (by createdAt)
+      if (dateStart) {
+        const taskDate = new Date(t.createdAt);
+        if (taskDate < dateStart) return false;
+      }
+
+      return true;
+    };
 
     return {
       [TASK_STATUS.TODO]: groupedTasks[TASK_STATUS.TODO].filter(filterFn),
-      [TASK_STATUS.IN_PROGRESS]:
-        groupedTasks[TASK_STATUS.IN_PROGRESS].filter(filterFn),
-      [TASK_STATUS.IN_REVIEW]:
-        groupedTasks[TASK_STATUS.IN_REVIEW].filter(filterFn),
+      [TASK_STATUS.IN_PROGRESS]: groupedTasks[TASK_STATUS.IN_PROGRESS].filter(filterFn),
+      [TASK_STATUS.IN_REVIEW]: groupedTasks[TASK_STATUS.IN_REVIEW].filter(filterFn),
       [TASK_STATUS.DONE]: groupedTasks[TASK_STATUS.DONE].filter(filterFn),
     };
-  }, [groupedTasks, searchTerm]);
+  }, [groupedTasks, searchTerm, assigneeFilter, dateFilter]);
 
   const isTicketView = id === TICKETS_PROJECT_ID;
 
@@ -108,12 +176,7 @@ const ProjectDetail = () => {
         },
       ];
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (isLoading) return <CenteredLoading />;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8">
@@ -266,28 +329,70 @@ const ProjectDetail = () => {
 
       {!isTicketView && <ProjectAnalyticsBar analytics={analytics} />}
 
-      {/* Global Search & Filter Bar */}
-      <div className="relative group">
-        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-text-muted/40 group-focus-within:text-primary transition-colors">
-          <Search size={18} />
-        </div>
-        <input
-          type="text"
-          placeholder="Search by title, description, assignee, or ticket number..."
-          className="w-full h-14 pl-12 pr-4 bg-white/[0.03] border border-white/5 rounded-2xl text-sm text-white placeholder:text-text-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all shadow-inner"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        {searchTerm && (
-          <button
-            onClick={() => setSearchTerm('')}
-            className="absolute inset-y-0 right-4 flex items-center text-text-muted/40 hover:text-white transition-colors"
+      {/* Search + Filter Bar — all inline on one row */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-3 bg-white/[0.03] border border-white/5 rounded-2xl px-4 h-14 shadow-inner focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all">
+
+          {/* Search icon */}
+          <Search size={16} className="text-text-muted/40 shrink-0" />
+
+          {/* Search input */}
+          <input
+            type="text"
+            placeholder="Search by title, description, assignee, or ticket number..."
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-text-muted/30 focus:outline-none min-w-0"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-white/10 shrink-0" />
+
+          {/* Assignee dropdown */}
+          <select
+            id="filter-assignee"
+            value={assigneeFilter}
+            onChange={(e) => setAssigneeFilter(e.target.value)}
+            className="bg-transparent text-xs font-semibold text-text-muted focus:outline-none cursor-pointer hover:text-white transition-colors shrink-0"
           >
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-white/5 px-2 py-1 rounded">
-              Clear
-            </span>
-          </button>
-        )}
+            <option value="all" className="bg-[#1E1E2E]">Everyone</option>
+            <option value={user?._id} className="bg-[#1E1E2E]">My Tasks</option>
+          </select>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-white/10 shrink-0" />
+
+          {/* Time period pills */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {DATE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                id={`filter-date-${opt.value}`}
+                onClick={() => setDateFilter(opt.value)}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-150 whitespace-nowrap ${
+                  dateFilter === opt.value
+                    ? 'bg-primary text-white shadow-sm shadow-primary/30'
+                    : 'text-text-muted hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Clear button — only when something is active */}
+          {hasActiveFilters && (
+            <>
+              <div className="w-px h-6 bg-white/10 shrink-0" />
+              <button
+                onClick={clearAllFilters}
+                className="text-[10px] font-bold uppercase tracking-widest text-text-muted/40 hover:text-status-error transition-colors shrink-0"
+              >
+                ✕ Clear
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <TaskBoard
