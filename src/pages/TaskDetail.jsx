@@ -7,16 +7,19 @@ import { useAuth } from '../context/AuthContext';
 import {
   Calendar,
   User,
-  Tag,
   Clock,
   AlertCircle,
   Code,
   ArrowLeft,
   UserPlus,
   Rocket,
-  ChevronDown
+  ChevronDown,
+  BrainCircuit,
+  Tag,
+  Loader2
 } from 'lucide-react';
 import TaskComments from '../components/organisms/TaskComments';
+import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
 const TaskDetailPage = () => {
@@ -25,6 +28,7 @@ const TaskDetailPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
+  const [isEpiExpanded, setIsEpiExpanded] = React.useState(false);
   const statusMenuRef = React.useRef(null);
 
   const { data: taskData, isLoading, error } = useQuery({
@@ -43,7 +47,7 @@ const TaskDetailPage = () => {
     },
   });
 
-  // Handle click outside for status dropdown
+  // Close menu on outside click
   React.useEffect(() => {
     const handleClickOutside = (event) => {
       if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
@@ -54,7 +58,35 @@ const TaskDetailPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-64px)]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>;
+  const [displayRemaining, setDisplayRemaining] = React.useState(taskData?.remainingDuration);
+
+  React.useEffect(() => {
+    if (taskData?.status === TASK_STATUS.IN_PROGRESS && taskData?.lastStartedAt) {
+      // Timer logic
+      const calculate = () => {
+        const elapsedMinutes = (new Date() - new Date(taskData.lastStartedAt)) / (1000 * 60);
+        setDisplayRemaining(Math.max(0, taskData.remainingDuration - elapsedMinutes));
+      };
+      
+      calculate();
+
+      return () => clearInterval(interval);
+    } else {
+      setDisplayRemaining(taskData?.remainingDuration);
+    }
+  }, [taskData]);
+
+  const formatDuration = (mins) => {
+    const rounded = Math.round(mins);
+    if (rounded >= 60) {
+      const h = Math.floor(rounded / 60);
+      const m = rounded % 60;
+      return `${h}h${m > 0 ? ` ${m}m` : ''}`;
+    }
+    return `${rounded || 0}m`;
+  };
+
+  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-110px)] bg-black/20"><div className="relative"><div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full animate-pulse" /><Loader2 size={40} className="text-primary animate-spin relative" /></div></div>;
 
   if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-bold text-white mb-4 uppercase tracking-tighter">Mission Terminated</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Go Back</button></div>;
 
@@ -70,7 +102,7 @@ const TaskDetailPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-110px)] flex flex-col gap-4 py-4 overflow-hidden animate-in fade-in duration-500">
-      {/* Precision Strategic Header */}
+      {/* Header */}
       <header className="flex items-center justify-between shrink-0 pb-4 border-b border-white/5">
         <div className="flex items-center gap-5">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all shadow-sm"><ArrowLeft size={18} /></button>
@@ -95,7 +127,7 @@ const TaskDetailPage = () => {
             
             <div className="w-px h-8 bg-white/5 hidden md:block" />
 
-            {/* Interactive Status Selector */}
+            {/* Status Select */}
             <div className="relative" ref={statusMenuRef}>
               <div className="text-right">
                 <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] mb-1 block mr-4">Mission State</span>
@@ -109,7 +141,7 @@ const TaskDetailPage = () => {
                 </button>
               </div>
 
-              {/* High-Fidelity Dropdown Menu */}
+              {/* Dropdown Menu */}
               {isStatusMenuOpen && (
                 <div className="absolute top-full right-0 mt-2 w-48 bg-[#0A0B14] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-200 backdrop-blur-3xl">
                   {columns.map((c) => (
@@ -140,22 +172,39 @@ const TaskDetailPage = () => {
 
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden min-h-0">
         <div className="lg:col-span-8 flex flex-col gap-6 overflow-hidden min-h-0">
-          {/* Brief Section */}
+          {/* Task Description */}
           <section className="flex-1 flex flex-col bg-white/[0.015] border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-3xl min-h-0">
-             <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
+             <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
                 <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] flex items-center gap-2.5">
                    <Tag size={14} className="text-primary" /> Intelligence Brief
                 </h3>
-                {taskData.source === 'github' && <span className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 flex items-center gap-1.5"><Code size={12}/> GitHub Sync</span>}
+                
+                <div className="flex items-center gap-4">
+                  {taskData.source === 'github' && <span className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 flex items-center gap-1.5"><Code size={12}/> GitHub Sync</span>}
+                  
+                  <button 
+                    onClick={() => setIsEpiExpanded(!isEpiExpanded)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${isEpiExpanded ? 'bg-primary/10 border-primary/30 text-primary shadow-lg shadow-primary/5' : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    <BrainCircuit size={14} className={isEpiExpanded ? 'animate-pulse' : ''} />
+                    <span className="text-[9px] font-bold uppercase tracking-widest">Tactical Intelligence</span>
+                    {isEpiExpanded && <ChevronDown size={12} className="rotate-180 transition-all animate-in fade-in zoom-in-75 duration-300" />}
+                  </button>
+                </div>
              </div>
              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-black/5">
                 <p className="text-[15px] text-white/70 leading-relaxed font-medium whitespace-pre-wrap">{taskData.description || "No mission instructions provided."}</p>
+                <TaskEPIExplanation 
+                   taskId={taskId} 
+                   isExpanded={isEpiExpanded}
+                   isOverdue={taskData.dueDate && new Date() > new Date(taskData.dueDate) && taskData.status !== TASK_STATUS.DONE} 
+                />
              </div>
           </section>
 
-          {/* Single-Line Tactical Logistics Matrix */}
+          {/* Task Metrics */}
           <section className="bg-white/[0.02] border border-white/5 p-3.5 rounded-2xl backdrop-blur-md flex flex-nowrap items-center justify-between gap-4 shrink-0 shadow-lg px-6 overflow-hidden">
-             {/* Strategist */}
+             {/* Assignee */}
              <div className="flex items-center gap-3 shrink-0">
                 <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-[10px] font-bold text-primary shadow-lg">
                     {taskData.assignedUser?.name[0].toUpperCase() || '?'}
@@ -168,7 +217,7 @@ const TaskDetailPage = () => {
 
              <div className="w-px h-6 bg-white/5 shrink-0" />
 
-             {/* Origin */}
+             {/* Creator */}
              <div className="flex items-center gap-3 shrink-0">
                 <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 shadow-sm">
                     <User size={13} />
@@ -181,7 +230,7 @@ const TaskDetailPage = () => {
 
              <div className="w-px h-6 bg-white/5 shrink-0" />
 
-             {/* Cycle */}
+             {/* Sprint */}
              <div className="flex items-center gap-3 shrink-0 max-w-[20%]">
                 <div className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary shadow-sm">
                     <Calendar size={13} />
@@ -194,34 +243,27 @@ const TaskDetailPage = () => {
 
              <div className="w-px h-6 bg-white/5 shrink-0" />
 
-              {/* Duration Tracking */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="w-8 h-8 rounded-lg bg-status-success/10 border border-status-success/20 flex items-center justify-center text-status-success shadow-sm">
-                    <Clock size={13} />
-                </div>
-                <div>
-                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Duration</span>
-                   <p className="text-[10px] font-bold text-white/80 tracking-tight uppercase leading-none mb-1">
-                     Est: {taskData.estimatedDuration >= 60 
-                       ? `${Math.floor(taskData.estimatedDuration / 60)}h${taskData.estimatedDuration % 60 > 0 ? ` ${taskData.estimatedDuration % 60}m` : ''}` 
-                       : `${taskData.estimatedDuration || 0}m`}
-                   </p>
-                   {taskData.estimatedDuration - (taskData.actualDuration || 0) > 0 && (
-                     <p className="text-[9px] font-bold text-status-success/80 tracking-tight uppercase leading-none opacity-60">
-                       Rem: {(() => {
-                         const rem = taskData.estimatedDuration - (taskData.actualDuration || 0);
-                         return rem >= 60 
-                           ? `${Math.floor(rem / 60)}h${rem % 60 > 0 ? ` ${rem % 60}m` : ''}` 
-                           : `${rem}m`;
-                       })()}
-                     </p>
-                   )}
-                </div>
-              </div>
+               {/* Timer */}
+               <div className="flex items-center gap-3 shrink-0">
+                 <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm transition-all ${taskData.status === TASK_STATUS.IN_PROGRESS ? 'bg-primary/20 border-primary/30 text-primary animate-pulse' : 'bg-status-success/10 border-status-success/20 text-status-success'}`}>
+                     <Clock size={13} />
+                 </div>
+                 <div>
+                    <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Duration</span>
+                    <p className="text-[10px] font-bold text-white/80 tracking-tight uppercase leading-none mb-1">
+                      Est: {formatDuration(taskData.estimatedDuration)}
+                    </p>
+                    <p className={`text-[9px] font-bold tracking-tight uppercase leading-none transition-all ${
+                      taskData.status === TASK_STATUS.IN_PROGRESS ? 'text-primary' : 'text-status-success/80 opacity-60'
+                    }`}>
+                      Rem: {formatDuration(displayRemaining || taskData.remainingDuration || taskData.estimatedDuration)}
+                    </p>
+                 </div>
+               </div>
           </section>
         </div>
 
-        {/* Discussion Side */}
+        {/* Activity Feed */}
         <aside className="lg:col-span-4 flex flex-col gap-6 overflow-hidden min-h-0">
           <section className="flex-1 flex flex-col min-h-0 bg-white/[0.015] border border-white/5 rounded-[1.75rem] shadow-xl overflow-hidden">
              <TaskComments taskId={taskId} />
@@ -229,7 +271,7 @@ const TaskDetailPage = () => {
         </aside>
       </main>
 
-      {/* Reroute Confirmation Overlay */}
+      {/* Confirm Status Change */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
           <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 shadow-full animate-in zoom-in-95 duration-500 text-center">

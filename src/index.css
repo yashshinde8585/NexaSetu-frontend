@@ -20,7 +20,7 @@
   --color-status-error: #ef4444;
   --color-status-info: #38bdf8;
 
-  /* Breakpoints for Responsive Excellence */
+  /* Breakpoints */
   --breakpoint-xs: 320px;
   --breakpoint-sm: 480px;
   --breakpoint-md: 768px;
@@ -86,7 +86,7 @@
     }
   }
 
-  /* Glassmorphism */
+  /* UI Effects */
   .glass {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
@@ -101,7 +101,7 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Floating Animation */
+  /* Animations */
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -116,7 +116,7 @@
     }
   }
 
-  /* Typography Refinement */
+  /* Typography */
   .text-gradient {
     background-clip: text;
     -webkit-background-clip: text;
@@ -130,5 +130,65 @@
 
   .text-glow {
     text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+
+  /* Content Prose */
+  .prose-epi {
+    --tw-prose-body: rgba(255, 255, 255, 0.7);
+    --tw-prose-headings: #ffffff;
+    --tw-prose-bold: #ffffff;
+    --tw-prose-counters: var(--color-primary);
+    --tw-prose-bullets: var(--color-primary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .prose-epi strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .prose-epi p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose-epi p:last-child {
+    margin-bottom: 0;
+  }
+
+  .prose-epi ul, .prose-epi ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .prose-epi li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-epi h1, .prose-epi h2, .prose-epi h3, .prose-epi h4 {
+    color: #ffffff;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    transition: background 0.3s;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 }
