@@ -181,8 +181,8 @@ const AIExtractionPanel = ({
                   Task Description
                 </label>
                 <textarea
-                  className="w-full bg-[#0F0F13] border border-white/5 text-sm font-medium text-white/80 px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all h-[134px] resize-none"
-                  value={aiSuggestion.description}
+                  className="w-full bg-[#0F0F13] border border-white/5 text-sm font-medium text-white/80 px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all h-[200px] resize-none overflow-y-auto"
+                  value={aiSuggestion.description || ''}
                   onChange={(e) =>
                     setAiSuggestion({
                       ...aiSuggestion,
