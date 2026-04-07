@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
 import { TICKETS_PROJECT_ID, TASK_STATUS } from '../constants';
 
-// Sub-components
-import ProjectAnalyticsBar from '../components/project/ProjectAnalyticsBar';
+// Components
 import GithubPanel from '../components/project/GithubPanel';
 import AIExtractionPanel from '../components/project/AIExtractionPanel';
 import TaskBoard from '../components/project/TaskBoard';
@@ -14,13 +13,13 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 
-// A detailed project view page that provides task management boards, analytics, and AI-assisted workflows.
+// Project board with task management and AI analysis.
 const ProjectDetail = () => {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Leverage the new Orchestration Hook
+  // Orchestration hooks
   const {
     project,
     analytics,
@@ -43,7 +42,7 @@ const ProjectDetail = () => {
   const [assigneeFilter, setAssigneeFilter] = React.useState('all');
   const [dateFilter, setDateFilter] = React.useState('all');
 
-  // Derive all unique assignees from grouped tasks
+  // Get unique assignees
   const allAssignees = React.useMemo(() => {
     const map = new Map();
     const allTasks = [
@@ -60,7 +59,7 @@ const ProjectDetail = () => {
     return Array.from(map.values());
   }, [groupedTasks]);
 
-  // Date range helper
+  // Filter helpers
   const getDateStart = (filter) => {
     const now = new Date();
     if (filter === 'week') {
@@ -96,7 +95,7 @@ const ProjectDetail = () => {
     const dateStart = getDateStart(dateFilter);
 
     const filterFn = (t) => {
-      // Text search
+      // Search content
       if (term) {
         const matches =
           t.title?.toLowerCase().includes(term) ||
@@ -106,12 +105,12 @@ const ProjectDetail = () => {
         if (!matches) return false;
       }
 
-      // Assignee filter
+      // Filter assignees
       if (assigneeFilter !== 'all') {
         if (t.assignedUser?._id !== assigneeFilter) return false;
       }
 
-      // Date filter (by createdAt)
+      // Filter dates
       if (dateStart) {
         const taskDate = new Date(t.createdAt);
         if (taskDate < dateStart) return false;
@@ -327,16 +326,12 @@ const ProjectDetail = () => {
         />
       )}
 
-      {!isTicketView && <ProjectAnalyticsBar analytics={analytics} />}
-
-      {/* Search + Filter Bar — all inline on one row */}
+      {/* Search and Filters */}
       <div className="space-y-2">
         <div className="flex items-center gap-3 bg-white/[0.03] border border-white/5 rounded-2xl px-4 h-14 shadow-inner focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all">
 
-          {/* Search icon */}
-          <Search size={16} className="text-text-muted/40 shrink-0" />
 
-          {/* Search input */}
+          <Search size={16} className="text-text-muted/40 shrink-0" />
           <input
             type="text"
             placeholder="Search by title, description, assignee, or ticket number..."
@@ -348,7 +343,6 @@ const ProjectDetail = () => {
           {/* Divider */}
           <div className="w-px h-6 bg-white/10 shrink-0" />
 
-          {/* Assignee dropdown */}
           <select
             id="filter-assignee"
             value={assigneeFilter}
@@ -362,7 +356,6 @@ const ProjectDetail = () => {
           {/* Divider */}
           <div className="w-px h-6 bg-white/10 shrink-0" />
 
-          {/* Time period pills */}
           <div className="flex items-center gap-1.5 shrink-0">
             {DATE_OPTIONS.map((opt) => (
               <button
@@ -380,7 +373,6 @@ const ProjectDetail = () => {
             ))}
           </div>
 
-          {/* Clear button — only when something is active */}
           {hasActiveFilters && (
             <>
               <div className="w-px h-6 bg-white/10 shrink-0" />

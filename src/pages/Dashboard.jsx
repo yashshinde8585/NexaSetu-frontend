@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDashboard } from '../hooks/useDashboard';
 import { useMagic } from '../context/MagicContext';
 
-// Sub-components
+// Components
 import StatCards from '../components/dashboard/StatCards';
 import SprintList from '../components/dashboard/SprintList';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
@@ -19,11 +19,12 @@ import ProjectCard from '../components/ProjectCard';
 import ApprovalPanel from '../components/portfolio/ApprovalPanel';
 
 import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
+import ProjectHealthSummary from '../components/dashboard/ProjectHealthSummary';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 
-// import MagicBar from '../components/MagicBar';
 
-// The main dashboard page that provides a centralized view of project health, team activity, and AI insights.
+
+// Centralized view of project health, team activity, and AI insights.
 const Dashboard = () => {
   const { user } = useAuth();
   const { setProjects, setDashboardContext } = useMagic();
@@ -48,7 +49,7 @@ const Dashboard = () => {
 
   const [selectedProjectId, setSelectedProjectId] = React.useState(null);
 
-  // Role Determination
+  // User Roles
   const isLead = React.useMemo(
     () =>
       (user?.jobTitle || '').toUpperCase().includes('LEAD') ||
@@ -63,7 +64,7 @@ const Dashboard = () => {
     [user, isLead]
   );
 
-  // Synchronize with Magic Context and ensure selection integrity
+  // Sync with global context
   React.useEffect(() => {
     if (projects) {
       setProjects(projects);
@@ -126,7 +127,7 @@ const Dashboard = () => {
         },
       ];
     } else {
-      // Tech Lead, Senior Engineer, Software Engineer, Intern
+      // Personal task filters
       computedStats = [
         {
           label: 'To-Do',
@@ -166,7 +167,7 @@ const Dashboard = () => {
     return computedStats;
   }, [projects, workload, personal, user, isAdmin, isLead]);
 
-  // Synchronize dashboard summary stats with magic global context to help Nexa's understanding of the UI
+  // Sync summary stats
   React.useEffect(() => {
     if (stats && stats.length > 0) {
       setDashboardContext({ stats });
@@ -187,10 +188,12 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* MagicBar moved to Navbar */}
+
 
       <div className="space-y-12">
         <StatCards stats={stats} />
+        
+        <ProjectHealthSummary sprintId={selectedSprintId} />
 
         <div className="relative z-30">
           {isAdmin ? (
@@ -235,7 +238,7 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* AI Orchestration Approval Area */}
+        {/* AI Approvals */}
         <div className="pt-10 transition-all duration-1000">
           <ApprovalPanel
             actions={pendingActions}
