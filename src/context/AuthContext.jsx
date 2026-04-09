@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
+      localStorage.removeItem('token');
       setUser(null);
     }
   }, []);
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }) => {
 
     // Binds a listener for global logout events triggered by API interceptors.
     const handleGlobalLogout = () => {
+      localStorage.removeItem('token');
       setUser(null);
     };
 
@@ -51,6 +53,7 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     try {
       const res = await AuthService.login(email, password);
+      if (res.token) localStorage.setItem('token', res.token);
       setUser(res.data.user);
       return res;
     } catch (err) {
@@ -77,6 +80,7 @@ export const AuthProvider = ({ children }) => {
         if (plan) payload.plan = plan;
 
         const res = await AuthService.register(payload);
+        if (res.token) localStorage.setItem('token', res.token);
         setUser(res.data.user);
         return res;
       } catch (err) {
@@ -89,6 +93,7 @@ export const AuthProvider = ({ children }) => {
   const activateInvite = useCallback(async (token, name, password) => {
     try {
       const res = await AuthService.activateInvite(token, name, password);
+      if (res.token) localStorage.setItem('token', res.token);
       setUser(res.data.user);
       return res;
     } catch (err) {

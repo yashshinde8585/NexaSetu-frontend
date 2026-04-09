@@ -34,6 +34,15 @@ class TaskService {
   getTaskById(taskId) {
     return apiClient.get(API_ENDPOINTS.TASKS.DETAIL(taskId));
   }
+
+  // Toggle mission blockage status.
+  toggleTaskBlockage(taskId, blocked, reason = '') {
+    return apiClient.patch(`${API_ENDPOINTS.TASKS.DETAIL(taskId)}/block`, { 
+      taskId, 
+      blocked, 
+      reason 
+    });
+  }
 }
 
 export default new TaskService();

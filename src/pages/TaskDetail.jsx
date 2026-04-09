@@ -10,13 +10,15 @@ import {
   Clock,
   AlertCircle,
   Code,
+  ShieldAlert,
   ArrowLeft,
   UserPlus,
   Rocket,
   ChevronDown,
   BrainCircuit,
   Tag,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import TaskComments from '../components/organisms/TaskComments';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
@@ -29,6 +31,8 @@ const TaskDetailPage = () => {
   const queryClient = useQueryClient();
   const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
   const [isEpiExpanded, setIsEpiExpanded] = React.useState(false);
+  const [isBlockModalOpen, setIsBlockModalOpen] = React.useState(false);
+  const [blockReason, setBlockReason] = React.useState('');
   const statusMenuRef = React.useRef(null);
 
   const { data: taskData, isLoading, error } = useQuery({
@@ -47,6 +51,15 @@ const TaskDetailPage = () => {
     },
   });
 
+  const blockMutation = useMutation({
+    mutationFn: ({ blocked, reason }) => TaskService.toggleTaskBlockage(taskId, blocked, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['task', taskId]);
+      setIsBlockModalOpen(false);
+      setBlockReason('');
+    },
+  });
+
   // Close menu on outside click
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -61,6 +74,7 @@ const TaskDetailPage = () => {
   const [displayRemaining, setDisplayRemaining] = React.useState(taskData?.remainingDuration);
 
   React.useEffect(() => {
+    let intervalId;
     if (taskData?.status === TASK_STATUS.IN_PROGRESS && taskData?.lastStartedAt) {
       // Timer logic
       const calculate = () => {
@@ -69,8 +83,9 @@ const TaskDetailPage = () => {
       };
       
       calculate();
-
-      return () => clearInterval(interval);
+      intervalId = setInterval(calculate, 60000); // UI updates every minute
+      
+      return () => clearInterval(intervalId);
     } else {
       setDisplayRemaining(taskData?.remainingDuration);
     }
@@ -107,8 +122,17 @@ const TaskDetailPage = () => {
         <div className="flex items-center gap-5">
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all shadow-sm"><ArrowLeft size={18} /></button>
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded uppercase tracking-wider border border-primary/20 shrink-0">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
-            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-xl">{taskData.title}</h1>
+             <div className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded uppercase tracking-wider border border-primary/20 shrink-0">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
+                {taskData.blocked && (
+                  <span className="flex items-center gap-1.5 text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse">
+                    <ShieldAlert size={10} /> Mission Blocked
+                  </span>
+                )}
+              </div>
+              <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-xl mt-1">{taskData.title}</h1>
+             </div>
           </div>
         </div>
 
@@ -125,6 +149,26 @@ const TaskDetailPage = () => {
               </span>
             </div>
             
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => {
+                  if (taskData.blocked) {
+                    blockMutation.mutate({ blocked: false });
+                  } else {
+                    setIsBlockModalOpen(true);
+                  }
+                }}
+                className={`px-4 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  taskData.blocked 
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/20' 
+                  : 'bg-rose-500/10 border-rose-500/30 text-rose-500 hover:bg-rose-500/20'
+                }`}
+                disabled={blockMutation.isLoading}
+              >
+                {blockMutation.isLoading ? 'Processing...' : taskData.blocked ? 'Unblock Mission' : 'Block Mission'}
+              </button>
+            </div>
+
             <div className="w-px h-8 bg-white/5 hidden md:block" />
 
             {/* Status Select */}
@@ -284,6 +328,38 @@ const TaskDetailPage = () => {
                 <div className="grid grid-cols-2 gap-4 w-full">
                    <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-white/5 text-white/30 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all active:scale-95">Abort Mission</button>
                    <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest text-white shadow-2xl transition-all active:scale-95 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>Confirm Transition</button>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+      {/* Block Mission Modal */}
+      {isBlockModalOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
+          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 shadow-full animate-in zoom-in-95 duration-500 text-center">
+             <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-[1.75rem] bg-rose-500/10 border-2 border-rose-500/20 flex items-center justify-center text-rose-500 mb-8 shadow-large">
+                    <ShieldAlert size={36} />
+                </div>
+                <h2 className="text-2xl font-bold text-white tracking-tight mb-3 uppercase">Halt Objective</h2>
+                <p className="text-[11px] text-white/40 font-semibold uppercase tracking-widest leading-loose mb-6 px-6">Enter technical justification for blocking this mission:</p>
+                
+                <textarea
+                  value={blockReason}
+                  onChange={(e) => setBlockReason(e.target.value)}
+                  placeholder="Reason for blockage..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-xs mb-8 focus:outline-none focus:border-rose-500/50 min-h-[100px] resize-none"
+                />
+
+                <div className="grid grid-cols-2 gap-4 w-full">
+                   <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-white/5 text-white/30 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all active:scale-95">Abort Change</button>
+                   <button 
+                    onClick={() => blockMutation.mutate({ blocked: true, reason: blockReason })} 
+                    className="py-4 bg-rose-500 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95"
+                    disabled={!blockReason.trim() || blockMutation.isLoading}
+                   >
+                     {blockMutation.isLoading ? 'Processing...' : 'Confirm Block'}
+                   </button>
                 </div>
              </div>
           </div>
