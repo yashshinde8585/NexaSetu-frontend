@@ -1,0 +1,93 @@
+import React, { lazy } from 'react';
+
+// Lazy load role dashboards for better bundle splitting
+const CTODashboard = lazy(() => import('../CTODashboard'));
+const VPEDashboard = lazy(() => import('../VPEDashboard'));
+const EMDashboard = lazy(() => import('../EMDashboard'));
+const TLDashboard = lazy(() => import('../TLDashboard'));
+const QADashboard = lazy(() => import('../QADashboard'));
+const SQADashboard = lazy(() => import('../SQADashboard'));
+const QALeadDashboard = lazy(() => import('../QALeadDashboard'));
+const PeopleOpsDashboard = lazy(() => import('../PeopleOpsDashboard'));
+const SEDashboard = lazy(() => import('../SEDashboard'));
+const SWEDashboard = lazy(() => import('../SWEDashboard'));
+const JREDashboard = lazy(() => import('../JREDashboard'));
+const InternDashboard = lazy(() => import('../InternDashboard'));
+
+/**
+ * Registry mapping user attributes (role/title) to dashboard components.
+ */
+export const DASHBOARD_REGISTRY = [
+  {
+    id: 'cto',
+    match: (role, title) => role === 'WORKSPACE_ADMIN' || title.includes('cto'),
+    component: CTODashboard
+  },
+  {
+    id: 'vpe',
+    match: (role, title) => title.includes('vp engineering'),
+    component: VPEDashboard
+  },
+  {
+    id: 'em',
+    match: (role, title) => role === 'ENGINEERING_MANAGER' || title.includes('engineering manager'),
+    component: EMDashboard
+  },
+  {
+    id: 'tl',
+    match: (role, title) => role === 'TECH_LEAD' || title.includes('tech lead'),
+    component: TLDashboard
+  },
+  {
+    id: 'qa_lead',
+    match: (role, title) => title.includes('qa lead'),
+    component: QALeadDashboard
+  },
+  {
+    id: 'people_ops',
+    match: (role, title) => role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager'),
+    component: PeopleOpsDashboard
+  },
+  {
+    id: 'sqa',
+    match: (role, title) => title.includes('senior qa engineer'),
+    component: SQADashboard
+  },
+  {
+    id: 'qa',
+    match: (role, title) => role === 'QA_ENGINEER' || title.includes('qa engineer'),
+    component: QADashboard
+  },
+  {
+    id: 'senior_eng',
+    match: (role, title) => role === 'SENIOR_ENGINEER' || title.includes('senior engineer'),
+    component: SEDashboard
+  },
+  {
+    id: 'swe',
+    match: (role, title) => role === 'SOFTWARE_ENGINEER' || title.includes('software engineer'),
+    component: SWEDashboard
+  },
+  {
+    id: 'junior_eng',
+    match: (role, title) => role === 'JUNIOR_ENGINEER' || title.includes('junior engineer'),
+    component: JREDashboard
+  },
+  {
+    id: 'intern',
+    match: (role, title) => role === 'INTERN' || title.includes('intern'),
+    component: InternDashboard
+  }
+];
+
+/**
+ * Resolves the appropriate dashboard component based on user context.
+ */
+export const resolveDashboard = (user) => {
+  if (!user) return null;
+  const role = user.role || '';
+  const title = (user.jobTitle || '').toLowerCase();
+
+  const entry = DASHBOARD_REGISTRY.find(d => d.match(role, title));
+  return entry ? entry.component : null;
+};

@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
   TEAM: {
     INVITE_BULK: '/team/invite-bulk',
     MEMBERS: '/team/members',
+    ROLES: '/team/roles'
   },
   AI: {
     EXTRACT: '/ai/extract',
@@ -60,4 +61,19 @@ export const API_ENDPOINTS = {
   MAGIC: {
     EXECUTE: '/magic/execute',
   },
+  DASHBOARDS: {
+    TACTICAL: (role) => `/v1/engineering/workspace`, // Internal IC roles (SWE, SE, JRE, Intern)
+    MANAGEMENT: `/v1/leadership/dashboard`,         // Management roles (EM, VPE, CTO)
+    OPERATIONS: `/v1/operations/dashboard`,         // Operations roles (QA, PeopleOps)
+  },
+  CTO: {
+    DASHBOARD: '/v1/leadership/dashboard',
+    FUNCTION_DRILLDOWN: (category) => `/cto/function/${category}/roles`,
+    INDIVIDUAL_DRILLDOWN: (role) => `/cto/roles/${role}/individuals`,
+  },
+  VPE: {
+    DASHBOARD: '/v1/leadership/dashboard',
+    TEAM_DRILLDOWN: (teamName) => `/vpe/team/${teamName}`,
+  },
 };
+

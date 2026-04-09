@@ -22,6 +22,11 @@ class AuthService {
   logout() {
     return apiClient.get(API_ENDPOINTS.AUTH.LOGOUT);
   }
+  
+  // Explicitly rotate session tokens.
+  refreshSession() {
+    return apiClient.get(API_ENDPOINTS.AUTH.REFRESH);
+  }
 
   // Activate a user account using an invitation token.
   activateInvite(token, name, password) {
