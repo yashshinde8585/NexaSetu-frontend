@@ -9,6 +9,10 @@ class TeamService {
   getMembers() {
     return apiClient.get(API_ENDPOINTS.TEAM.MEMBERS);
   }
+
+  getRoles() {
+    return apiClient.get(API_ENDPOINTS.TEAM.ROLES);
+  }
 }
 
 export default new TeamService();

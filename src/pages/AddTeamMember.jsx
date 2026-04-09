@@ -24,52 +24,8 @@ import { useNavigate } from 'react-router-dom';
 import ProjectService from '../api/projectService';
 import TeamService from '../api/teamService';
 import { useAuth } from '../context/AuthContext';
-import { USER_ROLES } from '../constants';
+import { USER_ROLES, JOB_TITLES } from '../constants';
 
-const ROLE_OPTIONS = [
-  {
-    value: USER_ROLES.WORKSPACE_ADMIN,
-    jobTitle: 'CTO',
-    label: 'CTO',
-    description: 'Executive technical oversight',
-  },
-  {
-    value: USER_ROLES.WORKSPACE_ADMIN,
-    jobTitle: 'VP Engineering',
-    label: 'VP Engineering',
-    description: 'Strategic engineering leadership',
-  },
-  {
-    value: USER_ROLES.WORKSPACE_MANAGER,
-    jobTitle: 'Engineering Manager',
-    label: 'Engineering Manager',
-    description: 'Team execution & planning',
-  },
-  {
-    value: USER_ROLES.WORKSPACE_MANAGER,
-    jobTitle: 'Tech Lead',
-    label: 'Tech Lead',
-    description: 'Technical architecture & guidance',
-  },
-  {
-    value: USER_ROLES.PROJECT_MEMBER,
-    jobTitle: 'Senior Engineer',
-    label: 'Senior Engineer',
-    description: 'Core feature ownership',
-  },
-  {
-    value: USER_ROLES.PROJECT_MEMBER,
-    jobTitle: 'Software Engineer',
-    label: 'Software Engineer',
-    description: 'Feature development',
-  },
-  {
-    value: USER_ROLES.RESTRICTED,
-    jobTitle: 'Intern',
-    label: 'Intern',
-    description: 'Restricted learning access',
-  },
-];
 
 // Handles the bulk invitation of new team members, providing role assignment and project scoping capabilities.
 const AddTeamMember = () => {
@@ -89,31 +45,48 @@ const AddTeamMember = () => {
   const [error, setError] = useState('');
   const [results, setResults] = useState(null);
   const [copiedField, setCopiedField] = useState(null);
+  const [customRoles, setCustomRoles] = useState([]);
 
   const isTechLead =
     user?.role === USER_ROLES.TECH_LEAD ||
     user?.jobTitle?.toUpperCase().includes('TECH LEAD');
-  const filteredRoles = isTechLead
-    ? ROLE_OPTIONS.filter((r) =>
-        ['Senior Engineer', 'Software Engineer', 'Intern'].includes(r.jobTitle)
-      )
-    : ROLE_OPTIONS;
+
+  const dynJobTitles = [
+    ...JOB_TITLES,
+    ...(customRoles.some(r => r.isCustom) ? [{
+      category: 'Organizational Roles',
+      roles: customRoles.filter(r => r.isCustom).map(r => ({ title: r.role.replace(/_/g, ' '), role: r.role }))
+    }] : [])
+  ];
+
+  const filteredJobTitles = isTechLead
+    ? dynJobTitles.map((group) => ({
+        ...group,
+        roles: group.roles.filter((r) =>
+          ['Senior Engineer', 'Software Engineer', 'Junior Engineer', 'Intern', 'QA Engineer / Software Tester'].includes(r.title)
+        ),
+      })).filter((group) => group.roles.length > 0)
+    : dynJobTitles;
+
+  const allRoleOptions = dynJobTitles.flatMap(g => g.roles);
 
   useEffect(() => {
-    const fetchProjectsData = async () => {
+    const fetchTeamData = async () => {
       try {
-        const res = await ProjectService.getProjects();
-        // The backend returns { data: { projects: [...] } }
-        const projectArray = Array.isArray(res?.data?.projects)
-          ? res.data.projects
-          : Array.isArray(res?.projects)
-            ? res.projects
-            : Array.isArray(res)
-              ? res
-              : [];
+        const [projRes, roleRes] = await Promise.all([
+          ProjectService.getProjects(),
+          TeamService.getRoles()
+        ]);
+
+        const projectArray = Array.isArray(projRes?.data?.projects)
+          ? projRes.data.projects
+          : projRes?.projects || projRes || [];
         setProjects(projectArray);
 
-        // Set default project for rows that don't have one
+        if (roleRes?.data?.roles) {
+          setCustomRoles(roleRes.data.roles);
+        }
+
         if (projectArray.length > 0) {
           setInvites((prev) =>
             prev.map((inv) =>
@@ -122,10 +95,10 @@ const AddTeamMember = () => {
           );
         }
       } catch (err) {
-        console.error('Failed to load project list', err);
+        console.error('Failed to load team data', err);
       }
     };
-    fetchProjectsData();
+    fetchTeamData();
   }, []);
 
   const addRow = () => {
@@ -155,12 +128,14 @@ const AddTeamMember = () => {
   };
 
   const handleJobTitleChange = (idx, jobTitle) => {
-    const option = ROLE_OPTIONS.find((o) => o.jobTitle === jobTitle);
+    const option = allRoleOptions.find((o) => o.title === jobTitle);
+    if (!option) return;
     const newInvites = [...invites];
     newInvites[idx].jobTitle = jobTitle;
-    newInvites[idx].role = option.value;
+    newInvites[idx].role = option.role;
     setInvites(newInvites);
   };
+
 
   const handleSendAll = async (e) => {
     e.preventDefault();
@@ -353,23 +328,32 @@ const AddTeamMember = () => {
                       Role
                     </label>
                     <div className="relative group/input">
-                      <select
-                        className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
-                        value={invite.jobTitle}
-                        onChange={(e) =>
-                          handleJobTitleChange(idx, e.target.value)
-                        }
-                      >
-                        {filteredRoles.map((r) => (
-                          <option
-                            key={r.jobTitle}
-                            value={r.jobTitle}
-                            className="bg-[#121826] text-white py-4"
-                          >
-                            {r.label}
-                          </option>
-                        ))}
-                      </select>
+                        <select
+                          className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
+                          value={invite.jobTitle}
+                          onChange={(e) =>
+                            handleJobTitleChange(idx, e.target.value)
+                          }
+                        >
+                          {filteredJobTitles.map((group) => (
+                            <optgroup
+                              key={group.category}
+                              label={group.category}
+                              className="bg-[#121826] text-primary/50 text-[10px] uppercase font-black tracking-widest py-2"
+                            >
+                              {group.roles.map((r) => (
+                                <option
+                                  key={r.title}
+                                  value={r.title}
+                                  className="bg-[#121826] text-white py-4 font-bold uppercase text-[10px]"
+                                >
+                                  {r.title}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+
                       <Shield
                         size={14}
                         className="absolute right-5 top-1/2 -translate-y-1/2 text-white/5 group-focus-within/input:text-primary transition-colors pointer-events-none"

@@ -17,51 +17,12 @@ import {
 } from 'lucide-react';
 import ProjectService from '../api/projectService';
 import TeamService from '../api/teamService';
+import { USER_ROLES, JOB_TITLES } from '../constants';
 
-const ROLE_OPTIONS = [
-  {
-    value: 'WORKSPACE_ADMIN',
-    jobTitle: 'CTO',
-    label: 'CTO',
-    description: 'Executive technical oversight',
-  },
-  {
-    value: 'WORKSPACE_ADMIN',
-    jobTitle: 'VP Engineering',
-    label: 'VP Engineering',
-    description: 'Strategic engineering leadership',
-  },
-  {
-    value: 'WORKSPACE_MANAGER',
-    jobTitle: 'Engineering Manager',
-    label: 'Engineering Manager',
-    description: 'Team execution & planning',
-  },
-  {
-    value: 'WORKSPACE_MANAGER',
-    jobTitle: 'Tech Lead',
-    label: 'Tech Lead',
-    description: 'Technical architecture & guidance',
-  },
-  {
-    value: 'PROJECT_MEMBER',
-    jobTitle: 'Senior Engineer',
-    label: 'Senior Engineer',
-    description: 'Core feature ownership',
-  },
-  {
-    value: 'PROJECT_MEMBER',
-    jobTitle: 'Software Engineer',
-    label: 'Software Engineer',
-    description: 'Feature development',
-  },
-  {
-    value: 'RESTRICTED',
-    jobTitle: 'Intern',
-    label: 'Intern',
-    description: 'Restricted learning access',
-  },
-];
+const ALL_ROLE_OPTIONS = JOB_TITLES.flatMap((group) => group.roles);
+
+
+
 
 // A modal dialog that allows administrators to invite new team members in bulk.
 const InviteModal = ({ isOpen, onClose }) => {
@@ -69,7 +30,8 @@ const InviteModal = ({ isOpen, onClose }) => {
     {
       name: '',
       email: '',
-      role: 'PROJECT_MEMBER',
+      role: USER_ROLES.PROJECT_MEMBER,
+
       jobTitle: 'Software Engineer',
       projectId: '',
     },
@@ -99,7 +61,8 @@ const InviteModal = ({ isOpen, onClose }) => {
         {
           name: '',
           email: '',
-          role: 'PROJECT_MEMBER',
+          role: USER_ROLES.PROJECT_MEMBER,
+
           jobTitle: 'Software Engineer',
           projectId: '',
         },
@@ -116,7 +79,8 @@ const InviteModal = ({ isOpen, onClose }) => {
       {
         name: '',
         email: '',
-        role: 'PROJECT_MEMBER',
+        role: USER_ROLES.PROJECT_MEMBER,
+
         jobTitle: 'Software Engineer',
         projectId: '',
       },
@@ -139,17 +103,19 @@ const InviteModal = ({ isOpen, onClose }) => {
 
   // Finds and assigns the correct role based on user selection.
   const handleRoleChange = (index, roleValue) => {
-    const option = ROLE_OPTIONS.find((o) => o.value === roleValue);
+    const option = ALL_ROLE_OPTIONS.find((o) => o.role === roleValue);
   };
+
 
   // Updates the job title and corresponding role for an invitation entry.
   const handleJobTitleChange = (idx, jobTitle) => {
-    const option = ROLE_OPTIONS.find((o) => o.jobTitle === jobTitle);
+    const option = ALL_ROLE_OPTIONS.find((o) => o.title === jobTitle);
     const newInvites = [...invites];
     newInvites[idx].jobTitle = jobTitle;
-    newInvites[idx].role = option.value;
+    newInvites[idx].role = option.role;
     setInvites(newInvites);
   };
+
 
   // Dispatches all valid invitations to the server for processing.
   const handleSendAll = async (e) => {
@@ -353,16 +319,25 @@ const InviteModal = ({ isOpen, onClose }) => {
                               handleJobTitleChange(idx, e.target.value)
                             }
                           >
-                            {ROLE_OPTIONS.map((r) => (
-                              <option
-                                key={r.jobTitle}
-                                value={r.jobTitle}
-                                className="bg-[#1E1E2E] text-white"
+                            {JOB_TITLES.map((group) => (
+                              <optgroup
+                                key={group.category}
+                                label={group.category}
+                                className="bg-[#1E1E2E] text-primary/50 text-[10px] uppercase font-black tracking-widest py-2"
                               >
-                                {r.label}
-                              </option>
+                                {group.roles.map((r) => (
+                                  <option
+                                    key={r.title}
+                                    value={r.title}
+                                    className="bg-[#1E1E2E] text-white"
+                                  >
+                                    {r.title}
+                                  </option>
+                                ))}
+                              </optgroup>
                             ))}
                           </select>
+
                           <Shield
                             className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10"
                             size={12}
