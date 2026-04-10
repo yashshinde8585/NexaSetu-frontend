@@ -1,30 +1,54 @@
 import React, { useState } from 'react';
-import { Target, Users, Shield, ArrowRight, Layout, Zap } from 'lucide-react';
+import { Target, Users, Shield, ArrowRight, Layout, Zap, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
+import Skeleton from '../components/atoms/Skeleton';
+
+const SetupSkeleton = () => (
+  <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 pt-10 pb-8 space-y-10">
+    <div className="space-y-4">
+      <Skeleton className="h-10 w-96 rounded-none" />
+      <Skeleton className="h-4 w-full max-w-xl rounded-none" />
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="lg:col-span-7 xl:col-span-8">
+        <Skeleton className="h-[500px] w-full rounded-none" />
+      </div>
+      <div className="lg:col-span-5 xl:col-span-4 space-y-6">
+        <Skeleton className="h-64 w-full rounded-none" />
+        <Skeleton className="h-24 w-full rounded-none" />
+      </div>
+    </div>
+  </div>
+);
 
 // A dedicated workspace area for creating new projects, with standard dashboard UI and approved clear text.
 const ProjectSetup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { handleCreateProject, newProjectName, setNewProjectName } = useDashboard(user);
+  const { handleCreateProject, newProjectName, setNewProjectName, isLoading } = useDashboard(user);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const onInitialize = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
     setIsSubmitting(true);
     try {
       await handleCreateProject(e);
       navigate('/project-info');
     } catch (error) {
       console.error('Failed to create project:', error);
+      setSubmitError(error?.message || 'The Secure Gateway rejected the project initialization protocol. Please check your connection and unique project name.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) return <SetupSkeleton />;
 
   return (
     <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 pt-10 pb-8 space-y-10 font-sans relative">
@@ -37,7 +61,7 @@ const ProjectSetup = () => {
               CREATE A NEW <span className="text-secondary">PROJECT</span>
             </h2>
           </div>
-          <p className="text-text-muted text-sm font-medium opacity-60 max-w-xl">
+          <p className="text-text-muted text-sm font-medium opacity-80 max-w-xl">
             Set up a new project to start managing tasks, team collaboration, and development cycles in your workspace.
           </p>
         </div>
@@ -49,28 +73,36 @@ const ProjectSetup = () => {
         {/* Left: Project Form */}
         <div className="lg:col-span-7 xl:col-span-8">
           <div className="bg-background-light/30 border border-white/5 p-8 md:p-12 glass shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+            {submitError && (
+              <div className="mb-8 p-6 bg-status-error/10 border border-status-error/20 flex gap-4 animate-in slide-in-from-top-4 duration-500">
+                <AlertCircle className="text-status-error shrink-0" size={20} />
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Initialization Protocol Failed</h4>
+                  <p className="text-[10px] text-status-error/80 font-bold leading-relaxed">{submitError}</p>
+                </div>
+              </div>
+            )}
             
             <form onSubmit={onInitialize} className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black text-text-muted/60 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <label className="text-[10px] font-black text-text-muted/80 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Target size={12} className="text-primary" /> PROJECT NAME
                   </label>
                   <Input 
                     placeholder="e.g. Mobile App Dev" 
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
-                    className="bg-white/[0.03] border-white/10 rounded-none h-12 text-sm font-bold tracking-widest placeholder:text-text-muted/20 focus:border-primary/50"
+                    className="bg-white/[0.06] border-white/15 rounded-none h-12 text-sm font-bold tracking-widest placeholder:text-text-muted/40 focus:border-primary/50"
                     required
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black text-text-muted/60 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <label className="text-[10px] font-black text-text-muted/80 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Users size={12} className="text-secondary" /> WORKSPACE
                   </label>
-                  <div className="h-12 flex items-center px-4 bg-white/[0.02] border border-white/5 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                  <div className="h-12 flex items-center px-4 bg-white/[0.04] border border-white/10 text-[10px] font-bold text-white/60 uppercase tracking-widest">
                     GLOBAL_WORKSPACE_BRANCH
                   </div>
                 </div>
@@ -89,7 +121,8 @@ const ProjectSetup = () => {
                 <button 
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  className="text-[10px] font-black text-text-muted hover:text-white uppercase tracking-[0.2em] transition-colors"
+                  disabled={isSubmitting}
+                  className={`text-[10px] font-black text-text-muted uppercase tracking-[0.2em] transition-colors ${isSubmitting ? 'opacity-20 cursor-not-allowed' : 'hover:text-white'}`}
                 >
                   Cancel Setup
                 </button>
@@ -114,17 +147,13 @@ const ProjectSetup = () => {
                 <div className="shrink-0 p-2 bg-white/5 h-fit">{feature.icon}</div>
                 <div className="space-y-1">
                   <h4 className="text-[10px] font-black text-white uppercase tracking-widest">{feature.title}</h4>
-                  <p className="text-[10px] text-text-muted font-bold leading-relaxed opacity-60">{feature.desc}</p>
+                  <p className="text-[10px] text-text-muted font-bold leading-relaxed opacity-80">{feature.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="p-8 border border-primary/20 bg-primary/5">
-            <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] leading-relaxed">
-              Once created, your project will appear in the Intelligence Hub for full orchestration and reporting.
-            </p>
-          </div>
+
         </div>
       </div>
     </div>

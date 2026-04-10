@@ -108,10 +108,10 @@ export const useDashboard = (user, initialSprintId = null) => {
     },
   });
 
-  const handleCreateProject = (e) => {
+  const handleCreateProject = async (e) => {
     e.preventDefault();
     const name = newProjectName.trim();
-    if (name) createMutation.mutate({ name, sprintId: selectedSprintId });
+    if (name) return createMutation.mutateAsync({ name, sprintId: selectedSprintId });
   };
 
   const visibleProjects = useMemo(() => {

@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { useAdminDashboard } from '../hooks/useAdminDashboard';
 import { useAuth } from '../context/AuthContext';
-import CenteredLoading from '../components/atoms/CenteredLoading';
+import Skeleton from '../components/atoms/Skeleton';
 import Badge from '../components/atoms/Badge';
 import InviteUserModal from '../components/organisms/admin/InviteUserModal';
 import WorkspaceSettingsModal from '../components/organisms/admin/WorkspaceSettingsModal';
@@ -41,6 +41,34 @@ import ConnectGithubModal from '../components/organisms/admin/ConnectGithubModal
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import GithubService from '../api/githubService';
+
+const DashboardSkeleton = () => (
+  <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-8 py-6 md:py-10 space-y-10 bg-black min-h-screen">
+    <div className="flex justify-between items-center px-1">
+      <div className="space-y-3">
+        <Skeleton className="h-10 w-64 md:w-80" />
+        <Skeleton className="h-4 w-48 md:w-64" />
+      </div>
+      <div className="flex gap-3">
+        <Skeleton className="h-10 w-24 md:w-32" />
+        <Skeleton className="h-10 w-24 md:w-32" />
+      </div>
+    </div>
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-28 w-full rounded-2xl" />)}
+    </div>
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+      <div className="xl:col-span-8 space-y-6">
+        <Skeleton className="h-[600px] w-full rounded-[2rem]" />
+      </div>
+      <div className="xl:col-span-4 space-y-6">
+        <Skeleton className="h-72 w-full rounded-[2rem]" />
+        <Skeleton className="h-72 w-full rounded-[2rem]" />
+        <Skeleton className="h-72 w-full rounded-[2rem]" />
+      </div>
+    </div>
+  </div>
+);
 
 const AdminDashboard = () => {
   const queryClient = useQueryClient();
@@ -115,7 +143,7 @@ const AdminDashboard = () => {
     };
   }, [data?.users, searchQuery, currentPage]);
 
-  if (isLoading) return <CenteredLoading />;
+  if (isLoading) return <DashboardSkeleton />;
 
   // Error Presentation Layer
   if (error) {
@@ -160,7 +188,7 @@ const AdminDashboard = () => {
             </div>
             Administration
           </h1>
-          <p className="text-xs md:text-sm text-white/40 font-medium">Manage workspace infrastructure and human capital.</p>
+          <p className="text-xs md:text-sm text-white/60 font-medium">Manage workspace infrastructure and human capital.</p>
         </div>
         <div className="flex items-center gap-3 animate-in slide-in-from-right duration-700">
           <button 
@@ -178,25 +206,27 @@ const AdminDashboard = () => {
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 animate-in fade-in zoom-in-95 duration-700 delay-100">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 animate-in fade-in zoom-in-95 duration-700 delay-100">
         {[
-          { label: 'Workspace', value: overview?.name || 'Central', icon: <Globe size={18} />, color: 'primary' },
-          { label: 'Total Users', value: overview?.totalUsers || 0, icon: <Users size={18} />, color: 'secondary' },
-          { label: 'Active Roles', value: overview?.activeRoles || 0, icon: <Shield size={18} />, color: 'status-success' },
-          { label: 'Integrations', value: overview?.integrations || 0, icon: <LinkIcon size={18} />, color: 'status-warning' },
-          { label: 'System status', value: overview?.status || 'Online', icon: <Activity size={18} />, color: 'status-success' }
+          { label: 'Active Users', value: overview?.totalUsers || 0, icon: <Users size={20} />, color: 'secondary' },
+          { label: 'System Roles', value: overview?.activeRoles || 0, icon: <Shield size={20} />, color: 'status-success' },
+          { label: 'Connections', value: overview?.integrations || 0, icon: <LinkIcon size={20} />, color: 'status-warning' },
+          { label: 'Status', value: overview?.status || 'Online', icon: <Activity size={20} />, color: 'status-info' }
         ].map((stat, i) => (
           <div 
             key={i} 
-            className={`bg-white/[0.03] border border-white/5 rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-${stat.color}/30 transition-all group relative overflow-hidden ${i === 4 ? 'col-span-2 lg:col-span-1' : ''}`}
+            className="bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 rounded-3xl p-5 md:p-6 flex items-center gap-5 transition-all duration-500 hover:translate-y-[-4px] group relative overflow-hidden backdrop-blur-md"
           >
-            <div className={`absolute top-0 right-0 w-12 h-12 bg-${stat.color}/5 rounded-full blur-xl translate-x-1/2 -translate-y-1/2 group-hover:bg-${stat.color}/10 transition-colors`} />
-            <div className={`p-2.5 rounded-xl bg-${stat.color}/10 text-${stat.color} border border-${stat.color}/20 group-hover:scale-110 transition-transform relative z-10`}>
+            <div className={`absolute -top-10 -right-10 w-32 h-32 bg-${stat.color}/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+            
+            <div className={`p-3.5 rounded-2xl bg-black border border-white/10 text-${stat.color} group-hover:border-${stat.color}/40 transition-all duration-500 shadow-2xl relative z-10`}>
               {stat.icon}
             </div>
-            <div className="relative z-10">
-              <p className="text-[9px] uppercase tracking-[0.2em] font-black text-white/30 mb-0.5">{stat.label}</p>
-              <p className="text-lg md:text-xl font-black text-white">{stat.value}</p>
+            <div className="relative z-10 min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1 leading-none">{stat.label}</p>
+              <p className="text-xl md:text-2xl font-black text-white tracking-tighter truncate leading-none">
+                {stat.value}
+              </p>
             </div>
           </div>
         ))}
@@ -214,7 +244,7 @@ const AdminDashboard = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tight">Operator Registry</h2>
-                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Personnel & Access Management</p>
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Personnel & Access Management</p>
                 </div>
               </div>
               
@@ -238,7 +268,7 @@ const AdminDashboard = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="text-[9px] uppercase tracking-[0.2em] text-white/20 bg-black/40">
+                  <tr className="text-[9px] uppercase tracking-[0.2em] text-white/50 bg-black/40">
                     <th className="px-6 py-4 font-black">Operator</th>
                     <th className="px-6 py-4 font-black hidden sm:table-cell">Clearance Role</th>
                     <th className="px-6 py-4 font-black">Status</th>
@@ -251,12 +281,12 @@ const AdminDashboard = () => {
                     <tr key={u.id} className="hover:bg-white/[0.03] transition-colors group">
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black text-white/40">
+                          <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center text-[10px] font-black text-white/60">
                             {u.name.substring(0, 2).toUpperCase()}
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold text-sm text-white group-hover:text-primary transition-colors">{u.name}</span>
-                            <span className="text-[10px] text-white/20 font-mono">{u.email}</span>
+                            <span className="text-[10px] text-white/40 font-mono">{u.email}</span>
                           </div>
                         </div>
                       </td>
@@ -275,7 +305,7 @@ const AdminDashboard = () => {
                         </div>
                       </td>
                       <td className="px-6 py-5 hidden lg:table-cell">
-                        <div className="flex items-center gap-1.5 text-white/30 text-[10px] font-mono">
+                        <div className="flex items-center gap-1.5 text-white/60 text-[10px] font-mono">
                           <Clock size={10} />
                           {u.lastActive ? new Date(u.lastActive).toLocaleDateString() : 'OFFLINE'}
                         </div>
@@ -283,7 +313,7 @@ const AdminDashboard = () => {
                       <td className="px-6 py-5 text-right">
                         <button
                           onClick={() => setEditingUser(u)}
-                          className="p-2 rounded-lg bg-white/5 border border-white/5 text-white/20 hover:text-primary hover:border-primary/20 transition-all hover:scale-110"
+                          className="p-2 rounded-lg bg-white/10 border border-white/15 text-white/60 hover:text-primary hover:border-primary/20 transition-all hover:scale-110"
                         >
                           <SettingsIcon size={14} />
                         </button>
@@ -308,8 +338,8 @@ const AdminDashboard = () => {
             {/* Pagination UI */}
             {filteredUsers.length > itemsPerPage && (
               <div className="px-6 py-4 border-t border-white/5 bg-black/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-[9px] text-white/20 font-black uppercase tracking-[0.2em]">
-                  Registry Index: <span className="text-white/60">{startIndex} - {endIndex}</span> of <span className="text-white/60">{filteredUsers.length}</span>
+                <div className="text-[9px] text-white/50 font-black uppercase tracking-[0.2em]">
+                  Registry Index: <span className="text-white/80">{startIndex} - {endIndex}</span> of <span className="text-white/80">{filteredUsers.length}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button

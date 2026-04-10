@@ -63,6 +63,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       path: '/dashboard',
       icon: <LayoutDashboard size={20} />,
       permission: null,
+      hidden: user?.role === 'WORKSPACE_ADMIN'
     },
     {
       name: 'Team Members',
@@ -77,7 +78,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       permission: PERMISSIONS.MANAGE_BILLING,
       disabled: true,
     },
-  ].filter((item) => !item.permission || hasPermission(item.permission));
+  ].filter((item) => (!item.permission || hasPermission(item.permission)) && !item.hidden);
 
   const canInvite = hasPermission(PERMISSIONS.INVITE_USERS);
 

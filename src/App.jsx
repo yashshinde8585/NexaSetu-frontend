@@ -205,7 +205,15 @@ function App() {
                 <Route
                   path={ROUTES.DASHBOARD}
                   element={
-                    user ? <Dashboard /> : <Navigate to={ROUTES.LOGIN} replace />
+                    user ? (
+                      user.role === 'WORKSPACE_ADMIN' ? (
+                        <Navigate to={ROUTES.ADMIN_PANEL} replace />
+                      ) : (
+                        <Dashboard />
+                      )
+                    ) : (
+                      <Navigate to={ROUTES.LOGIN} replace />
+                    )
                   }
                 />
                 <Route

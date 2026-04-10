@@ -59,6 +59,10 @@
     animation-name: fadeIn;
   }
 
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+  }
+
   .slide-in-from-top-4 {
     animation-name: slideInFromTop;
   }
