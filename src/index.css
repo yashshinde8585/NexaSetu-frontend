@@ -4,6 +4,7 @@
   --color-primary: #3b82f6;
   --color-primary-dark: #1e3a8a;
   --color-primary-light: #60a5fa;
+  --color-brand: #5f57ff;
 
   --color-secondary: #8b5cf6;
   --color-secondary-light: #a78bfa;
@@ -190,5 +191,211 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Real-Feel Micro-Animations */
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+
+  @keyframes blink {
+    50% { opacity: 0 }
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(0.33); opacity: 1; }
+    80%, 100% { opacity: 0; }
+  }
+
+  @keyframes data-flow {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes binary-shift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+
+  .animate-typing {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid;
+    animation: typing 3s steps(30, end) infinite, blink 0.75s step-end infinite;
+  }
+
+  .animate-scan {
+    animation: scan 3s linear infinite;
+  }
+
+  .animate-data-flow {
+    animation: data-flow 2s linear infinite;
+  }
+
+  .animate-binary {
+    animation: binary-shift 10s linear infinite;
+  }
+
+  .animate-pulse-ring {
+    animation: pulse-ring 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+  }
+
+  /* ── Cinematic Scroll Story Engine ─────────────────────────────────────── */
+
+  /* Hero entrance keyframes */
+  @keyframes heroBadge {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes heroHeadline {
+    from { opacity: 0; transform: translateY(36px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Word-lift: each word rises from below and snaps into place */
+  @keyframes heroWord {
+    from {
+      opacity: 0;
+      transform: translateY(56px) skewY(4deg);
+      filter: blur(4px);
+    }
+    60% {
+      filter: blur(0px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) skewY(0deg);
+      filter: blur(0px);
+    }
+  }
+
+  /* Subtitle: fades in with a soft upward drift + blur-clear */
+  @keyframes heroSubFade {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0px);
+    }
+  }
+
+  /* Gradient hue drift for "Team Productivity" — living color */
+  @keyframes gradientShift {
+    0%   { background-image: linear-gradient(to right, #3b82f6, #8b5cf6); }
+    50%  { background-image: linear-gradient(to right, #60a5fa, #a78bfa); }
+    100% { background-image: linear-gradient(to right, #3b82f6, #c084fc); }
+  }
+
+  .hero-gradient-word {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  @keyframes heroMockup {
+    from { opacity: 0; transform: translateY(60px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Slide-in variants used by Tailwind animate-in */
+  @keyframes slideInFromBottom {
+    from { transform: translateY(2rem); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .slide-in-from-bottom-8 {
+    animation-name: slideInFromBottom;
+  }
+
+  /* Scroll progress bar shimmer */
+  @keyframes progressShimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+  }
+
+  /* Stats counter pop */
+  @keyframes statPop {
+    0%   { transform: scale(0.8); opacity: 0; }
+    60%  { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .animate-stat-pop {
+    animation: statPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes pulse-node {
+    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px currentColor; }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 20px currentColor; }
+  }
+
+  @keyframes rotate-core {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse-core {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+
+  @keyframes signal-flow {
+    0% { stroke-dashoffset: 100%; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { stroke-dashoffset: 0%; opacity: 0; }
+  }
+
+  @keyframes float-card {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    33% { transform: translateY(-10px) translateX(5px); }
+    66% { transform: translateY(5px) translateX(-5px); }
+  }
+
+  .animate-pulse-node {
+    animation: pulse-node 3s ease-in-out infinite;
+  }
+
+  .animate-rotate-core {
+    animation: rotate-core 20s linear infinite;
+  }
+
+  .animate-pulse-core {
+    animation: pulse-core 4s ease-in-out infinite;
+  }
+
+  .animate-float-card {
+    animation: float-card 8s ease-in-out infinite;
+  }
+
+  .signal-path {
+    stroke-dashoffset: 100%;
+    animation: signal-flow 4s linear infinite;
+  }
+  @keyframes shimmer-logo {
+    0% { transform: translateX(-150%) skewX(-25deg); }
+    100% { transform: translateX(150%) skewX(-25deg); }
+  }
+
+  .animate-shimmer-logo {
+    animation: shimmer-logo 4s infinite linear;
+  }
+
+  .bg-grid-white {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
   }
 }
