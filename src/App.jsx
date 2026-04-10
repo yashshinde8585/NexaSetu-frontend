@@ -405,7 +405,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/profile"
+                  path={ROUTES.PROFILE}
                   element={
                     user ? <Profile /> : <Navigate to={ROUTES.LOGIN} replace />
                   }

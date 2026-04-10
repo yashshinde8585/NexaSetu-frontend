@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import {
   User,
   Shield,
@@ -7,15 +7,19 @@ import {
   Save,
   RotateCcw,
 } from 'lucide-react';
+import Button from '../components/atoms/Button';
+import SettingsSidebar from '../components/organisms/SettingsSidebar';
 import {
-  Button,
-  SettingsSidebar,
   IdentitySection,
   SecuritySection,
   PreferencesSection,
-} from '@/components';
+} from '../components/organisms/SettingsDecks';
+import { ROUTES } from '../constants';
 
-// A settings management page that allows users to update their profile, security, and application preferences.
+/**
+ * Clean and professional Settings management console.
+ * Implements a structured, high-contrast interface for system configurations.
+ */
 const Settings = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('identity');
@@ -33,48 +37,71 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="mb-12">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight uppercase leading-none">
-          Account <span className="text-primary">Settings</span>
-        </h1>
-        <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-3 max-w-md opacity-50">
-          Customize your profile, account security, and notification
-          preferences.
-        </p>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-10">
-        <SettingsSidebar
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          userRole={user.role}
-          jobTitle={user.jobTitle}
-        />
-
-        <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-          {activeTab === 'identity' && <IdentitySection user={user} />}
-          {activeTab === 'security' && <SecuritySection />}
-          {activeTab === 'preferences' && <PreferencesSection />}
-
-          <div className="pt-8 flex items-center justify-end gap-4 border-t border-white/5">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="px-8 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest text-white/40 hover:bg-white/5 flex items-center gap-2"
-            >
-              <RotateCcw size={14} /> Discard Changes
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              className="px-10 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2"
-            >
-              <Save size={14} /> Save Settings
-            </Button>
+    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
+      <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
+        
+        {/* Professional Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-10">
+          <div className="space-y-2">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter uppercase leading-none">
+              Console <span className="text-primary-light">Settings</span>
+            </h1>
+            <p className="text-white/70 text-xs sm:text-sm font-bold max-w-xl leading-relaxed">
+              Configure your operational parameters, security encryption, and identity credentials across the NexaSetu grid.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+             <Button
+               variant="ghost"
+               className="flex-1 md:flex-none h-12 px-8 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white/80 hover:bg-white/5"
+             >
+               <RotateCcw size={14} className="mr-2" /> Discard
+             </Button>
+             <Button
+               variant="primary"
+               className="flex-1 md:flex-none h-12 px-10 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/10"
+             >
+               <Save size={14} className="mr-2" /> Commit Changes
+             </Button>
           </div>
         </div>
+
+        {/* Main Configuration Interface */}
+        <div className="flex flex-col xl:flex-row gap-12 sm:gap-16">
+          
+          {/* Navigation Sidebar */}
+          <div className="shrink-0 relative z-20">
+            <SettingsSidebar
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              userRole={user.role}
+              jobTitle={user.jobTitle}
+            />
+          </div>
+
+          {/* Configuration Decks */}
+          <div className="flex-1 space-y-8 relative z-10 animate-in slide-in-from-bottom-4 duration-700">
+            <div className="min-h-[600px]">
+              {activeTab === 'identity' && <IdentitySection user={user} />}
+              {activeTab === 'security' && <SecuritySection />}
+              {activeTab === 'preferences' && <PreferencesSection />}
+            </div>
+
+            {/* Bottom Global Actions (Mobile/Tablet Friendly Duplicate) */}
+            <div className="xl:hidden pt-8 flex items-center justify-end gap-4 border-t border-white/10">
+               <button className="text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white/80 px-4 py-2">Discard</button>
+               <Button variant="primary" className="h-10 px-8 text-[10px] font-black uppercase tracking-widest">Save Settings</Button>
+            </div>
+          </div>
+
+        </div>
+
+        {/* System Meta */}
+        <footer className="pt-10 border-t border-white/10 flex flex-col sm:flex-row justify-end items-center gap-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/50">
+            <span>ID: {user._id.toUpperCase()}</span>
+        </footer>
+
       </div>
     </div>
   );

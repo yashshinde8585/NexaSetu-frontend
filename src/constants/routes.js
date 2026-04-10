@@ -22,4 +22,5 @@ export const ROUTES = {
   ADMIN_PANEL: '/admin/dashboard',
   LOGIN: '/login',
   REGISTER: '/register',
+  PROFILE: '/profile',
 };
