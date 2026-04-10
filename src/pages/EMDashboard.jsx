@@ -92,6 +92,7 @@ const EMDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-24">
         
+        <div className="lg:col-span-12">
           <DashboardSection title="TASK BOARD">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[800px]">
@@ -151,6 +152,7 @@ const EMDashboard = () => {
           </DashboardSection>
         </div>
 
+        <div className="lg:col-span-12">
           <DashboardSection title="CRITICAL BLOCKERS">
             <div id="em-blockers" className="space-y-4">
               {blockers.map((blocker, i) => (
@@ -215,6 +217,7 @@ const EMDashboard = () => {
           </DashboardSection>
         </div>
 
+        <div className="lg:col-span-6">
           <DashboardSection title="SPRINT VELOCITY">
               <div id="burndown" className="space-y-6">
                  <div className="grid grid-cols-2 gap-4">
