@@ -39,6 +39,7 @@ const EditTeam = lazy(() => import('./pages/EditTeam'));
 import Navbar from './components/organisms/Navbar';
 import MagicResults from './components/organisms/MagicResults';
 import Sidebar from './components/organisms/Sidebar';
+import ServerWakeupBanner from './components/organisms/ServerWakeupBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useAuth } from './context/AuthContext';
 import { usePermissions, PERMISSIONS } from './hooks/usePermissions';
@@ -103,6 +104,7 @@ function App() {
       <div
         className={`transition-all duration-300 min-h-screen flex flex-col ${user && !isPricing ? 'md:ml-64' : ''}`}
       >
+        <ServerWakeupBanner />
         {serverDown && (
           <div className="bg-red-500/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] py-2 text-center sticky top-0 z-50 animate-in slide-in-from-top duration-500">
             Connection Interrupted: Strategic Link to Central Intelligence Lost
