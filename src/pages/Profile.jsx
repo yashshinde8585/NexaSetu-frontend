@@ -6,212 +6,180 @@ import {
   Shield,
   ShieldCheck,
   Calendar,
-  Globe,
   Settings,
   LogOut,
   Lock,
   Key,
-  UserCircle,
   BadgeCheck,
-  Cpu,
-  ExternalLink,
+  Clock,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Button from '../components/atoms/Button';
+import { ROUTES } from '../constants';
 
-// A user profile page that displays personal identity, account roles, and membership details.
+/**
+ * Clean and professional Profile page for NexaSetu.
+ * Focuses on clarity, high contrast, and structured information layouts.
+ */
 const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate(ROUTES.LOGIN);
   };
 
   if (!user) return null;
 
-  // Returns a visual theme mapping based on the user's specific job title.
-  const getRoleVisuals = (title) => {
-    switch (title) {
-      case 'CTO':
-      case 'VP Engineering':
-      case 'Engineering Manager':
-      case 'HR Manager / People Ops':
-        return {
-          color: 'text-status-success',
-          shadow: 'rgba(34, 197, 94, 0.3)',
-          border: 'border-status-success/20',
-        };
-      case 'Tech Lead':
-      case 'QA Lead':
-        return {
-          color: 'text-primary',
-          shadow: 'rgba(59, 130, 246, 0.3)',
-          border: 'border-primary/20',
-        };
-      case 'Senior Engineer':
-      case 'Senior QA Engineer':
-        return {
-          color: 'text-purple-400',
-          shadow: 'rgba(168, 85, 247, 0.3)',
-          border: 'border-purple-400/20',
-        };
-      case 'Software Engineer':
-      case 'Junior Engineer':
-      case 'QA Engineer / Software Tester':
-        return {
-          color: 'text-cyan-400',
-          shadow: 'rgba(34, 211, 238, 0.3)',
-          border: 'border-cyan-400/20',
-        };
-      case 'Intern':
-        return {
-          color: 'text-slate-500',
-          shadow: 'rgba(148, 163, 184, 0.3)',
-          border: 'border-slate-500/20',
-        };
-      default:
-        return {
-          color: 'text-white/40',
-          shadow: 'transparent',
-          border: 'border-white/10',
-        };
-    }
-  };
-
-
-  const visuals = getRoleVisuals(user.jobTitle);
-
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Profile Header */}
-      <div className="relative max-w-5xl mx-auto">
-        <div className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-transparent opacity-50 rounded-[40px] pointer-events-none"></div>
-        <div className="relative flex flex-col md:flex-row items-center md:items-start gap-10 p-10 bg-[#121826]/40 backdrop-blur-3xl border border-white/5 rounded-[40px] shadow-2xl overflow-hidden group">
-          {/* Animated Glow Background */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-          {/* Avatar Display */}
-          <div className="relative">
-            <div className="w-32 h-32 md:w-36 md:h-36 rounded-full bg-linear-to-tr from-primary/20 to-secondary/20 p-1 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center border border-white/5">
-                  <span className="text-5xl font-extrabold text-white">
-                    {user.name.charAt(0)}
-                  </span>
-                </div>
-              )}
+    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
+      <div className="max-w-6xl mx-auto space-y-10">
+        
+        {/* Simple Professional Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center relative shadow-xl">
+               {user.avatar ? (
+                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-2xl" />
+               ) : (
+                 <span className="text-4xl font-black text-white/50">{user.name.charAt(0)}</span>
+               )}
+               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-black border border-white/10 rounded-lg flex items-center justify-center text-primary">
+                  <ShieldCheck size={16} />
+               </div>
             </div>
-            <div
-              className={`absolute bottom-2 right-2 w-8 h-8 border rounded-full bg-[#121826] flex items-center justify-center shadow-xl ${visuals.border}`}
-            >
-              <ShieldCheck className={visuals.color} size={16} />
+            <div>
+              <h1 className="text-3xl font-black tracking-tight mb-1">{user.name}</h1>
+              <div className="flex items-center gap-3 text-sm font-medium text-white/80">
+                <span className="uppercase tracking-widest text-primary text-[10px] font-black">{user.jobTitle || 'Team Member'}</span>
+                <span className="w-1 h-1 bg-white/40 rounded-full" />
+                <span>{user._id.slice(-8).toUpperCase()}</span>
+              </div>
             </div>
           </div>
-
-          {/* Identity Details */}
-          <div className="flex-1 text-center md:text-left space-y-4">
-            <div>
-              <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-                <h1 className="text-4xl font-extrabold text-white uppercase tracking-tight leading-none">
-                  {user.name}
-                </h1>
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-widest ${visuals.color}`}
-                >
-                  <BadgeCheck size={10} /> Member ID:{' '}
-                  {user._id.slice(-6).toUpperCase()}
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                <div
-                  className={`text-base font-bold uppercase tracking-[0.2em] ${visuals.color}`}
-                >
-                  {user.jobTitle || 'Team Member'}
-                </div>
-                <div className="h-1 w-1 bg-white/20 rounded-full hidden md:block"></div>
-                <div className="flex items-center gap-2 text-text-muted text-sm font-medium">
-                  <Mail size={14} className="text-white/20" /> {user.email}
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-white/5 grid grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatBlock
-                label="User Role"
-                value={user.role.replace('_', ' ')}
-                color={visuals.color}
-              />
-              <StatBlock
-                label="Joined Date"
-                value={new Date(user.createdAt).toLocaleDateString()}
-              />
-              <StatBlock label="Location" value="Global Hub" />
-              <StatBlock label="Status" value="Online" status="online" />
-            </div>
+          <div className="flex gap-3 w-full md:w-auto">
+            <Button 
+              variant="outline" 
+              className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-white/10"
+              onClick={() => navigate(ROUTES.SETTINGS)}
+            >
+              Settings
+            </Button>
+            <Button 
+              variant="danger" 
+              className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest"
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
           </div>
         </div>
+
+        {/* Informational Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          
+          {/* Main Info Columns */}
+          <div className="lg:col-span-2 space-y-12">
+            
+            {/* Account Details Section */}
+            <section className="space-y-6">
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/70 border-l-2 border-primary pl-4">Account Information</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+                <InfoRow label="Full Name" value={user.name} icon={<User size={14} />} />
+                <InfoRow label="Email Address" value={user.email} icon={<Mail size={14} />} />
+                <InfoRow label="System Role" value={user.role.replace('_', ' ')} icon={<Shield size={14} />} />
+                <InfoRow label="Clearance" value="L4 High Command" icon={<BadgeCheck size={14} />} />
+                <InfoRow label="Joined Workspace" value={new Date(user.createdAt).toLocaleDateString()} icon={<Calendar size={14} />} />
+                <InfoRow label="Current Status" value="Active" icon={<Clock size={14} />} status="active" />
+              </div>
+            </section>
+
+            {/* Security Section */}
+            <section className="space-y-6">
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 border-l-2 border-primary pl-4">Security & Access</h2>
+              <div className="grid grid-cols-1 gap-4">
+                 <ActionTile 
+                   icon={<Key size={18} />} 
+                   title="Update Password" 
+                   desc="Ensure your account key is rotated regularly for maximum security." 
+                 />
+                 <ActionTile 
+                   icon={<Lock size={18} />} 
+                   title="Two-Factor Authentication" 
+                   desc="Add an extra layer of protection to your identity profile." 
+                   badge="Recommended"
+                 />
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar / Preferences */}
+          <div className="space-y-12">
+            
+            {/* Preferences Section */}
+            <section className="space-y-6">
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 border-l-2 border-primary pl-4">Preferences</h2>
+              <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-6">
+                 <PreferenceToggle label="Email Notifications" active />
+                 <PreferenceToggle label="Real-time Status" active />
+                 <PreferenceToggle label="Compact View" />
+                 <PreferenceToggle label="Developer Mode" />
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+        {/* Professional Footer */}
+        <footer className="pt-20 pb-10 border-t border-white/10 flex justify-end items-center text-[9px] font-black uppercase tracking-[0.2em] text-white/50">
+           <span>Workspace ID: {user._id.slice(0, 12)}</span>
+        </footer>
+
       </div>
     </div>
   );
 };
 
-// A small info component for displaying labeled profile statistics.
-const StatBlock = ({ label, value, color, status }) => (
-  <div>
-    <div className="text-[7px] font-black text-white/20 uppercase tracking-[0.3em] mb-1.5">
-      {label}
-    </div>
-    <div
-      className={`text-xs font-black uppercase tracking-widest flex items-center gap-1.5 ${color || 'text-white/80'}`}
-    >
-      {status === 'online' && (
-        <div className="w-1.5 h-1.5 bg-status-success rounded-full animate-pulse shadow-[0_0_10px_rgba(var(--color-success),0.5)]"></div>
-      )}
-      {value}
-    </div>
+// Sub-components for a structured, clean UI
+const InfoRow = ({ label, value, icon, status }) => (
+  <div className="bg-black p-5 flex flex-col gap-1.5">
+     <span className="text-[9px] font-black uppercase tracking-widest text-white/60 flex items-center gap-2">
+        {icon} {label}
+     </span>
+     <span className="text-sm font-bold text-white flex items-center gap-2">
+        {status === 'active' && <div className="w-1.5 h-1.5 bg-status-success rounded-full" />}
+        {value}
+     </span>
   </div>
 );
 
-// A reusable header component for distinct profile sections.
-const SectionHeader = ({ icon, title, danger }) => (
-  <div className="flex items-center gap-3">
-    <div
-      className={`w-10 h-10 rounded-xl flex items-center justify-center border ${danger ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-white/5 border-white/10 text-primary'}`}
-    >
-      {icon}
-    </div>
-    <h2 className="text-lg font-bold text-white uppercase tracking-tight">
-      {title}
-    </h2>
+const ActionTile = ({ icon, title, desc, badge }) => (
+  <div className="p-5 bg-white/[0.05] border border-white/10 rounded-xl flex items-center justify-between hover:bg-white/[0.08] transition-all cursor-pointer group">
+     <div className="flex items-center gap-5">
+        <div className="w-12 h-12 rounded-lg bg-black border border-white/15 flex items-center justify-center text-white/60 group-hover:text-primary transition-colors">
+           {icon}
+        </div>
+        <div>
+           <div className="flex items-center gap-3 mb-0.5">
+              <h4 className="text-sm font-black uppercase tracking-tight text-white/90">{title}</h4>
+              {badge && <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-tighter">{badge}</span>}
+           </div>
+           <p className="text-[10px] font-medium text-white/60 leading-relaxed max-w-sm">{desc}</p>
+        </div>
+     </div>
+     <ChevronRight size={16} className="text-white/20 group-hover:text-white transition-all transform group-hover:translate-x-1" />
   </div>
 );
 
-// A clickable action card component for profile-related navigation or tasks.
-const ActionCard = ({ icon, title, desc }) => (
-  <button className="flex items-center gap-5 p-5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-2xl transition-all group text-left w-full h-full relative overflow-hidden active:scale-[0.98]">
-    <div className="text-white/20 group-hover:text-primary transition-colors">
-      {React.cloneElement(icon, { size: 24 })}
-    </div>
-    <div className="flex-1">
-      <h4 className="text-xs font-bold text-white uppercase tracking-tight group-hover:translate-x-1 transition-transform">
-        {title}
-      </h4>
-      <p className="text-[10px] text-text-muted opacity-40 group-hover:opacity-60 transition-opacity truncate">
-        {desc}
-      </p>
-    </div>
-    <ExternalLink
-      size={12}
-      className="text-white/5 absolute top-4 right-4 group-hover:text-white/20 transition-all"
-    />
-  </button>
+const PreferenceToggle = ({ label, active }) => (
+  <div className="flex items-center justify-between group cursor-pointer">
+     <span className="text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">{label}</span>
+     <div className={`w-9 h-5 rounded-full relative transition-all ${active ? 'bg-primary' : 'bg-white/20'}`}>
+        <div className={`absolute top-1 w-3 h-3 rounded-full transition-all ${active ? 'right-1 bg-black' : 'left-1 bg-white/60'}`} />
+     </div>
+  </div>
 );
 
 export default Profile;

@@ -1,134 +1,367 @@
-import React, { useState } from 'react';
-import { Target, Users, Shield, ArrowRight, Layout, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  AlertCircle, 
+  Calendar, 
+  Clock, 
+  FileText, 
+  Rocket
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
-import Button from '../components/atoms/Button';
-import Input from '../components/atoms/Input';
 
-// A dedicated workspace area for creating new projects, with standard dashboard UI and approved clear text.
+const SetupSkeleton = () => (
+  <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+  </div>
+);
+
 const ProjectSetup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { handleCreateProject, newProjectName, setNewProjectName } = useDashboard(user);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { handleCreateProject, isLoading } = useDashboard(user);
+  
+  const [mission, setMission] = useState({
+    name: '',
+    type: 'Product Development',
+    objective: '',
+    teams: ['Backend', 'Frontend'],
+    priority: 'Medium',
+    timeline: {
+      start: new Date().toISOString().split('T')[0],
+      end: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    }
+  });
 
-  const onInitialize = async (e) => {
-    e.preventDefault();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
+  const onInitialize = async (e, isDraft = false) => {
+    if (e) e.preventDefault();
+    if (!mission.name.trim()) {
+      setSubmitError('Project name is mandatory for mission initialization.');
+      return;
+    }
+
+    setSubmitError(null);
     setIsSubmitting(true);
     try {
-      await handleCreateProject(e);
+      await handleCreateProject({
+        ...mission,
+        status: isDraft ? 'draft' : 'active'
+      });
       navigate('/project-info');
     } catch (error) {
       console.error('Failed to create project:', error);
+      setSubmitError(error?.message || 'The Gateway rejected the project initialization protocol.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const toggleTeam = (team) => {
+    setMission(prev => ({
+      ...prev,
+      teams: prev.teams.includes(team) 
+        ? prev.teams.filter(t => t !== team)
+        : [...prev.teams, team]
+    }));
+  };
+
+  if (isLoading) return <SetupSkeleton />;
+
   return (
-    <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 pt-10 pb-8 space-y-10 font-sans relative">
-      
-      {/* Dashboard Header with Approved Clear Text */}
-      <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 relative z-20">
-        <div className="space-y-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[28px] font-black text-white tracking-tighter uppercase leading-tight">
-              CREATE A NEW <span className="text-secondary">PROJECT</span>
-            </h2>
-          </div>
-          <p className="text-text-muted text-sm font-medium opacity-60 max-w-xl">
-            Set up a new project to start managing tasks, team collaboration, and development cycles in your workspace.
-          </p>
-        </div>
-      </header>
-
-      {/* Main Configuration Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12 overflow-x-hidden">
+      <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12 animate-in fade-in duration-700">
         
-        {/* Left: Project Form */}
-        <div className="lg:col-span-7 xl:col-span-8">
-          <div className="bg-background-light/30 border border-white/5 p-8 md:p-12 glass shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-            
-            <form onSubmit={onInitialize} className="space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black text-text-muted/60 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <Target size={12} className="text-primary" /> PROJECT NAME
-                  </label>
-                  <Input 
-                    placeholder="e.g. Mobile App Dev" 
-                    value={newProjectName}
-                    onChange={(e) => setNewProjectName(e.target.value)}
-                    className="bg-white/[0.03] border-white/10 rounded-none h-12 text-sm font-bold tracking-widest placeholder:text-text-muted/20 focus:border-primary/50"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black text-text-muted/60 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <Users size={12} className="text-secondary" /> WORKSPACE
-                  </label>
-                  <div className="h-12 flex items-center px-4 bg-white/[0.02] border border-white/5 text-[10px] font-bold text-white/40 uppercase tracking-widest">
-                    GLOBAL_WORKSPACE_BRANCH
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                <Button 
-                  type="submit" 
-                  size="xl" 
-                  variant="primary"
-                  isLoading={isSubmitting}
-                  className="w-full sm:w-auto px-10 h-14 rounded-none text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl"
-                >
-                  CREATE PROJECT <ArrowRight size={14} className="ml-2" />
-                </Button>
-                <button 
-                  type="button"
-                  onClick={() => navigate('/dashboard')}
-                  className="text-[10px] font-black text-text-muted hover:text-white uppercase tracking-[0.2em] transition-colors"
-                >
-                  Cancel Setup
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Right: Key Features */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-          <div className="bg-white/[0.02] border border-white/5 p-8 space-y-8">
-            <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] border-b border-white/5 pb-4">
-              PROJECT FEATURES
-            </h3>
-            
-            {[
-              { icon: <Target size={18} className="text-primary" />, title: "TASK TRACKING", desc: "Organize and track items with full isolation." },
-              { icon: <Zap size={18} className="text-secondary" />, title: "SPRINT READY", desc: "Instantly link to your development cycles." },
-              { icon: <Shield size={18} className="text-primary" />, title: "ACCESS CONTROL", desc: "Manage member permissions securely." }
-            ].map((feature, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="shrink-0 p-2 bg-white/5 h-fit">{feature.icon}</div>
-                <div className="space-y-1">
-                  <h4 className="text-[10px] font-black text-white uppercase tracking-widest">{feature.title}</h4>
-                  <p className="text-[10px] text-text-muted font-bold leading-relaxed opacity-60">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-8 border border-primary/20 bg-primary/5">
-            <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] leading-relaxed">
-              Once created, your project will appear in the Intelligence Hub for full orchestration and reporting.
+        {/* Simplified Header */}
+        <header className="border-b border-white/20 pb-6 sm:pb-10">
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter uppercase leading-none">
+                CREATE NEW PROJECT
+            </h1>
+            <p className="text-[10px] sm:text-[11px] font-black text-white/60 uppercase tracking-[0.4em] pl-4 sm:pl-10 flex items-center gap-3">
+              <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0 animate-pulse" />
+              Set up your project workspace in one step.
             </p>
           </div>
+        </header>
+
+        {/* Main Configuration Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-start relative z-10">
+          
+          {/* Header/Summary for Mobile - Always Visible */}
+          <div className="lg:hidden">
+            <MobileSummary mission={mission} />
+          </div>
+
+          {/* Left: Setup Panel */}
+          <div className="lg:col-span-7 xl:col-span-8 order-2 lg:order-1 space-y-6 sm:space-y-8">
+            <div className="bg-black border border-white/20 p-6 sm:p-10 rounded-2xl shadow-3xl relative overflow-hidden group hover:border-white/30 transition-colors">
+              
+              {submitError && (
+                <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-status-error/5 border border-status-error/30 rounded-xl flex items-start gap-3 sm:gap-4 animate-in slide-in-from-top-4">
+                  <AlertCircle className="text-status-error mt-0.5" size={18} />
+                  <p className="text-[10px] text-white/70 font-black uppercase tracking-widest leading-relaxed">{submitError}</p>
+                </div>
+              )}
+              
+              <form className="space-y-10 sm:space-y-12">
+                {/* Section 1: Identity */}
+                <div className="space-y-6 sm:space-y-8">
+                  <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+                    <FileText size={16} className="text-primary" />
+                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">PROJECT IDENTITY</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Project Name</label>
+                      <input 
+                        placeholder="E.G. NEXT-GEN ENGINE" 
+                        value={mission.name}
+                        onChange={(e) => setMission({...mission, name: e.target.value.toUpperCase()})}
+                        className="w-full h-14 bg-white/5 border border-white/20 px-5 rounded-lg text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-white/10"
+                      />
+                      <p className="text-[8px] text-white/30 font-bold italic tracking-wider">Give your project a clear, descriptive name.</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Mission Type</label>
+                      <select 
+                        value={mission.type}
+                        onChange={(e) => setMission({...mission, type: e.target.value})}
+                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="Product Development">Product Development</option>
+                        <option value="Internal Tool">Internal Tool</option>
+                        <option value="Client Project">Client Project</option>
+                        <option value="Research / POC">Research / POC</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Project Objective</label>
+                    <textarea 
+                      placeholder="E.G. BUILD SCALABLE PAYMENT SYSTEM..." 
+                      rows={3}
+                      value={mission.objective}
+                      onChange={(e) => setMission({...mission, objective: e.target.value})}
+                      className="w-full bg-white/5 border border-white/20 p-5 rounded-xl text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none placeholder:text-white/10"
+                    />
+                  </div>
+                </div>
+
+                {/* Section 2: Composition */}
+                <div className="space-y-6 sm:space-y-8">
+                  <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+                    <Users size={16} className="text-secondary" />
+                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TEAM COMPOSITION</h2>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
+                    {['Backend', 'Frontend', 'QA', 'DevOps', 'UI/UX', 'Hardware'].map(team => (
+                      <button
+                        key={team}
+                        type="button"
+                        onClick={() => toggleTeam(team)}
+                        className={`px-4 sm:px-6 py-3 rounded-lg border text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${
+                          mission.teams.includes(team)
+                            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]'
+                            : 'bg-white/5 border-white/10 text-white/40 hover:border-white/30'
+                        }`}
+                      >
+                        {team}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Section 3: Logistics */}
+                <div className="space-y-6 sm:space-y-8">
+                  <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+                    <Calendar size={16} className="text-status-success" />
+                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">MISSION LOGISTICS</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Start Date</label>
+                      <input 
+                        type="date"
+                        value={mission.timeline.start}
+                        onChange={(e) => setMission({...mission, timeline: {...mission.timeline, start: e.target.value}})}
+                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Target Date</label>
+                      <input 
+                        type="date"
+                        value={mission.timeline.end}
+                        onChange={(e) => setMission({...mission, timeline: {...mission.timeline, end: e.target.value}})}
+                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-8 sm:pt-10 border-t border-white/20">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <button 
+                      type="button" 
+                      onClick={(e) => onInitialize(e)}
+                      disabled={isSubmitting}
+                      className="w-full sm:w-auto h-14 px-10 bg-gradient-to-r from-primary to-blue-600 text-black hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] rounded-xl text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      INITIALIZE PROJECT
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={(e) => onInitialize(e, true)}
+                      disabled={isSubmitting}
+                      className="w-full sm:w-auto h-14 px-8 border border-white/20 hover:border-white/40 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl"
+                    >
+                      SAVE AS DRAFT
+                    </button>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => navigate('/dashboard')}
+                    className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.2em] transition-colors py-2"
+                  >
+                    CANCEL MISSION
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Right: Live Preview (Hidden on Mobile, replaced by Summary) */}
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-32 order-1 lg:order-2">
+            <div className="space-y-6">
+              <h2 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] px-4">LIVE MISSION PREVIEW</h2>
+              
+              <div className="bg-black border border-white/30 rounded-2xl overflow-hidden shadow-3xl group relative">
+                
+                <div className="p-8 space-y-8 relative z-10">
+                  {/* Status Badge */}
+                  <div className="flex justify-between items-start">
+                    <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10">
+                       <p className="text-[8px] font-black tracking-widest uppercase text-white/50">STATUS: INITIALIZING</p>
+                    </div>
+                  </div>
+
+                  {/* Project Name & Objective */}
+                  <div className="space-y-3">
+                    <h2 className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${mission.name ? 'text-2xl text-white' : 'text-xl text-white/10 italic'}`}>
+                        {mission.name || 'PROJECT_CODENAME'}
+                    </h2>
+                    <div className="w-12 h-1 bg-primary/40 group-hover:w-20 transition-all duration-700" />
+                    <p className={`text-[10px] leading-relaxed uppercase tracking-widest transition-all duration-300 ${mission.objective ? 'text-white/60' : 'text-white/5'}`}>
+                      {mission.objective || 'Mission objectives will manifest here...'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/10">
+                    <div className="space-y-2">
+                       <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">TYPE</p>
+                       <p className="text-[10px] font-black text-white uppercase tracking-wider">{mission.type}</p>
+                    </div>
+                    <div className="space-y-2">
+                       <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">TIMELINE</p>
+                       <div className="flex items-center gap-2 text-white">
+                         <Calendar size={12} className="text-secondary" />
+                         <p className="text-[10px] font-black uppercase tracking-wider">
+                           {mission.timeline.start || 'TBD'} — {mission.timeline.end || 'TBD'}
+                         </p>
+                       </div>
+                    </div>
+                  </div>
+
+                  {/* Team Reveal */}
+                  <div className="space-y-4">
+                    <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">ASSIGNED ASSETS</p>
+                    <div className="flex flex-wrap gap-2">
+                      {mission.teams.length > 0 ? mission.teams.map(team => (
+                        <span key={team} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[9px] font-black text-white/80 uppercase tracking-widest">
+                          {team}
+                        </span>
+                      )) : (
+                        <div className="w-full py-4 border border-dashed border-white/10 rounded-xl flex items-center justify-center">
+                           <span className="text-[9px] text-white/20 font-black uppercase tracking-widest">Awaiting Team Selection</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ID / Metadata */}
+                  <div className="pt-6 border-t border-white/10 flex justify-end items-center opacity-40">
+                     <span className="text-[10px] font-black text-white">ID: NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</span>
+                  </div>
+                </div>
+
+                {/* Background Shimmer */}
+                <div className="absolute inset-0 bg-linear-to-tr from-primary/0 via-primary/5 to-transparent pointer-events-none" />
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   );
 };
+
+/* Mobile-Specific Summary Component */
+const MobileSummary = ({ mission }) => (
+  <div className="bg-black border border-primary/30 rounded-2xl p-6 sm:p-8 space-y-5 animate-in slide-in-from-top-4 relative overflow-hidden">
+    <div className="absolute top-0 right-0 p-4 opacity-10">
+      <Rocket size={48} className="text-primary" />
+    </div>
+    <div className="flex justify-between items-start">
+      <div className="space-y-2">
+        <h2 className={`font-black uppercase tracking-tight leading-none ${mission.name ? 'text-xl text-white' : 'text-lg text-white/20 italic'}`}>
+          {mission.name || 'NEW_MISSION'}
+        </h2>
+        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">MISSION PREVIEW ENGINE</p>
+      </div>
+      <div className="text-right">
+        <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">TARGET_ID</p>
+        <p className="text-[10px] font-black text-white">NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</p>
+      </div>
+    </div>
+    
+    <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+      <div className="flex-1">
+        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">TEAM_UNITS</p>
+        <div className="flex flex-wrap gap-1.5">
+          {mission.teams.slice(0, 3).map(team => (
+            <span key={team} className="w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
+          ))}
+          {mission.teams.length > 3 && <span className="text-[8px] font-bold text-white/40">+{mission.teams.length - 3}</span>}
+          {mission.teams.length === 0 && <span className="text-[8px] font-bold text-white/20">PENDING</span>}
+        </div>
+      </div>
+    </div>
+
+    <div className="flex justify-between items-center pt-4 border-t border-white/10">
+      <div className="space-y-1">
+        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">TIMELINE</p>
+        <p className="text-[9px] font-black text-white uppercase tracking-widest">
+          {mission.timeline.start || 'TBD'} — {mission.timeline.end || 'TBD'}
+        </p>
+      </div>
+      <div className="text-right">
+        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">STATUS</p>
+        <span className="text-[9px] font-black text-status-success uppercase tracking-widest animate-pulse">Initializing</span>
+      </div>
+    </div>
+  </div>
+);
 
 export default ProjectSetup;

@@ -1,24 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Zap, ChevronDown } from 'lucide-react';
+import { Plus, Zap, Cpu, Activity, Clock, Box } from 'lucide-react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES } from '../constants/auth';
 import Button from '../components/atoms/Button';
-import Input from '../components/atoms/Input';
 import SprintCreationModal from '../components/organisms/SprintCreationModal';
 import SprintDetailsCard from '../components/organisms/SprintDetailsCard';
 import ProjectStatusList from '../components/organisms/ProjectStatusList';
 import SprintSummaryModal from '../components/organisms/SprintSummaryModal';
 
-// Orchestrates and monitors development cycles (sprints) across the workspace.
+/**
+ * Tactical Sprint Intelligence Hub.
+ * Orchestrates development cycles, tracks high-level project status, and monitors organizational velocity.
+ * Optimized for industrial sunlight legibility and high-density technical orchestration.
+ */
 const ProjectInfo = () => {
   const { user } = useAuth();
+  
   // Tactical State Persistence
   const [selectedSprintId, setSelectedSprintId] = useState(() => localStorage.getItem('nexa_selected_sprint_id'));
   const [filterProjectId, setFilterProjectId] = useState(() => localStorage.getItem('nexa_selected_project_id'));
   const [showSprintForm, setShowSprintForm] = useState(false);
-  const [quickTicketProject, setQuickTicketProject] = useState(null);
-  const [quickTicketTitle, setQuickTicketTitle] = useState('');
 
   const {
     projects,
@@ -28,8 +30,6 @@ const ProjectInfo = () => {
     sprintStatsLoading,
     createSprint,
     createSprintLoading,
-    createTicket,
-    createTicketLoading,
     linkProjectToSprint: handleLinkProject,
     getFinalSummary,
     downloadSprintReport,
@@ -75,7 +75,6 @@ const ProjectInfo = () => {
     }
   }, [sprintsForUser, selectedSprintId]);
 
-  // Logic to calculate specific sprint metrics
   const selectedSprintData = useMemo(() => 
     sprints?.find(s => s._id === selectedSprintId),
   [sprints, selectedSprintId]);
@@ -109,8 +108,6 @@ const ProjectInfo = () => {
     };
   }, [sprintStats, selectedSprintData]);
 
-
-
   const canCreate = user?.role === USER_ROLES.WORKSPACE_ADMIN || user?.role === USER_ROLES.WORKSPACE_MANAGER || user?.role === USER_ROLES.TECH_LEAD;
 
   const submitSprint = (e) => {
@@ -133,87 +130,160 @@ const ProjectInfo = () => {
     }
   };
 
-  const handleDownload = () => {
-    downloadSprintReport(selectedSprintId);
+  const handleDownload = async () => {
+    try {
+      const reportData = await downloadSprintReport(selectedSprintId);
+      
+      // Convert reportData.tasks into CSV format
+      const tasks = reportData.tasks || [];
+      const headers = ['Sprint', 'Task Title', 'Project', 'Assigned To', 'Status', 'Priority', 'Due Date'];
+      const sprintName = reportData.sprint?.name || 'Unknown Sprint';
+      
+      const csvContent = [
+        headers.join(','),
+        ...tasks.map(t => {
+          // Wrap text in quotes to handle commas within values
+          const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
+          return [
+            escape(sprintName),
+            escape(t.title),
+            escape(t.project),
+            escape(t.assignedTo),
+            escape(t.status),
+            escape(t.priority),
+            escape(t.dueDate ? new Date(t.dueDate).toLocaleDateString() : '')
+          ].join(',');
+        })
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sprint-report-${selectedSprintId}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download sprint report:', err);
+    }
   };
 
   if (isLoading) return (
-    <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
     </div>
   );
 
   return (
-    <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 pt-10 pb-8 space-y-6 font-sans relative">
-      <SprintCreationModal show={showSprintForm} onClose={() => setShowSprintForm(false)} sprintData={sprintData} setSprintData={setSprintData} onSubmit={submitSprint} isLoading={createSprintLoading} projects={projects} />
-      <SprintSummaryModal finalSummary={finalSummary} setFinalSummary={setFinalSummary} />
-
-      {/* Sprint Management Header */}
-      <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 relative z-20">
-        <div className="space-y-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[28px] font-black text-white tracking-tighter uppercase leading-tight">
-              Sprint <span className="text-secondary">Management</span>
-            </h2>
-          </div>
-          <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.4em] opacity-40">
-            Control Center for Development Cycles
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center gap-4 relative z-30">
-          {canCreate && (
-            <button 
-              onClick={() => setShowSprintForm(true)}
-              className="h-12 px-8 bg-primary/10 border border-primary/20 hover:bg-primary/20 text-white text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-all active:scale-95 group"
-            >
-              <Plus size={14} className="text-primary group-hover:rotate-90 transition-transform" />
-              CREATE NEW SPRINT
-            </button>
-          )}
-        </div>
-      </header>
-
-      <div className="grid grid-cols-1 gap-6 relative z-10">
-        {selectedSprintId ? (
-          <SprintDetailsCard
-            sprint={selectedSprintData}
-            metrics={sprintMetrics}
-            stats={sprintStats}
-            statsLoading={sprintStatsLoading}
-            showWorkload={showWorkload}
-            setShowWorkload={setShowWorkload}
-            onDownload={handleDownload}
-            sprints={sprintsForUser}
-            onSprintChange={(id) => setSelectedSprintId(id)}
-            onAddSprint={() => setShowSprintForm(true)}
-            onFinalize={finalizeSelection}
-            finalizing={finalizing}
-            canCreate={canCreate}
-          />
-        ) : (
-          <div className="p-20 text-center flex flex-col items-center justify-center space-y-10 border border-white/5 bg-white/[0.02] shadow-2xl group">
-             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20">
-               <Zap size={32} />
-             </div>
-             <div className="space-y-4 max-w-sm">
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase">No Active Sprint Detected</h3>
-                <p className="text-text-muted text-[11px] font-bold uppercase tracking-[0.3em] opacity-40 leading-relaxed">Initialize a new cycle to begin cycle management</p>
-             </div>
-             {canCreate && (
-               <Button onClick={() => setShowSprintForm(true)} variant="primary" size="lg" className="px-10 rounded-none uppercase tracking-[0.3em] text-[10px] font-black">
-                 + Add Sprint
-               </Button>
-             )}
-          </div>
-        )}
-
-        <ProjectStatusList 
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12 overflow-x-hidden">
+      <div className="max-w-[1600px] mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-700">
+        
+        <SprintCreationModal 
+          show={showSprintForm} 
+          onClose={() => setShowSprintForm(false)} 
+          sprintData={sprintData} 
+          setSprintData={setSprintData} 
+          onSubmit={submitSprint} 
+          isLoading={createSprintLoading} 
           projects={projects} 
-          currentSprintId={selectedSprintId}
-          onLinkProject={handleLinkProject}
-          canLink={canCreate}
         />
+        
+        <SprintSummaryModal 
+          finalSummary={finalSummary} 
+          setFinalSummary={setFinalSummary} 
+        />
+
+        {/* Tactical Orchestration Header */}
+        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/40 pb-12">
+          <div className="space-y-6 flex-1 w-full">
+            <div className="flex items-center gap-4">
+
+              <div className="space-y-1">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase leading-none">
+                   Sprint <span className="text-primary">Intelligence</span> Core
+                </h1>
+                <p className="text-[10px] sm:text-[11px] font-black text-white/50 uppercase tracking-[0.4em]">
+                  Mission Control for Organizational Development Cycles
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-8 pt-4">
+               <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Active Cycles</span>
+                  <div className="flex items-center gap-2.5">
+                     <Clock size={14} className="text-primary-light" />
+                     <span className="text-sm font-black text-white uppercase tracking-tight">{sprintsForUser?.length || 0} SECTORS</span>
+                  </div>
+               </div>
+
+
+
+
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+            {canCreate && (
+              <button 
+                onClick={() => setShowSprintForm(true)}
+                className="flex-1 sm:flex-none h-14 px-10 bg-primary text-black hover:bg-primary-dark rounded-xl text-[11px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-primary/40 transition-all active:scale-95 group"
+              >
+                <Plus size={18} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
+                INITIATE NEW SPRINT
+              </button>
+            )}
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 gap-12 relative z-10">
+          {selectedSprintId ? (
+            <SprintDetailsCard
+              sprint={selectedSprintData}
+              metrics={sprintMetrics}
+              stats={sprintStats}
+              statsLoading={sprintStatsLoading}
+              showWorkload={showWorkload}
+              setShowWorkload={setShowWorkload}
+              onDownload={handleDownload}
+              sprints={sprintsForUser}
+              onSprintChange={(id) => setSelectedSprintId(id)}
+              onAddSprint={() => setShowSprintForm(true)}
+              onFinalize={finalizeSelection}
+              finalizing={finalizing}
+              canCreate={canCreate}
+            />
+          ) : (
+            <div className="py-24 text-center bg-black border border-dashed border-white/30 rounded-[40px] animate-in zoom-in-95 duration-500 shadow-3xl group">
+               <div className="w-24 h-24 bg-black rounded-3xl border border-primary flex items-center justify-center text-primary mx-auto mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                 <Zap size={48} />
+               </div>
+               <div className="space-y-4 max-w-sm mx-auto mb-12">
+                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Status: Standby</h3>
+                  <p className="text-white/60 text-[11px] font-black uppercase tracking-[0.3em] leading-relaxed">No active development cycle detected. Initialize a new sprint to begin telemetry tracking.</p>
+               </div>
+               {canCreate && (
+                 <button 
+                   onClick={() => setShowSprintForm(true)}
+                   className="h-14 px-12 bg-white text-black hover:bg-white/90 rounded-xl text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-2xl active:scale-95"
+                 >
+                   + INITIALIZE CYCLE
+                 </button>
+               )}
+            </div>
+          )}
+
+          <div className="pt-8">
+            <ProjectStatusList 
+              projects={projects} 
+              currentSprintId={selectedSprintId}
+              onLinkProject={handleLinkProject}
+              canLink={canCreate}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -49,17 +49,17 @@ const PeopleOpsDashboard = () => {
       
       {/* 1. Workforce Health Strip (Top) */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <MetricStripItem label="Total Employees" value={workforceHealth?.totalEmployees} icon={<Users size={20} />} />
-        <MetricStripItem label="Avg Utilization" value={`${workforceHealth?.avgUtilization}%`} icon={<Activity size={20} />} color={workforceHealth?.avgUtilization > 90 ? 'text-rose-500' : 'text-emerald-500'} />
+        <MetricStripItem label="Total Workforce" value={workforceHealth?.totalEmployees} icon={<Users size={20} />} />
+        <MetricStripItem label="Average Workload" value={`${workforceHealth?.avgUtilization}%`} icon={<Activity size={20} />} color={workforceHealth?.avgUtilization > 90 ? 'text-rose-500' : 'text-emerald-500'} />
         <MetricStripItem label="Overloaded" value={workforceHealth?.overloadedTeams} icon={<ShieldAlert size={20} />} color={workforceHealth?.overloadedTeams > 0 ? 'text-amber-500' : 'text-emerald-500'} />
-        <MetricStripItem label="Open Roles" value={workforceHealth?.openPositions} icon={<Briefcase size={20} />} />
-        <MetricStripItem label="Burnout Risk" value={workforceHealth?.burnoutRisk} icon={<Heart size={20} />} color={workforceHealth?.burnoutRisk === 'HIGH' ? 'text-rose-500' : 'text-emerald-500'} />
+        <MetricStripItem label="Open Positions" value={workforceHealth?.openPositions} icon={<Briefcase size={20} />} />
+        <MetricStripItem label="Retention Risk" value={workforceHealth?.burnoutRisk} icon={<Heart size={20} />} color={workforceHealth?.burnoutRisk === 'HIGH' ? 'text-rose-500' : 'text-emerald-500'} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* 2. Team Capacity Overview (Main Grid) */}
         <div className="lg:col-span-8">
-            <DashboardSection title="Organization Capacity" icon={<LayoutGrid size={18} />} description="Workforce distribution and team stability">
+            <DashboardSection title="Workforce Load & Capacity" icon={<LayoutGrid size={18} />} description="Workforce distribution and team stability">
                 <div className="overflow-x-auto mt-6">
                     <table className="w-full text-left">
                        <thead>
@@ -102,7 +102,7 @@ const PeopleOpsDashboard = () => {
 
         {/* 4. Burnout Risk Panel */}
         <div className="lg:col-span-4">
-           <DashboardSection title="Health Signals" icon={<Stethoscope size={18} />}>
+           <DashboardSection title="Team Wellness Signals" icon={<Stethoscope size={18} />}>
               <div className="flex flex-col gap-4 mt-8">
                  {burnoutRisk?.map((r, idx) => (
                     <div key={idx} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl group hover:border-rose-500/30 transition-all">
@@ -136,7 +136,7 @@ const PeopleOpsDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         <DashboardSection title="Hiring Pipeline" icon={<Briefcase size={18} />}>
+         <DashboardSection title="Active Recruitment" icon={<Briefcase size={18} />}>
             <div className="flex flex-col gap-3 mt-6">
                {hiringImpact?.openRoles.map((role, idx) => (
                   <div key={idx} className="p-4 bg-white/[0.015] border border-white/5 rounded-2xl flex justify-between items-center group hover:bg-white/[0.03] transition-all">
@@ -154,7 +154,7 @@ const PeopleOpsDashboard = () => {
             </div>
          </DashboardSection>
 
-         <DashboardSection title="Staffing Recommendations" icon={<RefreshCw size={18} />}>
+         <DashboardSection title="Staffing Suggestions" icon={<RefreshCw size={18} />}>
             <div className="flex flex-col gap-4 mt-6">
                 {rebalanceSuggestions?.map((sug, idx) => (
                   <div key={idx} className="flex gap-4 p-4 border-l-2 border-primary bg-primary/5 rounded-r-2xl items-start">
@@ -168,7 +168,7 @@ const PeopleOpsDashboard = () => {
             </div>
          </DashboardSection>
 
-         <DashboardSection title="Organization Activity" icon={<Activity size={18} />}>
+         <DashboardSection title="Recent Activity" icon={<Activity size={18} />}>
             <div className="flex flex-col gap-3 mt-6">
                {orgActivity?.slice(0, 3).map((act, idx) => (
                   <div key={idx} className="flex gap-4 items-start p-3 hover:bg-white/[0.02] rounded-xl transition-all">
@@ -184,8 +184,8 @@ const PeopleOpsDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {/* Individual Load Signals */}
-          <DashboardSection title="Personnel Load Signals" icon={<TrendingUp size={18} />}>
+          {/* Individual Workload */}
+          <DashboardSection title="Individual Workload" icon={<TrendingUp size={18} />}>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                  {individualSignals?.map((sig, idx) => (
                     <div key={idx} className="flex items-center justify-between p-4 bg-white/[0.015] border border-white/5 rounded-2xl">
@@ -206,8 +206,8 @@ const PeopleOpsDashboard = () => {
              </div>
           </DashboardSection>
 
-          {/* Retention & Trends */}
-          <DashboardSection title="Stability Trend Center" icon={<BarChart2 size={18} />}>
+          {/* Workforce Stability */}
+          <DashboardSection title="Workforce Stability" icon={<BarChart2 size={18} />}>
               <div className="grid grid-cols-2 gap-10 mt-8 px-4">
                  <TrendIndicator label="Utilization Stress" now={workforceTrend?.avgLoad.now} last={workforceTrend?.avgLoad.last} unit="%" />
                  <TrendIndicator label="Staffing Gap" now={workforceTrend?.hiringGap.now} last={workforceTrend?.hiringGap.last} unit=" PX" inverse />

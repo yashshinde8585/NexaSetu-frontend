@@ -13,7 +13,7 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
     },
     {
       label: 'Retention',
-      value: finalSummary.metrics.retention.toFixed(1) + '%',
+      value: (finalSummary.metrics.retention || 0).toFixed(1) + '%',
       color: 'text-status-success',
     },
     {
@@ -24,20 +24,20 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background-dark/80 backdrop-blur-sm">
-      <div className="bg-background w-full max-w-2xl rounded-xl border border-white/10 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-4">
-        <div className="p-6 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black animate-in fade-in slide-in-from-top-4">
+      <div className="bg-black w-full max-w-2xl rounded-2xl border border-white/20 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+        <div className="p-6 border-b border-white/20 bg-black flex justify-between items-center">
           <div>
             <h2 className="text-xl font-black text-primary uppercase tracking-tighter">
               Sprint Summary
             </h2>
-            <p className="text-xs text-text-muted font-mono">
+            <p className="text-[10px] uppercase font-black tracking-widest text-white/50">
               {finalSummary.sprint} Overview
             </p>
           </div>
           <button
             onClick={() => setFinalSummary(null)}
-            className="text-text-muted hover:text-white transition-colors text-2xl font-light"
+            className="text-white/40 hover:text-primary transition-colors text-3xl font-light leading-none"
           >
             ×
           </button>
@@ -48,9 +48,9 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="flex-1 bg-white/5 p-4 rounded-lg border border-white/5 text-center"
+                className="flex-1 bg-black p-4 rounded-xl border border-white/20 text-center shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:border-primary transition-all group"
               >
-                <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">
+                <p className="text-[10px] text-white/50 uppercase font-black tracking-widest mb-1 group-hover:text-white/80 transition-colors">
                   {stat.label}
                 </p>
                 <p className={`text-2xl font-black ${stat.color}`}>
@@ -61,34 +61,34 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
           </div>
 
           <div className="mb-8">
-            <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
               AI Tactical Summary
             </h3>
-            <div className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap bg-white/[0.02] p-6 rounded-xl border border-white/5 font-mono italic">
+            <div className="text-[11px] text-white/80 uppercase tracking-widest leading-loose whitespace-pre-wrap bg-black p-6 rounded-xl border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] font-black">
               {finalSummary.summary}
             </div>
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4">
+            <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-4 mt-2">
               Top Contributors
             </h3>
             <div className="space-y-3">
               {finalSummary.topContributors.map((c, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/5"
+                  className="flex justify-between items-center p-3 bg-black rounded-xl border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:border-primary transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs border border-primary/20">
+                    <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-primary font-black text-[10px] border border-primary shadow-[0_0_10px_rgba(59,130,246,0.2)]">
                       {c.name[0]}
                     </div>
-                    <span className="text-sm font-bold text-white">
+                    <span className="text-[11px] font-black uppercase tracking-tight text-white">
                       {c.name}
                     </span>
                   </div>
-                  <span className="text-xs text-primary font-mono font-bold">
+                  <span className="text-[10px] text-primary uppercase font-black tracking-widest">
                     {c.missions} Tasks Completed
                   </span>
                 </div>
@@ -97,10 +97,10 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
           </div>
         </div>
 
-        <div className="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <div className="p-6 bg-black border-t border-white/20 flex gap-3">
           <button
             onClick={() => setFinalSummary(null)}
-            className="flex-1 py-3 text-xs font-black uppercase tracking-widest bg-white/5 text-text-muted rounded-lg hover:bg-white/10 transition-all border border-white/5"
+            className="flex-1 py-4 text-[11px] font-black uppercase tracking-[0.3em] bg-black text-white/50 rounded-xl hover:text-white hover:border-white transition-all border border-white/20 shadow-none"
           >
             Acknowledge & Archive
           </button>

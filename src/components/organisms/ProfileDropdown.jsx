@@ -65,7 +65,7 @@ const ProfileDropdown = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-72 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="absolute right-0 mt-3 w-72 bg-black border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-4 duration-200">
           {/* Header */}
           <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-linear-to-br from-primary/40 to-secondary/40 border-2 border-white/10 flex items-center justify-center p-0.5 shadow-xl">
@@ -84,10 +84,10 @@ const ProfileDropdown = () => {
               )}
             </div>
             <div className="flex flex-col overflow-hidden">
-              <h3 className="text-base font-bold text-white truncate leading-tight">
+              <h3 className="text-base font-black text-white uppercase truncate leading-tight tracking-widest">
                 {user.name}
               </h3>
-              <p className="text-xs text-text-muted truncate mt-0.5">
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-wide truncate mt-0.5">
                 {user.email}
               </p>
             </div>
@@ -150,13 +150,13 @@ const ProfileDropdown = () => {
 const DropdownItem = ({ icon, label, trailing, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-text-muted hover:text-white hover:bg-white/5 transition-all group duration-200 cursor-pointer"
+    className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all group duration-200 cursor-pointer"
   >
-    <div className="flex items-center gap-3">
-      <span className="p-1.5 rounded-lg bg-white/0 group-hover:bg-white/5 transition-colors">
+    <div className="flex items-center gap-4">
+      <span className="p-1.5 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
         {icon}
       </span>
-      <span className="text-sm font-semibold">{label}</span>
+      <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
     </div>
     {trailing}
   </button>

@@ -16,14 +16,11 @@ const SprintCreationModal = ({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-full max-w-md bg-[#11111E] border border-white/5 rounded-none p-8 sm:p-10 shadow-2xl shadow-primary/20 animate-in zoom-in-95 duration-300 relative overflow-hidden">
-        {/* Glow Element */}
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-1.5 h-6 bg-primary" />
-          <h3 className="text-xl font-bold text-white tracking-widest uppercase">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black animate-in fade-in duration-300">
+      <div className="w-full max-w-md bg-black border border-white/20 rounded-[2rem] p-8 sm:p-10 shadow-3xl animate-in zoom-in-95 duration-300 relative overflow-hidden">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="w-1.5 h-8 bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+          <h3 className="text-2xl font-black text-white tracking-tighter uppercase">
             Initialize Strategic Cycle
           </h3>
         </div>
@@ -42,17 +39,17 @@ const SprintCreationModal = ({
 
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">
-              Connect Objective
+              Connect Objective *
             </label>
             <select
               required
               value={sprintData.project}
               onChange={(e) => setSprintData({ ...sprintData, project: e.target.value })}
-              className="w-full bg-white/[0.03] border border-white/10 rounded-none px-4 py-4 text-white text-[11px] font-bold outline-hidden focus:border-primary/40 focus:bg-white/[0.06] transition-all appearance-none cursor-pointer"
+              className="w-full bg-black border border-white/20 rounded-xl px-4 py-4 text-white text-[11px] font-black tracking-widest uppercase focus:outline-none focus:border-primary focus:bg-white/5 transition-all appearance-none cursor-pointer"
             >
-              <option value="" disabled className="bg-[#11111E]">Select Target Project</option>
+              <option value="" disabled className="bg-black">SELECT TARGET PROJECT</option>
               {projects?.map(p => (
-                <option key={p._id} value={p._id} className="bg-[#11111E]">
+                <option key={p._id} value={p._id} className="bg-black">
                   {p.name}
                 </option>
               ))}
@@ -86,18 +83,17 @@ const SprintCreationModal = ({
             <Button
               type="submit"
               variant="primary"
-              className="flex-1 rounded-none py-4 text-[11px] font-black tracking-widest uppercase"
+              className="flex-1 rounded-xl py-4 text-[11px] font-black tracking-widest uppercase shadow-[0_0_20px_rgba(59,130,246,0.3)]"
               isLoading={isLoading}
             >
               INITIATE
             </Button>
             <Button
               type="button"
-              variant="glass"
               onClick={onClose}
-              className="px-8 rounded-none border border-white/5 text-[11px] font-black uppercase opacity-40 hover:opacity-100"
+              className="px-8 bg-black rounded-xl border border-white/20 text-[11px] font-black text-white/80 uppercase hover:text-white hover:border-primary transition-all shadow-none"
             >
-              ABORT
+              CANCEL
             </Button>
           </div>
         </form>

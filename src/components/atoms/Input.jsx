@@ -17,10 +17,10 @@ const Input = ({
         type={type}
         id={id}
         placeholder={placeholder}
-        className={`w-full px-4 py-2.5 rounded-lg border focus:outline-none focus:ring-2 transition-all transition-duration-200 glass text-text placeholder:text-text-muted/50 ${
+        className={`w-full px-4 py-3.5 bg-black rounded-xl border focus:outline-none transition-all text-[12px] font-black tracking-normal text-white placeholder:text-white/30 ${
           isError
-            ? 'border-status-error focus:ring-status-error/30'
-            : 'border-white/10 focus:ring-primary/40 focus:border-primary/50'
+            ? 'border-status-error focus:border-status-error'
+            : 'border-white/20 focus:border-primary focus:bg-white/5'
         } ${className}`}
         {...props}
       />

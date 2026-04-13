@@ -42,18 +42,18 @@ const MyTasks = () => {
       {/* Page header with the title and description. */}
       <div className="flex justify-between items-end gap-6 flex-wrap">
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight uppercase">
-            {scope === 'personal' ? 'My Missions' : 'Workspace Missions'}
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase">
+            {scope === 'personal' ? 'MY MISSIONS' : 'WORKSPACE MISSIONS'}
           </h1>
-          <p className="text-text-muted text-sm md:text-base font-medium opacity-60 leading-relaxed max-w-2xl">
+          <p className="text-white/50 text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-2xl">
             {scope === 'personal'
-              ? 'Manage and track your assigned tasks across all active projects.'
-              : 'Overview of all tactical directives across the entire workspace.'}
+              ? 'MANAGE AND TRACK YOUR ASSIGNED TASKS ACROSS ALL ACTIVE PROJECTS.'
+              : 'OVERVIEW OF ALL TACTICAL DIRECTIVES ACROSS THE ENTIRE WORKSPACE.'}
           </p>
         </div>
 
         {/* Buttons to switch between different task scopes. */}
-        <div className="flex glass border border-white/5 rounded-2xl p-1 shrink-0 h-fit mb-1">
+        <div className="flex bg-black border border-white/20 rounded-2xl p-1 shrink-0 h-fit mb-1">
           {[
             { id: 'personal', label: 'My Tasks' },
             { id: 'workspace', label: 'Overall Tasks' },
@@ -76,21 +76,21 @@ const MyTasks = () => {
       </div>
 
       {/* Sub-toolbar */}
-      <div className="flex flex-col md:flex-row gap-6 p-1 justify-between items-center border-b border-white/5 pb-8">
+      <div className="flex flex-col md:flex-row gap-6 p-1 justify-between items-center border-b border-white/20 pb-8">
         <div className="relative w-full md:w-96 group">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors z-10"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors z-10"
             size={16}
           />
           <Input
-            placeholder="Search missions..."
+            placeholder="SEARCH MISSIONS..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-12 py-3 rounded-2xl"
+            className="w-full bg-black border border-white/20 text-white rounded-xl pl-12 pr-6 py-3 focus:outline-none focus:border-primary/60 focus:bg-white/5 transition-all text-[11px] font-black uppercase tracking-widest placeholder:text-white/30"
           />
         </div>
 
-        <div className="flex bg-white/[0.02] border border-white/5 rounded-2xl p-1 shrink-0 overflow-x-auto max-w-full no-scrollbar">
+        <div className="flex bg-black border border-white/20 rounded-2xl p-1 shrink-0 overflow-x-auto max-w-full no-scrollbar">
           {[
             'active',
             'in_review',
@@ -103,10 +103,10 @@ const MyTasks = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-6 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap ${
+              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap ${
                 filter === f
-                  ? 'bg-primary/20 border border-primary/30 text-primary shadow-lg shadow-primary/10'
-                  : 'text-text-muted hover:text-white hover:bg-white/5'
+                  ? 'bg-primary/20 border border-primary text-primary shadow-none'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
               {f === 'active'
@@ -140,9 +140,9 @@ const MyTasks = () => {
             />
           ))
         ) : (
-          <div className="col-span-full py-32 text-center glass border border-dashed border-white/5 rounded-[3rem]">
-            <CheckCircle2 className="w-16 h-16 text-status-success mx-auto mb-6 opacity-20" />
-            <h3 className="text-2xl font-black text-white uppercase tracking-tight">
+          <div className="col-span-full py-32 text-center bg-black border border-dashed border-white/20 rounded-[3rem]">
+            <CheckCircle2 className="w-16 h-16 text-status-success mx-auto mb-6 opacity-40" />
+            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">
               {filter === 'due'
                 ? 'No Critical Blockers'
                 : filter === 'completed'
@@ -153,14 +153,14 @@ const MyTasks = () => {
                       ? 'No Active Tasks'
                       : 'All Clear'}
             </h3>
-            <p className="text-text-muted font-bold uppercase tracking-widest text-[10px] mt-2">
+            <p className="text-white/50 font-black uppercase tracking-widest text-[10px] mt-4">
               {filter === 'due'
-                ? 'All your pending items are currently on schedule.'
+                ? 'ALL YOUR PENDING ITEMS ARE CURRENTLY ON SCHEDULE.'
                 : filter === 'completed'
-                  ? "You haven't finalized any tasks in this view yet."
+                  ? 'YOU HAVEN\'T FINALIZED ANY TASKS IN THIS VIEW YET.'
                   : filter === 'in_review'
-                    ? 'You are all caught up with your team reviews.'
-                    : 'Your workspace is fully synchronized and up to date.'}
+                    ? 'YOU ARE ALL CAUGHT UP WITH YOUR TEAM REVIEWS.'
+                    : 'YOUR WORKSPACE IS FULLY SYNCHRONIZED AND UP TO DATE.'}
             </p>
           </div>
         )}
