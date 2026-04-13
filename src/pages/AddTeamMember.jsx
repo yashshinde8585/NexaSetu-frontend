@@ -184,10 +184,10 @@ const AddTeamMember = () => {
             <CheckCircle size={40} strokeWidth={1.5} />
           </div>
 
-          <h2 className="text-3xl font-black text-white mb-3 tracking-tighter uppercase">
-            PERSONNEL <span className="text-primary">INVITED</span>
+          <h2 className="text-2xl font-bold text-white mb-3 tracking-tight uppercase">
+            Personnel <span className="text-primary">Invited</span>
           </h2>
-          <p className="text-white/50 text-sm font-black uppercase tracking-wider mb-12">
+          <p className="text-white/40 text-[10px] font-medium uppercase tracking-widest mb-12">
             New accounts have been provisioned successfully.
           </p>
 
@@ -281,7 +281,7 @@ const AddTeamMember = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 <div className="space-y-6">
                   <div className="relative">
-                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
+                    <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-2 mb-3 block">
                       Full Name
                     </label>
                     <div className="relative group/input">
@@ -300,7 +300,7 @@ const AddTeamMember = () => {
                     </div>
                   </div>
                   <div className="relative">
-                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
+                    <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-2 mb-3 block">
                       Email Address
                     </label>
                     <div className="relative group/input">
@@ -425,7 +425,7 @@ const AddTeamMember = () => {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="max-w-xl w-full h-16 bg-primary hover:bg-primary-dark disabled:opacity-50 text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl shadow-2xl shadow-primary/40 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
+            className="max-w-xl w-full h-16 bg-primary hover:bg-primary-dark disabled:opacity-50 text-black font-bold uppercase tracking-[0.1em] text-[11px] rounded-2xl shadow-2xl shadow-primary/40 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
           >
             {status === 'loading' ? (
               <>

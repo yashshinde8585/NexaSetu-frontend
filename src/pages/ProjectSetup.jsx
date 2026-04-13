@@ -78,10 +78,10 @@ const ProjectSetup = () => {
         {/* Simplified Header */}
         <header className="border-b border-white/20 pb-6 sm:pb-10">
           <div className="space-y-3 sm:space-y-4">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter uppercase leading-none">
-                CREATE NEW PROJECT
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase leading-none">
+                Create New Project
             </h1>
-            <p className="text-[10px] sm:text-[11px] font-black text-white/60 uppercase tracking-[0.4em] pl-4 sm:pl-10 flex items-center gap-3">
+            <p className="text-[10px] sm:text-[11px] font-bold text-white/40 uppercase tracking-widest pl-4 sm:pl-10 flex items-center gap-3">
               <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0 animate-pulse" />
               Set up your project workspace in one step.
             </p>
@@ -112,27 +112,27 @@ const ProjectSetup = () => {
                 <div className="space-y-6 sm:space-y-8">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <FileText size={16} className="text-primary" />
-                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">PROJECT IDENTITY</h2>
+                    <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-widest">PROJECT IDENTITY</h2>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Project Name</label>
+                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Project Name</label>
                       <input 
                         placeholder="E.G. NEXT-GEN ENGINE" 
                         value={mission.name}
                         onChange={(e) => setMission({...mission, name: e.target.value.toUpperCase()})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-5 rounded-lg text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-white/10"
+                        className="w-full h-14 bg-white/5 border border-white/20 px-5 rounded-lg text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-white/10"
                       />
                       <p className="text-[8px] text-white/30 font-bold italic tracking-wider">Give your project a clear, descriptive name.</p>
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Mission Type</label>
+                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Mission Type</label>
                       <select 
                         value={mission.type}
                         onChange={(e) => setMission({...mission, type: e.target.value})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                       >
                         <option value="Product Development">Product Development</option>
                         <option value="Internal Tool">Internal Tool</option>

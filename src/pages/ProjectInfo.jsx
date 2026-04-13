@@ -201,10 +201,10 @@ const ProjectInfo = () => {
             <div className="flex items-center gap-4">
 
               <div className="space-y-1">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase leading-none">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight uppercase leading-none">
                    Sprint <span className="text-primary">Intelligence</span> Core
                 </h1>
-                <p className="text-[10px] sm:text-[11px] font-black text-white/50 uppercase tracking-[0.4em]">
+                <p className="text-[10px] sm:text-[11px] font-bold text-white/40 uppercase tracking-widest">
                   Mission Control for Organizational Development Cycles
                 </p>
               </div>
@@ -229,7 +229,7 @@ const ProjectInfo = () => {
             {canCreate && (
               <button 
                 onClick={() => setShowSprintForm(true)}
-                className="flex-1 sm:flex-none h-14 px-10 bg-primary text-black hover:bg-primary-dark rounded-xl text-[11px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-primary/40 transition-all active:scale-95 group"
+                className="flex-1 sm:flex-none h-14 px-10 bg-primary text-black hover:bg-primary-dark rounded-xl text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/40 transition-all active:scale-95 group"
               >
                 <Plus size={18} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
                 INITIATE NEW SPRINT
