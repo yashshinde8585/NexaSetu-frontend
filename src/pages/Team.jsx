@@ -136,13 +136,10 @@ const Team = () => {
       
       {/* Dynamic Command Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in slide-in-from-top duration-700">
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter leading-none">
-            Workspace <span className="text-primary-light">Personnel</span>
+        <div className="space-y-4">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none uppercase">
+            Team Personnel Directory
           </h1>
-          <p className="text-white/60 text-xs sm:text-sm font-bold max-w-xl leading-relaxed">
-            A comprehensive directory for managing project assignments and tracking workforce distribution across the organization.
-          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
@@ -157,14 +154,12 @@ const Team = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {hasPermission(PERMISSIONS.INVITE_USERS) && (
-            <button
-              onClick={() => navigate('/team/add')}
-              className="px-8 py-4 bg-primary text-black font-black uppercase tracking-[0.1em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
-            >
-              <UserPlus size={18} /> <span className="hidden sm:inline">Invite Operative</span>
-            </button>
-          )}
+          <button
+            onClick={() => navigate('/team/add')}
+            className="px-8 py-4 bg-primary text-black font-bold uppercase tracking-[0.05em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
+          >
+            <UserPlus size={18} /> <span className="hidden sm:inline">Invite Operative</span>
+          </button>
         </div>
       </div>
 
@@ -192,8 +187,8 @@ const Team = () => {
           <div key={i} className="bg-white/[0.04] border border-white/20 rounded-2xl p-4 flex items-center gap-4">
             <div className="p-2.5 rounded-xl bg-white/10 border border-white/10">{stat.icon}</div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/60">{stat.label}</p>
-              <p className="text-lg font-black text-white">{stat.value}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">{stat.label}</p>
+              <p className="text-lg font-bold text-white tracking-tight">{stat.value}</p>
             </div>
           </div>
         ))}
@@ -243,13 +238,13 @@ const Team = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-black text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors">
+                   <div>
+                    <h3 className="text-lg font-bold text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors">
                       {group.name}
                     </h3>
                     <div className="flex items-center gap-2">
                        <ShieldCheck size={12} className="text-primary/50" />
-                       <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{group.members.length} Operators Assigned</span>
+                       <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{group.members.length} Operators Assigned</span>
                     </div>
                   </div>
 
@@ -359,17 +354,7 @@ const Team = () => {
         )}
       </div>
 
-      {/* Footer Connectivity Status */}
-      <div className="pt-20 pb-10 flex items-center justify-center gap-6">
-         <div className="flex items-center gap-2 text-[9px] font-black text-white/10 uppercase tracking-[0.3em]">
-            <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
-            Personnel Database: Connected
-         </div>
-         <div className="h-4 w-[1px] bg-white/5" />
-         <div className="text-[9px] font-black text-white/10 uppercase tracking-[0.3em]">
-            Protocol: 2.1-NEXA
-         </div>
-      </div>
+
     </div>
   );
 };
