@@ -11,9 +11,12 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick }) => {
     >
       <div className="flex justify-between items-start mb-2 gap-4">
         <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-3 mb-1">
             <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">
               {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
+            </span>
+            <span className="text-[9px] font-bold text-text-muted/40 lowercase italic">
+              {task.createdFormatted}
             </span>
             {task.sprintInfo && (
               <span className="text-[7px] font-black bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-text-muted/60 uppercase tracking-tighter">

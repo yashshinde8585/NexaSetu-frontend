@@ -10,6 +10,91 @@ export const USER_ROLES = {
   INTERN: 'INTERN',
 };
 
+// Hierarchical job titles as requested by the user
+export const JOB_TITLES = [
+  {
+    category: 'Engineering Leadership',
+    roles: [
+      {
+        title: 'CTO',
+        role: USER_ROLES.WORKSPACE_ADMIN,
+        description: 'Executive technical oversight',
+      },
+      {
+        title: 'VP Engineering',
+        role: USER_ROLES.WORKSPACE_ADMIN,
+        description: 'Strategic engineering leadership',
+      },
+      {
+        title: 'Engineering Manager',
+        role: USER_ROLES.WORKSPACE_MANAGER,
+        description: 'Team execution & planning',
+      },
+    ],
+  },
+  {
+    category: 'Engineering (IC + Execution)',
+    roles: [
+      {
+        title: 'Tech Lead',
+        role: USER_ROLES.TECH_LEAD,
+        description: 'Technical architecture & guidance',
+      },
+      {
+        title: 'Senior Engineer',
+        role: USER_ROLES.SENIOR_ENGINEER,
+        description: 'Core feature ownership',
+      },
+      {
+        title: 'Software Engineer',
+        role: USER_ROLES.SOFTWARE_ENGINEER,
+        description: 'Feature development',
+      },
+      {
+        title: 'Junior Engineer',
+        role: USER_ROLES.SOFTWARE_ENGINEER,
+        description: 'Entry-level development',
+      },
+      {
+        title: 'Intern',
+        role: USER_ROLES.INTERN,
+        description: 'Restricted learning access',
+      },
+    ],
+  },
+  {
+    category: 'Quality Assurance (Testing Track)',
+    roles: [
+      {
+        title: 'QA Engineer / Software Tester',
+        role: USER_ROLES.SOFTWARE_ENGINEER,
+        description: 'Quality verification & testing',
+      },
+      {
+        title: 'Senior QA Engineer',
+        role: USER_ROLES.SENIOR_ENGINEER,
+        description: 'Advanced testing strategies',
+      },
+      {
+        title: 'QA Lead',
+        role: USER_ROLES.TECH_LEAD,
+        description: 'QA process leadership',
+      },
+    ],
+  },
+  {
+    category: 'People / Operations',
+    roles: [
+      {
+        title: 'HR Manager / People Ops',
+        role: USER_ROLES.WORKSPACE_MANAGER,
+        description: 'Human resources & operations',
+      },
+    ],
+  },
+];
+
+
 // Lists all specific action permissions applicable within the application.
 export const PERMISSIONS = {
   INVITE_USERS: 'INVITE_USERS',

@@ -61,29 +61,38 @@ const ProjectTeam = () => {
   const ROLE_PRIORITY = {
     CTO: 1,
     'VP Engineering': 2,
-    Director: 3,
-    'Engineering Manager': 4,
+    'Engineering Manager': 3,
+    'HR Manager / People Ops': 4,
     'Tech Lead': 5,
+    'QA Lead': 5,
     'Senior Engineer': 6,
+    'Senior QA Engineer': 6,
     'Software Engineer': 7,
-    Intern: 8,
+    'Junior Engineer': 8,
+    'QA Engineer / Software Tester': 8,
+    Intern: 9,
   };
+
 
   const getRoleVisuals = (title) => {
     switch (title) {
       case 'CTO':
       case 'VP Engineering':
-      case 'Director':
       case 'Engineering Manager':
+      case 'HR Manager / People Ops':
         return {
           color: 'text-status-success',
           shadow: 'rgba(34, 197, 94, 0.3)',
         };
       case 'Tech Lead':
+      case 'QA Lead':
         return { color: 'text-primary', shadow: 'rgba(59, 130, 246, 0.3)' };
       case 'Senior Engineer':
+      case 'Senior QA Engineer':
         return { color: 'text-purple-400', shadow: 'rgba(168, 85, 247, 0.3)' };
       case 'Software Engineer':
+      case 'Junior Engineer':
+      case 'QA Engineer / Software Tester':
         return { color: 'text-cyan-400', shadow: 'rgba(34, 211, 238, 0.3)' };
       case 'Intern':
         return { color: 'text-slate-500', shadow: 'rgba(148, 163, 184, 0.3)' };
@@ -94,6 +103,7 @@ const ProjectTeam = () => {
         };
     }
   };
+
 
   const filteredMembers = data.members
     .filter(

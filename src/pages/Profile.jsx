@@ -35,26 +35,30 @@ const Profile = () => {
     switch (title) {
       case 'CTO':
       case 'VP Engineering':
-      case 'Director':
       case 'Engineering Manager':
+      case 'HR Manager / People Ops':
         return {
           color: 'text-status-success',
           shadow: 'rgba(34, 197, 94, 0.3)',
           border: 'border-status-success/20',
         };
       case 'Tech Lead':
+      case 'QA Lead':
         return {
           color: 'text-primary',
           shadow: 'rgba(59, 130, 246, 0.3)',
           border: 'border-primary/20',
         };
       case 'Senior Engineer':
+      case 'Senior QA Engineer':
         return {
           color: 'text-purple-400',
           shadow: 'rgba(168, 85, 247, 0.3)',
           border: 'border-purple-400/20',
         };
       case 'Software Engineer':
+      case 'Junior Engineer':
+      case 'QA Engineer / Software Tester':
         return {
           color: 'text-cyan-400',
           shadow: 'rgba(34, 211, 238, 0.3)',
@@ -74,6 +78,7 @@ const Profile = () => {
         };
     }
   };
+
 
   const visuals = getRoleVisuals(user.jobTitle);
 

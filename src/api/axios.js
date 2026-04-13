@@ -12,7 +12,10 @@ const api = axios.create({
 // Request interceptor: logging and common headers
 api.interceptors.request.use(
   (config) => {
-    // console.log(`[API REQUEST] ${config.method.toUpperCase()} ${config.url}`, config.data || '');
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -21,23 +24,68 @@ api.interceptors.request.use(
 );
 
 // Response interceptor: normalization and automated error handling
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => {
-    // console.log(`[API RESPONSE] ${response.status} ${response.config.url}`);
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
     const normalizedError = normalizeError(error);
 
-    // Log failures persistently for debugging
-    console.error(
-      `[API ERROR] ${normalizedError.status} ${error.config?.url}:`,
-      normalizedError.message
-    );
+    // 🔄 Automated Silent Refresh Architecture
+    if (normalizedError.status === 401 && normalizedError.message === 'token_expired' && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
 
-    // Automated Session Management
-    if (normalizedError.status === 401) {
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Attempt to rotate access token using HttpOnly refresh cookie
+        await api.get('/auth/refresh');
+        isRefreshing = false;
+        processQueue(null);
+        return api(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        processQueue(refreshError);
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+        return Promise.reject(normalizeError(refreshError));
+      }
+    }
+
+    // Standard 401 logout (Invalid token or Session expired)
+    // Only logout if it's a 401 AND it was already a retry (meaning refresh failed)
+    if (normalizedError.status === 401 && originalRequest._retry) {
       window.dispatchEvent(new CustomEvent('auth:logout'));
+    }
+
+    // Handle 403 (Forbidden) - Do NOT logout, just reject
+    if (normalizedError.status === 403) {
+      console.warn('[API] Access forbidden. Performer lacks required privileges.');
     }
 
     // Global Server Down Notification

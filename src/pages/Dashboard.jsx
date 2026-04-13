@@ -24,7 +24,22 @@ import CenteredLoading from '../components/atoms/CenteredLoading';
 
 
 
-// Centralized view of project health, team activity, and AI insights.
+// Specialized Dashboards
+import VPEDashboard from './VPEDashboard';
+import EMDashboard from './EMDashboard';
+import TLDashboard from './TLDashboard';
+import SEDashboard from './SEDashboard';
+import SWEDashboard from './SWEDashboard';
+import QADashboard from './QADashboard';
+import SQADashboard from './SQADashboard';
+import QALeadDashboard from './QALeadDashboard';
+import PeopleOpsDashboard from './PeopleOpsDashboard';
+import JREDashboard from './JREDashboard';
+import InternDashboard from './InternDashboard';
+
+import { resolveDashboard } from './dashboard/DashboardRegistry';
+
+// Centralized view router for project health, team activity, and AI insights.
 const Dashboard = () => {
   const { user } = useAuth();
   const { setProjects, setDashboardContext } = useMagic();
@@ -179,6 +194,17 @@ const Dashboard = () => {
   }
 
   const errorMessage = error?.message || createMutation.error?.message || '';
+
+  // Strategic Role Redirection (Master Dashboard Registry)
+  const TacticalDashboard = resolveDashboard(user);
+
+  if (TacticalDashboard) {
+    return (
+      <React.Suspense fallback={<CenteredLoading />}>
+        <TacticalDashboard />
+      </React.Suspense>
+    );
+  }
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 pb-12 space-y-12">

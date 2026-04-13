@@ -12,19 +12,52 @@ import {
   Target,
   Rocket,
   PlusSquare,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
+import { ROUTES } from '../../constants';
 
 // A collapsible sidebar component that provides main navigation links for the workspace.
 const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
   const location = useLocation();
+  const title = user?.jobTitle?.toLowerCase() || '';
 
   if (location.pathname === '/pricing') return null;
 
   const navItems = [
+    {
+      name: user?.role === 'WORKSPACE_ADMIN' ? 'Admin Panel' :
+            user?.jobTitle === 'CTO' ? 'CTO Command Center' : 
+            user?.jobTitle?.toLowerCase() === 'vp engineering' ? 'Execution Commander' : 
+            (user?.role === 'ENGINEERING_MANAGER' || user?.jobTitle?.toLowerCase() === 'engineering manager') ? 'Team Command Center' :
+            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'System Health Control' :
+            (title.includes('qa lead')) ? 'Quality Command' :
+            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Workforce Strategy' :
+            (title.includes('senior qa engineer')) ? 'Quality Strategy' :
+            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Quality Control' :
+            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Execution Control' :
+            (title.includes('junior engineer')) ? 'Guided Work Assistant' :
+            (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Workspace' :
+            'Personal Work Console',
+      path: user?.role === 'WORKSPACE_ADMIN' ? ROUTES.ADMIN_PANEL :
+            user?.jobTitle === 'CTO' ? '/command-center' :
+            title.includes('vp engineering') ? '/execution-commander' : 
+            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
+            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? '/system-health-control' :
+            (title.includes('qa lead')) ? '/quality-command' :
+            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? '/people-ops' :
+            (title.includes('senior qa engineer')) ? '/quality-strategy' :
+            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? '/quality-control' :
+            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? '/execution-control' :
+            (title.includes('junior engineer')) ? '/guided-assistant' :
+            (user?.role === 'INTERN' || title.includes('intern')) ? '/learning-workspace' :
+            '/work-console',
+      icon: <Shield size={20} />,
+      permission: null, // Allow visibility based on user detection
+    },
     {
       name: 'Dashboard',
       path: '/dashboard',
@@ -140,6 +173,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                 permission: PERMISSIONS.CREATE_PROJECT,
               },
             ].filter(item => {
+              const isAdmin = user?.role === 'WORKSPACE_ADMIN';
+              if (isAdmin) {
+                // Admins only see Create Project in this section, following "System Control" focus
+                return item.name === 'Create Project';
+              }
               const isIntern = user?.role?.toUpperCase() === 'INTERN';
               const hasRegistryPerm = item.name === 'Sprint Management';
               const hasSetupPerm = item.name === 'Create Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
