@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrainCircuit, Loader2, Sparkles, AlertCircle, ChevronDown, ListChecks, ArrowRight } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../atoms/LazyMarkdown';
 import epiService from '../../api/epiService';
 
 const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
@@ -74,9 +74,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                         <Sparkles size={12} className="text-primary animate-pulse" />
                         INTELLIGENCE INSIGHT
                       </h5>
-                      <div className="prose-epi text-lg font-bold text-white/80 leading-relaxed mb-10 max-w-none">
-                         <ReactMarkdown>{data.explanation}</ReactMarkdown>
-                      </div>
+                         <LazyMarkdown>{data.explanation}</LazyMarkdown>
 
                       {/* Tactical Strategy */}
                       {!helpData && !helpLoading && (
@@ -107,7 +105,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                                TACTICAL IMPLEMENTATION STRATEGY
                              </h5>
                              <div className="prose-epi text-base font-bold text-white/80 leading-relaxed max-w-none">
-                                <ReactMarkdown>{helpData}</ReactMarkdown>
+                                <LazyMarkdown>{helpData}</LazyMarkdown>
                              </div>
                          </div>
                       )}
