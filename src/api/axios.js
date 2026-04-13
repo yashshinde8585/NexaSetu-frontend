@@ -6,7 +6,7 @@ const api = axios.create({
     import.meta.env.VITE_API_URL ||
     `${window.location.protocol}//${window.location.hostname}:5000/api`,
   withCredentials: true,
-  timeout: 10000, // 10s timeout
+  timeout: 60000, // 60s — accounts for Render free tier cold start (~30-60s)
 });
 
 // Request interceptor: logging and common headers
