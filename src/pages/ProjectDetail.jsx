@@ -131,23 +131,24 @@ const ProjectDetail = () => {
             <div className="flex flex-wrap items-center gap-3">
             </div>
             
-            <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-tighter leading-[0.9] flex flex-col gap-1">
+            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1] flex flex-col gap-1">
               {isTicketView && (
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-2 py-0.5 bg-secondary/10 border border-secondary/40 rounded text-[9px] font-black text-secondary uppercase tracking-widest">Global Support</span>
+                  <span className="px-2 py-0.5 bg-secondary/10 border border-secondary/40 rounded text-[9px] font-bold text-secondary uppercase tracking-widest">Global Support</span>
+                  <span className="px-2 py-0.5 bg-secondary/10 border border-secondary/40 rounded text-[9px] font-bold text-secondary uppercase tracking-wider">Global Support</span>
                 </div>
               )}
               {project?.name || 'Loading Project...'}
             </h1>
 
             <div className="flex flex-wrap items-center gap-8 pt-2">
-               <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Lead Operator</span>
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Lead Operator</span>
                   <div className="flex items-center gap-2.5">
-                     <div className="w-7 h-7 rounded bg-white/15 flex items-center justify-center text-[10px] font-black text-white border border-white/30">
+                     <div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center text-[10px] font-bold text-white border border-white/20">
                         {project?.lead?.name ? project.lead.name[0].toUpperCase() : 'A'}
                      </div>
-                     <span className="text-[13px] font-black text-white uppercase tracking-tight">{project?.lead?.name || 'ALPH-1'}</span>
+                     <span className="text-[13px] font-bold text-white uppercase tracking-tight">{project?.lead?.name || 'ALPH-1'}</span>
                   </div>
                </div>
 
@@ -155,12 +156,12 @@ const ProjectDetail = () => {
 
                {!isTicketView && (
                  <>
-                   <div className="flex flex-col gap-2">
-                      <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Active Sprint</span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Active Sprint</span>
                       <div className="flex items-center gap-2.5">
                          <CalendarIcon size={14} className="text-primary-light" />
                          <select
-                           className="bg-transparent text-[13px] font-black text-white uppercase focus:outline-none cursor-pointer hover:text-primary transition-colors pr-4"
+                           className="bg-transparent text-[13px] font-bold text-white uppercase focus:outline-none cursor-pointer hover:text-primary transition-colors pr-4"
                            value={project?.sprint || ''}
                            onChange={(e) => updateProjectMutation.mutate({ sprint: e.target.value })}
                          >
@@ -182,7 +183,7 @@ const ProjectDetail = () => {
              {!isTicketView && (
                 <button
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
-                  className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
+                  className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
                     ui.showGithubPanel 
                       ? 'bg-white/20 text-white border-white/40 ring-1 ring-white/20' 
                       : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
@@ -194,7 +195,7 @@ const ProjectDetail = () => {
 
              <button
                onClick={() => ui.setShowAiInput(!ui.showAiInput)}
-               className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
+               className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
                  ui.showAiInput 
                    ? 'bg-status-success text-black border-status-success shadow-status-success/40' 
                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
@@ -204,16 +205,16 @@ const ProjectDetail = () => {
              </button>
              
              <button
-               onClick={() => ui.setShowTaskForm(!ui.showTaskForm)}
-               className={`flex-1 sm:flex-none h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${
-                 ui.showTaskForm
-                   ? 'bg-status-error text-white shadow-status-error/20'
-                   : 'bg-primary text-black hover:bg-primary-dark shadow-primary/40'
-               }`}
-             >
-               {ui.showTaskForm ? <CloseIcon size={18} /> : <Plus size={18} strokeWidth={3} />}
-               {ui.showTaskForm ? 'ABORT' : (isTicketView ? 'NEW TICKET' : 'NEW TASK')}
-             </button>
+                onClick={() => ui.setShowTaskForm(!ui.showTaskForm)}
+                className={`flex-1 sm:flex-none h-12 px-8 rounded-xl font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${
+                  ui.showTaskForm
+                    ? 'bg-status-error text-white shadow-status-error/20'
+                    : 'bg-primary text-black hover:bg-primary-dark shadow-primary/40'
+                }`}
+              >
+                {ui.showTaskForm ? <CloseIcon size={18} /> : <Plus size={18} strokeWidth={3} />}
+                {ui.showTaskForm ? 'ABORT' : (isTicketView ? 'NEW TICKET' : 'NEW TASK')}
+              </button>
           </div>
         </div>
 

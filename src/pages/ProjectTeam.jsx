@@ -112,11 +112,11 @@ const ProjectTeam = () => {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase leading-none truncate max-w-[280px] sm:max-w-md">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight uppercase leading-none truncate max-w-[280px] sm:max-w-md">
                     {data.projectName}
                   </h1>
                 </div>
-                <div className="flex items-center gap-4 text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">
+                <div className="flex items-center gap-4 text-[10px] font-bold text-white/50 uppercase tracking-wider">
                    <span className="flex items-center gap-2">
                       <Users size={12} className="text-primary" />
                       Personnel Roster
@@ -163,10 +163,10 @@ const ProjectTeam = () => {
                     {member.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-black text-lg text-white tracking-tight truncate leading-tight mb-1 group-hover:text-primary-light transition-colors uppercase">
+                    <h3 className="font-bold text-lg text-white tracking-tight truncate leading-tight mb-1 group-hover:text-primary-light transition-colors uppercase">
                       {member.name}
                     </h3>
-                    <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-3">
+                    <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-3">
                       {member.jobTitle || 'UNCLASSIFIED'}
                     </div>
                     <div className="flex items-center gap-2 text-white/60 text-[11px] font-bold truncate">
