@@ -1,6 +1,14 @@
 import React from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Cpu, Check, X as DiscardIcon, Sparkles, RefreshCw, UserPlus, Layers, Zap, Clock, Type, Activity, Calendar, Minus, Plus } from 'lucide-react';
+import Button from '../atoms/Button';
 
-// A specialized panel that leverages AI to generate and refine task details from natural language input.
+/**
+ * Tactical AI Extraction Engine.
+ * Converts natural language directives into structured task objects with high-precision metadata.
+ * Optimized for industrial sunlight legibility.
+ */
 const AIExtractionPanel = ({
   aiInput,
   setAiInput,
@@ -13,200 +21,179 @@ const AIExtractionPanel = ({
   sprints,
 }) => {
   return (
-    <div className="space-y-8">
-      <div className="bg-[#1A1A2E]/50 p-6 rounded-2xl mb-8 shadow-2xl border border-white/5 backdrop-blur-xl">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-primary">
-          AI Task Generation
-        </h3>
-        <div className="space-y-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-500">
+      
+      {/* AI Intelligence Core */}
+      <div className="bg-white/5 p-8 rounded-2xl shadow-3xl border border-white/20 transition-all hover:bg-white/[0.07]">
+        <div className="flex items-center gap-4 mb-6">
+           <h3 className="text-xs font-black uppercase tracking-[0.3em] text-white/50">
+             DESCRIBE YOUR TASK TO AUTO-GENERATE DETAILS
+           </h3>
+        </div>
+        
+        <div className="space-y-6">
           <textarea
-            className="w-full bg-[#0F0F13] border border-white/5 text-sm text-white px-5 py-4 rounded-xl focus:ring-primary/30 focus:ring-1 focus:outline-none placeholder:text-text-muted/30 transition-all font-medium"
-            placeholder="e.g., 'Refactor the authentication middleware to use JWT standard and update the API documentation.'"
-            rows="3"
+            className="w-full bg-black border border-white/25 text-[13px] font-black text-white px-6 py-5 rounded-xl focus:border-primary focus:bg-white/5 focus:outline-none placeholder:text-white/40 transition-all leading-relaxed min-h-[140px] uppercase tracking-widest shadow-inner"
+            placeholder="e.g., 'OPTIMIZE AUTHENTICATION MIDDLEWARE FOR JWT STANDARDS AND UPDATE API DOCUMENTATION...'"
             value={aiInput}
             onChange={(e) => setAiInput(e.target.value)}
           />
-          <button
+          <Button
             onClick={handleAiExtract}
             disabled={isAiProcessing || !aiInput.trim()}
-            className="w-full bg-primary hover:bg-primary-dark disabled:bg-white/5 disabled:text-text-muted/30 text-white font-black py-4 px-6 rounded-xl transition duration-500 flex justify-center items-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20"
+            variant="primary"
+            className="w-full h-14 text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-primary/40 bg-primary text-black"
           >
             {isAiProcessing ? (
-              <>
-                <div className="animate-spin h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full"></div>{' '}
-                Processing...
-              </>
+              <RefreshCw size={18} className="animate-spin mr-3" />
             ) : (
-              <>
-                <span className="text-base text-white/50">✨</span> Generate
-                Task
-              </>
+              <Sparkles size={18} className="mr-3 text-black/40" />
             )}
-          </button>
+            {isAiProcessing ? 'EXTRACTING PARAMETERS...' : 'INITIATE EXTRACTION'}
+          </Button>
         </div>
       </div>
 
+      {/* Suggested Object Manifest */}
       {aiSuggestion && (
-        <div className="bg-[#1A1A2E]/80 backdrop-blur-2xl p-8 rounded-[2rem] mb-8 border border-primary/30 shadow-[0_30px_60px_rgba(0,0,0,0.4)] animate-in fade-in zoom-in-95 duration-500">
-          <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/5">
-            <h3 className="text-sm font-black flex items-center gap-3 uppercase tracking-[0.2em] text-white">
-              <span className="p-2 bg-primary/10 rounded-lg text-primary">
-                🤖
-              </span>{' '}
-              AI Recommendation
-            </h3>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-primary/10 text-primary px-3 py-1.5 rounded-full border border-primary/20">
-              Review Details
-            </span>
+        <div className="bg-black p-6 sm:p-8 rounded-3xl border border-white/10 shadow-3xl animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+            <div className="flex items-center gap-4">
+                <div className="space-y-1">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">VERIFIED AI TASK RECOMMENDATION</h3>
+                </div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Task Title
+
+          <div className="space-y-6">
+            {/* Primary Command Row: Title & Priority */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
+                  <Type size={12} className="text-primary" /> TITLE
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-[#0F0F13] border border-white/5 text-sm font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all"
+                  className="w-full bg-white/5 border border-white/25 text-sm font-black text-white px-6 py-4 rounded-xl focus:border-primary focus:outline-none transition-all uppercase tracking-tighter"
                   value={aiSuggestion.title}
-                  onChange={(e) =>
-                    setAiSuggestion({ ...aiSuggestion, title: e.target.value })
-                  }
+                  onChange={(e) => setAiSuggestion({ ...aiSuggestion, title: e.target.value })}
                 />
               </div>
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Assignee
-                </label>
-                <select
-                  className="w-full bg-[#0F0F13] border border-white/5 text-xs font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer"
-                  value={aiSuggestion.assignedUser || ''}
-                  onChange={(e) =>
-                    setAiSuggestion({
-                      ...aiSuggestion,
-                      assignedUser: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Unassigned</option>
-                  {project?.members
-                    ?.filter((member) => member.role !== 'WORKSPACE_ADMIN')
-                    .map((member) => (
-                      <option key={member._id} value={member._id}>
-                        {member.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
 
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Sprint
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
+                  <Activity size={12} className="text-primary" /> PRIORITY
                 </label>
-                <select
-                  className="w-full bg-[#0F0F13] border border-white/5 text-xs font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer"
-                  value={aiSuggestion.sprint || ''}
-                  onChange={(e) =>
-                    setAiSuggestion({ ...aiSuggestion, sprint: e.target.value })
-                  }
-                >
-                  <option value="">No Active Sprint</option>
-                  {(sprints || []).map((sprint) => (
-                    <option key={sprint._id} value={sprint._id}>
-                      {sprint.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-widest"
+                    value={aiSuggestion.priority || 'medium'}
+                    onChange={(e) => setAiSuggestion({ ...aiSuggestion, priority: e.target.value })}
+                  >
+                    <option value="low" className="bg-[#121212]">P-4 LOW</option>
+                    <option value="medium" className="bg-[#121212]">P-3 STANDARD</option>
+                    <option value="high" className="bg-[#121212]">P-2 HIGH</option>
+                    <option value="urgent" className="bg-[#121212]">P-1 URGENT</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Priority
-                </label>
-                <select
-                  className="w-full bg-[#0F0F13] border border-white/5 text-xs font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer"
-                  value={aiSuggestion.priority || 'medium'}
-                  onChange={(e) =>
-                    setAiSuggestion({
-                      ...aiSuggestion,
-                      priority: e.target.value,
-                    })
-                  }
-                >
-                  <option value="low">Low Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="high">High Priority</option>
-                  <option value="urgent">Urgent Priority</option>
-                </select>
+            {/* Expansive Mission Objective workspace */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
+                <Activity size={12} className="text-primary" /> DESCRIPTION
               </div>
+              <textarea
+                className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-8 py-6 rounded-2xl focus:border-primary transition-all h-[120px] resize-none uppercase tracking-widest leading-relaxed shadow-inner"
+                placeholder="DETAILED OPERATIONAL SPECIFICATIONS..."
+                value={aiSuggestion.description}
+                onChange={(e) => setAiSuggestion({ ...aiSuggestion, description: e.target.value })}
+              />
+            </div>
 
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Estimated Time
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="number"
-                    className="w-full bg-[#0F0F13] border border-white/5 text-sm font-bold text-white px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all"
-                    placeholder="30"
-                    value={aiSuggestion.estimatedDuration || 30}
-                    onChange={(e) =>
-                      setAiSuggestion({
-                        ...aiSuggestion,
-                        estimatedDuration: parseInt(e.target.value) || 0,
-                      })
-                    }
-                  />
+            {/* Secondary Fieldset Architecture */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 pt-6 border-t border-white/5">
+              <div className="space-y-6">
+                {/* Compact Operator Alignment */}
+                <div className="flex items-center justify-between gap-4 py-2 border-b border-white/5">
+                  <div className="flex items-center gap-3 shrink-0">
+                    <UserPlus size={12} className="text-white/20" />
+                    <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">ASSIGN TO</label>
+                  </div>
                   <select
-                    className="w-full bg-[#0F0F13] border border-white/5 text-[10px] font-bold text-white px-4 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 appearance-none cursor-pointer uppercase tracking-widest"
-                    value={aiSuggestion.durationUnit || 'min'}
-                    onChange={(e) =>
-                      setAiSuggestion({
-                        ...aiSuggestion,
-                        durationUnit: e.target.value,
-                      })
-                    }
+                    className="bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-1.5 rounded-lg focus:border-primary transition-all cursor-pointer uppercase tracking-widest outline-none min-w-[160px]"
+                    value={aiSuggestion.assignedUser || ''}
+                    onChange={(e) => setAiSuggestion({ ...aiSuggestion, assignedUser: e.target.value })}
                   >
-                    <option value="min">Minutes</option>
-                    <option value="hours">Hours</option>
-                    <option value="days">Days</option>
+                    <option value="" className="bg-[#121212]">UNASSIGNED</option>
+                    {project?.members?.filter(m => m.role !== 'WORKSPACE_ADMIN').map(m => (
+                      <option key={m._id} value={m._id} className="bg-[#121212]">{m.name.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
+                    <Layers size={12} className="text-primary" /> SPRINT PHASE
+                  </label>
+                  <select
+                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all cursor-pointer uppercase tracking-widest"
+                    value={aiSuggestion.sprint || ''}
+                    onChange={(e) => setAiSuggestion({ ...aiSuggestion, sprint: e.target.value })}
+                  >
+                    <option value="" className="bg-[#121212]">NO ACTIVE SPRINT</option>
+                    {(sprints || []).map(s => (
+                      <option key={s._id} value={s._id} className="bg-[#121212]">{s.name.toUpperCase()}</option>
+                    ))}
                   </select>
                 </div>
               </div>
 
-              <div className="group">
-                <label className="block text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1 group-focus-within:text-primary transition-colors">
-                  Task Description
-                </label>
-                <textarea
-                  className="w-full bg-[#0F0F13] border border-white/5 text-sm font-medium text-white/80 px-5 py-3 rounded-xl focus:ring-primary/20 focus:ring-1 focus:outline-none focus:border-primary/30 transition-all h-[134px] resize-none"
-                  value={aiSuggestion.description}
-                  onChange={(e) =>
-                    setAiSuggestion({
-                      ...aiSuggestion,
-                      description: e.target.value,
-                    })
-                  }
-                />
+              {/* Time & Constraints Parameters */}
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-1 border-b border-white/5">
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Clock size={12} className="text-white/20" />
+                    <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">DURATION</label>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4 justify-start sm:justify-end">
+                    <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/10 shrink-0">
+                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: Math.max(0, (aiSuggestion.estimatedDuration || 0) - 5) })} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-all"><Minus size={14}/></button>
+                      <input type="number" className="bg-transparent text-xs font-black text-white text-center w-8 focus:outline-none" value={aiSuggestion.estimatedDuration || 30} onChange={(e) => setAiSuggestion({ ...aiSuggestion, estimatedDuration: parseInt(e.target.value) || 0 })} />
+                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: (aiSuggestion.estimatedDuration || 0) + 5 })} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-all"><Plus size={14}/></button>
+                    </div>
+                    <button type="button" onClick={() => {const u=['min','hours','days']; setAiSuggestion({...aiSuggestion, durationUnit:u[(u.indexOf(aiSuggestion.durationUnit||'min')+1)%3]});}} className="px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg text-[9px] font-black text-primary uppercase">{aiSuggestion.durationUnit||'min'}</button>
+                    <div className="flex gap-3 pl-4 border-l border-white/10 h-6 items-center">
+                      {['30M','1H','1D'].map((l,i) => <button key={l} type="button" onClick={()=>setAiSuggestion({...aiSuggestion, estimatedDuration:[30,1,1][i], durationUnit:['min','hours','days'][i]})} className="text-[9px] font-black text-white/20 hover:text-white transition-all">{l}</button>)}
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
             </div>
           </div>
-          <div className="flex gap-4 mt-8">
-            <button
+          
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-white/10">
+            <Button
               onClick={() => handleCreateTask(aiSuggestion)}
-              className="flex-1 bg-primary hover:bg-primary-dark text-white font-black py-4 px-6 rounded-xl transition-all shadow-lg active:scale-95 text-[10px] uppercase tracking-widest shadow-primary/20"
+              variant="primary"
+              className="flex-1 h-14 text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-primary/40 bg-primary text-black"
             >
-              ✓ Create Task
-            </button>
-            <button
+              <Check size={18} strokeWidth={3} className="mr-3" /> COMMIT OBJECTIVE
+            </Button>
+            <Button
               onClick={() => setAiSuggestion(null)}
-              className="bg-status-error/10 text-status-error hover:bg-status-error/20 font-black py-4 px-10 rounded-xl transition-all text-[10px] uppercase tracking-widest border border-status-error/20"
+              variant="danger"
+              className="h-14 px-12 text-[11px] font-black uppercase tracking-[0.3em] bg-white/10 border border-white/20 text-white hover:bg-status-error hover:text-black hover:border-status-error transition-all"
             >
-              Discard
-            </button>
+              <DiscardIcon size={18} strokeWidth={3} className="mr-3" /> DISCARD
+            </Button>
           </div>
+
+          {/* Tactical Overlay */}
+
         </div>
       )}
     </div>

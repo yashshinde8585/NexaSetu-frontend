@@ -9,21 +9,21 @@ import React from 'react';
  * @param {function} onClick - Click handler
  */
 const FunctionalCard = ({ title, metrics, focus, id, onClick }) => (
-  <div id={id} onClick={onClick} className="bg-slate-900 border border-slate-800 p-5 rounded-lg hover:border-slate-700 transition-all shadow-lg group cursor-pointer">
-    <h3 className="text-sm font-bold mb-4 flex justify-between items-center text-slate-100 italic">
+  <div id={id} onClick={onClick} className="bg-black border border-white/20 p-5 rounded-2xl hover:border-primary transition-all shadow-none group cursor-pointer">
+    <h3 className="text-[11px] font-black uppercase tracking-widest mb-6 flex justify-between items-center text-white">
       {title}
-      <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 px-2 py-0.5 rounded uppercase text-slate-500 tracking-widest cursor-pointer">Drill Down ↗</span>
+      <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 px-2 py-1 rounded text-white/60 tracking-widest cursor-pointer">DRILL DOWN ↗</span>
     </h3>
     <div className="grid grid-cols-2 gap-y-3">
       {metrics.map((m, i) => (
-        <div key={i} className="flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase">{m.label}</span>
-          <span className={`text-lg font-bold ${m.color || 'text-slate-300'}`}>{m.value}</span>
+        <div key={i} className="flex flex-col gap-1 border-l border-white/10 pl-3">
+          <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">{m.label}</span>
+          <span className={`text-xl font-black ${m.color || 'text-white'}`}>{m.value}</span>
         </div>
       ))}
     </div>
-    <div className="mt-4 pt-3 border-t border-slate-800/50">
-      <span className="text-[10px] text-slate-600 uppercase font-bold tracking-widest">Focus: {focus}</span>
+    <div className="mt-5 pt-4 border-t border-white/10">
+      <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Focus: {focus}</span>
     </div>
   </div>
 );

@@ -29,21 +29,20 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     {
-      name: user?.role === 'WORKSPACE_ADMIN' ? 'Admin Panel' :
-            user?.jobTitle === 'CTO' ? 'CTO Command Center' : 
-            user?.jobTitle?.toLowerCase() === 'vp engineering' ? 'Execution Commander' : 
-            (user?.role === 'ENGINEERING_MANAGER' || user?.jobTitle?.toLowerCase() === 'engineering manager') ? 'Team Command Center' :
+      name: title.includes('cto') ? 'CTO Command Center' : 
+            title.includes('vp engineering') ? 'Execution Commander' : 
+            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? 'Team Command Center' :
             (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'System Health Control' :
             (title.includes('qa lead')) ? 'Quality Command' :
-            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Workforce Strategy' :
+            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Dashboard' :
             (title.includes('senior qa engineer')) ? 'Quality Strategy' :
             (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Quality Control' :
             (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Execution Control' :
             (title.includes('junior engineer')) ? 'Guided Work Assistant' :
             (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Workspace' :
+            user?.role === 'WORKSPACE_ADMIN' ? 'Admin Panel' :
             'Personal Work Console',
-      path: user?.role === 'WORKSPACE_ADMIN' ? ROUTES.ADMIN_PANEL :
-            user?.jobTitle === 'CTO' ? '/command-center' :
+      path: title.includes('cto') ? '/cto-dashboard' :
             title.includes('vp engineering') ? '/execution-commander' : 
             (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
             (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? '/system-health-control' :
@@ -54,6 +53,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? '/execution-control' :
             (title.includes('junior engineer')) ? '/guided-assistant' :
             (user?.role === 'INTERN' || title.includes('intern')) ? '/learning-workspace' :
+            user?.role === 'WORKSPACE_ADMIN' ? ROUTES.ADMIN_PANEL :
             '/work-console',
       icon: <Shield size={20} />,
       permission: null, // Allow visibility based on user detection
@@ -63,7 +63,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       path: '/dashboard',
       icon: <LayoutDashboard size={20} />,
       permission: null,
-      hidden: user?.role === 'WORKSPACE_ADMIN'
+      hidden: user?.role === 'WORKSPACE_ADMIN' || user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')
     },
     {
       name: 'Team Members',
@@ -93,7 +93,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <aside
-        className={`w-64 bg-background-dark border-r border-white/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-2xl md:shadow-none`}
+        className={`w-64 bg-black border-r border-white/20 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-3xl md:shadow-none`}
       >
         <div className="p-6">
           <Link to="/" className="flex items-center gap-3 group">
@@ -107,7 +107,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         <nav className="flex-1 mt-4 px-0 space-y-1">
-          <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">
+          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4">
             Workspace
           </div>
           {navItems.map((item) => (
@@ -120,7 +120,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     ? 'opacity-40 cursor-not-allowed'
                     : isActive
                       ? 'text-white bg-linear-to-r from-primary/10 via-primary/5 to-transparent'
-                      : 'text-text-muted hover:text-white hover:bg-white/5'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`
               }
               onClick={(e) => {
@@ -138,7 +138,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className={`transition-all duration-300 ${
                       !item.disabled && isActive
                         ? 'text-primary drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] scale-110'
-                        : 'text-text-muted/60 group-hover:text-white'
+                        : 'text-white/50 group-hover:text-white'
                     }`}
                   >
                     {item.icon}
@@ -151,7 +151,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           ))}
 
           <div className="pt-6">
-            <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">
+            <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4">
               Management
             </div>
             {[
@@ -168,7 +168,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 icon: <Settings size={18} />,
               },
               {
-                name: 'Create Project',
+                name: 'Project Setup',
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
@@ -176,13 +176,13 @@ const Sidebar = ({ isOpen, onClose }) => {
             ].filter(item => {
               const isAdmin = user?.role === 'WORKSPACE_ADMIN';
               if (isAdmin) {
-                // Admins only see Create Project in this section, following "System Control" focus
-                return item.name === 'Create Project';
+                // Admins only see Project Setup in this section, following "System Control" focus
+                return item.name === 'Project Setup';
               }
               const isIntern = user?.role?.toUpperCase() === 'INTERN';
               const hasRegistryPerm = item.name === 'Sprint Management';
-              const hasSetupPerm = item.name === 'Create Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
-              const otherItems = !['Sprint Management', 'Create Project'].includes(item.name);
+              const hasSetupPerm = item.name === 'Project Setup' && hasPermission(PERMISSIONS.CREATE_PROJECT);
+              const otherItems = !['Sprint Management', 'Project Setup'].includes(item.name);
               
               return hasRegistryPerm || hasSetupPerm || otherItems;
             })
@@ -197,7 +197,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                       ? 'opacity-40 cursor-not-allowed'
                       : isActive
                         ? 'text-white bg-linear-to-r from-secondary/10 via-secondary/5 to-transparent'
-                        : 'text-text-muted hover:text-white hover:bg-white/5'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`
                 }
               >
@@ -210,7 +210,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                       className={`transition-all duration-300 ${
                         isActive
                           ? 'text-secondary drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] scale-110'
-                          : 'text-text-muted/60 group-hover:text-white'
+                          : 'text-white/50 group-hover:text-white'
                       }`}
                     >
                       {item.icon}

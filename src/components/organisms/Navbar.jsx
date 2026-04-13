@@ -16,14 +16,14 @@ const Navbar = ({ onToggleSidebar }) => {
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 py-3 sm:py-4 bg-background-dark/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+    <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 py-3 sm:py-4 bg-black border-b border-white/15 transition-all duration-300">
       {user ? (
         <>
           {/* Left Column: Breadcrumb */}
           <div className="flex items-center gap-4 shrink-0 px-2 h-9 min-h-[36px]">
             <button
               onClick={onToggleSidebar}
-              className="p-2 -ml-2 text-text-muted hover:text-white md:hidden transition-colors"
+              className="p-2 -ml-2 text-white/60 hover:text-white md:hidden transition-colors"
               aria-label="Toggle Sidebar"
             >
               <Menu size={24} aria-hidden="true" />
@@ -34,20 +34,33 @@ const Navbar = ({ onToggleSidebar }) => {
                   const path = location.pathname;
                   const breadcrumbMap = {
                     [ROUTES.DASHBOARD]: 'Dashboard',
+                    [ROUTES.COMMAND_CENTER]: 'CTO Console',
+                    [ROUTES.EXECUTION_COMMANDER]: 'Execution',
+                    [ROUTES.TEAM_COMMAND_CENTER]: 'Team Control',
+                    [ROUTES.SYSTEM_HEALTH_CONTROL]: 'Health',
+                    [ROUTES.QUALITY_COMMAND]: 'Quality',
+                    [ROUTES.PEOPLE_OPS]: 'People',
+                    [ROUTES.QUALITY_STRATEGY]: 'Strategy',
+                    [ROUTES.QUALITY_CONTROL]: 'QC',
+                    [ROUTES.EXECUTION_CONTROL]: 'Execution',
+                    [ROUTES.GUIDED_WORK_ASSISTANT]: 'Assistant',
+                    [ROUTES.LEARNING_WORKSPACE]: 'Learning',
+                    [ROUTES.ADMIN_PANEL]: 'Admin',
+                    [ROUTES.PERSONAL_WORK_CONSOLE]: 'Console',
                     [ROUTES.PORTFOLIO || '/portfolio']: 'Portfolio',
-                    [ROUTES.TEAMS]: 'Personnel',
-                    '/team/add': 'Personnel Registry',
-                    '/project-info': 'Sprint Management',
-                    '/project-setup': 'Create Project',
-                    [ROUTES.MY_TASKS]: 'Tasks & Tickets',
-                    '/velocity': 'Tactical Velocity',
+                    [ROUTES.TEAMS]: 'Teams',
+                    '/team/add': 'Registry',
+                    '/project-info': 'Management',
+                    '/project-setup': 'Setup',
+                    [ROUTES.MY_TASKS]: 'Tasks',
+                    '/velocity': 'Velocity',
                     [ROUTES.PROFILE || '/profile']: 'Profile',
                     [ROUTES.SETTINGS]: 'Preferences',
-                    '/theme': 'Interface Themes',
+                    '/theme': 'Themes',
                   };
 
                   if (breadcrumbMap[path]) return breadcrumbMap[path];
-                  if (path.startsWith('/team/project/')) return 'Personnel';
+                  if (path.startsWith('/team/project/')) return 'Team';
                   if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
                   if (path.startsWith('/project/')) return 'Tasks & Tickets';
                   if (path.startsWith('/task/')) return 'Task Detail';
@@ -96,13 +109,13 @@ const Navbar = ({ onToggleSidebar }) => {
           <div className="flex gap-4 sm:gap-6 items-center">
             <Link
               to={ROUTES.LOGIN}
-              className="text-xs sm:text-sm font-semibold text-text-muted hover:text-white transition-colors whitespace-nowrap"
+              className="text-xs sm:text-sm font-black text-white/70 hover:text-white uppercase tracking-widest transition-colors whitespace-nowrap"
             >
               Sign In
             </Link>
             <Link
               to={ROUTES.REGISTER}
-              className="text-xs sm:text-sm font-bold bg-white hover:bg-white/90 text-background-dark px-4 sm:px-5 py-2 rounded-xl transition-all shadow-lg hover:shadow-white/10 active:scale-95 whitespace-nowrap"
+              className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all shadow-xl hover:shadow-white/20 active:scale-95 whitespace-nowrap"
             >
               Get Started
             </Link>

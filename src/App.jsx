@@ -73,9 +73,6 @@ function App() {
     const role = user.role;
     const title = user.jobTitle?.toLowerCase() || '';
 
-    // Workspace Admin Level Priority
-    if (role === 'WORKSPACE_ADMIN') return ROUTES.ADMIN_PANEL;
-
     // Executive Level Priority
     if (title.includes('cto')) return ROUTES.COMMAND_CENTER;
     if (title.includes('vp engineering')) return ROUTES.EXECUTION_COMMANDER;
@@ -88,6 +85,9 @@ function App() {
     if (role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) return ROUTES.EXECUTION_CONTROL;
     if (title.includes('junior engineer')) return ROUTES.GUIDED_WORK_ASSISTANT;
     if (role === 'INTERN' || title.includes('intern')) return ROUTES.LEARNING_WORKSPACE;
+
+    // Workspace Admin Level Priority
+    if (role === 'WORKSPACE_ADMIN') return ROUTES.ADMIN_PANEL;
 
     return ROUTES.PERSONAL_WORK_CONSOLE;
   };
@@ -208,6 +208,8 @@ function App() {
                     user ? (
                       user.role === 'WORKSPACE_ADMIN' ? (
                         <Navigate to={ROUTES.ADMIN_PANEL} replace />
+                      ) : (user.role === 'HR_MANAGER' || user.jobTitle?.toLowerCase().includes('people ops') || user.jobTitle?.toLowerCase().includes('hr manager')) ? (
+                        <Navigate to={ROUTES.PEOPLE_OPS} replace />
                       ) : (
                         <Dashboard />
                       )
@@ -219,7 +221,7 @@ function App() {
                 <Route
                   path={ROUTES.COMMAND_CENTER}
                   element={
-                    user && user.role === 'WORKSPACE_ADMIN' ? (
+                    user && (user.role === 'WORKSPACE_ADMIN' || user.jobTitle?.toLowerCase().includes('cto')) ? (
                       <CTODashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -229,7 +231,12 @@ function App() {
                 <Route
                   path={ROUTES.EXECUTION_COMMANDER}
                   element={
-                    user && (user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER' || user.role === 'VP_ENGINEERING') ? (
+                    user && (
+                      user.role === 'WORKSPACE_ADMIN' || 
+                      user.role === 'VP_ENGINEERING' || 
+                      user.role === 'WORKSPACE_MANAGER' ||
+                      user.jobTitle?.toLowerCase().includes('vp engineering')
+                    ) ? (
                       <VPEDashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -239,7 +246,12 @@ function App() {
                 <Route
                   path={ROUTES.TEAM_COMMAND_CENTER}
                   element={
-                    user && (user.role === 'ENGINEERING_MANAGER' || user.jobTitle?.toLowerCase() === 'engineering manager' || user.role === 'WORKSPACE_ADMIN' || user.role === 'TECH_LEAD') ? (
+                    user && (
+                      user.role === 'ENGINEERING_MANAGER' || 
+                      user.role === 'WORKSPACE_ADMIN' || 
+                      user.role === 'TECH_LEAD' ||
+                      user.jobTitle?.toLowerCase().includes('engineering manager')
+                    ) ? (
                       <EMDashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -249,7 +261,12 @@ function App() {
                 <Route
                   path={ROUTES.SYSTEM_HEALTH_CONTROL}
                   element={
-                    user && (user.role === 'TECH_LEAD' || user.jobTitle?.toLowerCase() === 'tech lead' || user.role === 'WORKSPACE_ADMIN' || user.role === 'VP_ENGINEERING') ? (
+                    user && (
+                      user.role === 'TECH_LEAD' || 
+                      user.role === 'WORKSPACE_ADMIN' || 
+                      user.role === 'VP_ENGINEERING' ||
+                      user.jobTitle?.toLowerCase().includes('tech lead')
+                    ) ? (
                       <TLDashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -309,7 +326,14 @@ function App() {
                 <Route
                   path={ROUTES.QUALITY_STRATEGY}
                   element={
-                    user && (user.role === 'QA_ENGINEER' || user.jobTitle?.toLowerCase() === 'qa lead' || user.role === 'TECH_LEAD' || user.role === 'ENGINEERING_MANAGER' || user.role === 'VP_ENGINEERING' || user.role === 'WORKSPACE_ADMIN') ? (
+                    user && (
+                      user.role === 'QA_ENGINEER' || 
+                      user.jobTitle?.toLowerCase().includes('senior qa engineer') || 
+                      user.role === 'TECH_LEAD' || 
+                      user.role === 'ENGINEERING_MANAGER' || 
+                      user.role === 'VP_ENGINEERING' || 
+                      user.role === 'WORKSPACE_ADMIN'
+                    ) ? (
                       <SQADashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -319,7 +343,14 @@ function App() {
                 <Route
                   path={ROUTES.QUALITY_COMMAND}
                   element={
-                    user && (user.role === 'QA_ENGINEER' || user.jobTitle?.toLowerCase() === 'qa lead' || user.role === 'TECH_LEAD' || user.role === 'ENGINEERING_MANAGER' || user.role === 'VP_ENGINEERING' || user.role === 'WORKSPACE_ADMIN') ? (
+                    user && (
+                      user.role === 'QA_ENGINEER' || 
+                      user.jobTitle?.toLowerCase().includes('qa lead') || 
+                      user.role === 'TECH_LEAD' || 
+                      user.role === 'ENGINEERING_MANAGER' || 
+                      user.role === 'VP_ENGINEERING' || 
+                      user.role === 'WORKSPACE_ADMIN'
+                    ) ? (
                       <QALeadDashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />
@@ -329,7 +360,14 @@ function App() {
                 <Route
                   path={ROUTES.PEOPLE_OPS}
                   element={
-                    user && (user.role === 'HR_MANAGER' || user.role === 'WORKSPACE_ADMIN' || user.jobTitle?.toLowerCase() === 'people ops' || user.role === 'VP_ENGINEERING' || user.role === 'ENGINEERING_MANAGER') ? (
+                    user && (
+                      user.role === 'HR_MANAGER' || 
+                      user.role === 'WORKSPACE_ADMIN' || 
+                      user.jobTitle?.toLowerCase().includes('people ops') || 
+                      user.jobTitle?.toLowerCase().includes('hr manager') ||
+                      user.role === 'VP_ENGINEERING' || 
+                      user.role === 'ENGINEERING_MANAGER'
+                    ) ? (
                       <PeopleOpsDashboard />
                     ) : (
                       <Navigate to={ROUTES.DASHBOARD} replace />

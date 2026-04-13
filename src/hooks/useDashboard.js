@@ -108,10 +108,11 @@ export const useDashboard = (user, initialSprintId = null) => {
     },
   });
 
-  const handleCreateProject = async (e) => {
-    e.preventDefault();
-    const name = newProjectName.trim();
-    if (name) return createMutation.mutateAsync({ name, sprintId: selectedSprintId });
+  const handleCreateProject = async (data) => {
+    // If a simple string is passed, wrap it in an object for backward compatibility
+    const projectData = typeof data === 'string' ? { name: data } : data;
+    const name = projectData.name?.trim();
+    if (name) return createMutation.mutateAsync({ ...projectData, name, sprintId: selectedSprintId });
   };
 
   const visibleProjects = useMemo(() => {

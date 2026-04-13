@@ -65,9 +65,17 @@ api.interceptors.response.use(
 
       try {
         // Attempt to rotate access token using HttpOnly refresh cookie
-        await api.get('/auth/refresh');
+        const res = await api.get('/auth/refresh');
+        const { token } = res.data;
+        
+        if (token) {
+          localStorage.setItem('token', token);
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          originalRequest.headers['Authorization'] = `Bearer ${token}`;
+        }
+
         isRefreshing = false;
-        processQueue(null);
+        processQueue(null, token);
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;
