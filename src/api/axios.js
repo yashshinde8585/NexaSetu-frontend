@@ -3,8 +3,8 @@ import { normalizeError } from './apiUtils';
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_BASE_URL ||
-    `http://${window.location.hostname}:5000/api`,
+    import.meta.env.VITE_API_URL ||
+    `${window.location.protocol}//${window.location.hostname}:5000/api`,
   withCredentials: true,
   timeout: 10000, // 10s timeout
 });
