@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Activity, AlertCircle, CheckCircle2, ChevronRight, BrainCircuit, FileText } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../atoms/LazyMarkdown';
 import epiService from '../../api/epiService';
 import StakeholderReportModal from './StakeholderReportModal';
 
@@ -106,7 +106,7 @@ const ProjectHealthSummary = ({ sprintId, manualTrigger = false }) => {
                 </p>
             ) : data ? (
                 <div className="prose-epi text-base sm:text-lg font-medium text-white/80 leading-relaxed">
-                    <ReactMarkdown>{data.narrative}</ReactMarkdown>
+                    <LazyMarkdown>{data.narrative}</LazyMarkdown>
                 </div>
             ) : manualTrigger && !hasInitialized ? (
                 <div className="flex flex-col items-start gap-4">

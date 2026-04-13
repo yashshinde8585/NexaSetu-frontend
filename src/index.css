@@ -402,6 +402,22 @@
     animation: shimmer-logo 4s infinite linear;
   }
 
+  /* GPU compositing hints – prevent layout thrashing on animated elements */
+  .animate-rotate-core,
+  .animate-float,
+  .animate-float-card,
+  .animate-scan,
+  .animate-data-flow,
+  .animate-shimmer-logo {
+    will-change: transform;
+  }
+
+  .animate-pulse-node,
+  .animate-pulse-core,
+  .animate-pulse-ring {
+    will-change: opacity, transform;
+  }
+
   .bg-grid-white {
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 30px 30px;
@@ -469,5 +485,17 @@
 
   .nexa-datepicker .react-datepicker__triangle {
     display: none !important;
+  }
+
+  /* ── Accessibility: Respect OS-level reduced-motion preference ───────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
