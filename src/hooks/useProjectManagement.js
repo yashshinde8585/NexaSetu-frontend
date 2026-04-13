@@ -24,6 +24,7 @@ export const useProjectManagement = (id, user) => {
     priority: 'medium',
     estimatedDuration: 30,
     durationUnit: 'min',
+    dueDate: '',
   });
   const [githubToken, setGithubToken] = useState('');
   const [githubSuggestions, setGithubSuggestions] = useState([]);
@@ -107,6 +108,7 @@ export const useProjectManagement = (id, user) => {
         priority: 'medium',
         estimatedDuration: 30,
         durationUnit: 'min',
+        dueDate: '',
       });
       queryClient.invalidateQueries({
         queryKey: ['tasks', id, selectedSprintId],
@@ -275,7 +277,7 @@ export const useProjectManagement = (id, user) => {
     ai: {
       input: aiInput,
       setInput: setAiInput,
-      processing: aiExtractMutation.isLoading,
+      processing: aiExtractMutation.isPending,
       suggestion: aiSuggestion,
       setSuggestion: setAiSuggestion,
       extract: () => aiExtractMutation.mutate(aiInput),
@@ -290,7 +292,7 @@ export const useProjectManagement = (id, user) => {
       loadingRepos: reposQuery.isLoading,
       suggestions: githubSuggestions,
       setSuggestions: setGithubSuggestions,
-      isFetchingActivity: githubActivityMutation.isLoading,
+      isFetchingActivity: githubActivityMutation.isPending,
       connect: () => githubConnectMutation.mutate(githubToken),
       linkRepo: (repo) => githubLinkRepoMutation.mutate(repo),
       fetchRepos: () => reposQuery.refetch(),

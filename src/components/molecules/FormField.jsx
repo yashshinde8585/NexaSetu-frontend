@@ -18,7 +18,7 @@ const FormField = ({
           {label && (
             <label
               htmlFor={id}
-              className="text-[10px] font-bold text-text-muted/60 uppercase tracking-[0.2em]"
+              className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1"
             >
               {label}
               {required && <span className="text-status-error ml-1">*</span>}
@@ -38,7 +38,7 @@ const FormField = ({
         {Icon && (
           <Icon
             size={17}
-            className="absolute left-4.5 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors"
           />
         )}
       </div>

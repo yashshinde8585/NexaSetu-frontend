@@ -3,8 +3,8 @@ import { normalizeError } from './apiUtils';
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_BASE_URL ||
-    `http://${window.location.hostname}:5000/api`,
+    import.meta.env.VITE_API_URL ||
+    `${window.location.protocol}//${window.location.hostname}:5000/api`,
   withCredentials: true,
   timeout: 10000, // 10s timeout
 });
@@ -65,9 +65,17 @@ api.interceptors.response.use(
 
       try {
         // Attempt to rotate access token using HttpOnly refresh cookie
-        await api.get('/auth/refresh');
+        const res = await api.get('/auth/refresh');
+        const { token } = res.data;
+        
+        if (token) {
+          localStorage.setItem('token', token);
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          originalRequest.headers['Authorization'] = `Bearer ${token}`;
+        }
+
         isRefreshing = false;
-        processQueue(null);
+        processQueue(null, token);
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;

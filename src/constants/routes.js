@@ -7,7 +7,7 @@ export const ROUTES = {
   TASK_DETAIL: (id) => `/task/${id}`,
   TEAMS: '/teams',
   SETTINGS: '/settings',
-  COMMAND_CENTER: '/command-center',
+  COMMAND_CENTER: '/cto-dashboard',
   EXECUTION_COMMANDER: '/execution-commander',
   TEAM_COMMAND_CENTER: '/team-command-center',
   SYSTEM_HEALTH_CONTROL: '/system-health-control',
@@ -22,4 +22,5 @@ export const ROUTES = {
   ADMIN_PANEL: '/admin/dashboard',
   LOGIN: '/login',
   REGISTER: '/register',
+  PROFILE: '/profile',
 };

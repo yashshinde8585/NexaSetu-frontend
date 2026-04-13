@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Users,
   Mail,
@@ -13,16 +13,45 @@ import {
   ChevronDown,
   Box,
   Rocket,
+  Zap,
+  Globe,
+  Layout,
+  ChevronRight,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import TeamService from '../api/teamService';
-import { USER_ROLES } from '../constants';
-
+import { USER_ROLES, ROUTES } from '../constants';
 import { useNavigate } from 'react-router-dom';
-
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
+import Skeleton from '../components/atoms/Skeleton';
 
-// Manages the global workspace roster, groupings by project, and outstanding invitations.
+const TeamSkeleton = () => (
+  <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 space-y-10 bg-black min-h-screen">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-12 w-64 md:w-96" />
+        <Skeleton className="h-4 w-full max-w-xl" />
+      </div>
+      <div className="flex gap-4">
+        <Skeleton className="h-14 w-64 hidden sm:block" />
+        <Skeleton className="h-14 w-40" />
+      </div>
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full" />)}
+    </div>
+    <div className="space-y-6">
+      <Skeleton className="h-4 w-40" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <Skeleton key={i} className="h-64 w-full rounded-[2.5rem]" />)}
+      </div>
+    </div>
+  </div>
+);
+
 const Team = () => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
@@ -32,13 +61,21 @@ const Team = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const fetchTeam = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await TeamService.getMembers();
+      setTeam(res.data || { members: [], invitations: [] });
+    } catch (err) {
+      setError(err.message || 'Mission protocols interrupted. Failed to link Personnel Registry.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    // Enforce Direct Mission Access for Tech Leads
-    // If a Tech Lead has a primary project assignment, redirect them directly
-    // to that team's page instead of showing the hub list.
-    const isTechLead =
-      user?.role === USER_ROLES.TECH_LEAD ||
-      user?.jobTitle?.toUpperCase().includes('LEAD');
+    const isTechLead = user?.role === USER_ROLES.TECH_LEAD;
     const primaryProjectId =
       user?.assignedProjectId?._id || user?.assignedProjectId;
 
@@ -48,245 +85,291 @@ const Team = () => {
     }
 
     fetchTeam();
-  }, [user, navigate]);
+  }, [user, navigate, fetchTeam]);
 
-  const fetchTeam = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const res = await TeamService.getMembers();
-      setTeam(res.data || { members: [], invitations: [] });
-    } catch (err) {
-      setError(err.message || 'Failed to fetch team members');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Performance Optimization: Memoized groupings
+  const { groupedTeams, unassignedMembers } = useMemo(() => {
+    const members = team.members || [];
+    const groups = members.reduce((acc, member) => {
+      const projectId = member.assignedProjectId?._id || 'unassigned';
+      const projectName = member.assignedProjectId?.name || 'Reserve Operations';
 
-  const getRoleBadge = (role) => {
-    switch (role) {
-      case USER_ROLES.WORKSPACE_ADMIN:
-        return 'bg-primary/10 text-primary border-primary/20';
-      case USER_ROLES.WORKSPACE_MANAGER:
-        return 'bg-status-success/10 text-status-success border-status-success/20';
-      case USER_ROLES.RESTRICTED:
-        return 'bg-status-warning/10 text-status-warning border-status-warning/20';
-      default:
-        return 'bg-white/5 text-white/60 border-white/5';
-    }
-  };
+      if (!acc[projectId]) {
+        acc[projectId] = { name: projectName, members: [], id: projectId };
+      }
+      acc[projectId].members.push(member);
+      return acc;
+    }, {});
 
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+    const unassigned = groups['unassigned']?.members || [];
+    delete groups['unassigned'];
 
-  // Organize the flat member array into groupings associated with their assigned projects
-  const groupedMembers = team.members.reduce((acc, member) => {
-    const projectId = member.assignedProjectId?._id || 'unassigned';
-    const projectName =
-      member.assignedProjectId?.name || 'Unassigned Operations';
+    return {
+      groupedTeams: Object.values(groups),
+      unassignedMembers: unassigned
+    };
+  }, [team.members]);
 
-    if (!acc[projectId]) {
-      acc[projectId] = { name: projectName, members: [] };
-    }
-    acc[projectId].members.push(member);
-    return acc;
-  }, {});
+  // Combined Search Filter
+  const filteredData = useMemo(() => {
+    const q = searchTerm.toLowerCase();
+    if (!q) return { groups: groupedTeams, unassigned: unassignedMembers };
+
+    const searchFilter = (m) => 
+      m.name.toLowerCase().includes(q) || 
+      m.email.toLowerCase().includes(q) || 
+      m.jobTitle?.toLowerCase().includes(q);
+
+    const filteredUnassigned = unassignedMembers.filter(searchFilter);
+    const filteredGroups = groupedTeams.map(group => ({
+      ...group,
+      members: group.members.filter(searchFilter)
+    })).filter(group => group.members.length > 0 || group.name.toLowerCase().includes(q));
+
+    return { groups: filteredGroups, unassigned: filteredUnassigned };
+  }, [groupedTeams, unassignedMembers, searchTerm]);
+
+  if (loading) return <TeamSkeleton />;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Executive Header - Scaled Down */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10 px-1">
-        <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-none">
-            Internal <span className="text-primary">Teams</span>
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 space-y-10 bg-black min-h-screen">
+      
+      {/* Dynamic Command Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in slide-in-from-top duration-700">
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter leading-none">
+            Workspace <span className="text-primary-light">Personnel</span>
           </h1>
-          <p className="text-text-muted text-[10px] sm:text-xs font-medium mt-3 max-w-md opacity-60">
-            Manage project assignments, workspace roles, and workforce
-            distribution.
+          <p className="text-white/60 text-xs sm:text-sm font-bold max-w-xl leading-relaxed">
+            A comprehensive directory for managing project assignments and tracking workforce distribution across the organization.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="relative group min-w-[280px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-primary transition-colors" size={16} />
+            <input
+              type="text"
+              placeholder="Query personnel by name, email, or role..."
+              aria-label="Search personnel by name, email, or role"
+              className="w-full bg-white/[0.06] border border-white/20 text-white rounded-2xl pl-12 pr-6 py-4 focus:outline-none focus:border-primary/40 focus:bg-white/[0.08] transition-all text-sm font-medium placeholder:text-white/40 shadow-2xl"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           {hasPermission(PERMISSIONS.INVITE_USERS) && (
             <button
               onClick={() => navigate('/team/add')}
-              className="group px-6 py-3 bg-primary hover:bg-primary-light text-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-xl shadow-primary/20 transition-all flex items-center gap-2 active:scale-95"
+              className="px-8 py-4 bg-primary text-black font-black uppercase tracking-[0.1em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
             >
-              <UserPlus size={14} /> Add Member
+              <UserPlus size={18} /> <span className="hidden sm:inline">Invite Operative</span>
             </button>
           )}
         </div>
       </div>
 
       {error && (
-        <div className="bg-status-error/5 border border-status-error/20 text-status-error px-5 py-3 rounded-xl mb-8 flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest backdrop-blur-xl">
-          <span className="text-lg">⚠️</span> {error}
+        <div className="bg-status-error/10 border border-status-error/20 p-6 rounded-[2rem] flex items-start gap-4 animate-in zoom-in-95 duration-500">
+          <AlertCircle className="text-status-error shrink-0 mt-1" size={20} />
+          <div>
+            <h4 className="text-sm font-black text-white uppercase tracking-widest mb-1">Telemetry Failure</h4>
+            <p className="text-xs text-status-error/80 font-bold">{error}</p>
+          </div>
+          <button onClick={fetchTeam} className="ml-auto p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+            <Rocket size={16} />
+          </button>
         </div>
       )}
 
-      {/* Tactical Controls */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8 px-1">
-        <div className="relative flex-1 group">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors"
-            size={16}
-          />
-          <input
-            type="text"
-            placeholder="Search personnel..."
-            className="w-full bg-white/[0.02] border border-white/5 text-white rounded-xl pl-12 pr-6 py-4 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all text-xs font-medium placeholder:text-white/10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      {/* Strategic Summary Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in duration-1000 delay-200">
+        {[
+          { label: 'Active Teams', value: groupedTeams.length, icon: <Layout className="text-secondary" size={16} /> },
+          { label: 'Personnel Count', value: team.members.length, icon: <Users size={16} className="text-primary" /> },
+          { label: 'Reserve Pool', value: unassignedMembers.length, icon: <Clock size={16} className="text-status-warning" /> },
+          { label: 'In-Transit', value: team.invitations.length, icon: <Mail size={16} className="text-status-info" /> }
+        ].map((stat, i) => (
+          <div key={i} className="bg-white/[0.04] border border-white/20 rounded-2xl p-4 flex items-center gap-4">
+            <div className="p-2.5 rounded-xl bg-white/10 border border-white/10">{stat.icon}</div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/60">{stat.label}</p>
+              <p className="text-lg font-black text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Personnel Grid */}
-      <div className="space-y-4 mb-16">
-        <div className="flex items-center justify-between px-1 mb-6">
-          <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">
-            Managed Teams
+      <div className="space-y-12">
+        {/* Managed Squads Section */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-4 px-1">
+            <h2 className="text-xs font-black text-white/60 uppercase tracking-[0.4em] whitespace-nowrap">Tactical Units</h2>
+            <div className="h-[1px] w-full bg-white/10" />
           </div>
-          <div className="h-[1px] flex-1 mx-6 bg-white/5" />
-          <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.1em]">
-            Members: {team.members.length}
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(groupedMembers).length === 0 && !loading && (
-            <div className="col-span-full py-20 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[40px]">
-              <Users size={60} className="mx-auto text-white/5 mb-6" />
-              <h3 className="text-xl font-black text-white mb-1 uppercase tracking-tighter italic">
-                Workspace Zero
-              </h3>
-              <p className="text-text-muted text-xs max-w-xs mx-auto opacity-30">
-                No strategic personnel detected.
-              </p>
+          {filteredData.groups.length === 0 && (
+            <div className="py-24 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[3rem] flex flex-col items-center justify-center animate-in fade-in duration-700">
+               <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/5">
+                <Box size={32} className="text-white/10" />
+               </div>
+               <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">
+                 {searchTerm ? 'No Matches Found' : 'No Active Squads'}
+               </h3>
+               <p className="text-white/20 text-xs font-bold max-w-xs leading-relaxed uppercase tracking-widest">
+                 {searchTerm 
+                   ? `Your query for "${searchTerm}" returned no personnel or units.` 
+                   : 'Awaiting project deployments or personnel assignment.'}
+               </p>
             </div>
           )}
 
-          {Object.entries(groupedMembers).map(([projectId, group]) => {
-            if (projectId === 'unassigned') return null;
-
-            const filteredGroupMembers = group.members.filter(
-              (m) =>
-                m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                m.email.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            if (searchTerm && filteredGroupMembers.length === 0) return null;
-
-            return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredData.groups.map((group) => (
               <div
-                key={projectId}
-                onClick={() => navigate(`/team/project/${projectId}`)}
-                className="group relative bg-white/[0.02] hover:bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-3xl p-6 transition-all duration-300 hover:translate-y-[-4px] cursor-pointer overflow-hidden backdrop-blur-sm"
+                key={group.id}
+                onClick={() => navigate(`/team/project/${group.id}`)}
+                className="group relative bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-primary/20 rounded-[2.5rem] p-8 transition-all duration-500 hover:translate-y-[-8px] cursor-pointer overflow-hidden backdrop-blur-xl"
               >
-                <div className="flex flex-col gap-6 h-full">
+                {/* Decorative Element */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors" />
+
+                <div className="relative z-10 space-y-8 flex flex-col h-full">
                   <div className="flex justify-between items-start">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 ${projectId === 'unassigned' ? 'bg-white/5 text-white/20' : 'bg-primary/5 text-primary'}`}
-                    >
-                      {projectId === 'unassigned' ? (
-                        <Users size={20} />
-                      ) : (
-                        <Box size={20} strokeWidth={2} />
-                      )}
+                    <div className="w-14 h-14 rounded-2xl bg-black border border-white/10 flex items-center justify-center text-primary shadow-2xl group-hover:scale-110 transition-transform">
+                      <Box size={24} strokeWidth={2.5} />
                     </div>
-                    <div className="p-2 rounded-lg bg-white/5 text-white/10 group-hover:text-primary transition-all">
-                      <ChevronDown size={16} className="-rotate-90" />
+                    <div className="p-2 rounded-xl bg-white/5 text-white/10 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+                      <ChevronRight size={18} />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-white tracking-tight uppercase truncate mb-1">
+                    <h3 className="text-lg font-black text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors">
                       {group.name}
                     </h3>
-                    <div className="inline-flex items-center gap-1.5 text-[9px] font-black text-white/30 uppercase tracking-widest">
-                      <Shield size={10} /> {group.members.length} Personnel
+                    <div className="flex items-center gap-2">
+                       <ShieldCheck size={12} className="text-primary/50" />
+                       <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{group.members.length} Operators Assigned</span>
                     </div>
                   </div>
 
-                  <div className="mt-auto border-t border-white/5 pt-4 flex items-center justify-between">
-                    <div className="flex -space-x-2">
-                      {group.members.slice(0, 4).map((m, i) => (
+                  <div className="pt-6 border-t border-white/5 mt-auto flex items-center justify-between">
+                    <div className="flex -space-x-2.5">
+                      {group.members.slice(0, 5).map((m, i) => (
                         <div
                           key={i}
-                          className="w-8 h-8 rounded-full bg-linear-to-br from-white/10 to-transparent border-2 border-[#0B0F1A] flex items-center justify-center text-[9px] font-black text-white uppercase shadow-sm"
+                          className="w-9 h-9 rounded-xl bg-linear-to-br from-white/10 to-transparent border-2 border-black flex items-center justify-center text-[10px] font-black text-white uppercase shadow-xl ring-1 ring-white/5"
                         >
                           {m.name.charAt(0)}
                         </div>
                       ))}
-                      {group.members.length > 4 && (
-                        <div className="w-8 h-8 rounded-full bg-white/5 border-2 border-[#0B0F1A] flex items-center justify-center text-[8px] font-black text-white/40 backdrop-blur-md">
-                          +{group.members.length - 4}
+                      {group.members.length > 5 && (
+                        <div className="w-9 h-9 rounded-xl bg-white/5 border-2 border-black flex items-center justify-center text-[9px] font-black text-white/40 backdrop-blur-md ring-1 ring-white/5">
+                          +{group.members.length - 5}
                         </div>
                       )}
                     </div>
-                    <span></span>
+                    <div className="text-[10px] font-black text-white/40 group-hover:text-white/60 transition-colors">VIEW HUB</div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Pending Pipeline Deployments - Scaled Down */}
-      {team.invitations.length > 0 && (
-        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 px-1">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="text-[8px] font-black text-status-warning/60 uppercase tracking-[0.4em]">
-              Pending Invitations
-            </div>
-            <div className="h-[1px] flex-1 bg-status-warning/10" />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {team.invitations.map((invite) => (
-              <div
-                key={invite.email}
-                className="p-5 bg-status-warning/[0.02] border border-status-warning/10 rounded-2xl flex flex-col gap-4 group hover:bg-status-warning/[0.04] transition-all duration-300"
-              >
-                <div className="flex justify-between items-start">
-                  <div className="w-10 h-10 bg-status-warning/10 text-status-warning rounded-xl flex items-center justify-center border border-status-warning/20">
-                    <Mail size={16} />
-                  </div>
-                  <div className="px-2 py-0.5 bg-status-warning/10 border border-status-warning/20 text-[7px] font-black text-status-warning uppercase tracking-widest rounded-md">
-                    Initiating
-                  </div>
-                </div>
-
-                <div className="overflow-hidden">
-                  <h4 className="text-xs font-bold text-white truncate mb-0.5">
-                    {invite.email}
-                  </h4>
-                  <div className="text-[9px] font-black text-white/20 uppercase tracking-widest flex items-center gap-1.5">
-                    Target:{' '}
-                    <span className="text-white/60">
-                      {invite.projectId?.name || 'GLOBAL'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                  <div className="px-2 py-0.5 bg-white/5 rounded-md text-[8px] font-black text-white/40 uppercase tracking-widest border border-white/5">
-                    {invite.role}
-                  </div>
-                  <button className="p-2 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-40 group-hover:opacity-100">
-                    <Trash2 size={14} />
-                  </button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        </section>
+
+        {/* Reserve Pool Section (Unassigned) */}
+        {filteredData.unassigned.length > 0 && (
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 px-1">
+              <h2 className="text-xs font-black text-white/50 uppercase tracking-[0.4em] whitespace-nowrap">Reserve Operators</h2>
+              <div className="h-[1px] w-full bg-white/10" />
+            </div>
+
+            <div className="bg-white/[0.01] border border-white/5 rounded-[2.5rem] p-6 lg:p-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredData.unassigned.map((m) => (
+                  <div key={m._id || m.id} className="p-4 bg-black border border-white/5 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all group">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xs font-black text-white/20 group-hover:text-primary transition-colors">
+                      {m.name.charAt(0)}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold text-white truncate">{m.name}</span>
+                      <span className="text-[10px] text-white/50 font-mono truncate">{m.jobTitle || 'UNASSIGNED'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Pending Invitations Section */}
+        {team.invitations.length > 0 && (
+          <section className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <div className="flex items-center gap-4 px-1">
+              <h2 className="text-xs font-black text-status-warning/40 uppercase tracking-[0.4em] whitespace-nowrap">Transit Pipeline</h2>
+              <div className="h-[1px] w-full bg-status-warning/5" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {team.invitations.map((invite) => (
+                <div
+                  key={invite.email || invite._id}
+                  className="p-6 bg-status-warning/[0.02] border border-status-warning/10 rounded-[2rem] flex flex-col gap-5 group hover:bg-status-warning/[0.04] transition-all duration-500 overflow-hidden relative"
+                >
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-status-warning/5 blur-2xl rounded-full" />
+                  
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="w-12 h-12 bg-status-warning/10 text-status-warning rounded-xl flex items-center justify-center border border-status-warning/20">
+                      <Mail size={18} />
+                    </div>
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="px-3 py-1 bg-status-warning/10 border border-status-warning/20 text-[8px] font-black text-status-warning uppercase tracking-widest rounded-lg">
+                        Access Pending
+                      </span>
+                      <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{invite.role}</span>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 relative z-10">
+                    <h4 className="text-sm font-black text-white truncate mb-1">
+                      {invite.email}
+                    </h4>
+                    <div className="text-[10px] font-bold text-white/50 truncate flex items-center gap-2">
+                       <Box size={10} /> Destination: <span className="text-white/60 uppercase">{invite.projectId?.name || 'GLOBAL CORE'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-5 border-t border-white/5 relative z-10">
+                    <div className="flex items-center gap-2">
+                       <Clock size={12} className="text-status-warning/30" />
+                       <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">Awaiting Uplink</span>
+                    </div>
+                    <button 
+                      aria-label="Remove pending invitation"
+                      className="p-2.5 text-white/10 hover:text-status-error hover:bg-status-error/10 hover:border-status-error/20 border border-transparent rounded-xl transition-all opacity-40 group-hover:opacity-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Footer Connectivity Status */}
+      <div className="pt-20 pb-10 flex items-center justify-center gap-6">
+         <div className="flex items-center gap-2 text-[9px] font-black text-white/10 uppercase tracking-[0.3em]">
+            <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+            Personnel Database: Connected
+         </div>
+         <div className="h-4 w-[1px] bg-white/5" />
+         <div className="text-[9px] font-black text-white/10 uppercase tracking-[0.3em]">
+            Protocol: 2.1-NEXA
+         </div>
+      </div>
     </div>
   );
 };

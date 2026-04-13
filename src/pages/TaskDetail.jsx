@@ -18,10 +18,14 @@ import {
   BrainCircuit,
   Tag,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Minus,
+  Plus
 } from 'lucide-react';
 import TaskComments from '../components/organisms/TaskComments';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
 const TaskDetailPage = () => {
@@ -33,6 +37,7 @@ const TaskDetailPage = () => {
   const [isEpiExpanded, setIsEpiExpanded] = React.useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = React.useState(false);
   const [blockReason, setBlockReason] = React.useState('');
+  const [isEpiLoading, setIsEpiLoading] = React.useState(false);
   const statusMenuRef = React.useRef(null);
 
   const { data: taskData, isLoading, error } = useQuery({
@@ -57,6 +62,14 @@ const TaskDetailPage = () => {
       queryClient.invalidateQueries(['task', taskId]);
       setIsBlockModalOpen(false);
       setBlockReason('');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data) => TaskService.updateTask(taskId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['task', taskId]);
+      queryClient.invalidateQueries(['tasks']);
     },
   });
 
@@ -101,45 +114,46 @@ const TaskDetailPage = () => {
     return `${rounded || 0}m`;
   };
 
-  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-110px)] bg-black/20"><div className="relative"><div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full animate-pulse" /><Loader2 size={40} className="text-primary animate-spin relative" /></div></div>;
+  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-110px)] bg-black"><div className="relative"><div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse blur-[30px]" /><Loader2 size={40} className="text-primary animate-spin relative" /></div></div>;
 
-  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-bold text-white mb-4 uppercase tracking-tighter">Mission Terminated</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Go Back</button></div>;
+  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-black text-white mb-4 uppercase tracking-tighter">Mission Terminated</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Go Back</button></div>;
 
   const columns = [
-    { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error', bg: 'bg-status-error/10', border: 'border-status-error/20' },
-    { id: TASK_STATUS.IN_PROGRESS, title: 'In Progress', color: 'text-status-warning', bg: 'bg-status-warning/10', border: 'border-status-warning/20' },
-    { id: TASK_STATUS.IN_REVIEW, title: 'In Review', color: 'text-secondary', bg: 'bg-secondary/10', border: 'border-secondary/20' },
-    { id: TASK_STATUS.DONE, title: 'Done', color: 'text-status-success', bg: 'bg-status-success/10', border: 'border-status-success/20' },
+    { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error', bg: 'bg-black', border: 'border-status-error' },
+    { id: TASK_STATUS.IN_PROGRESS, title: 'In Progress', color: 'text-status-warning', bg: 'bg-black', border: 'border-status-warning' },
+    { id: TASK_STATUS.IN_REVIEW, title: 'In Review', color: 'text-secondary', bg: 'bg-black', border: 'border-secondary' },
+    { id: TASK_STATUS.DONE, title: 'Done', color: 'text-status-success', bg: 'bg-black', border: 'border-status-success' },
   ];
 
   const getStatusColor = (status) => columns.find((c) => c.id === status)?.color || 'text-text-muted';
   const getStatusTitle = (status) => columns.find((c) => c.id === status)?.title || status;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-110px)] flex flex-col gap-4 py-4 overflow-hidden animate-in fade-in duration-500">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:h-[calc(100vh-110px)] flex flex-col gap-4 py-4 md:overflow-hidden animate-in fade-in duration-500 bg-black">
       {/* Header */}
-      <header className="flex items-center justify-between shrink-0 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-5">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all shadow-sm"><ArrowLeft size={18} /></button>
-          <div className="flex items-center gap-4">
-             <div className="flex flex-col">
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded uppercase tracking-wider border border-primary/20 shrink-0">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
-                {taskData.blocked && (
-                  <span className="flex items-center gap-1.5 text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse">
-                    <ShieldAlert size={10} /> Mission Blocked
-                  </span>
-                )}
-              </div>
-              <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-xl mt-1">{taskData.title}</h1>
-             </div>
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shrink-0 pb-6 border-b border-white/20">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-black border border-white/30 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-all shadow-sm shrink-0"><ArrowLeft size={18} /></button>
+          <div className="flex flex-col min-w-0">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <span className="text-[9px] md:text-[10px] font-black text-primary px-1.5 py-0.5 bg-black rounded uppercase tracking-wider border border-primary shrink-0 shadow-[0_0_10px_rgba(59,130,246,0.2)]">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
+              {taskData.blocked && (
+                <span className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse shrink-0">
+                  <ShieldAlert size={10} /> MISSION BLOCKED
+                </span>
+              )}
+              {taskData.source === 'github' && (
+                <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNC</span>
+              )}
+            </div>
+            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-full mt-1.5 uppercase">{taskData.title}</h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-8">
-            <div className="text-right">
-              <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] mb-1 block">Priority</span>
-              <span className={`text-[10px] font-bold flex items-center gap-1.5 justify-end uppercase tracking-widest ${
+        <div className="flex flex-wrap items-center gap-4 md:gap-8 w-full md:w-auto">
+            <div className="text-left md:text-right flex-1 md:flex-none">
+              <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.4em] mb-1 block">Priority</span>
+              <span className={`text-[10px] font-bold flex items-center gap-1.5 justify-start md:justify-end uppercase tracking-widest ${
                 taskData.priority === 'low' ? 'text-status-success' :
                 taskData.priority === 'high' ? 'text-status-warning' :
                 taskData.priority === 'urgent' ? 'text-status-error' :
@@ -149,7 +163,7 @@ const TaskDetailPage = () => {
               </span>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button 
                 onClick={() => {
                   if (taskData.blocked) {
@@ -158,158 +172,189 @@ const TaskDetailPage = () => {
                     setIsBlockModalOpen(true);
                   }
                 }}
-                className={`px-4 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
+                className={`flex-1 sm:flex-none px-5 py-2.5 md:py-1.5 rounded-xl border text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
                   taskData.blocked 
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/20' 
-                  : 'bg-rose-500/10 border-rose-500/30 text-rose-500 hover:bg-rose-500/20'
+                  ? 'bg-black border-emerald-500 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:bg-emerald-500/5' 
+                  : 'bg-black border-rose-500 text-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.2)] hover:bg-rose-500/5'
                 }`}
-                disabled={blockMutation.isLoading}
+                disabled={blockMutation.isPending}
               >
-                {blockMutation.isLoading ? 'Processing...' : taskData.blocked ? 'Unblock Mission' : 'Block Mission'}
+                {blockMutation.isPending ? 'SYNCING...' : taskData.blocked ? 'Unblock Mission' : 'Block Mission'}
               </button>
-            </div>
 
-            <div className="w-px h-8 bg-white/5 hidden md:block" />
-
-            {/* Status Select */}
-            <div className="relative" ref={statusMenuRef}>
-              <div className="text-right">
-                <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] mb-1 block mr-4">Mission State</span>
+              <div className="relative flex-1 sm:flex-none" ref={statusMenuRef}>
                 <button 
                   onClick={() => setIsStatusMenuOpen(!isStatusMenuOpen)}
-                  className={`flex items-center gap-2.5 font-bold text-[10px] uppercase tracking-widest py-1.5 px-3 rounded-lg border transition-all ${getStatusColor(taskData.status)} ${columns.find(c => c.id === taskData.status)?.bg} ${columns.find(c => c.id === taskData.status)?.border} hover:bg-white/5`}
+                  className={`w-full flex items-center justify-between gap-3 font-black text-[9px] md:text-[10px] uppercase tracking-widest py-2.5 md:py-1.5 px-4 rounded-xl border transition-all ${getStatusColor(taskData.status)} ${columns.find(c => c.id === taskData.status)?.bg} ${columns.find(c => c.id === taskData.status)?.border} shadow-lg hover:border-white/40 active:scale-95`}
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor] animate-pulse" />
-                  {getStatusTitle(taskData.status)}
-                  <ChevronDown size={12} className={`transition-transform duration-300 ${isStatusMenuOpen ? 'rotate-180' : ''}`} />
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor] animate-pulse" />
+                    {getStatusTitle(taskData.status)}
+                  </div>
+                  <ChevronDown size={14} className={`transition-transform duration-300 ${isStatusMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
-              </div>
 
-              {/* Dropdown Menu */}
-              {isStatusMenuOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-[#0A0B14] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-200 backdrop-blur-3xl">
-                  {columns.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => {
-                        if (c.id !== taskData.status) {
-                          setConfirmModal({ isOpen: true, targetStatus: c });
-                        }
-                        setIsStatusMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left flex items-center justify-between group hover:bg-white/[0.03] transition-colors ${c.id === taskData.status ? 'bg-white/[0.02] cursor-not-allowed' : 'cursor-pointer'}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-1.5 h-1.5 rounded-full bg-current ${c.color} ${c.id === taskData.status ? 'shadow-[0_0_8px_currentColor]' : 'opacity-40 group-hover:opacity-100'}`} />
-                        <span className={`text-[10px] font-bold uppercase tracking-widest ${c.id === taskData.status ? c.color : 'text-white/40 group-hover:text-white'}`}>
-                          {c.title}
-                        </span>
-                      </div>
-                      {c.id === taskData.status && <div className="w-1 h-1 rounded-full bg-primary" />}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {/* Dropdown Menu */}
+                {isStatusMenuOpen && (
+                  <div className="absolute top-full right-0 mt-3 w-56 bg-black border border-white/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-300">
+                    <div className="px-4 py-3 border-b border-white/20 bg-white/[0.02]">
+                       <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">Transition State</span>
+                    </div>
+                    {columns.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => {
+                          if (c.id !== taskData.status) {
+                            setConfirmModal({ isOpen: true, targetStatus: c });
+                          }
+                          setIsStatusMenuOpen(false);
+                        }}
+                        className={`w-full px-5 py-4 text-left flex items-center justify-between group hover:bg-white/[0.05] transition-all ${c.id === taskData.status ? 'bg-white/[0.02] cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-full bg-current ${c.color} ${c.id === taskData.status ? 'shadow-[0_0_8px_currentColor]' : 'opacity-40 group-hover:opacity-100'}`} />
+                          <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${c.id === taskData.status ? c.color : 'text-white/60 group-hover:text-white'}`}>
+                            {c.title}
+                          </span>
+                        </div>
+                        {c.id === taskData.status && <div className="w-1 h-1 rounded-full bg-primary shadow-[0_0_5px_rgba(59,130,246,0.8)]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
         </div>
       </header>
 
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden min-h-0">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 md:overflow-hidden min-h-0 pb-10 md:pb-0">
         <div className="lg:col-span-8 flex flex-col gap-6 overflow-hidden min-h-0">
           {/* Task Description */}
-          <section className="flex-1 flex flex-col bg-white/[0.015] border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-3xl min-h-0">
-             <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
-                <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] flex items-center gap-2.5">
+          <section className="flex-1 flex flex-col bg-black border border-white/20 rounded-[2rem] md:rounded-[32px] overflow-hidden shadow-2xl min-h-[300px] md:min-h-0">
+             <div className="px-6 py-5 border-b border-white/20 flex items-center justify-between shrink-0 bg-white/[0.02]">
+                <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] flex items-center gap-2.5">
                    <Tag size={14} className="text-primary" /> Intelligence Brief
                 </h3>
                 
                 <div className="flex items-center gap-4">
-                  {taskData.source === 'github' && <span className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 flex items-center gap-1.5"><Code size={12}/> GitHub Sync</span>}
-                  
                   <button 
-                    onClick={() => setIsEpiExpanded(!isEpiExpanded)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${isEpiExpanded ? 'bg-primary/10 border-primary/30 text-primary shadow-lg shadow-primary/5' : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10 hover:text-white'}`}
+                    onClick={() => !isEpiLoading && setIsEpiExpanded(!isEpiExpanded)}
+                    disabled={isEpiLoading}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${isEpiExpanded ? 'bg-primary/20 border-primary text-primary shadow-[0_0_20px_rgba(59,130,246,0.2)]' : 'bg-black border-white/30 text-white/50 hover:bg-white/5 hover:text-white'} disabled:opacity-50 disabled:cursor-wait`}
                   >
-                    <BrainCircuit size={14} className={isEpiExpanded ? 'animate-pulse' : ''} />
-                    <span className="text-[9px] font-bold uppercase tracking-widest">Tactical Intelligence</span>
-                    {isEpiExpanded && <ChevronDown size={12} className="rotate-180 transition-all animate-in fade-in zoom-in-75 duration-300" />}
+                    {isEpiLoading ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <BrainCircuit size={14} className={isEpiExpanded ? 'animate-pulse' : ''} />
+                    )}
+                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Tactical Intel</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest sm:hidden">Intel</span>
+                    {!isEpiLoading && <ChevronDown size={12} className={`transition-transform duration-300 ${isEpiExpanded ? 'rotate-180' : ''}`} />}
                   </button>
                 </div>
              </div>
-             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-black/5">
-                <p className="text-[15px] text-white/70 leading-relaxed font-medium whitespace-pre-wrap">{taskData.description || "No mission instructions provided."}</p>
+             <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-black leading-relaxed">
+                <p className="text-[14px] md:text-[15px] text-white/60 font-medium whitespace-pre-wrap selection:bg-primary selection:text-white uppercase tracking-tight">{taskData.description || "NO STRATEGIC PARAMETERS DEFINED."}</p>
                 <TaskEPIExplanation 
                    taskId={taskId} 
                    isExpanded={isEpiExpanded}
                    isOverdue={taskData.dueDate && new Date() > new Date(taskData.dueDate) && taskData.status !== TASK_STATUS.DONE} 
+                   onLoadingChange={setIsEpiLoading}
                 />
              </div>
           </section>
 
           {/* Task Metrics */}
-          <section className="bg-white/[0.02] border border-white/5 p-3.5 rounded-2xl backdrop-blur-md flex flex-nowrap items-center justify-between gap-4 shrink-0 shadow-lg px-6 overflow-hidden">
-             {/* Assignee */}
-             <div className="flex items-center gap-3 shrink-0">
-                <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-[10px] font-bold text-primary shadow-lg">
-                    {taskData.assignedUser?.name[0].toUpperCase() || '?'}
-                </div>
-                <div className="min-w-0">
-                    <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Strategist</span>
-                    <p className="text-[10px] font-bold text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name || 'Unassigned'}</p>
-                </div>
-             </div>
-
-             <div className="w-px h-6 bg-white/5 shrink-0" />
-
-             {/* Creator */}
-             <div className="flex items-center gap-3 shrink-0">
-                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 shadow-sm">
-                    <User size={13} />
-                </div>
-                <div className="min-w-0">
-                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Originator</span>
-                   <p className="text-[10px] font-bold text-white/70 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name || 'System'}</p>
-                </div>
-             </div>
-
-             <div className="w-px h-6 bg-white/5 shrink-0" />
-
-             {/* Sprint */}
-             <div className="flex items-center gap-3 shrink-0 max-w-[20%]">
-                <div className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary shadow-sm">
-                    <Calendar size={13} />
-                </div>
-                <div className="min-w-0">
-                   <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Objective</span>
-                   <p className="text-[10px] font-bold text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'Backlog'}</p>
-                </div>
-             </div>
-
-             <div className="w-px h-6 bg-white/5 shrink-0" />
-
-               {/* Timer */}
-               <div className="flex items-center gap-3 shrink-0">
-                 <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm transition-all ${taskData.status === TASK_STATUS.IN_PROGRESS ? 'bg-primary/20 border-primary/30 text-primary animate-pulse' : 'bg-status-success/10 border-status-success/20 text-status-success'}`}>
-                     <Clock size={13} />
+          <section className="bg-black border border-white/20 p-5 md:p-6 rounded-[2rem] grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-6 md:gap-4 shrink-0 shadow-xl overflow-hidden px-8">
+              <div className="flex items-center gap-2 shrink-0">
+                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-primary flex items-center justify-center text-[8px] font-black text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)] uppercase">
+                     {taskData.assignedUser?.name[0] || '?'}
                  </div>
-                 <div>
-                    <span className="block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-0.5">Duration</span>
-                    <p className="text-[10px] font-bold text-white/80 tracking-tight uppercase leading-none mb-1">
-                      Est: {formatDuration(taskData.estimatedDuration)}
-                    </p>
-                    <p className={`text-[9px] font-bold tracking-tight uppercase leading-none transition-all ${
-                      taskData.status === TASK_STATUS.IN_PROGRESS ? 'text-primary' : 'text-status-success/80 opacity-60'
-                    }`}>
-                      Rem: {formatDuration(displayRemaining || taskData.remainingDuration || taskData.estimatedDuration)}
-                    </p>
-                 </div>
-               </div>
+                <div className="min-w-0">
+                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Strategist</span>
+                    <p className="text-[10px] md:text-[11px] font-black text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name?.split(' ')[0] || 'UNASSIGNED'}</p>
+                </div>
+             </div>
+
+             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+
+             <div className="flex items-center gap-2 shrink-0">
+                <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-white/20 flex items-center justify-center text-white/50 group-hover:border-primary transition-all">
+                    <User size={10} />
+                </div>
+                <div className="min-w-0">
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Originator</span>
+                   <p className="text-[10px] md:text-[11px] font-black text-white/60 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name?.split(' ')[0] || 'SYSTEM'}</p>
+                </div>
+             </div>
+
+             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+
+             <div className="flex items-center gap-2 shrink-0">
+                <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-secondary flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(139,92,246,0.1)]">
+                    <Calendar size={10} />
+                </div>
+                <div className="min-w-0">
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Objective</span>
+                   <p className="text-[10px] md:text-[11px] font-black text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'BACKLOG'}</p>
+                </div>
+             </div>
+
+             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+
+              {/* Task Duration Metric */}
+              <div className="flex items-center gap-2 shrink-0">
+                  <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border flex items-center justify-center transition-all ${taskData.status === TASK_STATUS.IN_PROGRESS ? 'border-status-success shadow-[0_0_10px_rgba(16,185,129,0.1)] animate-pulse' : 'border-status-success/30'}`}>
+                      <Clock size={10} className="text-status-success" />
+                  </div>
+                  <div className="flex flex-col">
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Duration</span>
+                     <p className="text-lg font-black text-white tracking-tighter uppercase leading-none">
+                       {(() => {
+                         let mins = taskData.estimatedDuration || 0;
+                         if (taskData.durationUnit === 'hours') mins *= 60;
+                         if (taskData.durationUnit === 'days') mins *= 1440;
+                         
+                         const rounded = Math.round(mins);
+                         if (rounded >= 1440) return `${(rounded / 1440).toFixed(1)}D`;
+                         if (rounded >= 60) return `${(rounded / 60).toFixed(1)}H`;
+                         return `${rounded}M`;
+                       })()}
+                     </p>
+                  </div>
+              </div>
+
+              <div className="hidden md:block w-px h-10 bg-white/10 shrink-0" />
+
+              {/* Mission Deadline Metric */}
+              <div className="flex items-center gap-3 shrink-0 group">
+                  <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border flex items-center justify-center transition-all shadow-[0_0_10px_rgba(59,130,246,0.1)] ${taskData.dueDate && new Date(taskData.dueDate) < new Date() && taskData.status !== TASK_STATUS.DONE ? 'border-status-error animate-pulse' : 'border-primary/40'}`}>
+                      <Calendar size={10} className="text-primary" />
+                  </div>
+                  <div className="flex flex-col">
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Deadline</span>
+                     <div className="relative">
+                        <DatePicker
+                           selected={taskData.dueDate ? new Date(taskData.dueDate) : null}
+                           onChange={(date) => updateMutation.mutate({ dueDate: date })}
+                           customInput={
+                             <button className={`text-lg font-black tracking-tighter uppercase leading-none transition-all hover:text-primary ${taskData.dueDate && new Date(taskData.dueDate) < new Date() && taskData.status !== TASK_STATUS.DONE ? 'text-status-error' : 'text-white'}`}>
+                               {taskData.dueDate ? new Date(taskData.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : 'SET DATE'}
+                             </button>
+                           }
+                           dateFormat="MMM d, yyyy"
+                           popperPlacement="bottom-end"
+                           calendarClassName="nexa-datepicker"
+                        />
+                     </div>
+                  </div>
+              </div>
           </section>
         </div>
 
         {/* Activity Feed */}
-        <aside className="lg:col-span-4 flex flex-col gap-6 overflow-hidden min-h-0">
-          <section className="flex-1 flex flex-col min-h-0 bg-white/[0.015] border border-white/5 rounded-[1.75rem] shadow-xl overflow-hidden">
+        <aside className="lg:col-span-4 flex flex-col gap-6 md:overflow-hidden min-h-[400px] md:min-h-0">
+          <section className="flex-1 flex flex-col min-h-0 bg-black border border-white/20 rounded-[2rem] md:rounded-[32px] overflow-hidden shadow-xl">
              <TaskComments taskId={taskId} />
           </section>
         </aside>
@@ -318,16 +363,16 @@ const TaskDetailPage = () => {
       {/* Confirm Status Change */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 shadow-full animate-in zoom-in-95 duration-500 text-center">
+          <div className="bg-black border border-white/30 w-full max-w-sm rounded-[2.5rem] p-10 shadow-3xl animate-in zoom-in-95 duration-500 text-center">
              <div className="flex flex-col items-center">
                 <div className={`w-20 h-20 rounded-[1.75rem] flex items-center justify-center border-2 mb-8 shadow-large ${confirmModal.targetStatus?.bg} ${confirmModal.targetStatus?.border} ${confirmModal.targetStatus?.color}`}>
                     <Rocket size={36} />
                 </div>
-                <h2 className="text-2xl font-bold text-white tracking-tight mb-3 uppercase">Authorize Reroute</h2>
-                <p className="text-[11px] text-white/40 font-semibold uppercase tracking-widest leading-loose mb-10 px-6">Proceed with transitioning current objective to <span className={confirmModal.targetStatus?.color}>{confirmModal.targetStatus?.title}</span> command state?</p>
+                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">AUTHORIZE REROUTE</h2>
+                <p className="text-[11px] text-white/50 font-black uppercase tracking-widest leading-loose mb-10 px-6">PROCEED WITH TRANSITIONING CURRENT OBJECTIVE TO <span className={confirmModal.targetStatus?.color}>{confirmModal.targetStatus?.title}</span> COMMAND STATE?</p>
                 <div className="grid grid-cols-2 gap-4 w-full">
-                   <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-white/5 text-white/30 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all active:scale-95">Abort Mission</button>
-                   <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest text-white shadow-2xl transition-all active:scale-95 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>Confirm Transition</button>
+                   <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">ABORT</button>
+                   <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-black text-[11px] text-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 hover:brightness-110 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>CONFIRM</button>
                 </div>
              </div>
           </div>
@@ -335,30 +380,30 @@ const TaskDetailPage = () => {
       )}
       {/* Block Mission Modal */}
       {isBlockModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 shadow-full animate-in zoom-in-95 duration-500 text-center">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black animate-in fade-in duration-500">
+           <div className="bg-black border border-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-3xl animate-in zoom-in-95 duration-500 text-center">
              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-[1.75rem] bg-rose-500/10 border-2 border-rose-500/20 flex items-center justify-center text-rose-500 mb-8 shadow-large">
+                <div className="w-20 h-20 rounded-[1.75rem] bg-black border-2 border-status-error flex items-center justify-center text-status-error mb-8 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
                     <ShieldAlert size={36} />
                 </div>
-                <h2 className="text-2xl font-bold text-white tracking-tight mb-3 uppercase">Halt Objective</h2>
-                <p className="text-[11px] text-white/40 font-semibold uppercase tracking-widest leading-loose mb-6 px-6">Enter technical justification for blocking this mission:</p>
+                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">HALT OBJECTIVE</h2>
+                <p className="text-[10px] text-white font-black uppercase tracking-widest leading-loose mb-6 px-6">ENTER TECHNICAL JUSTIFICATION FOR BLOCKING THIS MISSION:</p>
                 
                 <textarea
                   value={blockReason}
                   onChange={(e) => setBlockReason(e.target.value)}
-                  placeholder="Reason for blockage..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-xs mb-8 focus:outline-none focus:border-rose-500/50 min-h-[100px] resize-none"
+                  placeholder="EXECUTIVE REASONING..."
+                  className="w-full bg-black border border-white/30 rounded-xl p-4 text-white text-xs font-black tracking-widest uppercase mb-8 focus:outline-none focus:border-status-error/50 min-h-[100px] resize-none placeholder:text-white/20"
                 />
 
                 <div className="grid grid-cols-2 gap-4 w-full">
-                   <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-white/5 text-white/30 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all active:scale-95">Abort Change</button>
+                   <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">ABORT</button>
                    <button 
                     onClick={() => blockMutation.mutate({ blocked: true, reason: blockReason })} 
-                    className="py-4 bg-rose-500 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95"
-                    disabled={!blockReason.trim() || blockMutation.isLoading}
+                    className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
+                    disabled={!blockReason.trim() || blockMutation.isPending}
                    >
-                     {blockMutation.isLoading ? 'Processing...' : 'Confirm Block'}
+                     {blockMutation.isPending ? 'PROCESSING...' : 'CONFIRM BLOCK'}
                    </button>
                 </div>
              </div>

@@ -20,7 +20,7 @@ const InternDashboard = lazy(() => import('../InternDashboard'));
 export const DASHBOARD_REGISTRY = [
   {
     id: 'cto',
-    match: (role, title) => role === 'WORKSPACE_ADMIN' || title.includes('cto'),
+    match: (role, title) => title.includes('cto'),
     component: CTODashboard
   },
   {

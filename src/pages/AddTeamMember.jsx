@@ -176,18 +176,18 @@ const AddTeamMember = () => {
     };
 
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-background-dark p-8 flex items-center justify-center animate-in fade-in zoom-in duration-500">
-        <div className="max-w-2xl w-full bg-[#121826]/30 border border-white/5 rounded-[40px] p-10 md:p-14 text-center backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+      <div className="min-h-[calc(100vh-64px)] bg-black p-8 flex items-center justify-center animate-in fade-in zoom-in duration-500">
+        <div className="max-w-2xl w-full bg-black border border-white/20 rounded-[40px] p-10 md:p-14 text-center shadow-3xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="w-20 h-20 bg-status-success/10 text-status-success rounded-[2rem] flex items-center justify-center mx-auto mb-10 border border-status-success/20 shadow-xl shadow-status-success/5">
             <CheckCircle size={40} strokeWidth={1.5} />
           </div>
 
-          <h2 className="text-3xl font-black text-white mb-3 tracking-tight uppercase">
-            Members <span className="text-primary">Invited</span>
+          <h2 className="text-3xl font-black text-white mb-3 tracking-tighter uppercase">
+            PERSONNEL <span className="text-primary">INVITED</span>
           </h2>
-          <p className="text-text-muted text-sm font-medium mb-12 opacity-50">
+          <p className="text-white/50 text-sm font-black uppercase tracking-wider mb-12">
             New accounts have been provisioned successfully.
           </p>
 
@@ -196,16 +196,16 @@ const AddTeamMember = () => {
               provisionedUnits.map((res, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 border border-white/5 rounded-3xl p-8 hover:bg-white/[0.08] transition-all group/res overflow-hidden relative"
+                  className="bg-black border border-white/15 rounded-3xl p-8 hover:bg-white/5 hover:border-primary/30 transition-all group/res overflow-hidden relative"
                 >
-                  <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 opacity-0 group-hover/res:opacity-100 transition-opacity"></div>
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-primary opacity-0 group-hover/res:opacity-100 transition-opacity"></div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-1">
+                      <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">
                         {res.name || 'New Member'}
                       </div>
-                      <div className="text-xs font-bold text-primary truncate max-w-[200px]">
+                      <div className="text-xs font-black text-white truncate max-w-[200px] tracking-widest">
                         {res.email}
                       </div>
                     </div>
@@ -237,9 +237,9 @@ const AddTeamMember = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => navigate('/team')}
-              className="flex-1 py-5 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl border border-white/10 transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="flex-1 py-5 bg-black hover:bg-white/5 text-white/60 hover:text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3"
             >
-              <ArrowLeft size={16} /> Return to Team
+              <ArrowLeft size={16} /> RETURN TO REGISTRY
             </button>
             <button
               onClick={() => {
@@ -255,9 +255,9 @@ const AddTeamMember = () => {
                 ]);
                 setResults(null);
               }}
-              className="flex-1 py-5 bg-primary text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-5 bg-primary text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-xl hover:bg-primary-dark shadow-primary/40 active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              <Plus size={18} /> Invite More
+              <Plus size={18} strokeWidth={3} /> INVITE MORE
             </button>
           </div>
         </div>
@@ -272,7 +272,7 @@ const AddTeamMember = () => {
           {invites.map((invite, idx) => (
             <div
               key={idx}
-              className="group relative bg-[#121826]/30 backdrop-blur-3xl border border-white/5 hover:border-white/10 rounded-[32px] p-8 transition-all duration-300 animate-in slide-in-from-bottom-2 shadow-2xl"
+              className="group relative bg-black border border-white/20 hover:border-white/30 rounded-[32px] p-8 sm:p-10 transition-all duration-300 animate-in slide-in-from-bottom-2 shadow-3xl"
             >
               <div className="absolute top-8 left-[-10px] w-6 h-6 bg-primary rounded-lg flex items-center justify-center text-[10px] font-black text-[#0B0F1A] shadow-lg shadow-primary/20">
                 {idx + 1}
@@ -281,33 +281,33 @@ const AddTeamMember = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 <div className="space-y-6">
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2 mb-2 block">
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
                       Full Name
                     </label>
                     <div className="relative group/input">
                       <input
                         type="text"
-                        className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/10 text-xs font-medium"
-                        placeholder="John Doe"
+                        className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
+                        placeholder="E.G. JOHN DOE"
                         required
                         value={invite.name}
                         onChange={(e) => updateRow(idx, 'name', e.target.value)}
                       />
                       <UserIcon
-                        size={14}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/5 group-focus-within/input:text-primary transition-colors"
+                        size={16}
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-primary transition-colors"
                       />
                     </div>
                   </div>
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2 mb-2 block">
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
                       Email Address
                     </label>
                     <div className="relative group/input">
                       <input
                         type="email"
-                        className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/10 text-xs font-medium"
-                        placeholder="john@nexus.app"
+                        className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
+                        placeholder="JOHN@NEXUS.APP"
                         required
                         value={invite.email}
                         onChange={(e) =>
@@ -315,8 +315,8 @@ const AddTeamMember = () => {
                         }
                       />
                       <Mail
-                        size={14}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/5 group-focus-within/input:text-primary transition-colors"
+                        size={16}
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-primary transition-colors"
                       />
                     </div>
                   </div>
@@ -324,12 +324,12 @@ const AddTeamMember = () => {
 
                 <div className="space-y-6">
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em] ml-2 mb-2 block">
-                      Role
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
+                      Role Assignment
                     </label>
                     <div className="relative group/input">
                         <select
-                          className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
+                          className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-black tracking-widest uppercase shadow-inner pr-12"
                           value={invite.jobTitle}
                           onChange={(e) =>
                             handleJobTitleChange(idx, e.target.value)
@@ -339,13 +339,13 @@ const AddTeamMember = () => {
                             <optgroup
                               key={group.category}
                               label={group.category}
-                              className="bg-[#121826] text-primary/50 text-[10px] uppercase font-black tracking-widest py-2"
+                              className="bg-black text-primary/70 text-[10px] uppercase font-black tracking-widest py-3"
                             >
                               {group.roles.map((r) => (
                                 <option
                                   key={r.title}
                                   value={r.title}
-                                  className="bg-[#121826] text-white py-4 font-bold uppercase text-[10px]"
+                                  className="bg-black text-white py-4 font-black uppercase tracking-widest text-[11px]"
                                 >
                                   {r.title}
                                 </option>
@@ -355,18 +355,18 @@ const AddTeamMember = () => {
                         </select>
 
                       <Shield
-                        size={14}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/5 group-focus-within/input:text-primary transition-colors pointer-events-none"
+                        size={16}
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-primary transition-colors pointer-events-none"
                       />
                     </div>
                   </div>
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em] ml-2 mb-2 block">
-                      Project Assignment
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
+                      Deployment Sector
                     </label>
                     <div className="relative group/input">
                       <select
-                        className="w-full bg-white/[0.03] border border-white/5 focus:border-primary/40 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-bold tracking-tight pr-12"
+                        className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all appearance-none cursor-pointer text-xs font-black tracking-widest uppercase shadow-inner pr-12"
                         value={invite.projectId}
                         onChange={(e) =>
                           updateRow(idx, 'projectId', e.target.value)
@@ -376,15 +376,15 @@ const AddTeamMember = () => {
                           <option
                             key={p._id}
                             value={p._id}
-                            className="bg-[#121826] text-white"
+                            className="bg-black text-white font-black uppercase tracking-widest"
                           >
                             {p.name}
                           </option>
                         ))}
                       </select>
                       <Rocket
-                        size={14}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/5 group-focus-within/input:text-primary transition-colors pointer-events-none"
+                        size={16}
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-primary transition-colors pointer-events-none"
                       />
                     </div>
                   </div>
@@ -392,15 +392,16 @@ const AddTeamMember = () => {
               </div>
 
               {/* Identity Profile Preview */}
-              <div className="mt-10 flex items-center gap-5 px-6 py-4 bg-white/[0.02] border border-white/5 rounded-2xl group-hover:bg-white/[0.04] transition-all duration-500">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 text-primary shadow-[0_0_20px_rgba(var(--color-primary),0.1)]">
+              <div className="mt-10 flex items-center gap-5 px-6 py-5 bg-black border border-white/20 rounded-2xl group-hover:border-primary/40 group-hover:bg-white/5 transition-all duration-500 shadow-inner overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-white/20 group-hover:bg-primary transition-colors"></div>
+                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 text-white/50 group-hover:text-primary group-hover:border-primary/30 transition-colors shadow-xl ml-3">
                   <UserPlus size={24} />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <div className="text-[11px] font-black text-white uppercase tracking-widest leading-none">
-                    {invite.name || 'New Member'}
+                <div className="flex flex-col gap-1 w-full">
+                  <div className="text-[12px] font-black text-white uppercase tracking-widest leading-none truncate">
+                    {invite.name || 'NEW PERSONNEL'}
                   </div>
-                  <div className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-none">
+                  <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none truncate">
                     {invite.jobTitle}
                   </div>
                 </div>
@@ -424,23 +425,21 @@ const AddTeamMember = () => {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="max-w-xl w-full py-5 bg-primary hover:bg-primary-light disabled:opacity-50 text-white font-black uppercase tracking-[0.4em] text-[10px] rounded-2xl shadow-[0_0_50px_rgba(var(--color-primary),0.2)] transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-4 relative overflow-hidden group"
+            className="max-w-xl w-full h-16 bg-primary hover:bg-primary-dark disabled:opacity-50 text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl shadow-2xl shadow-primary/40 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
           >
             {status === 'loading' ? (
               <>
-                <Loader2 className="animate-spin text-white" size={18} />{' '}
-                SENDING...
+                <Loader2 className="animate-spin text-black" size={20} />{' '}
+                DISPATCHING...
               </>
             ) : (
               <>
                 <Send
-                  size={20}
-                  className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500"
+                  size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" strokeWidth={2.5}
                 />{' '}
-                SEND INVITATION
+                DISPATCH INVITATION PROTOCOL
               </>
             )}
-            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           </button>
 
           {error && (

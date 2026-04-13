@@ -41,51 +41,56 @@ const SEDashboard = () => {
   } = data || {};
 
   return (
-    <div className="p-6 bg-[#050505] min-h-screen text-text-main flex flex-col gap-6 font-sans">
+    <div className="p-6 bg-black min-h-screen text-white flex flex-col gap-8 font-mono selection:bg-primary/30">
       
       {/* Metrics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <MetricStripItem label="Tasks Assigned" value={executionMetrics?.tasksAssigned} icon={<Package size={18} />} />
-        <MetricStripItem label="Due Today" value={executionMetrics?.dueToday} icon={<Clock size={18} />} color={executionMetrics?.dueToday > 0 ? 'text-amber-500' : 'text-white/40'} />
-        <MetricStripItem label="Blocked" value={executionMetrics?.blocked} icon={<ShieldAlert size={18} />} color={executionMetrics?.blocked > 0 ? 'text-rose-500' : 'text-white/40'} />
-        <MetricStripItem label="High Priority" value={executionMetrics?.highPriority} icon={<Flame size={18} />} color="text-orange-500" />
-        <MetricStripItem label="PR Reviews" value={executionMetrics?.pendingReviews} icon={<GitPullRequest size={18} />} color="text-emerald-500" />
+        <MetricStripItem label="Active Assignment" value={executionMetrics?.tasksAssigned} icon={<Package size={18} />} color="text-white" />
+        <MetricStripItem label="Imminent Deadline" value={executionMetrics?.dueToday} icon={<Clock size={18} />} color={executionMetrics?.dueToday > 0 ? 'text-status-warning' : 'text-white/40'} />
+        <MetricStripItem label="Execution Blocked" value={executionMetrics?.blocked} icon={<ShieldAlert size={18} />} color={executionMetrics?.blocked > 0 ? 'text-status-error' : 'text-white/40'} />
+        <MetricStripItem label="Mission Critical" value={executionMetrics?.highPriority} icon={<Flame size={18} />} color="text-status-error" />
+        <MetricStripItem label="Peer Assessment" value={executionMetrics?.pendingReviews} icon={<GitPullRequest size={18} />} color="text-primary" />
       </div>
 
       {/* 2. My Work Queue (MAIN FOCUS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8">
-          <DashboardSection title="My Tasks" icon={<Activity size={16} />} className="h-full">
-            <div className="overflow-x-auto mt-4">
-              <table className="w-full text-left border-collapse">
+          <DashboardSection title="EXECUTION PIPELINE: ACTIVE ASSIGNMENTS" icon={<Activity size={16} />} className="h-full">
+            <div className="overflow-x-auto mt-6 custom-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
-                  <tr className="border-b border-white/5 text-[10px] text-text-muted uppercase tracking-widest font-black">
-                    <th className="pb-3 px-4">Task</th>
-                    <th className="pb-3 px-4">Priority</th>
-                    <th className="pb-3 px-4">Due</th>
-                    <th className="pb-3 px-4 text-right">Action</th>
+                  <tr className="bg-black border-b border-white/20 text-[10px] text-white/30 uppercase tracking-[0.4em] font-black">
+                    <th className="py-6 px-8">Assignment // Identifier</th>
+                    <th className="py-6 px-8 text-center">Priority</th>
+                    <th className="py-6 px-8">Deadline</th>
+                    <th className="py-6 px-8 text-right">Access</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.03]">
+                <tbody className="divide-y divide-white/[0.05] font-black italic">
                   {workQueue?.map((task, idx) => (
-                    <tr key={idx} className="hover:bg-white/[0.01] transition-colors group">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                           {task.blocked && <ShieldAlert size={12} className="text-rose-500 animate-pulse" />}
-                           <span className="text-xs font-semibold text-white/80 group-hover:text-white truncate max-w-xs">{task.title}</span>
+                    <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                      <td className="py-5 px-8">
+                        <div className="flex items-center gap-4">
+                           {task.blocked && <ShieldAlert size={14} className="text-status-error animate-pulse shrink-0" />}
+                           <span className="text-[12px] font-black text-white group-hover:text-primary transition-colors truncate max-w-xs">{task.title}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <StatusBadge status={task.priority === 'urgent' ? 'blocked' : task.priority === 'high' ? 'in_progress' : 'todo'} />
+                      <td className="py-5 px-8 text-center">
+                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded border shadow-inner ${
+                          task.priority === 'urgent' ? 'border-status-error/40 text-status-error bg-status-error/5' : 
+                          task.priority === 'high' ? 'border-status-warning/40 text-status-warning bg-status-warning/5' : 'border-white/10 text-white/40 bg-white/5'
+                        }`}>
+                          {task.priority || 'NORMAL'}
+                        </span>
                       </td>
-                      <td className="py-3 px-4">
-                        <span className={`text-[10px] font-mono ${task.isOverdue ? 'text-rose-400' : 'text-text-muted'}`}>
+                      <td className="py-5 px-8">
+                        <span className={`text-[10px] font-mono font-black ${task.isOverdue ? 'text-status-error' : 'text-white/30'}`}>
                           {task.due}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <button className="p-1.5 rounded-lg bg-white/5 hover:bg-primary/20 hover:text-primary transition-all">
-                           <ChevronRight size={14} />
+                      <td className="py-5 px-8 text-right">
+                        <button className="p-3 rounded-xl bg-black border border-white/10 hover:border-primary hover:text-primary transition-all shadow-lg active:scale-95 group/btn">
+                           <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                       </td>
                     </tr>
@@ -96,33 +101,35 @@ const SEDashboard = () => {
           </DashboardSection>
         </div>
 
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <DashboardSection title="My Blockers" icon={<ShieldAlert size={16} />}>
-             <div className="space-y-3 mt-4">
+        <div className="lg:col-span-4 flex flex-col gap-10">
+          <DashboardSection title="SYSTEM BLOCKERS" icon={<ShieldAlert size={16} />}>
+             <div className="space-y-4 mt-6">
                 {myBlockers?.map((block, idx) => (
-                  <div key={idx} className="p-3 bg-rose-500/[0.02] border border-rose-500/10 rounded-xl">
-                    <span className="block text-[10px] font-bold text-white mb-1">{block.title}</span>
-                    <span className="block text-[8px] text-rose-400 uppercase tracking-widest font-black flex items-center gap-1">
-                      <Clock size={8} /> Waiting on: {block.waitingOn}
+                  <div key={idx} className="p-6 bg-black border-2 border-status-error/20 rounded-2xl shadow-[0_4px_20px_rgba(239,68,68,0.1)] group hover:border-status-error/60 transition-all">
+                    <span className="block text-[12px] font-black text-white uppercase mb-3 tracking-tight group-hover:text-status-error transition-colors">{block.title}</span>
+                    <span className="block text-[9px] text-status-error/60 uppercase tracking-[0.2em] font-black flex items-center gap-2">
+                      <Clock size={10} className="animate-pulse" /> DEBT OWNER: {block.waitingOn}
                     </span>
                   </div>
                 ))}
                 {!myBlockers?.length && (
-                  <div className="py-6 text-center text-[10px] text-text-muted/40 uppercase font-black italic">No active blockers</div>
+                  <div className="py-10 text-center text-[10px] text-white/10 uppercase font-black tracking-[0.5em] italic">Zero external blocks detected</div>
                 )}
              </div>
           </DashboardSection>
-
-          <DashboardSection title="Code Review Queue" icon={<GitPullRequest size={16} />}>
-             <div className="space-y-3 mt-4">
-                <div className="flex items-center justify-between text-xs font-bold text-white/60 mb-2">
-                   <span>Review Requests</span>
-                   <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-500 rounded text-[10px]">{prStatus?.pendingReviews}</span>
+ 
+          <DashboardSection title="PEER ASSESSMENT STACK" icon={<GitPullRequest size={16} />}>
+             <div className="space-y-4 mt-6">
+                <div className="flex items-center justify-between p-4 bg-black border border-white/10 rounded-xl">
+                   <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Awaiting assessment</span>
+                   <span className="px-3 py-1 bg-primary text-black font-black rounded-full text-[11px] shadow-[0_0_15px_rgba(var(--color-primary),0.4)]">{prStatus?.pendingReviews}</span>
                 </div>
                 {prStatus?.stalePR && (
-                  <div className="p-3 bg-amber-500/[0.02] border border-amber-500/10 rounded-xl group cursor-pointer hover:bg-amber-500/[0.05] transition-all">
-                    <span className="block text-[10px] font-bold text-white group-hover:text-amber-500 transition-colors">{prStatus.stalePR.title}</span>
-                    <span className="block text-[8px] text-amber-500/60 uppercase tracking-widest font-black mt-1">⚠ Stale for {prStatus.stalePR.pendingDays} days</span>
+                  <div className="p-6 bg-black border-2 border-status-warning/20 rounded-2xl group cursor-pointer hover:border-status-warning/60 transition-all shadow-lg">
+                    <span className="block text-[12px] font-black text-white uppercase group-hover:text-status-warning transition-colors">{prStatus.stalePR.title}</span>
+                    <span className="block text-[9px] text-status-warning/60 uppercase tracking-[0.3em] font-black mt-3 flex items-center gap-2 italic">
+                       ⚠ LATENCY DETECTED: {prStatus.stalePR.pendingDays} DAYS IN STACK
+                    </span>
                   </div>
                 )}
              </div>
@@ -131,22 +138,22 @@ const SEDashboard = () => {
       </div>
 
       {/* Row 3: Code Ownership | Bugs */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-5">
-           <DashboardSection title="Ownership" icon={<Shield size={16} />}>
-              <div className="space-y-3 mt-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-4">
+           <DashboardSection title="SYSTEM OWNERSHIP" icon={<Shield size={16} />}>
+              <div className="space-y-4 mt-6">
                  {moduleOwnership?.map((module, idx) => (
-                   <div key={idx} className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl">
-                      <div className="flex flex-col">
-                        <span className="text-[11px] font-bold text-white">{module.name}</span>
-                        <span className={`text-[9px] font-semibold ${
-                          module.status === 'healthy' ? 'text-emerald-500/60' : 'text-rose-500/60'
+                   <div key={idx} className="flex items-center justify-between p-5 bg-black border border-white/10 rounded-2xl group hover:border-white/30 transition-all shadow-lg">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[12px] font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{module.name}</span>
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${
+                          module.status === 'healthy' ? 'text-status-success/60' : 'text-status-error/60'
                         }`}>
-                          {module.health}
+                          INTEGRITY: {module.health}
                         </span>
                       </div>
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
-                        module.status === 'healthy' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded border ${
+                        module.status === 'healthy' ? 'border-status-success/30 text-status-success bg-status-success/5' : 'border-status-error/30 text-status-error bg-status-error/5 animate-pulse'
                       }`}>
                          {module.status}
                       </span>
@@ -156,25 +163,28 @@ const SEDashboard = () => {
            </DashboardSection>
         </div>
 
-        <div className="lg:col-span-7">
-           <DashboardSection title="Bugs Assigned to Me" icon={<Bug size={16} />}>
-              <div className="space-y-3 mt-4">
+        <div className="lg:col-span-8">
+           <DashboardSection title="DEFECT TELEMETRY: ASSIGNED" icon={<Bug size={16} />}>
+              <div className="space-y-4 mt-6">
                  {myBugs?.map((bug, idx) => (
-                   <div key={idx} className="flex items-center justify-between p-3 bg-white/[0.015] border border-white/5 rounded-xl hover:bg-white/[0.03] transition-all">
-                      <div className="flex items-center gap-3">
-                         <div className={`p-1.5 rounded-lg ${bug.severity === 'urgent' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                            <AlertCircle size={14} />
+                   <div key={idx} className="flex items-center justify-between p-5 bg-black border border-white/10 rounded-2xl hover:border-status-error transition-all group shadow-xl">
+                      <div className="flex items-center gap-5">
+                         <div className={`p-3 rounded-xl border ${bug.severity === 'urgent' ? 'border-status-error/40 text-status-error bg-status-error/5 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'border-status-warning/40 text-status-warning bg-status-warning/5'}`}>
+                            <AlertCircle size={20} className={bug.severity === 'urgent' ? 'animate-pulse' : ''} />
                          </div>
-                         <span className="text-xs font-semibold text-white/80">{bug.issue}</span>
+                         <div className="flex flex-col gap-1">
+                            <span className="text-[13px] font-black text-white uppercase group-hover:text-status-error transition-colors">{bug.issue}</span>
+                            <span className="text-[10px] text-white/30 uppercase font-black tracking-widest">Severity Tier: {bug.severity}</span>
+                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-[9px] text-text-muted uppercase tracking-tighter font-mono">{bug.status}</span>
-                        <ExternalLink size={12} className="text-text-muted/30" />
+                      <div className="flex items-center gap-8">
+                        <span className="text-[10px] text-white/20 uppercase tracking-[0.3em] font-mono italic">{bug.status}</span>
+                        <ExternalLink size={16} className="text-white/10 group-hover:text-white/40 transition-colors" />
                       </div>
                    </div>
                  ))}
                  {!myBugs?.length && (
-                  <div className="py-6 text-center text-[10px] text-text-muted/40 uppercase font-black italic">No defects currently assigned</div>
+                  <div className="py-10 text-center text-[10px] text-white/10 uppercase font-black tracking-[0.5em] italic">No defects requiring direct intervention</div>
                 )}
               </div>
            </DashboardSection>
@@ -182,48 +192,48 @@ const SEDashboard = () => {
       </div>
 
       {/* Row 4: Focus Mode | Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
          <div className="lg:col-span-7">
-            <DashboardSection title="Daily Objective" icon={<Zap size={16} />} className="bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 text-primary">
-                       <Zap size={14} /> Primary Focus
+            <DashboardSection title="PRIMARY MISSION OBJECTIVE" icon={<Zap size={16} />} className="border-primary/40 shadow-[0_0_30px_rgba(var(--color-primary),0.1)]">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pb-2">
+                  <div className="flex flex-col gap-2 p-4 bg-primary/5 border border-primary/20 rounded-2xl">
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2 text-primary">
+                       <Zap size={14} className="animate-pulse" /> Focus Alpha
                     </span>
-                    <span className="text-xs font-bold text-white/80 truncate">{workQueue?.[0]?.title || 'No tasks'}</span>
+                    <span className="text-[11px] font-black text-white uppercase leading-tight tracking-tight">{workQueue?.[0]?.title || 'System Idle'}</span>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 text-emerald-500">
-                       <GitPullRequest size={14} /> Unblock PRs
+                  <div className="flex flex-col gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2 text-status-success">
+                       <GitPullRequest size={14} /> Focus Beta
                     </span>
-                    <span className="text-xs font-bold text-white/80 truncate">{prStatus?.pendingReviews} assessments pending</span>
+                    <span className="text-[11px] font-black text-white uppercase leading-tight tracking-tight">{prStatus?.pendingReviews} Assessments Pending</span>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 text-amber-500">
-                       <Bug size={14} /> Resolution
+                  <div className="flex flex-col gap-2 p-4 bg-black border border-white/10 rounded-2xl">
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2 text-status-warning">
+                       <Bug size={14} /> Focus Gamma
                     </span>
-                    <span className="text-xs font-bold text-white/80 truncate">{myBugs?.length || 0} defects require attention</span>
+                    <span className="text-[11px] font-black text-white uppercase leading-tight tracking-tight">{myBugs?.length || 0} Defects Pending</span>
                   </div>
                </div>
             </DashboardSection>
          </div>
 
          <div className="lg:col-span-5">
-            <DashboardSection title="Activity Snapshot" icon={<Activity size={16} />}>
-               <div className="flex items-center justify-around h-full py-2">
-                  <div className="text-center">
-                    <span className="block text-2xl font-black text-white">{activity?.commitsToday}</span>
-                    <span className="block text-[8px] font-bold text-text-muted uppercase tracking-[0.2em]">Commits Today</span>
+            <DashboardSection title="OPERATIONAL TELEMETRY" icon={<Activity size={16} />}>
+               <div className="flex items-center justify-around h-full py-4 mt-4">
+                  <div className="text-center group">
+                    <span className="block text-3xl font-black text-white group-hover:text-primary transition-colors">{activity?.commitsToday}</span>
+                    <span className="block text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mt-2 italic shadow-md">Commits Today</span>
                   </div>
-                  <div className="w-px h-8 bg-white/5" />
-                  <div className="text-center">
-                    <span className="block text-2xl font-black text-white">{activity?.filesChanged}</span>
-                    <span className="block text-[8px] font-bold text-text-muted uppercase tracking-[0.2em]">Files Changed</span>
+                  <div className="w-px h-12 bg-white/10" />
+                  <div className="text-center group">
+                    <span className="block text-3xl font-black text-white group-hover:text-primary transition-colors">{activity?.filesChanged}</span>
+                    <span className="block text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mt-2 italic">Files Delta</span>
                   </div>
-                  <div className="w-px h-8 bg-white/5" />
-                  <div className="text-center">
-                    <span className="block text-2xl font-black text-white">{activity?.prsMerged}</span>
-                    <span className="block text-[8px] font-bold text-text-muted uppercase tracking-[0.2em]">PRs Merged</span>
+                  <div className="w-px h-12 bg-white/10" />
+                  <div className="text-center group">
+                    <span className="block text-3xl font-black text-white group-hover:text-primary transition-colors">{activity?.prsMerged}</span>
+                    <span className="block text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mt-2 italic">Assessments</span>
                   </div>
                </div>
             </DashboardSection>
@@ -231,22 +241,25 @@ const SEDashboard = () => {
       </div>
 
       {/* 9. Mentorship / Support Signals */}
-      <DashboardSection title="Team Support" icon={<Users size={16} />}>
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <DashboardSection title="TEAM COLLABORATION: SUPPORT VECTORS" icon={<Users size={16} />}>
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             {teamSupport?.map((help, idx) => (
-              <div key={idx} className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-2 hover:bg-white/[0.04] transition-all cursor-pointer">
+              <div key={idx} className="p-6 bg-black border border-white/10 rounded-[2rem] flex flex-col gap-3 hover:border-primary transition-all cursor-pointer shadow-lg group">
                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-primary px-2 py-0.5 bg-primary/10 rounded uppercase tracking-widest">{help.teamMember}</span>
-                    <span className="text-yellow-500/50"><Sparkles size={14} /></span>
+                    <span className="text-[10px] font-black text-primary px-3 py-1 bg-primary/5 border border-primary/20 rounded-full uppercase tracking-[0.2em]">{help.teamMember}</span>
+                    <span className="text-status-warning/40 group-hover:text-status-warning transition-colors"><Sparkles size={16} /></span>
                  </div>
-                 <p className="text-xs font-semibold text-white/80 leading-relaxed truncate">{help.issue}</p>
-                 <span className="text-[10px] text-text-muted flex items-center gap-1">
-                    <MessageSquare size={10} /> {help.reason}
-                 </span>
+                 <p className="text-[12px] font-black text-white uppercase leading-relaxed tracking-tight line-clamp-2">{help.issue}</p>
+                 <div className="pt-3 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-[9px] text-white/20 font-black uppercase tracking-widest flex items-center gap-2">
+                       <MessageSquare size={12} /> {help.reason}
+                    </span>
+                    <ChevronRight size={14} className="text-white/10 group-hover:text-primary transition-all" />
+                 </div>
               </div>
             ))}
             {!teamSupport?.length && (
-              <div className="col-span-3 py-6 text-center text-[10px] text-text-muted/40 uppercase font-black italic">Team is currently unblocked</div>
+              <div className="col-span-3 py-12 text-center text-[10px] text-white/10 uppercase font-black tracking-[0.5em] italic">Cluster stable: No active mentorship requests</div>
             )}
          </div>
       </DashboardSection>

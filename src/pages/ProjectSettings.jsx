@@ -5,31 +5,33 @@ import { useProjectManagement } from '../hooks/useProjectManagement';
 import {
   Settings,
   Save,
-  ArrowLeft,
+  ChevronLeft,
   Trash2,
-  Archive,
   Shield,
   Rocket,
   Clock,
+  Activity,
+  Box
 } from 'lucide-react';
 import ProjectService from '../api/projectService';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 
-// Allows configuration of project metadata and provides options for managing or deleting projects.
+/**
+ * Tactical Project Settings Interface.
+ * Orchestrates mission parameter modification and administrative overrides.
+ * Optimized for industrial sunlight legibility and decision-first engineering.
+ */
 const ProjectSettings = () => {
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { project, isLoading, error, queryClient } = useProjectManagement(
-    id,
-    user
-  );
+  const { project, isLoading, error, queryClient } = useProjectManagement(id, user);
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    status: 'Active',
+    status: 'OPERATIONAL',
   });
   const [saving, setSaving] = useState(false);
 
@@ -38,7 +40,7 @@ const ProjectSettings = () => {
       setFormData({
         name: project.name || '',
         description: project.description || '',
-        status: project.status || 'Active',
+        status: project.status || 'OPERATIONAL',
       });
     }
   }, [project]);
@@ -49,9 +51,8 @@ const ProjectSettings = () => {
       setSaving(true);
       await ProjectService.updateProject(id, formData);
       queryClient.invalidateQueries(['project', id]);
-      // Show success (optional)
     } catch (err) {
-      console.error('Failed to update project', err);
+      console.error('Linkage update failed:', err);
     } finally {
       setSaving(false);
     }
@@ -60,135 +61,156 @@ const ProjectSettings = () => {
   if (isLoading) return <CenteredLoading />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-10 space-y-10 animate-in fade-in duration-700">
-      {/* Navigation Header */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-text-muted hover:text-white transition-colors group"
-        >
-          <ArrowLeft
-            size={16}
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-          <span className="text-[10px] font-black uppercase tracking-widest">
-            Back to Mission
-          </span>
-        </button>
+    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
+      <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
+        
+        {/* Navigation & Status Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="group flex items-center gap-3 text-white/50 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em]"
+          >
+            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary/40 group-hover:bg-white/10">
+              <ChevronLeft size={16} />
+            </div>
+            Back to Command
+          </button>
 
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-            <span className="text-[9px] font-black text-primary uppercase tracking-widest">
-              Project ID: {id.slice(-6)}
+          <div className="flex items-center gap-4">
+            <span className="px-3 py-1.5 bg-primary/20 border border-primary/40 rounded-full text-[9px] font-black text-primary uppercase tracking-widest shadow-lg">
+              TARGET ID: {id.slice(-8).toUpperCase()}
+            </span>
+            <div className="h-1 w-6 bg-white/20 rounded-full" />
+            <span className="text-[9px] font-black text-white/80 uppercase tracking-widest animate-pulse">
+               LINK ACTIVE
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Title Section */}
-      <div className="border-b border-white/5 pb-8">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter flex items-center gap-4">
-          <Settings className="text-primary" size={28} />
-          Project configuration
-        </h1>
-        <p className="text-text-muted mt-2 font-medium">
-          Fine-tune mission parameters and structural metadata.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Sidebar Navigation (Visual Only for now) */}
-        <div className="space-y-1">
-          {[
-            { label: 'General Info', icon: <Rocket size={14} />, active: true },
-            {
-              label: 'Access Control',
-              icon: <Shield size={14} />,
-              to: `/team/project/${id}`,
-            },
-            { label: 'Mission History', icon: <Clock size={14} /> },
-            { label: 'Danger Zone', icon: <Trash2 size={14} />, danger: true },
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              onClick={() => item.to && navigate(item.to)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                item.active
-                  ? 'bg-primary/10 text-primary border border-primary/20'
-                  : item.danger
-                    ? 'text-status-error hover:bg-status-error/10'
-                    : 'text-text-muted hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
+        {/* Tactical Title Section */}
+        <div className="border-b border-white/15 pb-10">
+          <div className="flex items-center gap-6 mb-4">
+            <div className="w-16 h-16 bg-black border border-white/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
+              <Settings size={32} />
+            </div>
+            <div className="space-y-1">
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase leading-none">
+                Mission Configuration
+              </h1>
+              <p className="text-[11px] font-black text-white/50 uppercase tracking-[0.3em]">
+                Fine-tune mission parameters and structural metadata.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Main Content Area */}
-        <div className="md:col-span-2 space-y-8">
-          <form
-            onSubmit={handleSave}
-            className="bg-white/[0.02] border border-white/5 p-5 sm:p-8 space-y-6"
-          >
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">
-                Mission Long-Name
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full bg-background-dark/50 border border-white/10 px-4 py-3 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-all font-bold"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">
-                Mission Briefing / Description
-              </label>
-              <textarea
-                rows="4"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full bg-background-dark/50 border border-white/10 px-4 py-3 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-all font-medium text-sm"
-              ></textarea>
-            </div>
-
-            <div className="flex justify-end pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+          {/* Tactical Navigation Sidebar */}
+          <div className="lg:col-span-1 space-y-2">
+            {[
+              { label: 'General Info', icon: <Rocket size={16} />, active: true },
+              { label: 'Access Control', icon: <Shield size={16} />, to: `/team/project/${id}` },
+              { label: 'Mission History', icon: <Clock size={16} /> },
+              { label: 'Operational Health', icon: <Activity size={16} /> },
+              { label: 'Danger Zone', icon: <Trash2 size={16} />, danger: true },
+            ].map((item, idx) => (
               <button
-                type="submit"
-                disabled={saving}
-                className="bg-primary hover:bg-primary-dark text-white font-black py-3 px-8 rounded-xl transition-all shadow-lg flex items-center gap-3 text-[10px] uppercase tracking-widest disabled:opacity-50"
+                key={idx}
+                onClick={() => item.to && navigate(item.to)}
+                className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                  item.active
+                    ? 'bg-primary/20 text-primary border-primary/40 shadow-xl'
+                    : item.danger
+                      ? 'text-status-error/60 border-transparent hover:border-status-error hover:bg-status-error/10 hover:text-status-error'
+                      : 'text-white/40 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
+                }`}
               >
-                <Save size={16} />
-                {saving ? 'Syncing...' : 'Save Changes'}
+                {item.icon}
+                {item.label}
               </button>
-            </div>
-          </form>
+            ))}
+          </div>
 
-          {/* Danger Zone Section */}
-          <div className="pt-10 border-t border-white/5">
-            <h3 className="text-status-error text-[10px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-              <Shield size={16} /> Danger Zone
-            </h3>
-            <div className="bg-status-error/5 border border-status-error/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-center sm:text-left">
-                <h4 className="text-white font-bold text-sm">
-                  Delete this mission
-                </h4>
-                <p className="text-text-muted text-[10px] mt-1">
-                  Once deleted, all logs and sub-tasks are cleared from nexus.
-                </p>
+          {/* Main Control Console */}
+          <div className="lg:col-span-3 space-y-10">
+            <form onSubmit={handleSave} className="bg-white/5 border border-white/20 p-8 sm:p-10 rounded-2xl shadow-3xl space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
+                    <Box size={14} className="text-primary" /> MISSION CODENAME
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full h-14 bg-black border border-white/20 px-6 rounded-xl text-white font-black text-sm uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-white/5 transition-all shadow-inner"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
+                     <Activity size={14} className="text-primary" /> OPERATIONAL STATUS
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="w-full h-14 bg-black border border-white/20 px-6 rounded-xl text-white font-black text-[11px] uppercase tracking-widest focus:outline-none focus:border-primary appearance-none transition-all shadow-inner"
+                    >
+                      <option value="Active" className="bg-[#121212]">OPERATIONAL</option>
+                      <option value="On Hold" className="bg-[#121212]">HOLD PROTOCOL</option>
+                      <option value="Completed" className="bg-[#121212]">MISSION COMPLETE</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <button className="bg-status-error/10 hover:bg-status-error text-status-error hover:text-white border border-status-error/20 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                TERMINATE PROJECT
-              </button>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1">
+                  MISSION BRIEFING / ARCHITECTURE DESCRIPTION
+                </label>
+                <textarea
+                  rows="6"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full bg-black border border-white/20 px-6 py-5 rounded-xl text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-white/5 transition-all leading-relaxed shadow-inner"
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="bg-primary hover:bg-primary-dark text-black font-black py-4 px-12 rounded-xl transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] active:scale-95 disabled:opacity-50"
+                >
+                  <Save size={18} strokeWidth={3} />
+                  {saving ? 'SYNCING PARAMETERS...' : 'COMMIT CHANGES'}
+                </button>
+              </div>
+            </form>
+
+            {/* Tactical Override (Danger Zone) */}
+            <div className="pt-12 border-t border-white/15">
+              <div className="flex items-center gap-4 mb-8">
+                <Shield size={20} className="text-status-error" />
+                <h3 className="text-status-error text-[11px] font-black uppercase tracking-[0.4em]">
+                  Override Protocols (Danger Zone)
+                </h3>
+              </div>
+              
+              <div className="bg-status-error/5 border border-status-error/25 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-8 transition-all hover:bg-status-error/10">
+                <div className="text-center sm:text-left space-y-2">
+                  <h4 className="text-white font-black text-lg uppercase tracking-tight">
+                    Abort Mission / Terminate Project
+                  </h4>
+                  <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                    This action results in the permanent erasure of all logs, <br className="hidden sm:block" /> sub-tasks, and metadata from the nexus core.
+                  </p>
+                </div>
+                <button className="bg-status-error text-white font-black px-10 py-4 rounded-xl text-[10px] uppercase tracking-[0.25em] transition-all hover:bg-red-600 shadow-xl shadow-status-error/20 active:scale-95">
+                  TERMINATE PROJECT
+                </button>
+              </div>
             </div>
           </div>
         </div>

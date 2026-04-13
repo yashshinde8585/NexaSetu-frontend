@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 
-// A kanban-style task board component that organizes tasks into status-based columns with pagination.
+/**
+ * Tactical Kanban Board.
+ * Implements a high-density, status-driven workspace for task orchestration.
+ */
 const TaskBoard = ({
   groupedTasks,
   user,
@@ -12,13 +15,12 @@ const TaskBoard = ({
   const [pageState, setPageState] = useState({});
   const ITEMS_PER_PAGE = 10;
 
-  // Updates the current page index for a specific column to handle task pagination.
   const handlePageChange = (columnId, newPage) => {
     setPageState((prev) => ({ ...prev, [columnId]: newPage }));
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
       {columns.map((column) => {
         const currentTasks = groupedTasks[column.id] || [];
         const totalPages = Math.ceil(currentTasks.length / ITEMS_PER_PAGE) || 1;
@@ -30,46 +32,57 @@ const TaskBoard = ({
         );
 
         return (
-          <div
-            key={column.id}
-            className="bg-background-dark/50 rounded-2xl border border-white/5 flex flex-col min-h-[400px] overflow-hidden"
+          <div 
+            key={column.id} 
+            className="flex-1 min-w-[280px] flex flex-col h-full bg-white/[0.04] border border-white/20 rounded-3xl overflow-hidden shadow-2xl"
           >
-            <div
-              className={`sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl pt-5 px-5 pb-3 border-b-2 flex justify-between items-end text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${column.color}`}
-            >
-              <span>{column.title}</span>
-              <span className="text-text-muted text-[10px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">
-                {currentTasks.length}
-              </span>
+            {/* Column Header */}
+            <div className={`p-5 border-b-2 border-white/10 ${column.color.replace('text-', 'bg-')}/10 flex items-center justify-between`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-2 h-2 rounded-full ${column.color.replace('text-', 'bg-')} shadow-[0_0_10px_rgba(255,255,255,0.2)]`} />
+                <h3 className="text-[11px] font-black uppercase tracking-[0.25em] text-white/90">{column.title}</h3>
+                <span className="px-2 py-0.5 rounded bg-black/40 border border-white/20 text-[9px] font-black text-white/70">
+                  {currentTasks.length}
+                </span>
+              </div>
             </div>
-            <div className="p-4 space-y-3 flex-grow">
-              {paginatedTasks.map((task) => (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  user={user}
-                  columns={columns}
-                  handleStatusChange={handleStatusChange}
-                  onTaskClick={onTaskClick}
-                />
-              ))}
+            
+            <div className="p-3 space-y-4 flex-grow">
+              {paginatedTasks.length > 0 ? (
+                paginatedTasks.map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    user={user}
+                    columns={columns}
+                    handleStatusChange={handleStatusChange}
+                    onTaskClick={onTaskClick}
+                  />
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center opacity-10 py-20 grayscale">
+                   <div className="w-12 h-1 bg-white/40 mb-2 rounded-full" />
+                   <span className="text-[8px] font-black uppercase tracking-widest">Zone Clear</span>
+                </div>
+              )}
             </div>
+
             {totalPages > 1 && (
-              <div className="mx-4 mb-4 mt-1 flex items-center justify-between pt-3 border-t border-white/5">
+              <div className="mx-6 mb-6 mt-2 flex items-center justify-between pt-4 border-t border-white/5">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => handlePageChange(column.id, currentPage - 1)}
-                  className="text-xs px-3 py-1 bg-background-light disabled:opacity-30 rounded hover:bg-white/10 transition-colors text-text-muted font-bold"
+                  className="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 disabled:opacity-20 rounded-lg hover:bg-white/10 transition-colors text-white/60"
                 >
                   Prev
                 </button>
-                <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase">
-                  {currentPage} / {totalPages}
+                <span className="text-[9px] text-white/40 font-black tracking-[0.3em] uppercase">
+                  {currentPage} — {totalPages}
                 </span>
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => handlePageChange(column.id, currentPage + 1)}
-                  className="text-xs px-3 py-1 bg-background-light disabled:opacity-30 rounded hover:bg-white/10 transition-colors text-text-muted font-bold"
+                  className="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 disabled:opacity-20 rounded-lg hover:bg-white/10 transition-colors text-white/60"
                 >
                   Next
                 </button>

@@ -1,6 +1,6 @@
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
-import { AlertTriangle, Clock, Shield, Target, Users, TrendingDown, TrendingUp, Minus } from 'lucide-react';
+import { AlertTriangle, Clock, Shield, Target, Users, TrendingDown, TrendingUp, Minus, Activity } from 'lucide-react';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
@@ -20,28 +20,35 @@ const VPEDashboard = () => {
   } = useRoleDashboard('vpe');
 
   if (isLoading || !data) return (
-    <div className="h-screen flex items-center justify-center bg-[#0a0f18]">
-      <div className="flex flex-col items-center gap-4">
+    <div className="h-screen flex items-center justify-center bg-black">
+      <div className="flex flex-col items-center gap-6">
         <CenteredLoading />
-        <span className="text-slate-500 font-mono text-xs uppercase tracking-[0.3em]">Syncing data...</span>
+        <span className="text-white/60 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Syncing Execution Data...</span>
       </div>
     </div>
   );
   
   if (error) return (
-    <div className="p-8 text-rose-500 bg-[#0a0f18] h-screen font-mono flex items-center justify-center">
-      <div className="border border-rose-900/50 p-6 rounded bg-rose-950/20 max-w-md text-center">
-        <AlertTriangle className="mx-auto mb-4" size={40} />
-        <h2 className="text-xl font-black mb-2 uppercase">Connection Failure</h2>
-        <p className="text-sm text-rose-300/70">{error?.message || 'The data stream has been interrupted.'}</p>
+    <div className="p-8 text-status-error bg-black h-screen font-mono flex items-center justify-center uppercase font-black">
+      <div className="border border-status-error/40 p-8 rounded-2xl bg-black max-w-md text-center shadow-3xl">
+        <AlertTriangle className="mx-auto mb-6 text-status-error" size={48} />
+        <h2 className="text-2xl font-black mb-4 tracking-tighter">Connection Failure</h2>
+        <p className="text-[11px] text-white/60 tracking-widest leading-loose">{error?.message || 'The tactical data stream has been interrupted.'}</p>
       </div>
     </div>
   );
 
-  const { executionStats, teamGrid, sprintExecution, blockers, timeline, activity } = data;
+  const { 
+    executionStats = { projectsDelayed: 0, avgSprintDelay: '0d', activeBlockers: 0, teamsOverloaded: 0, velocityTrend: { direction: 'stable', value: '0%' } }, 
+    teamGrid = [], 
+    sprintExecution = { progress: 0, risk: 'UNKNOWN', completed: 0, inProgress: 0, blocked: 0 }, 
+    blockers = {}, 
+    timeline = [], 
+    activity = [] 
+  } = data;
 
   return (
-    <div className="min-h-screen bg-[#0a0f18] text-slate-300 p-4 md:p-6 font-mono selection:bg-sky-500/30">
+    <div className="min-h-screen bg-black text-white p-4 md:p-6 font-mono selection:bg-primary">
       
       {/* Execution Overview */}
       <div id="vp-top" className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
@@ -49,31 +56,36 @@ const VPEDashboard = () => {
             icon={<AlertTriangle size={14} />} 
             label="Projects Delayed" 
             value={executionStats.projectsDelayed} 
-            color="text-rose-500" 
+            color="text-status-error" 
+            accent="bg-status-error"
         />
         <MetricStripItem 
             icon={<Clock size={14} />} 
             label="Avg Sprint Delay" 
             value={executionStats.avgSprintDelay} 
-            color="text-amber-500" 
+            color="text-status-warning" 
+            accent="bg-status-warning"
         />
         <MetricStripItem 
             icon={<Shield size={14} />} 
             label="Active Blockers" 
             value={executionStats.activeBlockers} 
-            color="text-sky-500" 
+            color="text-primary" 
+            accent="bg-primary"
         />
         <MetricStripItem 
             icon={<Users size={14} />} 
             label="Teams Overloaded" 
             value={executionStats.teamsOverloaded} 
-            color="text-orange-500" 
+            color="text-status-warning" 
+            accent="bg-status-warning"
         />
         <MetricStripItem 
             icon={executionStats.velocityTrend.direction === 'down' ? <TrendingDown size={14} /> : <TrendingUp size={14} />} 
             label="Velocity Trend" 
             value={executionStats.velocityTrend.value} 
-            color={executionStats.velocityTrend.direction === 'down' ? 'text-rose-500' : 'text-emerald-500'} 
+            color={executionStats.velocityTrend.direction === 'down' ? 'text-status-error' : 'text-status-success'} 
+            accent={executionStats.velocityTrend.direction === 'down' ? 'bg-status-error' : 'bg-status-success'}
         />
       </div>
 
@@ -83,32 +95,33 @@ const VPEDashboard = () => {
         <div className="lg:col-span-8 space-y-6">
           
           <DashboardSection title="TEAM PERFORMANCE" icon={<Users size={12} />}>
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-500 text-[10px] uppercase tracking-widest font-black">
-                    <th className="py-4 px-4 bg-slate-900/30">Functional Team</th>
-                    <th className="py-4 px-4 bg-slate-900/30 text-center">Sprint Progress</th>
-                    <th className="py-4 px-4 bg-slate-900/30 text-center">Velocity</th>
-                    <th className="py-4 px-4 bg-slate-900/30 text-center">Avg Load</th>
-                    <th className="py-4 px-4 bg-slate-900/30 text-center">Blockers</th>
-                    <th className="py-4 px-4 bg-slate-900/30 text-right">Status</th>
+                  <tr className="border-b border-white/30 text-white/50 text-[10px] uppercase tracking-[0.2em] font-black">
+                    <th className="py-4 px-4 bg-black">Functional Team</th>
+                    <th className="py-4 px-4 bg-black text-center">Sprint Progress</th>
+                    <th className="py-4 px-4 bg-black text-center">Velocity</th>
+                    <th className="py-4 px-4 bg-black text-center">Avg Load</th>
+                    <th className="py-4 px-4 bg-black text-center">Blockers</th>
+                    <th className="py-4 px-4 bg-black text-right">Status</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
                   {teamGrid.map((row, i) => (
                     <tr key={i} 
                       onClick={() => handleDrilldown(row.team)}
-                      className="border-b border-slate-900 hover:bg-slate-900/40 transition-all cursor-pointer group">
-                      <td className="py-5 px-4 font-black text-slate-100 group-hover:text-sky-400 transition-colors uppercase tracking-tight">
+                      className="border-b border-white/[0.05] hover:bg-white/5 transition-all cursor-pointer group">
+                      <td className="py-5 px-4 font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest text-[11px]">
                         {row.team} Team
                       </td>
                       <td className="py-5 px-4">
                         <div className="flex flex-col items-center gap-2">
-                           <span className="text-[11px] font-bold text-slate-400">{row.progress}</span>
-                           <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
+                           <span className="text-[11px] font-black text-white/50">{row.progress}</span>
+                           <div className="w-24 h-1.5 bg-black border border-white/30 rounded-full overflow-hidden">
                              <div 
-                                className={`h-full ${parseInt(row.progress) > 70 ? 'bg-emerald-500' : parseInt(row.progress) > 40 ? 'bg-amber-500' : 'bg-rose-500'}`} 
+                                className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'}`} 
                                 style={{ width: row.progress }}
                              ></div>
                            </div>
@@ -118,13 +131,13 @@ const VPEDashboard = () => {
                         <VelocityIndicator direction={row.velocity} />
                       </td>
                       <td className="py-5 px-4 text-center">
-                        <span className={`px-2 py-0.5 rounded text-[11px] font-black ${parseInt(row.load) > 100 ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30' : 'bg-slate-800/50 text-slate-400'}`}>
+                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${parseInt(row.load) > 100 ? 'bg-status-error/10 text-status-error border border-status-error/40' : 'bg-black border border-white/30 text-white/50'}`}>
                           {row.load}
                         </span>
                       </td>
                       <td className="py-5 px-4 text-center">
-                        <span className={`font-mono ${row.blockers > 0 ? 'text-rose-500 font-black animate-pulse' : 'text-slate-600'}`}>
-                          {row.blockers}
+                        <span className={`font-black text-[11px] uppercase tracking-widest ${row.blockers > 0 ? 'text-status-error animate-pulse' : 'text-white/20'}`}>
+                          {row.blockers} BK
                         </span>
                       </td>
                       <td className="py-5 px-4 text-right">
@@ -135,9 +148,39 @@ const VPEDashboard = () => {
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 p-3 bg-slate-900/30 border border-slate-800 rounded text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-2">
-               <Shield size={12} className="text-sky-500" />
-               Critical Insights: {teamGrid.some(t => t.status === 'red') ? "High risk detection in active functional pipelines. Immediate rebalancing required." : "System performance within acceptable execution parameters."}
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {teamGrid.map((row, i) => (
+                <div key={i} 
+                  onClick={() => handleDrilldown(row.team)}
+                  className="bg-white/[0.03] border border-white/20 p-5 rounded-2xl group transition-all active:bg-white/10">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest text-[11px]">{row.team} Unit</span>
+                    <StatusIndicator color={row.status} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="space-y-1">
+                      <span className="text-[8px] text-white/50 uppercase tracking-widest font-black">Sprint Progress</span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1 bg-black border border-white/20 rounded-full overflow-hidden">
+                          <div className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'}`} style={{ width: row.progress }}></div>
+                        </div>
+                        <span className="text-[9px] font-black text-white">{row.progress}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[8px] text-white/50 uppercase tracking-widest font-black block mb-1">Blockers</span>
+                      <span className={`font-black text-[10px] uppercase tracking-widest ${row.blockers > 0 ? 'text-status-error animate-pulse' : 'text-white/20'}`}>{row.blockers} ACTIVE</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 p-4 bg-black border border-white/30 rounded-xl text-[10px] text-white/60 uppercase tracking-[0.2em] flex items-center gap-3">
+               <Shield size={14} className="text-primary" />
+               Critical Insights: {teamGrid.some(t => t.status === 'red') ? "HIGH RISK DETECTION IN ACTIVE FUNCTIONAL PIPELINES. IMMEDIATE REBALANCING REQUIRED." : "SYSTEM PERFORMANCE WITHIN ACCEPTABLE EXECUTION PARAMETERS."}
             </div>
           </DashboardSection>
 
@@ -146,25 +189,25 @@ const VPEDashboard = () => {
               <div className="space-y-6 py-2">
                 <div id="sprint" className="flex justify-between items-end">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Progress</span>
-                    <div className="text-3xl font-black text-white">{sprintExecution.progress}%</div>
+                    <span className="text-[10px] text-white/60 uppercase tracking-widest font-black">Progress</span>
+                    <div className="text-3xl font-black text-white">{sprintExecution?.progress || 0}%</div>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Spillover Risk</span>
-                    <span className={`px-2 py-0.5 rounded text-xs font-black uppercase tracking-widest ${sprintExecution.risk === 'HIGH' ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30' : 'bg-emerald-500/10 text-emerald-500'}`}>
-                        {sprintExecution.risk}
+                    <span className="text-[10px] text-white/60 uppercase tracking-widest font-black block mb-1">Spillover Risk</span>
+                    <span className={`px-3 py-1 border rounded-lg text-[10px] font-black uppercase tracking-widest ${sprintExecution?.risk === 'HIGH' ? 'bg-status-error/10 text-status-error border-status-error/40' : 'bg-status-success/10 text-status-success border-status-success/40'}`}>
+                        {sprintExecution?.risk || 'NONE'}
                     </span>
                   </div>
                 </div>
 
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div className="h-full bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.5)] transition-all duration-1000" style={{ width: `${sprintExecution.progress}%` }}></div>
+                <div className="w-full bg-black h-2 rounded-full overflow-hidden border border-white/30">
+                  <div className="h-full bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-1000" style={{ width: `${sprintExecution?.progress || 0}%` }}></div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <SprintCounter label="Completed" value={`${sprintExecution.completed} tasks`} color="text-emerald-500" />
-                  <SprintCounter label="In Progress" value={sprintExecution.inProgress} color="text-sky-500" />
-                  <SprintCounter label="Blocked" value={sprintExecution.blocked} color="text-rose-500" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <SprintCounter label="Completed" value={`${sprintExecution?.completed || 0} TASKS`} color="text-status-success" />
+                  <SprintCounter label="In Progress" value={sprintExecution?.inProgress || 0} color="text-primary" />
+                  <SprintCounter label="Blocked" value={sprintExecution?.blocked || 0} color="text-status-error" className="col-span-2 sm:col-span-1" />
                 </div>
                 
                 <div className="pt-2">
@@ -192,28 +235,28 @@ const VPEDashboard = () => {
               <div className="space-y-5 py-2">
                 {teamGrid.map((team, idx) => (
                   <div key={idx} className="space-y-1.5">
-                    <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-tight">
-                      <span className="text-slate-400">{team.team}</span>
-                      <span className={parseInt(team.load) > 100 ? 'text-rose-500' : 'text-slate-200'}>{team.load} Load</span>
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                      <span className="text-white/60">{team.team}</span>
+                      <span className={parseInt(team.load) > 100 ? 'text-status-error' : 'text-white'}>{team.load} Load</span>
                     </div>
-                    <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-black h-1.5 rounded-full overflow-hidden border border-white/30">
                       <div 
-                        className={`h-full transition-all duration-700 ${parseInt(team.load) > 100 ? 'bg-rose-500' : parseInt(team.load) > 85 ? 'bg-amber-500' : 'bg-slate-500'}`} 
+                        className={`h-full transition-all duration-700 ${parseInt(team.load) > 100 ? 'bg-status-error' : parseInt(team.load) > 85 ? 'bg-status-warning' : 'bg-white/20'}`} 
                         style={{ width: `${Math.min(parseInt(team.load), 100)}%` }}
                       ></div>
                     </div>
                     {parseInt(team.load) > 100 && (
-                      <p className="text-[9px] text-rose-500 italic uppercase">Rebalance Recommended: Shift tasks to underloaded units.</p>
+                      <p className="text-[9px] text-status-error font-black uppercase tracking-widest">Rebalance Recommended: Shift tasks to underloaded units.</p>
                     )}
                   </div>
                 ))}
 
-                <div className="mt-6 p-3 bg-sky-500/5 border border-sky-500/20 rounded">
-                  <h4 className="text-[10px] font-black text-sky-500 uppercase flex items-center gap-1 mb-2">
-                    <Target size={12} /> Analysis
+                <div className="mt-6 p-4 bg-black border border-primary/40 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                  <h4 className="text-[10px] font-black text-primary uppercase flex items-center gap-2 mb-2 tracking-widest">
+                    <Target size={14} /> Strategic Analysis
                   </h4>
-                  <p className="text-[11px] text-sky-300 italic">
-                    Shift 2 high-priority tasks from {teamGrid.sort((a,b) => parseInt(b.load)-parseInt(a.load))[0]?.team} → {teamGrid.sort((a,b) => parseInt(a.load)-parseInt(b.load))[0]?.team} to stabilize delivery velocity.
+                  <p className="text-[11px] text-primary/80 uppercase font-black tracking-tight leading-relaxed">
+                    SHIFT 2 HIGH-PRIORITY TASKS FROM {teamGrid.sort((a,b) => parseInt(b.load)-parseInt(a.load))[0]?.team.toUpperCase()} → {teamGrid.sort((a,b) => parseInt(a.load)-parseInt(b.load))[0]?.team.toUpperCase()} TO STABILIZE DELIVERY VELOCITY.
                   </p>
                 </div>
               </div>
@@ -228,14 +271,14 @@ const VPEDashboard = () => {
             <div id="vp-blockers" className="space-y-6">
               {Object.keys(blockers).map((teamName, idx) => (
                 <div key={idx} className="space-y-3">
-                  <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></div>
-                    {teamName} Team
+                  <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-2 mb-4">
+                    <div className="w-2 h-2 bg-status-error rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+                    {teamName} Team Blockers
                   </h4>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {blockers[teamName].map((item, i) => (
-                      <li key={i} className="text-[11px] text-slate-400 flex items-start gap-2 bg-slate-900/50 p-2 rounded border border-transparent hover:border-slate-800 transition-colors">
-                        <span className="text-rose-500/50 mt-0.5">•</span>
+                      <li key={i} className="text-[11px] text-white/70 font-black uppercase tracking-tight flex items-start gap-3 bg-black p-3 rounded-xl border border-white/30 shadow-sm hover:border-primary/40 transition-all">
+                        <span className="text-status-error font-black shrink-0">•</span>
                         {item}
                       </li>
                     ))}
@@ -247,18 +290,18 @@ const VPEDashboard = () => {
 
           <DashboardSection title="Delivery Timeline" icon={<Clock size={12} />}>
             <div id="timeline" className="space-y-4">
-               {timeline.map((item, idx) => (
-                 <div key={idx} className="flex justify-between items-center p-3 bg-slate-900/40 rounded border border-slate-800 group hover:border-slate-700 transition-all">
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-slate-200 group-hover:text-sky-400 transition-colors uppercase">{item.project}</span>
-                      <span className="text-[10px] text-slate-600 tracking-tighter uppercase font-bold">Current Drift Analysis</span>
+                {timeline.map((item, idx) => (
+                 <div key={idx} className="flex justify-between items-center p-4 bg-black rounded-xl border border-white/30 group hover:border-primary transition-all shadow-sm mb-3">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest">{item.project}</span>
+                      <span className="text-[9px] text-white/50 uppercase font-black tracking-widest">System Drift Analysis</span>
                     </div>
-                    <div className={`text-[11px] font-black uppercase px-2 py-0.5 rounded shadow-sm ${item.status === 'green' ? 'bg-emerald-500/10 text-emerald-500' : item.status === 'yellow' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                    <div className={`text-[10px] font-black uppercase px-3 py-1 rounded-lg border shadow-sm ${item.status === 'green' ? 'bg-status-success/10 text-status-success border-status-success/40' : item.status === 'yellow' ? 'bg-status-warning/10 text-status-warning border-status-warning/40' : 'bg-status-error/10 text-status-error border-status-error/40'}`}>
                       {item.drift}
                     </div>
                  </div>
                ))}
-               <p className="text-[9px] text-slate-600 text-center uppercase tracking-widest pt-2 italic">Projections based on current team velocity trends</p>
+               <p className="text-[9px] text-white/20 text-center uppercase tracking-[0.3em] pt-4 font-black">Projections based on current team velocity trends</p>
             </div>
           </DashboardSection>
 
@@ -266,12 +309,9 @@ const VPEDashboard = () => {
           <DashboardSection title="Engineering Activity" icon={<Activity size={12} />}>
             <div id="vp-feed" className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {activity?.map((item, i) => (
-                <div key={i} className="flex flex-col gap-1 border-l-2 border-slate-900 pl-4 py-1 hover:border-sky-500/50 transition-all group">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">{item.time}</span>
-                    <div className="w-1 h-1 bg-slate-800 rounded-full group-hover:bg-sky-500 transition-colors"></div>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed font-black tracking-tight uppercase group-hover:text-slate-200">{item.text}</p>
+                <div key={i} className="flex justify-between items-start border-l border-white/30 pl-4 py-3 hover:bg-white/5 transition-colors rounded-r-xl group">
+                  <p className="text-[11px] text-white/60 font-black uppercase tracking-tight leading-normal group-hover:text-white transition-colors">{item.text}</p>
+                  <span className="text-[9px] text-white/20 whitespace-nowrap ml-3 uppercase font-black tracking-widest self-center">{item.time}</span>
                 </div>
               ))}
             </div>
@@ -281,73 +321,106 @@ const VPEDashboard = () => {
 
        {/* Team Drilldown Modal */}
        {drilldown.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-300">
-          <div className="bg-[#0a0f18] border border-slate-800 rounded-xl w-full max-w-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/20">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black animate-in fade-in duration-300">
+          <div className="bg-black border border-white/30 rounded-[2.5rem] w-full max-w-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300">
+            <div className="p-6 md:p-10 border-b border-white/30 flex justify-between items-center bg-black">
               <div>
-                <h2 className="text-xl font-black text-white uppercase tracking-[0.2em] italic">
-                  Team Drill-Down: {drilldown.category}
+                <h2 className="text-lg md:text-2xl font-black text-white uppercase tracking-tighter">
+                  Unit Intelligence: {drilldown.category}
                 </h2>
-                <div className="flex items-center gap-2 mt-1.5 underline decoration-sky-500/50 underline-offset-4">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold font-mono italic">Functional Unit Operations & Load Profiling [V1.0]</span>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[8px] md:text-[10px] text-white/60 uppercase tracking-[0.4em] font-black">Functional Portfolio Operational Load Profiling // ACTIVE</span>
                 </div>
               </div>
               <button 
                 onClick={closeDrilldown} 
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all border border-slate-800 text-xl font-mono"
+                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-black border border-white/30 text-white/60 hover:text-primary hover:border-primary transition-all text-2xl md:text-3xl font-light"
               >
                 ×
               </button>
             </div>
             
             <div className="p-0 overflow-y-auto flex-1 custom-scrollbar">
-              <table className="w-full text-left font-mono">
-                <thead className="bg-[#0e141f] sticky top-0 z-10 border-b border-slate-800">
-                  <tr className="text-[10px] text-slate-600 uppercase tracking-[0.3em] font-black">
-                    <th className="py-4 px-6">Personnel</th>
-                    <th className="py-4 px-6">Active Tasks</th>
-                    <th className="py-4 px-6">Load Profile</th>
-                    <th className="py-4 px-6 text-right">Capacity</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm">
-                  {drilldown.data.map((person, i) => (
-                    <tr key={i} className="border-b border-slate-900 hover:bg-white/[0.02] transition-colors group">
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="font-black text-slate-100 group-hover:text-sky-400 uppercase tracking-tighter transition-colors">{person.name}</span>
-                          <span className="text-[10px] text-slate-500 uppercase tracking-widest">{person.role}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-slate-400 font-bold">{person.tasks}</td>
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col gap-1.5">
-                           <span className={`text-xs font-black ${person.load > 100 ? 'text-rose-500' : 'text-slate-300'}`}>{person.load}%</span>
-                           <div className="w-24 h-1 bg-slate-900 rounded-full overflow-hidden">
-                              <div 
-                                className={`h-full ${person.load > 100 ? 'bg-rose-500 shadow-[0_0_5px_rgba(244,63,94,0.5)]' : person.load > 80 ? 'bg-amber-500' : 'bg-slate-700'}`} 
-                                style={{ width: `${Math.min(person.load, 100)}%` }}
-                              ></div>
-                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <div className={`w-2 h-2 rounded-full inline-block ${person.status === 'red' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]' : 'bg-emerald-500 opacity-60'}`}></div>
-                      </td>
+              {/* Desktop View */}
+              <div className="hidden md:block">
+                <table className="w-full text-left">
+                  <thead className="bg-black sticky top-0 z-10 border-b border-white/30">
+                    <tr className="text-[10px] text-white/50 uppercase tracking-[0.3em] font-black">
+                      <th className="py-5 px-8">Personnel</th>
+                      <th className="py-5 px-8">Active Tasks</th>
+                      <th className="py-5 px-8">Load Profile</th>
+                      <th className="py-5 px-8 text-right">Capacity</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="text-sm font-black">
+                    {drilldown.data.map((person, i) => (
+                      <tr key={i} className="border-b border-white/[0.05] hover:bg-white/5 transition-colors group">
+                        <td className="py-5 px-8">
+                          <div className="flex flex-col gap-1">
+                            <span className="font-black text-white group-hover:text-primary uppercase tracking-tight transition-colors">{person.name}</span>
+                            <span className="text-[9px] text-white/50 uppercase tracking-[0.2em]">{person.role}</span>
+                          </div>
+                        </td>
+                        <td className="py-5 px-8 text-white font-mono">{person.tasks} TASKS</td>
+                        <td className="py-5 px-8">
+                          <div className="flex flex-col gap-2">
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${person.load > 100 ? 'text-status-error' : 'text-white/60'}`}>{person.load}%</span>
+                            <div className="w-32 h-1.5 bg-black border border-white/30 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${person.load > 100 ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.5)]' : person.load > 80 ? 'bg-status-warning' : 'bg-primary'}`} 
+                                  style={{ width: `${Math.min(person.load, 100)}%` }}
+                                ></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-5 px-8 text-right">
+                          <div className={`w-2 h-2 rounded-full inline-block ${person.status === 'red' ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.3)]'}`}></div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden p-5 space-y-4">
+                {drilldown.data.map((person, i) => (
+                  <div key={i} className="bg-white/[0.03] border border-white/20 p-5 rounded-2xl group transition-all">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-black text-white uppercase tracking-tight">{person.name}</span>
+                        <span className="text-[9px] text-white/50 uppercase tracking-[0.2em]">{person.role}</span>
+                      </div>
+                      <div className={`w-2 h-2 rounded-full ${person.status === 'red' ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.3)]'}`}></div>
+                    </div>
+                    <div className="mt-6 flex flex-col gap-3">
+                       <div className="flex justify-between items-center text-[9px] uppercase font-black tracking-widest text-white/60">
+                          <span>Active Tasks</span>
+                          <span className="text-white">{person.tasks} Entries</span>
+                       </div>
+                       <div className="space-y-2">
+                          <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
+                             <span className="text-white/40">Utilization</span>
+                             <span className={person.load > 100 ? 'text-status-error' : 'text-white'}>{person.load}%</span>
+                          </div>
+                          <div className="w-full h-1 bg-black border border-white/10 rounded-full overflow-hidden">
+                             <div className={`h-full ${person.load > 100 ? 'bg-status-error' : person.load > 80 ? 'bg-status-warning' : 'bg-primary'}`} style={{ width: `${Math.min(person.load, 100)}%` }}></div>
+                          </div>
+                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               {drilldown.data.length === 0 && (
-                <div className="p-12 text-center">
-                   <Users className="mx-auto mb-4 text-slate-800" size={48} />
-                   <p className="text-slate-600 uppercase tracking-widest text-xs font-bold font-mono">No personnel linked to this functional unit in current cycle</p>
+                <div className="p-20 text-center">
+                   <Users className="mx-auto mb-6 text-white/10" size={64} />
+                   <p className="text-white/20 uppercase tracking-[0.4em] text-[10px] font-black">No personnel linked to this functional unit in current cycle</p>
                 </div>
               )}
             </div>
             
-            <div className="p-4 bg-slate-950 border-t border-slate-800 flex justify-center">
-               <div className="text-[9px] text-slate-600 uppercase tracking-[0.4em] font-black italic">
+            <div className="p-6 bg-black border-t border-white/20 flex justify-center">
+               <div className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-black">
                  Security Layer: Tactical Visibility Enforced
                </div>
             </div>
@@ -363,45 +436,45 @@ const VPEDashboard = () => {
 
 
 const SprintCounter = ({ label, value, color }) => (
-  <div className="bg-slate-900/50 p-2 rounded border border-slate-800 flex flex-col gap-1 text-center">
-    <span className="text-[9px] text-slate-500 uppercase font-black">{label}</span>
-    <span className={`text-sm font-black ${color}`}>{value}</span>
+  <div className="bg-black p-3 rounded-xl border border-white/20 flex flex-col gap-1 text-center shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+    <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">{label}</span>
+    <span className={`text-[12px] font-black uppercase tracking-tight ${color}`}>{value}</span>
   </div>
 );
 
 const VelocityIndicator = ({ direction }) => {
   if (direction === 'up') return (
-    <div className="flex items-center justify-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 w-fit mx-auto">
-      <TrendingUp size={12} strokeWidth={3} />
-      <span className="text-[10px] font-black italic">OPTIMAL</span>
+    <div className="flex items-center justify-center gap-2 text-status-success bg-black px-3 py-1.5 rounded-xl border border-status-success/40 w-full mx-auto shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+      <TrendingUp size={14} strokeWidth={3} />
+      <span className="text-[10px] font-black uppercase tracking-widest">Optimal Flow</span>
     </div>
   );
   if (direction === 'down') return (
-    <div className="flex items-center justify-center gap-1 text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 w-fit mx-auto">
-      <TrendingDown size={12} strokeWidth={3} />
-      <span className="text-[10px] font-black italic">DROPPING</span>
+    <div className="flex items-center justify-center gap-2 text-status-error bg-black px-3 py-1.5 rounded-xl border border-status-error/40 w-full mx-auto shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+      <TrendingDown size={14} strokeWidth={3} />
+      <span className="text-[10px] font-black uppercase tracking-widest">Restricted Flow</span>
     </div>
   );
   return (
-    <div className="flex items-center justify-center gap-1 text-slate-400 bg-slate-800/30 px-2 py-0.5 rounded w-fit mx-auto border border-slate-700/50">
-      <Minus size={12} strokeWidth={3} />
-      <span className="text-[10px] font-black italic">STABLE</span>
+    <div className="flex items-center justify-center gap-2 text-white/40 bg-black px-3 py-1.5 rounded-xl border border-white/20 w-full mx-auto shadow-none">
+      <Minus size={14} strokeWidth={3} />
+      <span className="text-[10px] font-black uppercase tracking-widest">Stable Trend</span>
     </div>
   );
 };
 
 const StatusIndicator = ({ color }) => {
   const colors = {
-    red: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.4)]',
-    yellow: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.4)]',
-    green: 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+    red: 'bg-status-error shadow-[0_0_12px_rgba(239,68,68,0.5)]',
+    yellow: 'bg-status-warning shadow-[0_0_12px_rgba(245,158,11,0.5)]',
+    green: 'bg-status-success shadow-[0_0_12px_rgba(34,197,94,0.5)]'
   };
   return (
-    <div className="flex items-center justify-end gap-2">
-       <span className={`text-[10px] font-black uppercase tracking-widest ${color === 'red' ? 'text-rose-500' : color === 'yellow' ? 'text-amber-500' : 'text-emerald-500'}`}>
+    <div className="flex items-center justify-end gap-3">
+       <span className={`text-[10px] font-black uppercase tracking-widest ${color === 'red' ? 'text-status-error' : color === 'yellow' ? 'text-status-warning' : 'text-status-success'}`}>
          {color === 'red' ? 'Critical' : color === 'yellow' ? 'At Risk' : 'Healthy'}
        </span>
-       <div className={`w-2 h-2 rounded-full ${colors[color] || 'bg-slate-700'} animate-pulse`}></div>
+       <div className={`w-2 h-2 rounded-full ${colors[color] || 'bg-white/20'} animate-pulse`}></div>
     </div>
   );
 };

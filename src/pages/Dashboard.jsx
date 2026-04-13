@@ -120,7 +120,7 @@ const Dashboard = () => {
         {
           label: 'Workload Velocity',
           value: `${avgVelocity.toFixed(0)}%`,
-          color: 'bg-white/5 border-white/10 text-white',
+          color: 'bg-white/10 border-white/20 text-white',
           icon: <Rocket size={20} />,
           trend: '+5.2%',
         },
@@ -147,7 +147,7 @@ const Dashboard = () => {
         {
           label: 'To-Do',
           value: personal.todo,
-          color: 'bg-white/5 border-white/10 text-white/40',
+          color: 'bg-white/10 border-white/20 text-white/60',
           icon: <FolderOpen size={20} />,
           trend: `Overall: ${summary.todo}`,
           to: '/my-tasks?filter=todo&scope=personal',
