@@ -4,6 +4,8 @@ import { AlertTriangle, Clock, Shield, Target, Users, TrendingDown, TrendingUp, 
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
+import SystemIntegrityStatus from '../components/dashboard/SystemIntegrityStatus';
+
 
 /**
  * VP Engineering Dashboard
@@ -266,8 +268,10 @@ const VPEDashboard = () => {
 
         {/* Sidebar Sections */}
         <div className="lg:col-span-4 space-y-6">
+          <SystemIntegrityStatus />
           
           <DashboardSection title="Team Blockers" icon={<AlertTriangle size={12} />}>
+
             <div id="vp-blockers" className="space-y-6">
               {Object.keys(blockers).map((teamName, idx) => (
                 <div key={idx} className="space-y-3">
