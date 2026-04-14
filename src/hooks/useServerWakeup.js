@@ -21,16 +21,26 @@ export function useServerWakeup() {
       }, 1000);
 
       try {
-        await api.get('/health', { timeout: 90_000 });
+        await api.get('/health', { timeout: 45_000 });
         if (!cancelled) {
           clearInterval(timerRef.current);
           setStatus('awake');
           setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
         }
       } catch (err) {
-        if (!cancelled) {
-          clearInterval(timerRef.current);
-          setStatus('failed');
+        // Redundant Connection Pathway: Attempt Deep Integrity Scan
+        try {
+          await api.get('/health/integrity', { timeout: 15_000 });
+          if (!cancelled) {
+            clearInterval(timerRef.current);
+            setStatus('awake');
+            setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+          }
+        } catch (fallbackErr) {
+          if (!cancelled) {
+            clearInterval(timerRef.current);
+            setStatus('failed');
+          }
         }
       }
     };
