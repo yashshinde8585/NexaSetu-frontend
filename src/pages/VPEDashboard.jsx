@@ -1,15 +1,17 @@
+import React from 'react';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
-import { AlertTriangle, Clock, Shield, Target, Users, TrendingDown, TrendingUp, Minus, Activity } from 'lucide-react';
+import { AlertTriangle, Clock, Shield, Target, Users, TrendingDown, TrendingUp, Minus, Activity, ChevronRight, Zap, Target as TargetIcon, ShieldAlert, BarChart3, Terminal } from 'lucide-react';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
+import ActivityItem from '../components/molecules/dashboard/ActivityItem';
+import DrilldownModal from '../components/molecules/dashboard/DrilldownModal';
 import SystemIntegrityStatus from '../components/dashboard/SystemIntegrityStatus';
 
-
 /**
- * VP Engineering Dashboard
- * High-level overview of engineering execution and performance.
+ * VP Engineering (VPE) Dashboard
+ * High-level engineering execution and performance visibility.
  */
 const VPEDashboard = () => {
   const {
@@ -21,22 +23,11 @@ const VPEDashboard = () => {
     closeDrilldown
   } = useRoleDashboard('vpe');
 
-  if (isLoading || !data) return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <div className="flex flex-col items-center gap-6">
-        <CenteredLoading />
-        <span className="text-white/60 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Syncing Execution Data...</span>
-      </div>
-    </div>
-  );
+  if (isLoading || !data) return <CenteredLoading />;
   
   if (error) return (
-    <div className="p-8 text-status-error bg-black h-screen font-mono flex items-center justify-center uppercase font-black">
-      <div className="border border-status-error/40 p-8 rounded-2xl bg-black max-w-md text-center shadow-3xl">
-        <AlertTriangle className="mx-auto mb-6 text-status-error" size={48} />
-        <h2 className="text-2xl font-black mb-4 tracking-tighter">Connection Failure</h2>
-        <p className="text-[11px] text-white/60 tracking-widest leading-loose">{error?.message || 'The tactical data stream has been interrupted.'}</p>
-      </div>
+    <div className="p-12 text-status-error bg-black min-h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
+      {error?.message || 'CRITICAL_ERROR: SYSTEM_DATA_UNAVAILABLE'}
     </div>
   );
 
@@ -47,23 +38,23 @@ const VPEDashboard = () => {
     blockers = {}, 
     timeline = [], 
     activity = [] 
-  } = data;
+  } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-6 font-mono selection:bg-primary">
+    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1700px] mx-auto flex flex-col gap-12">
       
-      {/* Execution Overview */}
-      <div id="vp-top" className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+      {/* 1. Global Performance metrics */}
+      <div id="vpe-execution-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-6">
         <MetricStripItem 
             icon={<AlertTriangle size={14} />} 
-            label="Projects Delayed" 
+            label="Delayed Projects" 
             value={executionStats.projectsDelayed} 
             color="text-status-error" 
             accent="bg-status-error"
         />
         <MetricStripItem 
             icon={<Clock size={14} />} 
-            label="Avg Sprint Delay" 
+            label="Average Delay" 
             value={executionStats.avgSprintDelay} 
             color="text-status-warning" 
             accent="bg-status-warning"
@@ -87,62 +78,60 @@ const VPEDashboard = () => {
             label="Velocity Trend" 
             value={executionStats.velocityTrend.value} 
             color={executionStats.velocityTrend.direction === 'down' ? 'text-status-error' : 'text-status-success'} 
-            accent={executionStats.velocityTrend.direction === 'down' ? 'bg-status-error' : 'bg-status-success'}
+            accent="bg-primary"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
-        {/* Main Section - Team Performance Grid */}
-        <div className="lg:col-span-8 space-y-6">
+        {/* 2. Main Column: Execution Metrics */}
+        <div className="lg:col-span-8 flex flex-col gap-12">
           
-          <DashboardSection title="TEAM PERFORMANCE" icon={<Users size={12} />}>
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
+          <DashboardSection title="Team Performance Matrix" icon={<Terminal size={14} />}>
+            <div className="overflow-x-auto py-2">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/30 text-white/50 text-[10px] uppercase tracking-[0.2em] font-black">
-                    <th className="py-4 px-4 bg-black">Functional Team</th>
-                    <th className="py-4 px-4 bg-black text-center">Sprint Progress</th>
-                    <th className="py-4 px-4 bg-black text-center">Velocity</th>
-                    <th className="py-4 px-4 bg-black text-center">Avg Load</th>
-                    <th className="py-4 px-4 bg-black text-center">Blockers</th>
-                    <th className="py-4 px-4 bg-black text-right">Status</th>
+                  <tr className="text-[10px] text-white/30 uppercase font-bold tracking-widest border-b border-white/5">
+                    <th className="pb-4 px-2">Team</th>
+                    <th className="pb-4 px-2 text-center">Progress</th>
+                    <th className="pb-4 px-2 text-center">Velocity</th>
+                    <th className="pb-4 px-2 text-center">Load</th>
+                    <th className="pb-4 px-2 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm">
+                <tbody className="divide-y divide-white/[0.02]">
                   {teamGrid.map((row, i) => (
                     <tr key={i} 
                       onClick={() => handleDrilldown(row.team)}
-                      className="border-b border-white/[0.05] hover:bg-white/5 transition-all cursor-pointer group">
-                      <td className="py-5 px-4 font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest text-[11px]">
-                        {row.team} Team
-                      </td>
-                      <td className="py-5 px-4">
-                        <div className="flex flex-col items-center gap-2">
-                           <span className="text-[11px] font-black text-white/50">{row.progress}</span>
-                           <div className="w-24 h-1.5 bg-black border border-white/30 rounded-full overflow-hidden">
-                             <div 
-                                className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'}`} 
-                                style={{ width: row.progress }}
-                             ></div>
-                           </div>
+                      className="group hover:bg-white/[0.015] transition-all cursor-pointer">
+                      <td className="py-4 px-2">
+                        <div className="flex items-center gap-4">
+                          <span className="text-[12px] font-bold text-white group-hover:text-primary transition-colors uppercase tracking-tight">{row.team}</span>
+                          {row.blockers > 0 && <span className="text-[8px] text-status-error font-bold uppercase tracking-widest tabular-nums">{row.blockers} BLOCKED</span>}
                         </div>
                       </td>
-                      <td className="py-5 px-4 text-center">
-                        <VelocityIndicator direction={row.velocity} />
+                      <td className="py-4 px-2">
+                         <div className="flex flex-col items-center gap-2">
+                            <span className="text-[9px] font-bold text-white/40 tabular-nums">{row.progress}</span>
+                            <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                              <div 
+                                 className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'} transition-all duration-700`} 
+                                 style={{ width: row.progress }}
+                              ></div>
+                            </div>
+                         </div>
                       </td>
-                      <td className="py-5 px-4 text-center">
-                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${parseInt(row.load) > 100 ? 'bg-status-error/10 text-status-error border border-status-error/40' : 'bg-black border border-white/30 text-white/50'}`}>
+                      <td className="py-4 px-2">
+                        <div className="flex justify-center">
+                           <VelocityIndicator direction={row.velocity} />
+                        </div>
+                      </td>
+                      <td className="py-4 px-2 text-center">
+                        <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-widest leading-none ${parseInt(row.load) > 100 ? 'text-status-error border-status-error/30 bg-status-error/5' : 'text-white/40 border-white/5 bg-white/5'}`}>
                           {row.load}
                         </span>
                       </td>
-                      <td className="py-5 px-4 text-center">
-                        <span className={`font-black text-[11px] uppercase tracking-widest ${row.blockers > 0 ? 'text-status-error animate-pulse' : 'text-white/20'}`}>
-                          {row.blockers} BK
-                        </span>
-                      </td>
-                      <td className="py-5 px-4 text-right">
+                      <td className="py-4 px-2 text-right">
                         <StatusIndicator color={row.status} />
                       </td>
                     </tr>
@@ -150,335 +139,187 @@ const VPEDashboard = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden space-y-4">
-              {teamGrid.map((row, i) => (
-                <div key={i} 
-                  onClick={() => handleDrilldown(row.team)}
-                  className="bg-white/[0.03] border border-white/20 p-5 rounded-2xl group transition-all active:bg-white/10">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest text-[11px]">{row.team} Unit</span>
-                    <StatusIndicator color={row.status} />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="space-y-1">
-                      <span className="text-[8px] text-white/50 uppercase tracking-widest font-black">Sprint Progress</span>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1 bg-black border border-white/20 rounded-full overflow-hidden">
-                          <div className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'}`} style={{ width: row.progress }}></div>
-                        </div>
-                        <span className="text-[9px] font-black text-white">{row.progress}</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[8px] text-white/50 uppercase tracking-widest font-black block mb-1">Blockers</span>
-                      <span className={`font-black text-[10px] uppercase tracking-widest ${row.blockers > 0 ? 'text-status-error animate-pulse' : 'text-white/20'}`}>{row.blockers} ACTIVE</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 p-4 bg-black border border-white/30 rounded-xl text-[10px] text-white/60 uppercase tracking-[0.2em] flex items-center gap-3">
-               <Shield size={14} className="text-primary" />
-               Critical Insights: {teamGrid.some(t => t.status === 'red') ? "HIGH RISK DETECTION IN ACTIVE FUNCTIONAL PIPELINES. IMMEDIATE REBALANCING REQUIRED." : "SYSTEM PERFORMANCE WITHIN ACCEPTABLE EXECUTION PARAMETERS."}
-            </div>
           </DashboardSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DashboardSection title="Sprint Execution" icon={<Shield size={12} />}>
-              <div className="space-y-6 py-2">
-                <div id="sprint" className="flex justify-between items-end">
-                  <div className="space-y-1">
-                    <span className="text-[10px] text-white/60 uppercase tracking-widest font-black">Progress</span>
-                    <div className="text-3xl font-black text-white">{sprintExecution?.progress || 0}%</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <DashboardSection title="Sprint Progress" icon={<BarChart3 size={14} />}>
+              <div className="flex flex-col gap-10 py-4 px-2">
+                <div className="flex justify-between items-end leading-none">
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest">Aggregate Progress</span>
+                    <div className="text-5xl font-bold text-white tracking-tighter tabular-nums">{sprintExecution?.progress || 0}%</div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-white/60 uppercase tracking-widest font-black block mb-1">Spillover Risk</span>
-                    <span className={`px-3 py-1 border rounded-lg text-[10px] font-black uppercase tracking-widest ${sprintExecution?.risk === 'HIGH' ? 'bg-status-error/10 text-status-error border-status-error/40' : 'bg-status-success/10 text-status-success border-status-success/40'}`}>
-                        {sprintExecution?.risk || 'NONE'}
+                  <div className="pb-1">
+                    <span className={`px-4 py-1.5 border rounded text-[10px] font-bold uppercase tracking-[0.2em] leading-none ${sprintExecution?.risk === 'HIGH' ? 'bg-status-error/5 text-status-error border-status-error/30' : 'bg-status-success/5 text-status-success border-status-success/30'}`}>
+                        RISK: {sprintExecution?.risk || 'NONE'}
                     </span>
                   </div>
                 </div>
 
-                <div className="w-full bg-black h-2 rounded-full overflow-hidden border border-white/30">
-                  <div className="h-full bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-1000" style={{ width: `${sprintExecution?.progress || 0}%` }}></div>
+                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                  <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${sprintExecution?.progress || 0}%` }}></div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  <SprintCounter label="Completed" value={`${sprintExecution?.completed || 0} TASKS`} color="text-status-success" />
-                  <SprintCounter label="In Progress" value={sprintExecution?.inProgress || 0} color="text-primary" />
-                  <SprintCounter label="Blocked" value={sprintExecution?.blocked || 0} color="text-status-error" className="col-span-2 sm:col-span-1" />
-                </div>
-                
-                <div className="pt-2">
-                   <div className="h-24 w-full bg-slate-900/50 rounded border border-slate-800/50 flex items-center justify-center relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/5 to-transparent"></div>
-                      <span className="text-[9px] text-slate-600 uppercase tracking-[0.2em] font-bold">Burndown Chart</span>
-                      {/* Placeholder for burndown using SVG */}
-                      <svg className="absolute bottom-0 left-0 w-full h-12 opacity-30 group-hover:opacity-50 transition-opacity" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 20 L20 35 L40 30 L60 60 L80 55 L100 90 L100 100 L0 100 Z" fill="url(#grad)" />
-                        <defs>
-                          <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style={{stopColor:'rgb(14, 165, 233)', stopOpacity:0.5}} />
-                            <stop offset="100%" style={{stopColor:'rgb(14, 165, 233)', stopOpacity:0}} />
-                          </linearGradient>
-                        </defs>
-                        <path d="M0 20 L20 35 L40 30 L60 60 L80 55 L100 90" fill="none" stroke="#0ea5e9" strokeWidth="2" />
-                      </svg>
-                   </div>
+                <div className="grid grid-cols-3 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
+                  <SprintCounter label="COMPLETED" value={sprintExecution?.completed || 0} color="text-status-success" />
+                  <SprintCounter label="IN PROGRESS" value={sprintExecution?.inProgress || 0} color="text-primary" />
+                  <SprintCounter label="BLOCKED" value={sprintExecution?.blocked || 0} color="text-status-error" />
                 </div>
               </div>
             </DashboardSection>
 
-            {/* 5. Team Load Distribution */}
-            <DashboardSection title="Load Distribution" icon={<Target size={12} />}>
-              <div className="space-y-5 py-2">
-                {teamGrid.map((team, idx) => (
-                  <div key={idx} className="space-y-1.5">
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                      <span className="text-white/60">{team.team}</span>
-                      <span className={parseInt(team.load) > 100 ? 'text-status-error' : 'text-white'}>{team.load} Load</span>
-                    </div>
-                    <div className="w-full bg-black h-1.5 rounded-full overflow-hidden border border-white/30">
-                      <div 
-                        className={`h-full transition-all duration-700 ${parseInt(team.load) > 100 ? 'bg-status-error' : parseInt(team.load) > 85 ? 'bg-status-warning' : 'bg-white/20'}`} 
-                        style={{ width: `${Math.min(parseInt(team.load), 100)}%` }}
-                      ></div>
-                    </div>
-                    {parseInt(team.load) > 100 && (
-                      <p className="text-[9px] text-status-error font-black uppercase tracking-widest">Rebalance Recommended: Shift tasks to underloaded units.</p>
-                    )}
-                  </div>
-                ))}
-
-                <div className="mt-6 p-4 bg-black border border-primary/40 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                  <h4 className="text-[10px] font-black text-primary uppercase flex items-center gap-2 mb-2 tracking-widest">
-                    <Target size={14} /> Strategic Analysis
+            <DashboardSection title="Recommendations" icon={<TargetIcon size={14} />}>
+              <div className="flex flex-col gap-8 py-4 px-2">
+                <div className="bg-white/[0.015] border border-white/5 p-6 rounded group hover:border-primary/40 transition-all border-l-2 border-l-primary/40">
+                  <h4 className="text-[10px] font-bold text-primary uppercase flex items-center gap-3 mb-4 tracking-widest leading-none">
+                    <Zap size={14} fill="currentColor" /> Optimization Suggestion
                   </h4>
-                  <p className="text-[11px] text-primary/80 uppercase font-black tracking-tight leading-relaxed">
-                    SHIFT 2 HIGH-PRIORITY TASKS FROM {teamGrid.sort((a,b) => parseInt(b.load)-parseInt(a.load))[0]?.team.toUpperCase()} → {teamGrid.sort((a,b) => parseInt(a.load)-parseInt(b.load))[0]?.team.toUpperCase()} TO STABILIZE DELIVERY VELOCITY.
+                  <p className="text-[12px] text-white/60 uppercase font-bold tracking-tight leading-relaxed italic">
+                    Re-allocate resources to {teamGrid.sort((a,b) => parseInt(a.load)-parseInt(b.load))[0]?.team || 'available'} team to reduce workload in high-load areas.
                   </p>
+                </div>
+                
+                <div className="flex flex-col gap-5">
+                   {teamGrid.slice(0, 3).map((team, idx) => (
+                    <div key={idx} className="flex flex-col gap-2">
+                      <div className="flex justify-between items-end text-[9px] font-bold uppercase tracking-widest leading-none">
+                        <span className="text-white/20">{team.team}</span>
+                        <span className={parseInt(team.load) > 100 ? 'text-status-error' : 'text-white/40 tabular-nums'}>{team.load}</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <div 
+                          className={`h-full transition-all duration-1000 ${parseInt(team.load) > 100 ? 'bg-status-error' : parseInt(team.load) > 85 ? 'bg-status-warning' : 'bg-primary/40'}`} 
+                          style={{ width: `${Math.min(parseInt(team.load), 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </DashboardSection>
           </div>
         </div>
 
-        {/* Sidebar Sections */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* 3. Sidebar Column: Intelligence Registries */}
+        <div className="lg:col-span-4 flex flex-col gap-12">
           <SystemIntegrityStatus />
           
-          <DashboardSection title="Team Blockers" icon={<AlertTriangle size={12} />}>
-
-            <div id="vp-blockers" className="space-y-6">
+          <DashboardSection title="Top Blockers" icon={<ShieldAlert size={14} />}>
+            <div className="flex flex-col gap-px bg-white/10 border border-white/10 rounded overflow-hidden mt-2">
               {Object.keys(blockers).map((teamName, idx) => (
-                <div key={idx} className="space-y-3">
-                  <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 bg-status-error rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
-                    {teamName} Team Blockers
+                <div key={idx} className="bg-black p-6 border-b border-white/[0.05] last:border-0 flex flex-col gap-4">
+                  <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest flex items-center gap-3">
+                    <div className="w-1 h-3 bg-status-error" />
+                    {teamName}
                   </h4>
-                  <ul className="space-y-3">
+                  <div className="flex flex-col gap-2">
                     {blockers[teamName].map((item, i) => (
-                      <li key={i} className="text-[11px] text-white/70 font-black uppercase tracking-tight flex items-start gap-3 bg-black p-3 rounded-xl border border-white/30 shadow-sm hover:border-primary/40 transition-all">
-                        <span className="text-status-error font-black shrink-0">•</span>
+                      <div key={i} className="text-[11px] text-white/60 font-bold uppercase tracking-tight flex items-start gap-4 p-4 bg-white/[0.015] border border-white/5 rounded group hover:border-status-error/40 transition-all italic leading-tight">
+                        <span className="text-status-error shrink-0">::</span>
                         {item}
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               ))}
+              {Object.keys(blockers).length === 0 && (
+                <div className="py-20 text-center opacity-10 italic border border-white/5 border-dashed rounded">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.4em]">No critical blockers found.</span>
+                </div>
+              )}
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Delivery Timeline" icon={<Clock size={12} />}>
-            <div id="timeline" className="space-y-4">
+          <DashboardSection title="Timeline Risks" icon={<Clock size={14} />}>
+            <div className="flex flex-col gap-3 py-2">
                 {timeline.map((item, idx) => (
-                 <div key={idx} className="flex justify-between items-center p-4 bg-black rounded-xl border border-white/30 group hover:border-primary transition-all shadow-sm mb-3">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[11px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest">{item.project}</span>
-                      <span className="text-[9px] text-white/50 uppercase font-black tracking-widest">System Drift Analysis</span>
+                 <div key={idx} className="flex justify-between items-center p-6 bg-white/[0.015] border border-white/5 rounded group hover:border-primary/40 transition-all">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[12px] font-bold text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">{item.project}</span>
+                      <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-none">Schedule Delay</span>
                     </div>
-                    <div className={`text-[10px] font-black uppercase px-3 py-1 rounded-lg border shadow-sm ${item.status === 'green' ? 'bg-status-success/10 text-status-success border-status-success/40' : item.status === 'yellow' ? 'bg-status-warning/10 text-status-warning border-status-warning/40' : 'bg-status-error/10 text-status-error border-status-error/40'}`}>
+                    <div className={`text-[10px] font-bold uppercase px-3 py-1 rounded border tabular-nums tracking-widest leading-none ${item.status === 'green' ? 'bg-status-success/5 text-status-success border-status-success/30' : item.status === 'yellow' ? 'bg-status-warning/5 text-status-warning border-status-warning/30' : 'bg-status-error/5 text-status-error border-status-error/30'}`}>
                       {item.drift}
                     </div>
                  </div>
                ))}
-               <p className="text-[9px] text-white/20 text-center uppercase tracking-[0.3em] pt-4 font-black">Projections based on current team velocity trends</p>
             </div>
           </DashboardSection>
-
-          {/* 7. Engineering Activity Feed */}
-          <DashboardSection title="Engineering Activity" icon={<Activity size={12} />}>
-            <div id="vp-feed" className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+          
+          <DashboardSection title="Recent Activity" icon={<Activity size={14} />}>
+            <div className="space-y-px max-h-[350px] overflow-y-auto pr-3 custom-scrollbar">
               {activity?.map((item, i) => (
-                <div key={i} className="flex justify-between items-start border-l border-white/30 pl-4 py-3 hover:bg-white/5 transition-colors rounded-r-xl group">
-                  <p className="text-[11px] text-white/60 font-black uppercase tracking-tight leading-normal group-hover:text-white transition-colors">{item.text}</p>
-                  <span className="text-[9px] text-white/20 whitespace-nowrap ml-3 uppercase font-black tracking-widest self-center">{item.time}</span>
-                </div>
+                <ActivityItem key={i} text={item.text} time={item.time} mini />
               ))}
             </div>
           </DashboardSection>
         </div>
       </div>
 
-       {/* Team Drilldown Modal */}
+       {/* Drilldown Modal */}
        {drilldown.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black animate-in fade-in duration-300">
-          <div className="bg-black border border-white/30 rounded-[2.5rem] w-full max-w-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300">
-            <div className="p-6 md:p-10 border-b border-white/30 flex justify-between items-center bg-black">
-              <div>
-                <h2 className="text-lg md:text-2xl font-black text-white uppercase tracking-tighter">
-                  Unit Intelligence: {drilldown.category}
-                </h2>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[8px] md:text-[10px] text-white/60 uppercase tracking-[0.4em] font-black">Functional Portfolio Operational Load Profiling // ACTIVE</span>
-                </div>
-              </div>
-              <button 
-                onClick={closeDrilldown} 
-                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-black border border-white/30 text-white/60 hover:text-primary hover:border-primary transition-all text-2xl md:text-3xl font-light"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="p-0 overflow-y-auto flex-1 custom-scrollbar">
-              {/* Desktop View */}
-              <div className="hidden md:block">
-                <table className="w-full text-left">
-                  <thead className="bg-black sticky top-0 z-10 border-b border-white/30">
-                    <tr className="text-[10px] text-white/50 uppercase tracking-[0.3em] font-black">
-                      <th className="py-5 px-8">Personnel</th>
-                      <th className="py-5 px-8">Active Tasks</th>
-                      <th className="py-5 px-8">Load Profile</th>
-                      <th className="py-5 px-8 text-right">Capacity</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm font-black">
-                    {drilldown.data.map((person, i) => (
-                      <tr key={i} className="border-b border-white/[0.05] hover:bg-white/5 transition-colors group">
-                        <td className="py-5 px-8">
-                          <div className="flex flex-col gap-1">
-                            <span className="font-black text-white group-hover:text-primary uppercase tracking-tight transition-colors">{person.name}</span>
-                            <span className="text-[9px] text-white/50 uppercase tracking-[0.2em]">{person.role}</span>
-                          </div>
-                        </td>
-                        <td className="py-5 px-8 text-white font-mono">{person.tasks} TASKS</td>
-                        <td className="py-5 px-8">
-                          <div className="flex flex-col gap-2">
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${person.load > 100 ? 'text-status-error' : 'text-white/60'}`}>{person.load}%</span>
-                            <div className="w-32 h-1.5 bg-black border border-white/30 rounded-full overflow-hidden">
-                                <div 
-                                  className={`h-full ${person.load > 100 ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.5)]' : person.load > 80 ? 'bg-status-warning' : 'bg-primary'}`} 
-                                  style={{ width: `${Math.min(person.load, 100)}%` }}
-                                ></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-5 px-8 text-right">
-                          <div className={`w-2 h-2 rounded-full inline-block ${person.status === 'red' ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.3)]'}`}></div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Card View */}
-              <div className="md:hidden p-5 space-y-4">
-                {drilldown.data.map((person, i) => (
-                  <div key={i} className="bg-white/[0.03] border border-white/20 p-5 rounded-2xl group transition-all">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-black text-white uppercase tracking-tight">{person.name}</span>
-                        <span className="text-[9px] text-white/50 uppercase tracking-[0.2em]">{person.role}</span>
-                      </div>
-                      <div className={`w-2 h-2 rounded-full ${person.status === 'red' ? 'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.3)]'}`}></div>
-                    </div>
-                    <div className="mt-6 flex flex-col gap-3">
-                       <div className="flex justify-between items-center text-[9px] uppercase font-black tracking-widest text-white/60">
-                          <span>Active Tasks</span>
-                          <span className="text-white">{person.tasks} Entries</span>
-                       </div>
-                       <div className="space-y-2">
-                          <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
-                             <span className="text-white/40">Utilization</span>
-                             <span className={person.load > 100 ? 'text-status-error' : 'text-white'}>{person.load}%</span>
-                          </div>
-                          <div className="w-full h-1 bg-black border border-white/10 rounded-full overflow-hidden">
-                             <div className={`h-full ${person.load > 100 ? 'bg-status-error' : person.load > 80 ? 'bg-status-warning' : 'bg-primary'}`} style={{ width: `${Math.min(person.load, 100)}%` }}></div>
-                          </div>
-                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {drilldown.data.length === 0 && (
-                <div className="p-20 text-center">
-                   <Users className="mx-auto mb-6 text-white/10" size={64} />
-                   <p className="text-white/20 uppercase tracking-[0.4em] text-[10px] font-black">No personnel linked to this functional unit in current cycle</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="p-6 bg-black border-t border-white/20 flex justify-center">
-               <div className="text-[10px] text-white/20 uppercase tracking-[0.4em] font-black">
-                 Security Layer: Tactical Visibility Enforced
-               </div>
-            </div>
-          </div>
-        </div>
-      )}
+         <DrilldownModal 
+          isOpen={drilldown.isOpen}
+          onClose={closeDrilldown}
+          title={`${drilldown.category} Overview`}
+          subtitle="Detailed team workload and operational status."
+          data={drilldown.data}
+         />
+       )}
     </div>
   );
 };
 
-
-
-
-
 const SprintCounter = ({ label, value, color }) => (
-  <div className="bg-black p-3 rounded-xl border border-white/20 flex flex-col gap-1 text-center shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-    <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">{label}</span>
-    <span className={`text-[12px] font-black uppercase tracking-tight ${color}`}>{value}</span>
+  <div className="bg-black p-6 flex flex-col gap-2 text-center group hover:bg-white/[0.02] transition-colors">
+    <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-none mb-1">{label}</span>
+    <span className={`text-[16px] font-bold uppercase tracking-widest tabular-nums leading-none ${color}`}>{value}</span>
   </div>
 );
 
 const VelocityIndicator = ({ direction }) => {
   if (direction === 'up') return (
-    <div className="flex items-center justify-center gap-2 text-status-success bg-black px-3 py-1.5 rounded-xl border border-status-success/40 w-full mx-auto shadow-[0_0_15px_rgba(34,197,94,0.2)]">
-      <TrendingUp size={14} strokeWidth={3} />
-      <span className="text-[10px] font-black uppercase tracking-widest">Optimal Flow</span>
+    <div className="flex items-center gap-2 text-status-success bg-status-success/5 px-3 py-1 rounded border border-status-success/30 leading-none">
+      <TrendingUp size={12} />
+      <span className="text-[10px] font-bold uppercase tracking-widest">Improving</span>
     </div>
   );
   if (direction === 'down') return (
-    <div className="flex items-center justify-center gap-2 text-status-error bg-black px-3 py-1.5 rounded-xl border border-status-error/40 w-full mx-auto shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-      <TrendingDown size={14} strokeWidth={3} />
-      <span className="text-[10px] font-black uppercase tracking-widest">Restricted Flow</span>
+    <div className="flex items-center gap-2 text-status-error bg-status-error/5 px-3 py-1 rounded border border-status-error/30 leading-none">
+      <TrendingDown size={12} />
+      <span className="text-[10px] font-bold uppercase tracking-widest">Declining</span>
     </div>
   );
   return (
-    <div className="flex items-center justify-center gap-2 text-white/40 bg-black px-3 py-1.5 rounded-xl border border-white/20 w-full mx-auto shadow-none">
-      <Minus size={14} strokeWidth={3} />
-      <span className="text-[10px] font-black uppercase tracking-widest">Stable Trend</span>
+    <div className="flex items-center gap-2 text-white/30 bg-white/5 px-3 py-1 rounded border border-white/10 leading-none">
+      <Minus size={12} />
+      <span className="text-[10px] font-bold uppercase tracking-widest">Stable</span>
     </div>
   );
 };
 
 const StatusIndicator = ({ color }) => {
+  const labels = {
+    red: 'Critical',
+    yellow: 'At Risk',
+    green: 'Healthy'
+  };
   const colors = {
-    red: 'bg-status-error shadow-[0_0_12px_rgba(239,68,68,0.5)]',
-    yellow: 'bg-status-warning shadow-[0_0_12px_rgba(245,158,11,0.5)]',
-    green: 'bg-status-success shadow-[0_0_12px_rgba(34,197,94,0.5)]'
+    red: 'text-status-error',
+    yellow: 'text-status-warning',
+    green: 'text-status-success'
+  };
+  const dots = {
+    red: 'bg-status-error',
+    yellow: 'bg-status-warning',
+    green: 'bg-status-success'
   };
   return (
-    <div className="flex items-center justify-end gap-3">
-       <span className={`text-[10px] font-black uppercase tracking-widest ${color === 'red' ? 'text-status-error' : color === 'yellow' ? 'text-status-warning' : 'text-status-success'}`}>
-         {color === 'red' ? 'Critical' : color === 'yellow' ? 'At Risk' : 'Healthy'}
+    <div className="flex items-center justify-end gap-3 leading-none">
+       <span className={`text-[10px] font-bold uppercase tracking-widest ${colors[color] || 'text-white/40'}`}>
+         {labels[color] || 'Healthy'}
        </span>
-       <div className={`w-2 h-2 rounded-full ${colors[color] || 'bg-white/20'} animate-pulse`}></div>
+       <div className={`w-1.5 h-1.5 rounded-full ${dots[color] || 'bg-white/20'}`}></div>
     </div>
   );
 };

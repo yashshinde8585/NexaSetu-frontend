@@ -146,7 +146,7 @@ const AddTeamMember = () => {
       (i) => !i.name.trim() || !i.email.trim()
     );
     if (missingIdentity) {
-      setError(`Identity data (Name & Email) is mandatory for every account.`);
+      setError(`Name and email are required for each invitation.`);
       return;
     }
 
@@ -159,7 +159,7 @@ const AddTeamMember = () => {
       setStatus('success');
     } catch (err) {
       setError(
-        err.response?.data?.message || 'Failed to dispatch invitations.'
+        err.response?.data?.message || 'Unable to send invitations. Please try again.'
       );
       setStatus('error');
     }
@@ -185,10 +185,10 @@ const AddTeamMember = () => {
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-3 tracking-tight uppercase">
-            Personnel <span className="text-primary">Invited</span>
+            Invitations <span className="text-primary">Sent</span>
           </h2>
           <p className="text-white/40 text-[10px] font-medium uppercase tracking-widest mb-12">
-            New accounts have been provisioned successfully.
+            Members have been invited to your workspace.
           </p>
 
           <div className="space-y-4 mb-14 text-left max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
@@ -222,14 +222,14 @@ const AddTeamMember = () => {
                       ) : (
                         <Send size={14} />
                       )}
-                      {copiedField === `invite-${i}` ? 'Copied!' : 'Copy Invitation'}
+                      {copiedField === `invite-${i}` ? 'Copied' : 'Copy Invite Message'}
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-10 text-white/20 text-xs font-bold uppercase tracking-widest border border-dashed border-white/5 rounded-3xl">
-                No new members were provisioned
+              <div className="text-center py-10 text-white/20 text-[10px] font-black uppercase tracking-widest border border-dashed border-white/5 rounded-3xl">
+                No invitations were sent
               </div>
             )}
           </div>
@@ -239,7 +239,7 @@ const AddTeamMember = () => {
               onClick={() => navigate('/team')}
               className="flex-1 py-5 bg-black hover:bg-white/5 text-white/60 hover:text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3"
             >
-              <ArrowLeft size={16} /> RETURN TO REGISTRY
+              <ArrowLeft size={16} /> BACK TO DIRECTORY
             </button>
             <button
               onClick={() => {
@@ -257,7 +257,7 @@ const AddTeamMember = () => {
               }}
               className="flex-1 py-5 bg-primary text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-xl hover:bg-primary-dark shadow-primary/40 active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              <Plus size={18} strokeWidth={3} /> INVITE MORE
+              <Plus size={18} strokeWidth={3} /> SEND MORE
             </button>
           </div>
         </div>
@@ -288,7 +288,7 @@ const AddTeamMember = () => {
                       <input
                         type="text"
                         className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                        placeholder="E.G. JOHN DOE"
+                        placeholder="e.g., Alex Johnson" 
                         required
                         value={invite.name}
                         onChange={(e) => updateRow(idx, 'name', e.target.value)}
@@ -307,7 +307,7 @@ const AddTeamMember = () => {
                       <input
                         type="email"
                         className="w-full bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-5 py-4 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                        placeholder="JOHN@NEXUS.APP"
+                        placeholder="alex@company.com" 
                         required
                         value={invite.email}
                         onChange={(e) =>
@@ -325,7 +325,7 @@ const AddTeamMember = () => {
                 <div className="space-y-6">
                   <div className="relative">
                     <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
-                      Role Assignment
+                      Assign Role
                     </label>
                     <div className="relative group/input">
                         <select
@@ -362,7 +362,7 @@ const AddTeamMember = () => {
                   </div>
                   <div className="relative">
                     <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-2 mb-3 block">
-                      Deployment Sector
+                      Assign to Project
                     </label>
                     <div className="relative group/input">
                       <select
@@ -399,7 +399,7 @@ const AddTeamMember = () => {
                 </div>
                 <div className="flex flex-col gap-1 w-full">
                   <div className="text-[12px] font-black text-white uppercase tracking-widest leading-none truncate">
-                    {invite.name || 'NEW PERSONNEL'}
+                    {invite.name || 'NEW MEMBER'}
                   </div>
                   <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none truncate">
                     {invite.jobTitle}
@@ -430,14 +430,14 @@ const AddTeamMember = () => {
             {status === 'loading' ? (
               <>
                 <Loader2 className="animate-spin text-black" size={20} />{' '}
-                DISPATCHING...
+                SENDING...
               </>
             ) : (
               <>
                 <Send
                   size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" strokeWidth={2.5}
                 />{' '}
-                DISPATCH INVITATION PROTOCOL
+                SEND INVITATIONS
               </>
             )}
           </button>

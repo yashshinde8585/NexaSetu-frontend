@@ -24,9 +24,9 @@ const CreateTeam = () => {
 
   return (
     <SquadAssemblyForm 
-      title="Assemble New Team"
-      description="Define squad mission, appoint leadership, and curate specialized workforce."
-      submitLabel="Initialize Squad"
+      title="Create New Team"
+      description="Define team name, assign leadership, and select members."
+      submitLabel="Create Team"
       onSubmit={handleCreate}
       users={users}
       themeColor="primary"

@@ -29,19 +29,19 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     {
-      name: title.includes('cto') ? 'CTO Command Center' : 
-            title.includes('vp engineering') ? 'Execution Commander' : 
-            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? 'Team Command Center' :
-            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'System Health Control' :
-            (title.includes('qa lead')) ? 'Quality Command' :
+      name: title.includes('cto') ? 'Executive Dashboard' : 
+            title.includes('vp engineering') ? 'Ops Dashboard' : 
+            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? 'Team Overview' :
+            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'Systems Health' :
+            (title.includes('qa lead')) ? 'Quality Overview' :
             (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Dashboard' :
-            (title.includes('senior qa engineer')) ? 'Quality Strategy' :
-            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Quality Control' :
-            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Execution Control' :
-            (title.includes('junior engineer')) ? 'Guided Work Assistant' :
-            (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Workspace' :
-            user?.role === 'WORKSPACE_ADMIN' ? 'Admin Panel' :
-            'Personal Work Console',
+            (title.includes('senior qa engineer')) ? 'Test Strategy' :
+            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Test Dashboard' :
+            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Development Dashboard' :
+            (title.includes('junior engineer')) ? 'My Tasks' :
+            (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Hub' :
+            user?.role === 'WORKSPACE_ADMIN' ? 'Workspace Admin' :
+            'My Dashboard',
       path: title.includes('cto') ? '/cto-dashboard' :
             title.includes('vp engineering') ? '/execution-commander' : 
             (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
@@ -66,7 +66,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       hidden: user?.role === 'WORKSPACE_ADMIN' || user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')
     },
     {
-      name: 'Team Members',
+      name: 'People',
       path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
       icon: <Users size={20} />,
       permission: null,
@@ -156,19 +156,19 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
             {[
               {
-                name: 'Tasks & Tickets',
+                name: 'Task Board',
                 path: user?.assignedProjectId
                   ? `/project/${user.assignedProjectId._id || user.assignedProjectId}`
                   : '/my-tasks?scope=workspace',
                 icon: <Box size={18} />,
               },
               {
-                name: 'Sprint Management',
+                name: 'Sprints',
                 path: '/project-info',
                 icon: <Settings size={18} />,
               },
               {
-                name: 'Project Setup',
+                name: 'New Project',
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
@@ -232,7 +232,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               <span className="p-1 px-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <UserPlus size={16} />
               </span>
-              Invite Members
+              Invite Colleague
             </Link>
           )}
         </nav>

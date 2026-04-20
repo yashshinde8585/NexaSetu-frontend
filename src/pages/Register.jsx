@@ -44,7 +44,7 @@ const Register = () => {
       );
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Unable to create your account. Please check your information and try again.');
+      setError(err.message || 'We couldn\'t create your account. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
@@ -65,10 +65,10 @@ const Register = () => {
           {/* Section for the title and introductory text. */}
           <div className="text-center mb-10 flex flex-col items-center">
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tighter mb-2 uppercase">
-              INITIALIZE <span className="text-primary text-glow">COMMAND NEXUS</span>
+              Create Your <span className="text-primary text-glow">Workspace</span>
             </h2>
             <p className="text-white/50 font-black text-[10px] uppercase tracking-[0.2em] leading-relaxed">
-              Provision a new workspace sector.
+              Set up your environment and start collaborating.
             </p>
           </div>
 
@@ -77,14 +77,14 @@ const Register = () => {
               {/* Workspace Name */}
               <div className="md:col-span-2 space-y-3">
                 <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1 block">
-                  Workspace Designation
+                  Company or Team Name
                 </label>
                 <div className="relative group/input">
                   <input
                     id="workspaceName"
                     type="text"
                     className="w-full h-14 bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-12 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                    placeholder="E.G. ACME INC"
+                    placeholder="e.g., Acme Corp"
                     required
                     value={formData.workspaceName}
                     onChange={(e) => setFormData({ ...formData, workspaceName: e.target.value })}
@@ -98,14 +98,14 @@ const Register = () => {
               {/* Full Name */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1 block">
-                  Operator Title
+                  Full Name
                 </label>
                 <div className="relative group/input">
                   <input
                     id="name"
                     type="text"
                     className="w-full h-14 bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-12 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                    placeholder="JOHN CARTER"
+                    placeholder="Jane Cooper"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -127,7 +127,7 @@ const Register = () => {
                     id="email"
                     type="email"
                     className="w-full h-14 bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-12 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                    placeholder="JOHN@EXAMPLE.COM"
+                    placeholder="jane@company.com"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -143,10 +143,10 @@ const Register = () => {
               <div className="md:col-span-2 space-y-3">
                 <div className="flex items-center justify-between ml-1 pb-1">
                     <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] block">
-                      Clearance Protocol
+                      Password
                     </label>
                     <span className="text-[9px] text-primary/80 uppercase font-black tracking-[0.1em] flex items-center gap-1.5">
-                      <ShieldCheck size={12} /> MIN. 8 CHARS
+                      <ShieldCheck size={12} /> AT LEAST 8 CHARS
                     </span>
                 </div>
                 <div className="relative group/input">
@@ -179,7 +179,7 @@ const Register = () => {
               disabled={loading}
               className="w-full h-16 bg-primary hover:bg-primary-dark text-black rounded-xl mt-6 flex items-center justify-center gap-4 uppercase font-black tracking-[0.3em] text-[11px] transition-all shadow-2xl shadow-primary/30 active:scale-[0.98] group"
             >
-              {loading ? 'INITIALIZING...' : 'PROVISION COMMAND NEXUS'}
+              {loading ? 'CREATING ACCOUNT...' : 'GET STARTED'}
               {!loading && (
                 <ArrowRight
                   size={18} strokeWidth={2.5}
@@ -191,12 +191,12 @@ const Register = () => {
 
           <div className="mt-10 text-center border-t border-white/10 pt-8">
             <p className="text-white/50 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-              ALREADY REGISTERED?{' '}
+              ALREADY HAVE AN ACCOUNT?{' '}
               <Link
                 to="/login"
                 className="text-primary hover:text-primary-light transition-colors underline underline-offset-4 decoration-primary/30 ml-2"
               >
-                ESTABLISH LINK
+                Sign In
               </Link>
             </p>
           </div>

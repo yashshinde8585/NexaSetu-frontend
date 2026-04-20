@@ -3,28 +3,26 @@ import { Activity } from 'lucide-react';
 
 /**
  * Common dashboard section component.
- * @param {string} title - Section title
- * @param {ReactNode} icon - Section icon
- * @param {ReactNode} children - Content
- * @param {string} className - Optional className
+ * Provides a structured container with consistent header styling.
  */
 const DashboardSection = ({ title, icon = <Activity size={12} />, children, className = "" }) => {
   const sectionId = React.useId();
   return (
     <section 
       aria-labelledby={`heading-${sectionId}`}
-      className={`bg-black border border-white/20 p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-none relative group overflow-hidden ${className}`}
+      className={`bg-[#0A0A0A] border border-white/10 p-6 md:p-8 rounded-xl relative group flex flex-col ${className}`}
     >
-      <div className="absolute top-0 left-0 w-1.5 h-0 group-hover:h-full bg-primary/40 transition-all duration-1000 ease-in-out"></div>
-      <header className="flex items-center gap-4 mb-10">
-        <div className="p-2 bg-black border border-white/20 rounded-xl group-hover:border-primary/50 transition-colors shadow-none text-white">
+      <header className="flex items-center gap-4 mb-8">
+        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg group-hover:border-primary/40 group-hover:bg-primary/5 transition-all duration-300 text-white/40 group-hover:text-primary">
            {icon}
         </div>
-        <h3 id={`heading-${sectionId}`} className="text-[11px] font-black text-white/50 uppercase tracking-[0.4em] translate-y-px group-hover:text-white transition-colors">
+        <h3 id={`heading-${sectionId}`} className="text-[10px] font-black text-white/40 uppercase tracking-[0.25em] transition-colors group-hover:text-white">
           {title}
         </h3>
+        <div className="flex-grow h-[1px] bg-white/5 ml-2"></div>
       </header>
-      <div className="relative z-10">
+
+      <div className="relative z-10 flex-grow">
         {children}
       </div>
     </section>
@@ -32,3 +30,4 @@ const DashboardSection = ({ title, icon = <Activity size={12} />, children, clas
 };
 
 export default DashboardSection;
+

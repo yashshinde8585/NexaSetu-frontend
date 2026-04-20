@@ -115,22 +115,22 @@ const Dashboard = () => {
           value: activeCount,
           color: 'bg-primary/10 border-primary/20 text-primary',
           icon: <FolderOpen size={20} />,
-          trend: '+2 this mo',
+          trend: '+2 this month',
         },
         {
-          label: 'Workload Velocity',
+          label: 'Total Velocity',
           value: `${avgVelocity.toFixed(0)}%`,
           color: 'bg-white/10 border-white/20 text-white',
           icon: <Rocket size={20} />,
           trend: '+5.2%',
         },
         {
-          label: 'Priority Projects',
+          label: 'Attention Needed',
           value: atRiskCount,
           color:
             'bg-status-warning/10 border-status-warning/20 text-status-warning',
           icon: <Zap size={20} />,
-          trend: '+12% risk',
+          trend: 'Requires review',
         },
         {
           label: 'Completed',
@@ -138,7 +138,7 @@ const Dashboard = () => {
           color:
             'bg-status-success/10 border-status-success/20 text-status-success',
           icon: <CheckCircle size={20} />,
-          trend: '+4 this wk',
+          trend: '+4 this week',
         },
       ];
     } else {

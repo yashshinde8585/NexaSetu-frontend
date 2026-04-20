@@ -19,11 +19,11 @@ const ProjectTeam = () => {
         const res = await TeamService.getMembers();
         const allMembers = res?.data?.members || [];
 
-        let projectName = 'UNASSIGNED OPERATIONS';
+        let projectName = 'Global Operations';
         let filtered = [];
 
         if (projectId === 'unassigned') {
-          projectName = 'UNASSIGNED MEMBERS';
+          projectName = 'Unassigned Members';
           filtered = allMembers.filter((m) => !m.assignedProjectId);
         } else {
           filtered = allMembers.filter(
@@ -102,7 +102,7 @@ const ProjectTeam = () => {
             <div className="w-8 h-8 rounded-lg bg-black border border-white/20 flex items-center justify-center group-hover:border-primary group-hover:bg-white/5">
               <ChevronLeft size={16} />
             </div>
-            Back
+            Back to Directory
           </button>
 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-white/20 pb-12">
@@ -119,10 +119,10 @@ const ProjectTeam = () => {
                 <div className="flex items-center gap-4 text-[10px] font-bold text-white/50 uppercase tracking-wider">
                    <span className="flex items-center gap-2">
                       <Users size={12} className="text-primary" />
-                      Personnel Roster
+                      Member List
                    </span>
                    <div className="w-1 h-1 bg-white/20 rounded-full" />
-                   <span className="text-white/80">{data.members.length} Total Assignments</span>
+                   <span className="text-white/80">{data.members.length} Total Members</span>
                 </div>
               </div>
             </div>
@@ -134,8 +134,8 @@ const ProjectTeam = () => {
               />
               <input
                 type="text"
-                placeholder="SEARCH PERSONNEL OR EMAIL..."
-                className="w-full h-14 bg-black border border-white/20 text-white rounded-xl pl-12 pr-6 focus:outline-none focus:border-primary/60 focus:bg-white/5 transition-all text-[11px] font-black uppercase tracking-widest placeholder:text-white/30"
+                placeholder="Search by name or email..."
+                className="w-full h-14 bg-black border border-white/20 text-white rounded-xl pl-12 pr-6 focus:outline-none focus:border-primary/60 focus:bg-white/5 transition-all text-xs font-bold placeholder:text-white/30"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -167,7 +167,7 @@ const ProjectTeam = () => {
                       {member.name}
                     </h3>
                     <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-3">
-                      {member.jobTitle || 'UNCLASSIFIED'}
+                      {member.jobTitle || 'POSITION NOT SET'}
                     </div>
                     <div className="flex items-center gap-2 text-white/60 text-[11px] font-bold truncate">
                       <Mail size={12} className="text-white/20" />
@@ -179,7 +179,7 @@ const ProjectTeam = () => {
                 <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/20">
                   <div className="flex items-center gap-2 text-white/50 text-[10px] font-black uppercase tracking-widest">
                     <Clock size={12} />
-                    <span>ENLISTED</span>
+                    <span>JOINED</span>
                     <span className="text-white/80">{new Date(member.createdAt).toLocaleDateString()}</span>
                   </div>
                   <ShieldCheck
@@ -193,7 +193,7 @@ const ProjectTeam = () => {
 
                 {/* Hover Detail */}
                 <div className="absolute top-4 right-4 text-[8px] font-black text-white/20 uppercase tracking-[0.4em] opacity-0 group-hover:opacity-100 transition-opacity">
-                  ID: {member._id?.slice(-8).toUpperCase()}
+                  MEMBER ID: {member._id?.slice(-8).toUpperCase()}
                 </div>
               </div>
             ))
@@ -205,10 +205,10 @@ const ProjectTeam = () => {
           <div className="py-24 text-center bg-black border border-dashed border-white/20 rounded-[32px] animate-in zoom-in-95 duration-500 shadow-2xl">
             <Users size={64} className="mx-auto text-white/20 mb-8" />
             <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-3">
-              No Personnel Detected
+              No members found
             </h3>
             <p className="text-white/40 text-[11px] font-black uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
-              Tactical query returned zero matches for this project environment.
+              We couldn't find any team members matching your search for this project.
             </p>
           </div>
         )}

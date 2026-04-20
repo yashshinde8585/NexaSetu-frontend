@@ -37,7 +37,7 @@ const DeckWrapper = ({ title, children }) => (
  * Clean Identity section for profile management.
  */
 export const IdentitySection = ({ user }) => (
-  <DeckWrapper title="Profile Identity">
+  <DeckWrapper title="User Profile">
     <div className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-black border border-white/10 rounded-2xl">
       <div className="relative">
         <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 p-1 shadow-2xl">
@@ -54,7 +54,7 @@ export const IdentitySection = ({ user }) => (
         </button>
       </div>
       <div className="flex-1 space-y-2 text-center sm:text-left">
-        <div className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em]">Primary Operator</div>
+        <div className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em]">Active User</div>
         <h3 className="text-3xl font-black text-white uppercase tracking-tight leading-tight">{user.name}</h3>
         <p className="text-[10px] text-white/80 font-medium uppercase tracking-widest">{user.email}</p>
       </div>
@@ -70,11 +70,11 @@ export const IdentitySection = ({ user }) => (
          <TacticalInput icon={<AtSign size={16} />} value={user.email} className="bg-black/40" />
       </div>
       <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Organizational Title</label>
+          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Current Role</label>
          <TacticalInput icon={<BadgeCheck size={16} />} value={user.jobTitle || 'Team Member'} disabled className="bg-black/20" />
       </div>
       <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Deployment Date</label>
+          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Member Since</label>
          <TacticalInput icon={<Clock size={16} />} value={new Date(user.createdAt).toLocaleDateString()} disabled className="bg-black/20" />
       </div>
     </div>
@@ -85,11 +85,11 @@ export const IdentitySection = ({ user }) => (
  * Professional Security section.
  */
 export const SecuritySection = () => (
-  <DeckWrapper title="Security Protocols">
+  <DeckWrapper title="Account Security">
     <div className="grid grid-cols-1 gap-4">
-      <SecurityRow icon={<Lock size={18} />} title="Change Master Key" desc="Protocol recommended every 30 days." />
-      <SecurityRow icon={<Fingerprint size={18} />} title="Two-Factor Security" desc="Add an authentication layer via hardware/app." badge="Recommended" />
-      <SecurityRow icon={<Database size={18} />} title="Privacy Credentials" desc="Manage session persistence and visibility." />
+      <SecurityRow icon={<Lock size={18} />} title="Change Password" desc="Recommended to update every 90 days." />
+      <SecurityRow icon={<Fingerprint size={18} />} title="Two-Factor Authentication" desc="Add an extra security layer via app or SMS." badge="Recommended" />
+      <SecurityRow icon={<Database size={18} />} title="Privacy Settings" desc="Manage session persistence and visibility." />
     </div>
   </DeckWrapper>
 );
@@ -116,19 +116,19 @@ const SecurityRow = ({ icon, title, desc, badge }) => (
  * System Preferences section.
  */
 export const PreferencesSection = () => (
-  <DeckWrapper title="Console Preferences">
+  <DeckWrapper title="Platform Preferences">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1">Theme Infrastructure</label>
-         <TacticalSelect icon={<Monitor size={16} />} options={['Strategic Dark', 'Amber Command', 'Clean High Contrast']} value="Strategic Dark" />
+          <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1">Platform Theme</label>
+          <TacticalSelect icon={<Monitor size={16} />} options={['Modern Dark', 'Classic Amber', 'High Contrast']} value="Modern Dark" />
       </div>
       <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Operational Zone</label>
-         <TacticalSelect icon={<Globe size={16} />} options={['Asia/Kolkata (IST)', 'UTC (GMT)', 'US/New York (EST)']} value="Asia/Kolkata (IST)" />
-      </div>
-      <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Alert Protocols</label>
-         <TacticalSelect icon={<Bell size={16} />} options={['All Transmissions', 'Critical Alerts', 'Silent Mode']} value="All Transmissions" />
+          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Timezone</label>
+          <TacticalSelect icon={<Globe size={16} />} options={['Asia/Kolkata (IST)', 'UTC (GMT)', 'US/New York (EST)']} value="Asia/Kolkata (IST)" />
+       </div>
+       <div className="space-y-1.5">
+          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Notification Settings</label>
+          <TacticalSelect icon={<Bell size={16} />} options={['All Notifications', 'Critical Only', 'Muted']} value="All Notifications" />
       </div>
     </div>
   </DeckWrapper>
