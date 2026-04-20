@@ -221,8 +221,5 @@ const SWEDashboard = () => {
   );
 };
 
-export default SWEDashboard;
-
-
 
 export default SWEDashboard;

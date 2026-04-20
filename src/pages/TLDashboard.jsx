@@ -337,8 +337,5 @@ const TLDashboard = () => {
   );
 };
 
-export default TLDashboard;
-
-
 
 export default TLDashboard;
