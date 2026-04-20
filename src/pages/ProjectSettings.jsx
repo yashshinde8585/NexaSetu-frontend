@@ -73,21 +73,21 @@ const ProjectSettings = () => {
             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary/40 group-hover:bg-white/10">
               <ChevronLeft size={16} />
             </div>
-            Back to Command
+            Back to Dashboard
           </button>
 
           <div className="flex items-center gap-4">
             <span className="px-3 py-1.5 bg-primary/20 border border-primary/40 rounded-full text-[9px] font-black text-primary uppercase tracking-widest shadow-lg">
-              TARGET ID: {id.slice(-8).toUpperCase()}
+              PROJECT ID: {id.slice(-8).toUpperCase()}
             </span>
             <div className="h-1 w-6 bg-white/20 rounded-full" />
             <span className="text-[9px] font-black text-white/80 uppercase tracking-widest animate-pulse">
-               LINK ACTIVE
+               ACTIVE
             </span>
           </div>
         </div>
 
-        {/* Tactical Title Section */}
+        {/* Title Section */}
         <div className="border-b border-white/15 pb-10">
           <div className="flex items-center gap-6 mb-4">
             <div className="w-16 h-16 bg-black border border-white/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
@@ -95,23 +95,23 @@ const ProjectSettings = () => {
             </div>
             <div className="space-y-1">
               <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase leading-none">
-                Mission Configuration
+                Project Configuration
               </h1>
               <p className="text-[11px] font-black text-white/50 uppercase tracking-[0.3em]">
-                Fine-tune mission parameters and structural metadata.
+                Manage your project settings and configuration details.
               </p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          {/* Tactical Navigation Sidebar */}
+          {/* Navigation Sidebar */}
           <div className="lg:col-span-1 space-y-2">
             {[
               { label: 'General Info', icon: <Rocket size={16} />, active: true },
               { label: 'Access Control', icon: <Shield size={16} />, to: `/team/project/${id}` },
-              { label: 'Mission History', icon: <Clock size={16} /> },
-              { label: 'Operational Health', icon: <Activity size={16} /> },
+              { label: 'Activity Log', icon: <Clock size={16} /> },
+              { label: 'Health Metrics', icon: <Activity size={16} /> },
               { label: 'Danger Zone', icon: <Trash2 size={16} />, danger: true },
             ].map((item, idx) => (
               <button
@@ -137,7 +137,7 @@ const ProjectSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
-                    <Box size={14} className="text-primary" /> MISSION CODENAME
+                    <Box size={14} className="text-primary" /> PROJECT NAME
                   </label>
                   <input
                     type="text"
@@ -149,7 +149,7 @@ const ProjectSettings = () => {
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
-                     <Activity size={14} className="text-primary" /> OPERATIONAL STATUS
+                     <Activity size={14} className="text-primary" /> PROJECT STATUS
                   </label>
                   <div className="relative">
                     <select
@@ -157,9 +157,9 @@ const ProjectSettings = () => {
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="w-full h-14 bg-black border border-white/20 px-6 rounded-xl text-white font-black text-[11px] uppercase tracking-widest focus:outline-none focus:border-primary appearance-none transition-all shadow-inner"
                     >
-                      <option value="Active" className="bg-[#121212]">OPERATIONAL</option>
-                      <option value="On Hold" className="bg-[#121212]">HOLD PROTOCOL</option>
-                      <option value="Completed" className="bg-[#121212]">MISSION COMPLETE</option>
+                      <option value="Active" className="bg-[#121212]">ACTIVE</option>
+                      <option value="On Hold" className="bg-[#121212]">ON HOLD</option>
+                      <option value="Completed" className="bg-[#121212]">COMPLETED</option>
                     </select>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ const ProjectSettings = () => {
 
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1">
-                  MISSION BRIEFING / ARCHITECTURE DESCRIPTION
+                  PROJECT DESCRIPTION
                 </label>
                 <textarea
                   rows="6"
@@ -184,31 +184,31 @@ const ProjectSettings = () => {
                   className="bg-primary hover:bg-primary-dark text-black font-black py-4 px-12 rounded-xl transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] active:scale-95 disabled:opacity-50"
                 >
                   <Save size={18} strokeWidth={3} />
-                  {saving ? 'SYNCING PARAMETERS...' : 'COMMIT CHANGES'}
+                  {saving ? 'SAVING...' : 'SAVE CHANGES'}
                 </button>
               </div>
             </form>
 
-            {/* Tactical Override (Danger Zone) */}
+            {/* Danger Zone */}
             <div className="pt-12 border-t border-white/15">
               <div className="flex items-center gap-4 mb-8">
                 <Shield size={20} className="text-status-error" />
                 <h3 className="text-status-error text-[11px] font-black uppercase tracking-[0.4em]">
-                  Override Protocols (Danger Zone)
+                  Project Deletion
                 </h3>
               </div>
               
               <div className="bg-status-error/5 border border-status-error/25 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-8 transition-all hover:bg-status-error/10">
                 <div className="text-center sm:text-left space-y-2">
                   <h4 className="text-white font-black text-lg uppercase tracking-tight">
-                    Abort Mission / Terminate Project
+                    Delete Project
                   </h4>
                   <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-                    This action results in the permanent erasure of all logs, <br className="hidden sm:block" /> sub-tasks, and metadata from the nexus core.
+                    This action results in the permanent erasure of all project data, <br className="hidden sm:block" /> tasks, and associated records.
                   </p>
                 </div>
                 <button className="bg-status-error text-white font-black px-10 py-4 rounded-xl text-[10px] uppercase tracking-[0.25em] transition-all hover:bg-red-600 shadow-xl shadow-status-error/20 active:scale-95">
-                  TERMINATE PROJECT
+                  DELETE PROJECT
                 </button>
               </div>
             </div>

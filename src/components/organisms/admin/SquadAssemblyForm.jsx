@@ -68,13 +68,13 @@ const SquadAssemblyForm = ({
           className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
         >
           <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Back to Dashboard</span>
+          <span className="text-sm font-medium">Back</span>
         </button>
         <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] font-black text-white/10">
-          <span>Governance</span>
+          <span>Settings</span>
           <span className="w-1 h-1 rounded-full bg-white/5" />
           <span className={`${isPrimary ? 'text-primary/40' : 'text-secondary/40'}`}>
-            {isPrimary ? 'Squad Creation' : 'Squad Modification'}
+            {isPrimary ? 'New Team' : 'Edit Team'}
           </span>
         </div>
       </div>
@@ -99,12 +99,12 @@ const SquadAssemblyForm = ({
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-8 shadow-2xl h-full min-h-[400px] flex flex-col">
             <div className="flex items-center gap-3">
               <Layout className={colorClass} size={20} />
-              <h2 className="text-lg font-bold">Team Foundation</h2>
+              <h2 className="text-lg font-bold">Team Details</h2>
             </div>
 
             <div className="space-y-6 flex-1">
               <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Team Identity</label>
+                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Team Name</label>
                 <input 
                   required
                   type="text"
@@ -116,19 +116,19 @@ const SquadAssemblyForm = ({
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Mission Strategy</label>
+                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Purpose</label>
                 <textarea 
                   rows={4}
                   value={mission}
                   onChange={(e) => setMission(e.target.value)}
-                  placeholder="Define the primary focus..."
+                  placeholder="Describe what this team does..."
                   className={`w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 text-sm text-white/70 focus:border-${themeColor} placeholder:text-white/10 outline-none transition-all resize-none shadow-inner`}
                 />
               </div>
 
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1 flex items-center justify-between">
-                  Strategic Lead 
+                  Team Lead 
                   <Shield size={12} className="text-secondary" />
                 </label>
                 <div className="relative group">
@@ -138,7 +138,7 @@ const SquadAssemblyForm = ({
                     onChange={(e) => setLead(e.target.value)}
                     className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 text-sm text-white focus:border-secondary outline-none transition-all cursor-pointer appearance-none group-hover:bg-white/[0.02]"
                   >
-                    <option value="" disabled className="bg-slate-900">Appoint a leader...</option>
+                    <option value="" disabled className="bg-slate-900">Select a lead...</option>
                     {users.map(u => (
                       <option key={u.id} value={u.id} className="bg-slate-900">{u.name} — {u.role.replace(/_/g, ' ')}</option>
                     ))}
@@ -162,7 +162,7 @@ const SquadAssemblyForm = ({
                 onClick={() => navigate(-1)}
                 className="w-full text-white/20 hover:text-white font-bold text-xs transition-colors py-2"
               >
-                Discard Process
+                Cancel
               </button>
             </div>
           </div>
@@ -174,7 +174,7 @@ const SquadAssemblyForm = ({
              <div className="px-6 py-4 border-b border-white/5 bg-status-success/5 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-status-success" />
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Available Talent</span>
+                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Available Members</span>
                 </div>
                 <div className={`${bgColorClass} ${colorClass} text-[9px] font-black px-2 py-0.5 rounded-md border ${borderColorClass}`}>
                    {users.filter(u => !u.teams || u.teams.length === 0).length} TOTAL
@@ -204,7 +204,7 @@ const SquadAssemblyForm = ({
                 <div className="flex items-center gap-2">
                   <div className={`w-1.5 h-1.5 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'}`} />
                   <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
-                    {isPrimary ? 'Active Squad Members' : 'Cross-Team Allocation'}
+                    {isPrimary ? 'New Team Members' : 'Members from other teams'}
                   </span>
                 </div>
                 <div className={`${bgColorClass} ${colorClass} text-[9px] font-black px-2 py-0.5 rounded-full border ${borderColorClass}`}>

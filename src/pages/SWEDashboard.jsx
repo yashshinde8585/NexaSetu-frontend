@@ -1,189 +1,227 @@
 import React from 'react';
 import { 
-  CheckCircle2, 
-  Clock, 
-  ShieldAlert, 
-  ArrowRightCircle, 
-  MessageSquare, 
-  GitPullRequest,
-  Calendar,
-  ChevronRight,
-  Zap,
-  Activity,
-  User,
-  Plus
+  CheckCircle2, Clock, ShieldAlert, ArrowRightCircle, 
+  MessageSquare, GitPullRequest, Calendar, ChevronRight, 
+  Zap, Activity, User, Plus, ExternalLink, Target,
+  FileCode, Layers
 } from 'lucide-react';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
+import ActivityItem from '../components/molecules/dashboard/ActivityItem';
 
+/**
+ * Software Engineering (SWE) Dashboard
+ * Highly tactical interface focused on daily task execution, blockers, and sprint progress.
+ */
 const SWEDashboard = () => {
   const { data, isLoading } = useRoleDashboard('swe');
 
   if (isLoading) return <CenteredLoading />;
 
   const { 
-    dayMetrics, 
-    myTasks, 
-    blockers, 
-    progress, 
-    whatsNext,
-    prStats,
-    activityFeed 
+    dayMetrics = { myTasks: 0, dueToday: 0, blocked: 0, remaining: 0 }, 
+    myTasks = [], 
+    blockers = [], 
+    progress = { percentage: 0, completed: 0, total: 0 }, 
+    whatsNext = [],
+    prStats = { open: 0, merged: 0, pendingReview: 0 },
+    activityFeed = [] 
   } = data || {};
 
   return (
-    <div className="p-6 bg-black min-h-screen text-white flex flex-col gap-8 font-mono selection:bg-primary/30">
+    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1600px] mx-auto flex flex-col gap-12">
       
-      {/* Daily Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <MetricStripItem label="Active Mission" value={dayMetrics?.myTasks} icon={<CheckCircle2 size={18} />} color="text-white" />
-        <MetricStripItem label="Imminent Deadline" value={dayMetrics?.dueToday} icon={<Clock size={18} />} color={dayMetrics?.dueToday > 0 ? 'text-status-warning' : 'text-white/40'} />
-        <MetricStripItem label="Engagement Blocked" value={dayMetrics?.blocked} icon={<ShieldAlert size={18} />} color={dayMetrics?.blocked > 0 ? 'text-status-error' : 'text-white/40'} />
-        <MetricStripItem label="Backlog Depth" value={dayMetrics?.remaining} icon={<ArrowRightCircle size={18} />} color="text-white/40" />
+      {/* 1. Tactical Execution Strip */}
+      <div id="swe-metrics-strip" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <MetricStripItem 
+            label="Assigned Directives" 
+            value={dayMetrics.myTasks} 
+            icon={<CheckCircle2 size={14} />} 
+            accent="bg-primary" 
+        />
+        <MetricStripItem 
+            label="Temporal Threshold (Today)" 
+            value={dayMetrics.dueToday} 
+            icon={<Clock size={14} />} 
+            color={dayMetrics.dueToday > 0 ? 'text-status-warning' : 'text-white/40'} 
+            accent={dayMetrics.dueToday > 0 ? 'bg-status-warning' : 'bg-white/5'}
+        />
+        <MetricStripItem 
+            label="Operational Blockers" 
+            value={dayMetrics.blocked} 
+            icon={<ShieldAlert size={14} />} 
+            color={dayMetrics.blocked > 0 ? 'text-status-error' : 'text-white/40'} 
+            accent={dayMetrics.blocked > 0 ? 'bg-status-error' : 'bg-white/5'}
+        />
+        <MetricStripItem 
+            label="Queue Latency" 
+            value={dayMetrics.remaining} 
+            icon={<ArrowRightCircle size={14} />} 
+            accent="bg-white/5"
+        />
       </div>
 
-      {/* My Tasks */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8">
-           <DashboardSection title="EXECUTION PIPELINE: INDIVIDUAL ASSIGNMENTS" icon={<Activity size={16} />}>
-              <div className="overflow-x-auto mt-6 custom-scrollbar">
-                 <table className="w-full text-left border-collapse min-w-[600px]">
+        {/* 2. Primary Execution Queue */}
+        <div className="lg:col-span-8 flex flex-col gap-10">
+           <DashboardSection title="Execution Queue" icon={<Activity size={14} />}>
+              <div className="overflow-x-auto py-2">
+                 <table className="w-full text-left border-collapse">
                     <thead>
-                       <tr className="bg-black border-b border-white/20 text-[10px] text-white/30 uppercase tracking-[0.4em] font-black">
-                          <th className="py-6 px-8">Assignment // Identifier</th>
-                          <th className="py-6 px-8 text-center">Status</th>
-                          <th className="py-6 px-8">Deadline</th>
-                          <th className="py-6 px-8 text-right">Access</th>
+                       <tr className="text-[10px] text-white/30 uppercase font-bold tracking-widest border-b border-white/5">
+                          <th className="pb-4 px-2">Objective Identifier</th>
+                          <th className="pb-4 px-2 text-center">Lifecycle</th>
+                          <th className="pb-4 px-2">Temporal Limit</th>
+                          <th className="pb-4 px-2 text-right">Commit</th>
                        </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/[0.05] font-black italic">
+                    <tbody className="divide-y divide-white/[0.02]">
                        {myTasks?.map((task, idx) => (
-                         <tr key={idx} className="group hover:bg-white/5 transition-colors">
-                            <td className="py-5 px-8">
-                               <div className="flex items-center gap-4">
-                                  {task.blocked && <div className="w-2.5 h-2.5 rounded-full bg-status-error animate-pulse shrink-0 shadow-[0_0_12px_rgba(239,68,68,0.6)]" />}
-                                  <span className={`text-[12px] font-black tracking-tight ${task.isOverdue ? 'text-status-error' : 'text-white'} group-hover:text-primary transition-colors`}>{task.title}</span>
+                         <tr key={idx} className="group hover:bg-white/[0.015] transition-all">
+                            <td className="py-4 px-2">
+                               <div className="flex items-center gap-3">
+                                  {task.blocked && <div className="w-1.5 h-1.5 rounded-full bg-status-error animate-pulse shrink-0" />}
+                                  <span className={`text-[12px] font-bold tracking-tight uppercase ${task.isOverdue ? 'text-status-error' : 'text-white'} group-hover:text-primary transition-colors leading-none`}>
+                                     {task.title}
+                                  </span>
                                </div>
                             </td>
-                            <td className="py-5 px-8 text-center">
-                               <StatusBadge status={task.status} />
+                            <td className="py-4 px-2 text-center">
+                               <StatusBadge status={task.status} mini />
                             </td>
-                            <td className="py-5 px-8">
-                               <span className={`text-[10px] font-black uppercase tracking-widest ${task.due === 'Today' ? 'text-status-warning font-black animate-pulse' : task.due === 'Overdue' ? 'text-status-error font-black underline' : 'text-white/20'}`}>
+                            <td className="py-4 px-2">
+                               <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                                 task.due === 'Today' ? 'text-status-warning' : 
+                                 task.due === 'Overdue' ? 'text-status-error underline' : 'text-white/20'
+                               }`}>
                                   {task.due}
                                </span>
                             </td>
-                            <td className="py-5 px-8 text-right">
-                               <button className="px-6 py-2.5 bg-black border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-primary hover:text-black hover:border-primary transition-all shadow-lg active:scale-95">
-                                  Inspect
-                                </button>
+                            <td className="py-4 px-2 text-right">
+                               <button className="p-2 bg-white/[0.03] border border-white/10 rounded hover:border-primary/40 hover:bg-primary/10 transition-all text-white/20 hover:text-primary">
+                                  <ExternalLink size={14} />
+                               </button>
                             </td>
                          </tr>
                        ))}
                        {!myTasks?.length && (
-                         <tr><td colSpan="4" className="py-16 text-center text-[11px] text-white/10 font-black italic uppercase tracking-[0.5em]">No active deployments assigned.</td></tr>
+                         <tr>
+                           <td colSpan="4" className="py-12 text-center text-[10px] text-white/10 uppercase font-black tracking-widest italic">
+                              Zero mission parameters defined.
+                           </td>
+                         </tr>
                        )}
                     </tbody>
                  </table>
               </div>
            </DashboardSection>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <DashboardSection title="Synchronized Updates" icon={<GitPullRequest size={14} />}>
+                 <div className="grid grid-cols-3 gap-px bg-white/5 border border-white/10 rounded overflow-hidden mt-2">
+                    <div className="bg-black p-6 flex flex-col items-center justify-center gap-1 group hover:bg-white/[0.02] transition-all">
+                       <span className="text-3xl font-black text-primary tracking-tighter leading-none">{prStats.open}</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">Active</span>
+                    </div>
+                    <div className="bg-black p-6 flex flex-col items-center justify-center gap-1 group hover:bg-white/[0.02] transition-all border-x border-white/5">
+                       <span className="text-3xl font-black text-status-success tracking-tighter leading-none">{prStats.merged}</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">Merged</span>
+                    </div>
+                    <div className="bg-black p-6 flex flex-col items-center justify-center gap-1 group hover:bg-white/[0.02] transition-all">
+                       <span className="text-3xl font-black text-status-warning tracking-tighter leading-none">{prStats.pendingReview}</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">Review</span>
+                    </div>
+                 </div>
+              </DashboardSection>
+
+              <DashboardSection title="Tactical History" icon={<Activity size={14} />}>
+                 <div className="flex flex-col gap-3 py-2">
+                    {activityFeed?.slice(0, 4).map((item, idx) => (
+                      <ActivityItem 
+                         key={idx} 
+                         icon={<Layers size={12} />} 
+                         text={item.action} 
+                         time={item.time} 
+                         type="info"
+                      />
+                    ))}
+                 </div>
+              </DashboardSection>
+           </div>
         </div>
 
+        {/* 3. Sidebar: Blockades & Progress */}
         <div className="lg:col-span-4 flex flex-col gap-10">
-           <DashboardSection title="ENGAGEMENT BLOCKERS" icon={<ShieldAlert size={16} />} className="border-status-error/40 bg-black">
-              <div className="space-y-4 mt-6">
+           <DashboardSection title="Direct Blockades" icon={<ShieldAlert size={14} />}>
+              <div className="flex flex-col gap-3 py-2">
                  {blockers?.map((b, idx) => (
-                   <div key={idx} className="p-6 bg-black border-2 border-status-error/20 rounded-2xl shadow-[0_4px_20px_rgba(239,68,68,0.1)] group hover:border-status-error/60 transition-all">
-                      <span className="text-[12px] font-black text-white block mb-3 uppercase tracking-tight group-hover:text-status-error transition-colors">{b.issue}</span>
-                      <span className="text-[9px] text-status-error/60 flex items-center gap-2 font-black uppercase tracking-widest">
-                         <User size={10} /> CONTACT: {b.contact}
-                      </span>
+                   <div key={idx} className="p-5 bg-white/[0.01] border border-status-error/20 rounded group hover:border-status-error/60 transition-all">
+                      <span className="block text-[11px] font-bold text-white uppercase tracking-tight mb-3 leading-tight group-hover:text-status-error transition-colors">{b.issue}</span>
+                      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                         <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest flex items-center gap-2">
+                            <User size={10} /> {b.contact}
+                         </span>
+                         <button className="text-[9px] font-bold text-status-error uppercase tracking-widest hover:underline">Request Clear</button>
+                      </div>
                    </div>
                  ))}
                  {!blockers?.length && (
-                   <div className="py-10 text-center text-[10px] text-white/10 uppercase font-black tracking-[0.5em] italic">Zero external blocks</div>
+                   <div className="py-8 text-center text-[10px] text-white/10 uppercase font-black tracking-widest italic">Open corridor state.</div>
                  )}
               </div>
            </DashboardSection>
 
-           {/* 4. Progress Tracker */}
-           <DashboardSection title="SPRINT VELOCITY: INDIVIDUAL" icon={<Zap size={16} />}>
-              <div className="mt-8 flex flex-col gap-6">
-                 <div className="flex justify-between items-end border-b border-white/5 pb-4">
-                    <span className="text-4xl font-black text-white">{progress?.percentage}%</span>
-                    <span className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1 italic">{progress?.completed} / {progress?.total} Items Finalized</span>
+           <DashboardSection title="Sprint Fulfillment" icon={<Target size={14} />}>
+              <div className="flex flex-col gap-6 py-4 px-6 bg-white/[0.01] border border-white/5 rounded">
+                 <div className="flex justify-between items-end leading-none">
+                    <span className="text-5xl font-black text-white tracking-tighter tabular-nums">{progress.percentage}%</span>
+                    <div className="flex flex-col items-end gap-1">
+                       <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Integrity Threshold</span>
+                       <span className="text-[10px] font-bold text-primary uppercase tracking-tight">{progress.completed} / {progress.total} Completed</span>
+                    </div>
                  </div>
-                 <div className="w-full h-2.5 bg-black border border-white/10 rounded-full overflow-hidden shadow-inner">
+                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-primary transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(var(--color-primary),0.3)]" 
-                      style={{ width: `${progress?.percentage}%` }}
+                      className="h-full bg-primary transition-all duration-1000 ease-out" 
+                      style={{ width: `${progress.percentage}%` }}
                     />
                  </div>
               </div>
            </DashboardSection>
-        </div>
-      </div>
 
-      {/* Row 3: PRs | Activity Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-         <DashboardSection title="INDIVIDUAL DEPLOYMENT STATUS (PRs)" icon={<GitPullRequest size={16} />}>
-            <div className="grid grid-cols-3 gap-6 mt-6">
-               <div className="p-6 bg-black border border-white/10 rounded-2xl text-center shadow-lg group hover:border-primary transition-all">
-                  <span className="block text-3xl font-black mb-2 text-primary group-hover:scale-110 transition-transform">{prStats?.open}</span>
-                  <span className="block text-[9px] font-black uppercase tracking-[0.3em] text-white/30">OPEN STACK</span>
-               </div>
-               <div className="p-6 bg-black border border-white/10 rounded-2xl text-center shadow-lg group hover:border-status-success transition-all">
-                  <span className="block text-3xl font-black mb-2 text-status-success group-hover:scale-110 transition-transform">{prStats?.merged}</span>
-                  <span className="block text-[9px] font-black uppercase tracking-[0.3em] text-white/30">MERGED</span>
-               </div>
-               <div className="p-6 bg-black border border-white/10 rounded-2xl text-center shadow-lg group hover:border-status-warning transition-all">
-                  <span className="block text-3xl font-black mb-2 text-status-warning group-hover:scale-110 transition-transform">{prStats?.pendingReview}</span>
-                  <span className="block text-[9px] font-black uppercase tracking-[0.3em] text-white/30">ASSESSMENT</span>
-               </div>
-            </div>
-         </DashboardSection>
-
-         <DashboardSection title="OPERATIONAL LOG: RECENT" icon={<Activity size={16} />}>
-            <div className="flex flex-col gap-4 mt-6 custom-scrollbar max-h-[180px] overflow-y-auto pr-2">
-               {activityFeed?.map((item, idx) => (
-                 <div key={idx} className="flex items-center justify-between py-3 border-b border-white/10 last:border-0 group">
-                    <span className="text-[11px] font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{item.action}</span>
-                    <span className="text-[10px] font-mono font-black text-white/20 uppercase tracking-widest">{item.time}</span>
+           <DashboardSection title="Imminent Objective" icon={<ArrowRightCircle size={14} />}>
+              <div className="p-6 bg-white/[0.02] border border-primary/20 rounded group hover:border-primary/60 transition-all flex flex-col gap-4">
+                 <div className="flex justify-between items-center leading-none">
+                    <span className="text-[9px] font-bold uppercase text-primary tracking-widest">Priority Alpha</span>
+                    <CheckCircle2 size={14} className="text-primary/40" />
                  </div>
-               ))}
-            </div>
-         </DashboardSection>
-      </div>
+                 <span className="text-[13px] font-bold text-white uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">
+                    {whatsNext?.[0]?.title || 'Awaiting assignment...'}
+                 </span>
+                 <button className="mt-2 w-full py-3 bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary-hover transition-all active:scale-[0.98] rounded-sm">
+                    Initialize Directive
+                 </button>
+              </div>
+           </DashboardSection>
 
-      {/* Bottom: What’s Next | Help Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-         <DashboardSection title="SEQUENTIAL TARGETING" icon={<ArrowRightCircle size={16} />} className="border-primary/20">
-            <div className="flex bg-black border-2 border-white/10 p-6 rounded-[2rem] items-center justify-between mt-6 shadow-xl group hover:border-primary transition-all">
-               <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-black uppercase text-primary tracking-[0.4em] mb-1">Queue // Alpha</span>
-                  <span className="text-[14px] font-black text-white uppercase tracking-tight">{whatsNext?.[0]?.title || 'Awaiting assignment...'}</span>
-               </div>
-               <div className="p-4 rounded-2xl bg-primary text-black shadow-[0_0_20px_rgba(var(--color-primary),0.4)]">
-                  <Plus size={24} />
-               </div>
-            </div>
-         </DashboardSection>
-
-         <DashboardSection title="CRITICAL CLARIFICATION" icon={<MessageSquare size={16} />}>
-            <div className="mt-6">
-               <button className="w-full py-8 bg-black border-2 border-dashed border-white/10 rounded-[2.5rem] text-[12px] font-black uppercase tracking-[0.4em] text-white/30 hover:bg-white/5 hover:border-white/40 hover:text-white transition-all flex flex-col items-center gap-4 group shadow-2xl">
-                  <div className="w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center text-2xl group-hover:border-primary group-hover:text-primary transition-all font-mono">?</div>
-                  INITIALIZE LEAD ENGAGEMENT
-               </button>
-            </div>
-         </DashboardSection>
+           <DashboardSection title="External Support" icon={<MessageSquare size={14} />}>
+              <button className="w-full py-8 border-2 border-dashed border-white/5 rounded hover:bg-white/[0.02] hover:border-white/20 transition-all flex flex-col items-center gap-4 group">
+                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:text-primary group-hover:border-primary/40 border border-white/5 transition-all">
+                    <MessageSquare size={16} />
+                 </div>
+                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest group-hover:text-white transition-colors">Interrogate Tech Lead</span>
+              </button>
+           </DashboardSection>
+        </div>
       </div>
     </div>
   );
 };
+
+export default SWEDashboard;
 
 
 

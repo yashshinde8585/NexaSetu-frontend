@@ -33,36 +33,36 @@ const Navbar = ({ onToggleSidebar }) => {
                 {(() => {
                   const path = location.pathname;
                   const breadcrumbMap = {
-                    [ROUTES.DASHBOARD]: 'Dashboard',
-                    [ROUTES.COMMAND_CENTER]: 'CTO Console',
-                    [ROUTES.EXECUTION_COMMANDER]: 'Execution',
-                    [ROUTES.TEAM_COMMAND_CENTER]: 'Team Control',
-                    [ROUTES.SYSTEM_HEALTH_CONTROL]: 'Health',
+                    [ROUTES.DASHBOARD]: 'Home',
+                    [ROUTES.COMMAND_CENTER]: 'Executive',
+                    [ROUTES.EXECUTION_COMMANDER]: 'Operations',
+                    [ROUTES.TEAM_COMMAND_CENTER]: 'Team',
+                    [ROUTES.SYSTEM_HEALTH_CONTROL]: 'Status',
                     [ROUTES.QUALITY_COMMAND]: 'Quality',
                     [ROUTES.PEOPLE_OPS]: 'People',
                     [ROUTES.QUALITY_STRATEGY]: 'Strategy',
-                    [ROUTES.QUALITY_CONTROL]: 'QC',
-                    [ROUTES.EXECUTION_CONTROL]: 'Execution',
-                    [ROUTES.GUIDED_WORK_ASSISTANT]: 'Assistant',
-                    [ROUTES.LEARNING_WORKSPACE]: 'Learning',
+                    [ROUTES.QUALITY_CONTROL]: 'Audit',
+                    [ROUTES.EXECUTION_CONTROL]: 'Dashboard',
+                    [ROUTES.GUIDED_WORK_ASSISTANT]: 'Tasks',
+                    [ROUTES.LEARNING_WORKSPACE]: 'Hub',
                     [ROUTES.ADMIN_PANEL]: 'Admin',
-                    [ROUTES.PERSONAL_WORK_CONSOLE]: 'Console',
+                    [ROUTES.PERSONAL_WORK_CONSOLE]: 'Workbench',
                     [ROUTES.PORTFOLIO || '/portfolio']: 'Portfolio',
-                    [ROUTES.TEAMS]: 'Teams',
-                    '/team/add': 'Registry',
-                    '/project-info': 'Management',
-                    '/project-setup': 'Setup',
+                    [ROUTES.TEAMS]: 'People',
+                    '/team/add': 'Invite',
+                    '/project-info': 'Sprints',
+                    '/project-setup': 'New Project',
                     [ROUTES.MY_TASKS]: 'Tasks',
                     '/velocity': 'Velocity',
                     [ROUTES.PROFILE || '/profile']: 'Profile',
-                    [ROUTES.SETTINGS]: 'Preferences',
+                    [ROUTES.SETTINGS]: 'Settings',
                     '/theme': 'Themes',
                   };
 
                   if (breadcrumbMap[path]) return breadcrumbMap[path];
                   if (path.startsWith('/team/project/')) return 'Team';
                   if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
-                  if (path.startsWith('/project/')) return 'Tasks & Tickets';
+                  if (path.startsWith('/project/')) return 'Task Board';
                   if (path.startsWith('/task/')) return 'Task Detail';
                   return 'Intelligence';
                 })()}

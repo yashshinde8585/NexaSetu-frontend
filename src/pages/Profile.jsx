@@ -89,8 +89,8 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
                 <InfoRow label="Full Name" value={user.name} icon={<User size={14} />} />
                 <InfoRow label="Email Address" value={user.email} icon={<Mail size={14} />} />
-                <InfoRow label="System Role" value={user.role.replace('_', ' ')} icon={<Shield size={14} />} />
-                <InfoRow label="Clearance" value="L4 High Command" icon={<BadgeCheck size={14} />} />
+                <InfoRow label="Account Role" value={user.role.replace('_', ' ')} icon={<Shield size={14} />} />
+                <InfoRow label="Access Level" value="L4 Engineering" icon={<BadgeCheck size={14} />} />
                 <InfoRow label="Joined Workspace" value={new Date(user.createdAt).toLocaleDateString()} icon={<Calendar size={14} />} />
                 <InfoRow label="Current Status" value="Active" icon={<Clock size={14} />} status="active" />
               </div>
@@ -103,12 +103,12 @@ const Profile = () => {
                  <ActionTile 
                    icon={<Key size={18} />} 
                    title="Update Password" 
-                   desc="Ensure your account key is rotated regularly for maximum security." 
+                   desc="Set a strong, unique password to keep your account secure." 
                  />
                  <ActionTile 
                    icon={<Lock size={18} />} 
                    title="Two-Factor Authentication" 
-                   desc="Add an extra layer of protection to your identity profile." 
+                   desc="Add an extra layer of protection to your account profile." 
                    badge="Recommended"
                  />
               </div>

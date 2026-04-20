@@ -1,68 +1,76 @@
 import React from 'react';
 import StatusIndicator from './StatusIndicator';
+import { X } from 'lucide-react';
 
 /**
- * DrilldownModal - Standardized personnel/performance visibility layer.
+ * DrilldownModal - Detailed personnel/performance visibility layer.
  */
 const DrilldownModal = ({ isOpen, onClose, category, type, data = [] }) => {
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm transition-all duration-300"
       onClick={onClose}
     >
       <div 
-        className="bg-black border border-white/20 rounded-[2rem] w-full max-w-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-300"
+        className="bg-[#0A0A0A] border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transition-all"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-8 border-b border-white/20 flex justify-between items-center bg-black">
-          <div>
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">
-              {type === 'role' ? `Strategic Analysis: ${category}` : 'Personnel Visibility'}
+        <header className="p-8 border-b border-white/5 flex justify-between items-start">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-black text-white uppercase tracking-tight">
+              {type === 'role' ? `Analysis: ${category}` : 'Personnel Overview'}
             </h2>
-            <p className="text-[10px] text-white/40 mt-1 uppercase tracking-[0.3em] font-black opacity-80">
-              Org Level → {category} → {type === 'role' ? 'Functional Roles' : 'Individuals'}
-            </p>
+            <nav className="flex items-center gap-2 text-[9px] text-white/30 uppercase tracking-widest font-bold">
+              <span>Organization</span>
+              <span className="opacity-40">/</span>
+              <span>{category}</span>
+              <span className="opacity-40">/</span>
+              <span className="text-white/60">{type === 'role' ? 'Functional Roles' : 'Personnel'}</span>
+            </nav>
           </div>
           <button 
             onClick={onClose} 
-            className="text-white/40 hover:text-primary transition-colors p-2 hover:bg-white/5 rounded-full"
+            className="text-white/20 hover:text-white transition-all p-2 bg-white/5 border border-white/5 rounded-lg hover:border-white/20"
             aria-label="Close modal"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            <X size={16} />
           </button>
-        </div>
+        </header>
 
         {/* Content */}
-        <div className="p-0 overflow-y-auto custom-scrollbar">
-          <table className="w-full text-left">
-            <thead className="bg-black sticky top-0 border-b border-white/20">
-              <tr className="text-[10px] text-white/40 uppercase tracking-widest font-black">
-                <th className="py-5 px-8 font-black">{type === 'role' ? 'Role Type' : 'Entity Name'}</th>
-                <th className="py-5 px-8 font-black">{type === 'role' ? 'Headcount' : 'Assigned Load'}</th>
-                <th className="py-5 px-8 font-black">Utilization</th>
-                <th className="py-5 px-8 font-black">Status</th>
+        <div className="flex-grow overflow-y-auto custom-scrollbar">
+          <table className="w-full text-left border-separate border-spacing-0">
+            <thead className="sticky top-0 bg-[#0A0A0A] z-20">
+              <tr className="text-[10px] text-white/40 uppercase tracking-[0.15em] font-bold border-b border-white/10">
+                <th className="py-4 px-8 border-b border-white/5">{type === 'role' ? 'Role' : 'Name'}</th>
+                <th className="py-4 px-8 border-b border-white/5">{type === 'role' ? 'Headcount' : 'Load'}</th>
+                <th className="py-4 px-8 border-b border-white/5 text-center">Utilization</th>
+                <th className="py-4 px-8 border-b border-white/5">Status</th>
               </tr>
             </thead>
-            <tbody className="text-sm">
+            <tbody className="text-[12px]">
               {data.length > 0 ? data.map((row, i) => (
-                <tr key={i} className="border-b border-white/[0.05] hover:bg-white/5 transition-colors cursor-default group">
-                  <td className="py-5 px-8 font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{row.role || row.name}</td>
-                  <td className="py-5 px-8 text-white font-mono font-bold">{row.count || row.tasks}</td>
-                  <td className="py-5 px-8 text-white font-mono font-bold">{row.avgLoad || row.load}%</td>
-                  <td className="py-5 px-8">
+                <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                  <td className="py-4 px-8 font-bold text-white/70 uppercase tracking-tight group-hover:text-primary transition-colors border-b border-white/[0.03]">
+                    {row.role || row.name}
+                  </td>
+                  <td className="py-4 px-8 text-white/50 font-bold border-b border-white/[0.03]">
+                    {row.count || row.tasks}
+                  </td>
+                  <td className="py-4 px-8 text-center text-white border-b border-white/[0.03] font-bold">
+                    {row.avgLoad || row.load}%
+                  </td>
+                  <td className="py-4 px-8 border-b border-white/[0.03]">
                     <StatusIndicator color={row.status} />
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="4" className="py-20 text-center text-white/20 text-[10px] font-black uppercase tracking-[0.4em]">
-                    No refined personnel data available for this segment.
+                  <td colSpan="4" className="py-24 text-center text-white/10 text-[10px] font-bold uppercase tracking-[0.2em] italic">
+                    No active personnel data identified for this segment.
                   </td>
                 </tr>
               )}
@@ -71,12 +79,13 @@ const DrilldownModal = ({ isOpen, onClose, category, type, data = [] }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-black text-[10px] text-white/30 uppercase tracking-[0.3em] text-center font-black border-t border-white/20">
-          Autonomous Execution Engine // Data Simulation Layer Active
-        </div>
+        <footer className="p-6 bg-[#0E0E0E] text-[9px] text-white/20 uppercase tracking-widest text-center font-bold border-t border-white/5">
+          Data synchronized with organization management system
+        </footer>
       </div>
     </div>
   );
 };
 
 export default DrilldownModal;
+
