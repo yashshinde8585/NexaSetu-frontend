@@ -84,7 +84,7 @@ const Navbar = ({ onToggleSidebar }) => {
         </>
       ) : (
         <>
-          <Link to={ROUTES.LOGIN || "/"} className="flex items-center gap-3 group/logo relative">
+          <Link to="/" className="flex items-center gap-3 group/logo relative">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/25 blur-lg rounded-xl group-hover/logo:bg-primary/40 transition-all"></div>
               {/* Premium NexaSetu Logo - Unified Brand Mark */}
@@ -107,18 +107,22 @@ const Navbar = ({ onToggleSidebar }) => {
           </Link>
 
           <div className="flex gap-4 sm:gap-6 items-center">
-            <Link
-              to={ROUTES.LOGIN}
-              className="text-xs sm:text-sm font-black text-white/70 hover:text-white uppercase tracking-widest transition-colors whitespace-nowrap"
-            >
-              Sign In
-            </Link>
-            <Link
-              to={ROUTES.REGISTER}
-              className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all shadow-xl hover:shadow-white/20 active:scale-95 whitespace-nowrap"
-            >
-              Get Started
-            </Link>
+            {location.pathname !== ROUTES.LOGIN && (
+              <Link
+                to={ROUTES.LOGIN}
+                className="text-xs sm:text-sm font-black text-white/70 hover:text-white uppercase tracking-widest transition-colors whitespace-nowrap"
+              >
+                Sign In
+              </Link>
+            )}
+            {location.pathname !== ROUTES.REGISTER && (
+              <Link
+                to={ROUTES.REGISTER}
+                className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all shadow-xl hover:shadow-white/20 active:scale-95 whitespace-nowrap"
+              >
+                Get Started
+              </Link>
+            )}
           </div>
         </>
       )}
