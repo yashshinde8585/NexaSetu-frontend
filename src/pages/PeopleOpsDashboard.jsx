@@ -3,7 +3,7 @@ import {
   Users, Heart, TrendingUp, TrendingDown, AlertCircle, 
   Briefcase, Zap, Activity, ArrowRight, ShieldAlert, 
   UserPlus, Stethoscope, Target, BarChart2, RefreshCw, 
-  Clock, Header, LayoutGrid, ChevronRight
+  Clock, LayoutGrid, ChevronRight
 } from 'lucide-react';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import CenteredLoading from '../components/atoms/CenteredLoading';
