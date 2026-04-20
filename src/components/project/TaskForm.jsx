@@ -1,7 +1,7 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Minus, Plus } from 'lucide-react';
+import { Clock, Minus, Plus } from 'lucide-react';
 
 // A form component for manually creating new tasks with specific titles, sprints, and descriptions.
 const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
@@ -16,7 +16,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
       >
         <div>
           <label className="block text-sm font-medium mb-1 tracking-tight">
-            Task Title
+            Title
           </label>
           <input
             type="text"
@@ -29,14 +29,14 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1 tracking-tight">
-            Mission Cycle / Sprint (Optional)
+            Sprint
           </label>
           <select
             className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer"
             value={newTask.sprint || ''}
             onChange={(e) => setNewTask({ ...newTask, sprint: e.target.value })}
           >
-            <option value="">No Active Cycle</option>
+            <option value="">No sprint selected</option>
             {(sprints || []).map((sprint) => (
               <option key={sprint._id} value={sprint._id}>
                 {sprint.name}
@@ -46,7 +46,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1 tracking-tight">
-            Description (Optional)
+            Description
           </label>
           <textarea
             className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"
@@ -78,7 +78,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
             <div className="flex items-center gap-2">
                <Clock size={12} className="text-white/20" />
                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 whitespace-nowrap">
-                TIME PROJECTION
+                 ESTIMATED DURATION
                </label>
             </div>
             
@@ -145,7 +145,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
         <div>
            <label className="block text-sm font-medium mb-1 tracking-tight uppercase tracking-[0.2em] text-[10px] text-white/50">
-             Expected Deployment (Due Date)
+             DUE DATE
            </label>
            <div className="relative z-[60]">
              <DatePicker
@@ -153,7 +153,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                onChange={(date) => setNewTask({ ...newTask, dueDate: date })}
                dateFormat="MMM d, yyyy"
                className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer font-bold text-xs"
-               placeholderText="SELECT TARGET DATE"
+               placeholderText="Pick a date"
                calendarClassName="nexa-datepicker"
                popperPlacement="bottom-start"
              />
@@ -163,7 +163,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
           type="submit"
           className="bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded w-full transition duration-200 shadow-xl shadow-primary/20"
         >
-          Create Task
+          Create task
         </button>
       </form>
     </div>
