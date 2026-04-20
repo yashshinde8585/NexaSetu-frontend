@@ -70,7 +70,8 @@ export const AuthProvider = ({ children }) => {
       role = null,
       assignedProjectId = null,
       workspaceName = null,
-      plan = 'free'
+      plan = 'free',
+      admin = null
     ) => {
       try {
         const payload = { name, email, password };
@@ -78,6 +79,7 @@ export const AuthProvider = ({ children }) => {
         if (assignedProjectId) payload.assignedProjectId = assignedProjectId;
         if (workspaceName) payload.workspaceName = workspaceName;
         if (plan) payload.plan = plan;
+        if (admin !== null && admin !== undefined) payload.admin = admin;
 
         const res = await AuthService.register(payload);
         if (res.token) localStorage.setItem('token', res.token);

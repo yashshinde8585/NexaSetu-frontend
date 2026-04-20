@@ -22,6 +22,7 @@ const Register = () => {
     email: '',
     password: '',
     workspaceName: '',
+    admin: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,6 +34,12 @@ const Register = () => {
     setError('');
 
     try {
+      if (formData.admin.trim().length < 2) {
+        setError('Administrator name must be at least 2 characters long.');
+        setLoading(false);
+        return;
+      }
+      
       await authRegister(
         formData.name,
         formData.email,
@@ -40,7 +47,8 @@ const Register = () => {
         'WORKSPACE_ADMIN',
         null,
         formData.workspaceName,
-        plan
+        plan,
+        formData.admin
       );
       navigate('/dashboard');
     } catch (err) {
@@ -95,10 +103,33 @@ const Register = () => {
                   />
                 </div>
               </div>
+
+              {/* Administrator Name */}
+              <div className="md:col-span-2 space-y-3">
+                <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1 block">
+                  Administrator Name
+                </label>
+                <div className="relative group/input">
+                  <input
+                    id="admin"
+                    type="text"
+                    className="w-full h-14 bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-12 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
+                    placeholder="Workspace Administrator"
+                    required
+                    value={formData.admin}
+                    onChange={(e) => setFormData({ ...formData, admin: e.target.value })}
+                  />
+                  <ShieldCheck
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-primary transition-colors"
+                  />
+                </div>
+              </div>
+
               {/* Full Name */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1 block">
-                  Full Name
+                  User Full Name
                 </label>
                 <div className="relative group/input">
                   <input

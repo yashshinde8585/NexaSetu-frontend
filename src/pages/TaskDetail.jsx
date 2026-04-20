@@ -116,7 +116,7 @@ const TaskDetailPage = () => {
 
   if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-110px)] bg-black"><div className="relative"><div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse blur-[30px]" /><Loader2 size={40} className="text-primary animate-spin relative" /></div></div>;
 
-  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-black text-white mb-4 uppercase tracking-tighter">Mission Terminated</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Go Back</button></div>;
+  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-black text-white mb-4 uppercase tracking-tighter">Task not found</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Back to project</button></div>;
 
   const columns = [
     { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error', bg: 'bg-black', border: 'border-status-error' },
@@ -139,11 +139,11 @@ const TaskDetailPage = () => {
               <span className="text-[9px] md:text-[10px] font-black text-primary px-1.5 py-0.5 bg-black rounded uppercase tracking-wider border border-primary shrink-0 shadow-[0_0_10px_rgba(59,130,246,0.2)]">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
               {taskData.blocked && (
                 <span className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse shrink-0">
-                  <ShieldAlert size={10} /> MISSION BLOCKED
+                  <ShieldAlert size={10} /> BLOCKED
                 </span>
               )}
               {taskData.source === 'github' && (
-                <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNC</span>
+                <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNCED</span>
               )}
             </div>
             <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-full mt-1.5 uppercase">{taskData.title}</h1>
@@ -179,7 +179,7 @@ const TaskDetailPage = () => {
                 }`}
                 disabled={blockMutation.isPending}
               >
-                {blockMutation.isPending ? 'SYNCING...' : taskData.blocked ? 'Unblock Mission' : 'Block Mission'}
+                {blockMutation.isPending ? 'SAVING...' : taskData.blocked ? 'Unblock' : 'Block'}
               </button>
 
               <div className="relative flex-1 sm:flex-none" ref={statusMenuRef}>
@@ -198,7 +198,7 @@ const TaskDetailPage = () => {
                 {isStatusMenuOpen && (
                   <div className="absolute top-full right-0 mt-3 w-56 bg-black border border-white/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-300">
                     <div className="px-4 py-3 border-b border-white/20 bg-white/[0.02]">
-                       <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">Transition State</span>
+                       <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">Update status</span>
                     </div>
                     {columns.map((c) => (
                       <button
@@ -233,7 +233,7 @@ const TaskDetailPage = () => {
           <section className="flex-1 flex flex-col bg-black border border-white/20 rounded-[2rem] md:rounded-[32px] overflow-hidden shadow-2xl min-h-[300px] md:min-h-0">
              <div className="px-6 py-5 border-b border-white/20 flex items-center justify-between shrink-0 bg-white/[0.02]">
                 <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] flex items-center gap-2.5">
-                   <Tag size={14} className="text-primary" /> Intelligence Brief
+                   <Tag size={14} className="text-primary" /> Task brief
                 </h3>
                 
                 <div className="flex items-center gap-4">
@@ -247,14 +247,14 @@ const TaskDetailPage = () => {
                     ) : (
                       <BrainCircuit size={14} className={isEpiExpanded ? 'animate-pulse' : ''} />
                     )}
-                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Tactical Intel</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest sm:hidden">Intel</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">AI insights</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest sm:hidden">Insights</span>
                     {!isEpiLoading && <ChevronDown size={12} className={`transition-transform duration-300 ${isEpiExpanded ? 'rotate-180' : ''}`} />}
                   </button>
                 </div>
              </div>
              <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-black leading-relaxed">
-                <p className="text-[14px] md:text-[15px] text-white/60 font-medium whitespace-pre-wrap selection:bg-primary selection:text-white uppercase tracking-tight">{taskData.description || "NO STRATEGIC PARAMETERS DEFINED."}</p>
+                <p className="text-[14px] md:text-[15px] text-white/60 font-medium whitespace-pre-wrap selection:bg-primary selection:text-white uppercase tracking-tight">{taskData.description || "No description provided."}</p>
                 <TaskEPIExplanation 
                    taskId={taskId} 
                    isExpanded={isEpiExpanded}
@@ -271,8 +271,8 @@ const TaskDetailPage = () => {
                      {taskData.assignedUser?.name[0] || '?'}
                  </div>
                 <div className="min-w-0">
-                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Strategist</span>
-                    <p className="text-[10px] md:text-[11px] font-black text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name?.split(' ')[0] || 'UNASSIGNED'}</p>
+                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Assignee</span>
+                    <p className="text-[10px] md:text-[11px] font-black text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name?.split(' ')[0] || 'Unassigned'}</p>
                 </div>
              </div>
 
@@ -283,8 +283,8 @@ const TaskDetailPage = () => {
                     <User size={10} />
                 </div>
                 <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Originator</span>
-                   <p className="text-[10px] md:text-[11px] font-black text-white/60 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name?.split(' ')[0] || 'SYSTEM'}</p>
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Created by</span>
+                   <p className="text-[10px] md:text-[11px] font-black text-white/60 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name?.split(' ')[0] || 'System'}</p>
                 </div>
              </div>
 
@@ -295,8 +295,8 @@ const TaskDetailPage = () => {
                     <Calendar size={10} />
                 </div>
                 <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Objective</span>
-                   <p className="text-[10px] md:text-[11px] font-black text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'BACKLOG'}</p>
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Sprint</span>
+                   <p className="text-[10px] md:text-[11px] font-black text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'Backlog'}</p>
                 </div>
              </div>
 
@@ -308,7 +308,7 @@ const TaskDetailPage = () => {
                       <Clock size={10} className="text-status-success" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Duration</span>
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Est. Time</span>
                      <p className="text-lg font-black text-white tracking-tighter uppercase leading-none">
                        {(() => {
                          let mins = taskData.estimatedDuration || 0;
@@ -332,14 +332,14 @@ const TaskDetailPage = () => {
                       <Calendar size={10} className="text-primary" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Deadline</span>
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Due date</span>
                      <div className="relative">
                         <DatePicker
                            selected={taskData.dueDate ? new Date(taskData.dueDate) : null}
                            onChange={(date) => updateMutation.mutate({ dueDate: date })}
                            customInput={
                              <button className={`text-lg font-black tracking-tighter uppercase leading-none transition-all hover:text-primary ${taskData.dueDate && new Date(taskData.dueDate) < new Date() && taskData.status !== TASK_STATUS.DONE ? 'text-status-error' : 'text-white'}`}>
-                               {taskData.dueDate ? new Date(taskData.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : 'SET DATE'}
+                               {taskData.dueDate ? new Date(taskData.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : 'Set date'}
                              </button>
                            }
                            dateFormat="MMM d, yyyy"
@@ -368,11 +368,11 @@ const TaskDetailPage = () => {
                 <div className={`w-20 h-20 rounded-[1.75rem] flex items-center justify-center border-2 mb-8 shadow-large ${confirmModal.targetStatus?.bg} ${confirmModal.targetStatus?.border} ${confirmModal.targetStatus?.color}`}>
                     <Rocket size={36} />
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">AUTHORIZE REROUTE</h2>
-                <p className="text-[11px] text-white/50 font-black uppercase tracking-widest leading-loose mb-10 px-6">PROCEED WITH TRANSITIONING CURRENT OBJECTIVE TO <span className={confirmModal.targetStatus?.color}>{confirmModal.targetStatus?.title}</span> COMMAND STATE?</p>
+                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">Update status</h2>
+                <p className="text-[11px] text-white/50 font-black uppercase tracking-widest leading-loose mb-10 px-6">Are you sure you want to change the status to <span className={confirmModal.targetStatus?.color}>{confirmModal.targetStatus?.title}</span>?</p>
                 <div className="grid grid-cols-2 gap-4 w-full">
-                   <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">ABORT</button>
-                   <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-black text-[11px] text-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 hover:brightness-110 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>CONFIRM</button>
+                   <button onClick={() => setConfirmModal({ isOpen: false, targetStatus: null })} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">Cancel</button>
+                   <button onClick={() => { statusMutation.mutate({ taskId: taskData._id, status: confirmModal.targetStatus.id }); setConfirmModal({ isOpen: false, targetStatus: null }); }} className={`py-4 rounded-xl font-black text-[11px] text-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 hover:brightness-110 ${confirmModal.targetStatus?.id === TASK_STATUS.DONE ? 'bg-status-success' : 'bg-primary'}`}>Update</button>
                 </div>
              </div>
           </div>
@@ -386,24 +386,24 @@ const TaskDetailPage = () => {
                 <div className="w-20 h-20 rounded-[1.75rem] bg-black border-2 border-status-error flex items-center justify-center text-status-error mb-8 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
                     <ShieldAlert size={36} />
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">HALT OBJECTIVE</h2>
-                <p className="text-[10px] text-white font-black uppercase tracking-widest leading-loose mb-6 px-6">ENTER TECHNICAL JUSTIFICATION FOR BLOCKING THIS MISSION:</p>
+                <h2 className="text-2xl font-black text-white tracking-tighter mb-3 uppercase">Block task</h2>
+                <p className="text-[10px] text-white font-black uppercase tracking-widest leading-loose mb-6 px-6">Why are you blocking this task?</p>
                 
                 <textarea
                   value={blockReason}
                   onChange={(e) => setBlockReason(e.target.value)}
-                  placeholder="EXECUTIVE REASONING..."
+                  placeholder="Reason for blocking..."
                   className="w-full bg-black border border-white/30 rounded-xl p-4 text-white text-xs font-black tracking-widest uppercase mb-8 focus:outline-none focus:border-status-error/50 min-h-[100px] resize-none placeholder:text-white/20"
                 />
 
                 <div className="grid grid-cols-2 gap-4 w-full">
-                   <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">ABORT</button>
+                   <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">Cancel</button>
                    <button 
                     onClick={() => blockMutation.mutate({ blocked: true, reason: blockReason })} 
                     className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
                     disabled={!blockReason.trim() || blockMutation.isPending}
                    >
-                     {blockMutation.isPending ? 'PROCESSING...' : 'CONFIRM BLOCK'}
+                     {blockMutation.isPending ? 'SAVING...' : 'Block task'}
                    </button>
                 </div>
              </div>
