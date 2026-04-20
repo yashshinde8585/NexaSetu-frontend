@@ -293,31 +293,5 @@ const TrendDisplay = ({ label, value, lastValue, color, upIsBad }) => {
   );
 };
 
-export default SQADashboard;
-
-const MiniMetric = ({ label, value, color }) => (
-  <div className="flex flex-col items-center justify-center p-3 bg-white/5 rounded-3xl min-w-[70px]">
-     <span className={`text-lg font-black ${color}`}>{value}</span>
-     <span className="text-[8px] font-black text-text-muted/40 uppercase tracking-tighter text-center">{label}</span>
-  </div>
-);
-
-const TrendDisplay = ({ label, value, lastValue, color, upIsBad }) => {
-  const isUp = parseFloat(value) > parseFloat(lastValue);
-  const trendColor = isUp ? (upIsBad ? 'text-rose-500' : 'text-emerald-500') : (upIsBad ? 'text-emerald-500' : 'text-rose-500');
-
-  return (
-    <div className="flex flex-col gap-1">
-       <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">{label}</span>
-       <div className="flex items-end gap-3 px-1">
-          <span className={`text-4xl font-black ${color}`}>{value}</span>
-          <div className="flex flex-col gap-0 mb-1.5">
-             <span className={`text-[10px] font-black ${trendColor}`}>{isUp ? '↑' : '↓'}</span>
-             <span className="text-[8px] font-mono text-text-muted/40">wk: {lastValue}</span>
-          </div>
-       </div>
-    </div>
-  );
-};
 
 export default SQADashboard;
