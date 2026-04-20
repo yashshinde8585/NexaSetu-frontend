@@ -28,7 +28,8 @@ const MainLayout = ({ children }) => {
     
     // Logic for Application Shell Components
     const showSidebar = user && !isPublicPage;
-    const showNavbar = location.pathname === '/' || !isPublicPage;
+    const showNavbar = true; // Always show navbar for navigation consistency
+
 
     const toggleSidebar = () => setSidebarOpen(prev => !prev);
     const closeSidebar = () => setSidebarOpen(false);
