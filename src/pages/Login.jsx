@@ -20,7 +20,7 @@ const Login = () => {
       await login(formData.email, formData.password);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Unable to sign in. Please check your credentials and try again.');
+      setError(err.message || 'We couldn\'t verify your account. Please check your email and password.');
     } finally {
       setLoading(false);
     }
@@ -40,10 +40,10 @@ const Login = () => {
 
           <div className="text-center mb-10 flex flex-col items-center">
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tighter mb-2 uppercase">
-              AUTHENTICATE <span className="text-primary text-glow">USER</span>
+              Welcome <span className="text-primary text-glow">Back</span>
             </h2>
             <p className="text-white/50 font-black text-[10px] uppercase tracking-[0.2em] leading-relaxed">
-              Sign in to access the command nexus.
+              Sign in to access your dashboard and projects.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ const Login = () => {
                   id="email"
                   type="email"
                   className="w-full h-14 bg-black border border-white/20 focus:border-primary focus:bg-white/5 text-white rounded-xl px-12 outline-none transition-all placeholder:text-white/20 text-xs font-black tracking-widest uppercase shadow-inner"
-                  placeholder="NAME@EXAMPLE.COM"
+                  placeholder="name@company.com" 
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -81,7 +81,7 @@ const Login = () => {
                   to="/"
                   className="text-[9px] text-primary hover:text-primary-light transition-colors font-black uppercase tracking-widest"
                 >
-                  Forgot Protocol?
+                  Forgot password?
                 </Link>
               </div>
               <div className="relative group/input">
@@ -113,7 +113,7 @@ const Login = () => {
               disabled={loading}
               className="w-full h-16 bg-primary hover:bg-primary-dark text-black rounded-xl mt-6 flex items-center justify-center gap-4 uppercase font-black tracking-[0.3em] text-[11px] transition-all shadow-2xl shadow-primary/30 active:scale-[0.98] group"
             >
-              {loading ? 'AUTHENTICATING...' : 'ESTABLISH LINK'}
+              {loading ? 'SIGNING IN...' : 'SIGN IN'}
               {!loading && (
                 <ArrowRight
                   size={18} strokeWidth={2.5}
@@ -125,12 +125,12 @@ const Login = () => {
 
           <div className="mt-10 text-center border-t border-white/10 pt-8">
             <p className="text-white/50 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-              UNAUTHORIZED ACCESS?{' '}
+              Don't have an account?{' '}
               <Link
                 to="/register"
                 className="text-primary hover:text-primary-light transition-colors underline underline-offset-4 decoration-primary/30 ml-2"
               >
-                REQUEST CLEARANCE
+                Create an account
               </Link>
             </p>
           </div>

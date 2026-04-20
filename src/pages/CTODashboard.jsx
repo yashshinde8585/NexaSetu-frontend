@@ -13,7 +13,7 @@ import { Activity, Zap, AlertTriangle } from 'lucide-react';
 
 /**
  * CTO Dashboard
- * High-level overview of engineering organization health.
+ * Refactored for professional clarity and organization health visibility.
  */
 const CTODashboard = () => {
   const {
@@ -26,120 +26,130 @@ const CTODashboard = () => {
   } = useRoleDashboard('cto');
 
   if (isLoading || !data) return <CenteredLoading />;
-  if (error) return <div className="p-8 text-status-error bg-black h-screen font-mono font-black uppercase">{error?.message || 'Connection failed'}</div>;
+  if (error) return (
+    <div className="p-8 text-status-error bg-[#0A0A0A] h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
+      {error?.message || 'Unable to load dashboard. Please try again.'}
+    </div>
+  );
 
   const { global, functionalBreakdown, functionalTable, blockers, pipeline } = data;
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 font-mono selection:bg-primary selection:text-white">
-      {/* Key Metrics */}
-      <div id="cto-global" className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <MetricStripItem label="At-Risk Projects" value={global.projectsAtRisk} color="text-status-error" accent="bg-status-error" />
+    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary selection:text-white max-w-[1600px] mx-auto">
+      {/* 1. Global Performance metrics */}
+      <div id="cto-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+        <MetricStripItem label="Projects At risk" value={global.projectsAtRisk} color="text-status-error" accent="bg-status-error" />
         <MetricStripItem label="Active Blockers" value={global.totalBlockers} color="text-status-warning" accent="bg-status-warning" />
-        <MetricStripItem label="Avg Delivery Delay" value={`+${global.orgDeliveryDrift}d`} color="text-primary" accent="bg-primary" />
-        <MetricStripItem label="Resource Utilization" value={`${global.avgUtilization}%`} color="text-status-success" accent="bg-status-success" />
-        <MetricStripItem label="Overloaded Teams" value={global.teamsOverloaded} color="text-status-warning" accent="bg-status-warning" />
+        <MetricStripItem label="Avg Drift" value={`+${global.orgDeliveryDrift}d`} color="text-primary" accent="bg-primary" />
+        <MetricStripItem label="Energy/Cap Usage" value={`${global.avgUtilization}%`} color="text-status-primary" accent="bg-primary" />
+        <MetricStripItem label="Teams At capacity" value={global.teamsOverloaded} color="text-status-warning" accent="bg-status-warning" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column - Org Breakdown & Table */}
-        <div className="lg:col-span-8 space-y-6">
+        {/* Left Column: Strategy & Operations */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FunctionalCard 
-              id="eng-leadership"
-              title="Engineering Management" 
+              id="strategic-leadership"
+              title="Leadership" 
               onClick={() => handleDrilldown('leadership')}
               metrics={[
                 { label: 'Active Projects', value: functionalBreakdown.engineeringLeadership.activeProjects },
                 { label: 'Delayed', value: functionalBreakdown.engineeringLeadership.delayed, color: 'text-status-error' },
                 { label: 'Avg Delay', value: `+${functionalBreakdown.engineeringLeadership.avgDrift}d`, color: 'text-white' },
-                { label: 'Pending Decisions', value: functionalBreakdown.engineeringLeadership.decisionsPending, color: 'text-status-warning' }
+                { label: 'Pending Approvals', value: functionalBreakdown.engineeringLeadership.decisionsPending, color: 'text-status-warning' }
               ]} 
-              focus="Strategy & Ownership"
+              focus="Strategy & Policy"
             />
             <FunctionalCard 
-              id="eng-ic"
-              title="Individual Contributors" 
+              id="engineering-operations"
+              title="Engineering Teams" 
               onClick={() => handleDrilldown('engineering')}
               metrics={[
-                { label: 'Total Headcount', value: functionalBreakdown.engineeringIC.totalEngineers },
-                { label: 'Avg Workload', value: `${functionalBreakdown.engineeringIC.avgLoad}%`, color: 'text-white' },
+                { label: 'Engineers', value: functionalBreakdown.engineeringIC.totalEngineers },
+                { label: 'Workload', value: `${functionalBreakdown.engineeringIC.avgLoad}%`, color: 'text-white' },
                 { label: 'Overloaded', value: functionalBreakdown.engineeringIC.overloaded, color: 'text-status-error' },
-                { label: 'Completion Rate', value: `${functionalBreakdown.engineeringIC.completionRate}%` }
+                { label: 'Velocity', value: `${functionalBreakdown.engineeringIC.completionRate}%` }
               ]} 
-              focus="Execution Capacity"
+              focus="Delivery Capacity"
             />
-            {/* QA and People cards follow same pattern... */}
           </div>
 
-          <DashboardSection title="Cross-Functional Health Summary" icon={<Activity size={12} />}>
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/20 text-white/50 text-[10px] uppercase font-black tracking-[0.2em]">
-                  <th className="py-4 px-4 font-black">Function</th>
-                  <th className="py-4 px-4 font-black text-center">Load %</th>
-                  <th className="py-4 px-4 font-black text-center">Blockers</th>
-                  <th className="py-4 px-4 font-black">Delay</th>
-                  <th className="py-4 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="text-xs">
-                {functionalTable.map((row, i) => (
-                  <tr key={i} 
-                    onClick={() => handleDrilldown(row.function.split(' ')[0])}
-                    className="border-b border-white/[0.05] hover:bg-white/5 transition-all cursor-pointer group">
-                    <td className="py-4 px-4 font-black group-hover:text-primary transition-colors uppercase">{row.function}</td>
-                    <td className="py-4 px-4 text-center font-mono font-bold text-white">{row.load}%</td>
-                    <td className="py-4 px-4 text-center font-mono font-bold text-white">{row.blockers}</td>
-                    <td className="py-4 px-4 font-mono font-bold text-white/60">{row.delay}</td>
-                    <td className="py-4 px-4">
-                      <StatusIndicator color={row.status} />
-                    </td>
+          <DashboardSection title="Organizational Overview" icon={<Activity size={14} />}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-separate border-spacing-0">
+                <thead>
+                  <tr className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-white/10">
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Department</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Workload %</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Blockers</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Delay</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-[12px]">
+                  {functionalTable.map((row, i) => (
+                    <tr key={i} 
+                      onClick={() => handleDrilldown(row.function.split(' ')[0])}
+                      className="hover:bg-white/[0.02] transition-colors cursor-pointer group group/row">
+                      <td className="py-5 px-6 font-bold border-b border-white/[0.03] group-hover/row:text-primary transition-colors uppercase tracking-tight">{row.function}</td>
+                      <td className="py-5 px-6 text-center font-bold text-white border-b border-white/[0.03]">{row.load}%</td>
+                      <td className="py-5 px-6 text-center font-bold text-white border-b border-white/[0.03]">{row.blockers}</td>
+                      <td className="py-5 px-6 font-bold text-white/60 border-b border-white/[0.03]">{row.delay}</td>
+                      <td className="py-5 px-6 border-b border-white/[0.03]">
+                        <StatusIndicator color={row.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </DashboardSection>
         </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-4 space-y-6">
-          <DashboardSection title="Delivery Pipelines" icon={<Zap size={12} />}>
-             <div className="space-y-5 py-2">
+        {/* Right Column: Tactical Monitoring */}
+        <div className="lg:col-span-4 flex flex-col gap-8">
+          <DashboardSection title="Delivery Pipeline" icon={<Zap size={14} />}>
+             <div className="space-y-6 pt-2">
                 {(() => {
                   const total = (pipeline.backlog || 0) + (pipeline.dev || 0) + (pipeline.qa || 0) + (pipeline.release || 0);
                   const getProgress = (val) => total > 0 ? (val / total) * 100 : 0;
                   
                   return (
-                    <>
-                      <PipelineStep label="Backlog" value={pipeline.backlog} progress={getProgress(pipeline.backlog)} color="bg-white/20" />
+                    <div className="flex flex-col gap-6">
+                      <PipelineStep label="Backlog" value={pipeline.backlog} progress={getProgress(pipeline.backlog)} color="bg-white/10" />
                       <PipelineStep label="In Development" value={pipeline.dev} progress={getProgress(pipeline.dev)} color="bg-primary" />
                       <PipelineStep label="In QA Review" value={pipeline.qa} progress={getProgress(pipeline.qa)} color="bg-status-warning" isWarning />
                       <PipelineStep label="Ready for Release" value={pipeline.release} progress={getProgress(pipeline.release)} color="bg-status-success" />
-                    </>
+                    </div>
                   );
                 })()}
              </div>
           </DashboardSection>
 
-          <DashboardSection title="Active Blockers" icon={<AlertTriangle size={12} />}>
-            <div className="space-y-6">
-              <BlockerCategory label="Engineering ICs" items={blockers.engineering} />
+          <DashboardSection title="Critical Blockers" icon={<AlertTriangle size={14} />}>
+            <div className="space-y-8">
+              <BlockerCategory label="Engineering" items={blockers.engineering} />
               <BlockerCategory label="Quality Assurance" items={blockers.qa} />
-              <BlockerCategory label="Operations" items={blockers.peopleOps} />
+              <BlockerCategory label="Operational" items={blockers.peopleOps} />
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Organizational Activity" icon={<Activity size={12} />}>
-            <div className="space-y-1 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          <DashboardSection title="Activity Register" icon={<Activity size={14} />}>
+            <div className="space-y-2 max-h-[340px] overflow-y-auto pr-3 custom-scrollbar">
               {data.activity?.length > 0 ? (
                 data.activity.map((item, i) => (
                   <ActivityItem key={i} text={item.text} time={item.time} />
                 ))
               ) : (
-                <p className="text-white/40 text-[10px] uppercase font-black italic p-8 text-center">NO RECENT ACTIVITY LOGS AVAILABLE.</p>
+                <div className="flex flex-col items-center justify-center p-12 text-center">
+                  <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center mb-4 text-white/20">
+                    <Activity size={12} />
+                  </div>
+                  <p className="text-white/30 text-[9px] uppercase font-bold tracking-widest italic">No recent logs.</p>
+                </div>
               )}
             </div>
           </DashboardSection>
@@ -158,3 +168,4 @@ const CTODashboard = () => {
 };
 
 export default CTODashboard;
+

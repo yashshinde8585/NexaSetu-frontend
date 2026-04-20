@@ -36,17 +36,17 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
             <div className="w-16 h-16 rounded-full bg-status-error/20 flex items-center justify-center text-status-error mb-6">
               <AlertCircle size={32} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Confirm Account Action</h3>
+            <h3 className="text-xl font-bold text-white mb-2">Update Account Status</h3>
             <p className="text-white/40 text-sm mb-8">
               Are you sure you want to {user.status === 'Active' ? 'deactivate' : 'reactivate'} <span className="text-white font-bold">{user.name}</span>? 
-              {user.status === 'Active' && " This will immediately revoke all platform access."}
+              {user.status === 'Active' && " This will revoke all workspace access immediately."}
             </p>
             <div className="flex gap-4 w-full">
               <button 
                 onClick={() => setShowConfirm(false)}
                 className="flex-1 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all"
               >
-                Go Back
+                Cancel
               </button>
               <button 
                 onClick={() => {
@@ -58,7 +58,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
                   user.status === 'Active' ? 'bg-status-error text-white shadow-lg shadow-status-error/20' : 'bg-status-success text-black'
                 }`}
               >
-                Yes, Proceed
+                Confirm Change
               </button>
             </div>
           </div>
@@ -97,7 +97,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
           <div className="space-y-3">
             <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1 flex items-center gap-2">
               <Shield size={12} className="text-primary" />
-              Organization Role
+              Member Role
             </label>
             <div className="relative group">
               <select
@@ -115,7 +115,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
                 <Shield size={16} />
               </div>
             </div>
-            <p className="text-[10px] text-white/20 px-1 italic">Role changes affect platform permissions immediately.</p>
+            <p className="text-[10px] text-white/20 px-1 italic">Permissions update as soon as you save.</p>
           </div>
 
           {/* Quick Actions */}
@@ -132,8 +132,8 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
                <div className="flex items-center gap-3">
                  {user.status === 'Active' ? <UserMinus size={18} /> : <UserPlus size={18} />}
                  <div className="text-left">
-                    <p className="text-sm font-bold">{user.status === 'Active' ? 'Deactivate User' : 'Activate User'}</p>
-                    <p className="text-[10px] opacity-60">Control platform access</p>
+                    <p className="text-sm font-bold">{user.status === 'Active' ? 'Deactivate Member' : 'Activate Member'}</p>
+                    <p className="text-[10px] opacity-60">Control workspace access</p>
                  </div>
                </div>
                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
@@ -150,7 +150,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
             onClick={onClose}
             className="flex-1 px-6 py-3 text-sm font-bold text-white/40 hover:text-white transition-colors"
           >
-            Discard
+            Cancel
           </button>
           <button
             onClick={() => {

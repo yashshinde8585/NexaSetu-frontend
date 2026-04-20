@@ -25,11 +25,11 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('identity');
 
   const tabs = [
-    { id: 'identity', label: 'Tactical Identity', icon: <User size={18} /> },
-    { id: 'security', label: 'Security Protocols', icon: <Shield size={18} /> },
+    { id: 'identity', label: 'User Identity', icon: <User size={18} /> },
+    { id: 'security', label: 'Account Security', icon: <Shield size={18} /> },
     {
       id: 'preferences',
-      label: 'Console Preferences',
+      label: 'Platform Preferences',
       icon: <SettingsIcon size={18} />,
     },
   ];
@@ -44,10 +44,10 @@ const Settings = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-10">
           <div className="space-y-2">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter uppercase leading-none">
-              Console <span className="text-primary-light">Settings</span>
+              Platform <span className="text-primary-light">Settings</span>
             </h1>
             <p className="text-white/70 text-xs sm:text-sm font-bold max-w-xl leading-relaxed">
-              Configure your operational parameters, security encryption, and identity credentials across the NexaSetu grid.
+              Manage your account profile, security options, and platform preferences across the NexaSetu workspace.
             </p>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -61,7 +61,7 @@ const Settings = () => {
                variant="primary"
                className="flex-1 md:flex-none h-12 px-10 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/10"
              >
-               <Save size={14} className="mr-2" /> Commit Changes
+                <Save size={14} className="mr-2" /> Save Changes
              </Button>
           </div>
         </div>

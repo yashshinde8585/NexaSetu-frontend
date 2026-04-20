@@ -26,9 +26,9 @@ const EditTeam = () => {
 
   return (
     <SquadAssemblyForm 
-      title="Refigure Squad"
-      description="Modify team mission, reassess leadership, and re-allocate workforce."
-      submitLabel="Commit Changes"
+      title="Edit Team"
+      description="Update team details, change leadership, or reassign members."
+      submitLabel="Save Changes"
       onSubmit={handleUpdate}
       users={users}
       initialData={{

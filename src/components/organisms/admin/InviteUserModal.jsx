@@ -53,8 +53,8 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
               <User className="text-primary" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white">Invite Collaborator</h2>
-              <p className="text-xs text-white/40">Expanding the organizational collective.</p>
+              <h2 className="text-xl font-bold tracking-tight text-white">Invite Member</h2>
+              <p className="text-xs text-white/40">Invite new members to join your workspace.</p>
             </div>
           </div>
           <button 
@@ -91,7 +91,7 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
 
           {/* Role Field */}
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Assigned Role</label>
+            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Member Role</label>
             <div className="relative">
               <select
                 value={role}
@@ -104,7 +104,7 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
               </select>
               <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
             </div>
-            <p className="text-[10px] text-white/20 mt-2 px-1 italic">Permissions are inherited automatically based on the selected role profile.</p>
+            <p className="text-[10px] text-white/20 mt-2 px-1 italic">Permissions are automatically assigned based on the selected role.</p>
           </div>
 
           {/* Action Footer */}

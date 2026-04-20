@@ -72,10 +72,10 @@ const ActionCenter = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-lg font-black tracking-tight text-white">
-                Execution Oversight
+                Approvals
               </h2>
               <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
-                Nexa Command Center
+                Operations Hub
               </p>
             </div>
           </div>
@@ -98,7 +98,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
               <CheckCircle size={48} className="text-status-success mb-4" />
               <p className="text-sm font-bold text-white">All Clear</p>
               <p className="text-xs text-text-muted mt-1">
-                No pending strategic actions require executive approval.
+                No items currently require your approval.
               </p>
             </div>
           ) : (
@@ -112,7 +112,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
                     {action.type.replace(/_/g, ' ')}
                   </span>
                   <span className="text-[10px] text-text-muted font-mono bg-black/20 px-2 py-0.5 rounded">
-                    Agent: {action.agent || 'Nexa'}
+                    By: {action.agent || 'Nexa'}
                   </span>
                 </div>
                 <p className="text-sm text-white/90 font-medium mb-4 leading-relaxed">

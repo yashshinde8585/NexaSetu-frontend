@@ -40,7 +40,7 @@ const ProjectSetup = () => {
   const onInitialize = async (e, isDraft = false) => {
     if (e) e.preventDefault();
     if (!mission.name.trim()) {
-      setSubmitError('Project name is mandatory for mission initialization.');
+      setSubmitError('Enter a project name to continue.');
       return;
     }
 
@@ -54,7 +54,7 @@ const ProjectSetup = () => {
       navigate('/project-info');
     } catch (error) {
       console.error('Failed to create project:', error);
-      setSubmitError(error?.message || 'The Gateway rejected the project initialization protocol.');
+      setSubmitError(error?.message || 'Unable to create project. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +83,7 @@ const ProjectSetup = () => {
             </h1>
             <p className="text-[10px] sm:text-[11px] font-bold text-white/40 uppercase tracking-widest pl-4 sm:pl-10 flex items-center gap-3">
               <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0 animate-pulse" />
-              Set up your project workspace in one step.
+              Configure your workspace and start collaborating.
             </p>
           </div>
         </header>
@@ -112,23 +112,23 @@ const ProjectSetup = () => {
                 <div className="space-y-6 sm:space-y-8">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <FileText size={16} className="text-primary" />
-                    <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-widest">PROJECT IDENTITY</h2>
+                    <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-widest">PROJECT DETAILS</h2>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     <div className="space-y-3">
                       <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Project Name</label>
                       <input 
-                        placeholder="E.G. NEXT-GEN ENGINE" 
+                        placeholder="e.g., Client Portal" 
                         value={mission.name}
                         onChange={(e) => setMission({...mission, name: e.target.value.toUpperCase()})}
                         className="w-full h-14 bg-white/5 border border-white/20 px-5 rounded-lg text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-white/10"
                       />
-                      <p className="text-[8px] text-white/30 font-bold italic tracking-wider">Give your project a clear, descriptive name.</p>
+                      <p className="text-[8px] text-white/30 font-bold italic tracking-wider">Use a descriptive name for easy identification.</p>
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Mission Type</label>
+                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Project Type</label>
                       <select 
                         value={mission.type}
                         onChange={(e) => setMission({...mission, type: e.target.value})}
@@ -143,9 +143,9 @@ const ProjectSetup = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Project Objective</label>
+                    <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Description</label>
                     <textarea 
-                      placeholder="E.G. BUILD SCALABLE PAYMENT SYSTEM..." 
+                      placeholder="Describe the key goals and deliverables..." 
                       rows={3}
                       value={mission.objective}
                       onChange={(e) => setMission({...mission, objective: e.target.value})}
@@ -158,7 +158,7 @@ const ProjectSetup = () => {
                 <div className="space-y-6 sm:space-y-8">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <Users size={16} className="text-secondary" />
-                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TEAM COMPOSITION</h2>
+                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TEAM ASSIGNMENT</h2>
                   </div>
                   
                   <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -183,7 +183,7 @@ const ProjectSetup = () => {
                 <div className="space-y-6 sm:space-y-8">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <Calendar size={16} className="text-status-success" />
-                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">MISSION LOGISTICS</h2>
+                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TIMELINE & SCHEDULE</h2>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
@@ -197,7 +197,7 @@ const ProjectSetup = () => {
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Target Date</label>
+                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">End Date</label>
                       <input 
                         type="date"
                         value={mission.timeline.end}
@@ -217,7 +217,7 @@ const ProjectSetup = () => {
                       disabled={isSubmitting}
                       className="w-full sm:w-auto h-14 px-10 bg-gradient-to-r from-primary to-blue-600 text-black hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] rounded-xl text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
                     >
-                      INITIALIZE PROJECT
+                      CREATE PROJECT
                     </button>
                     <button 
                       type="button"
@@ -233,7 +233,7 @@ const ProjectSetup = () => {
                     onClick={() => navigate('/dashboard')}
                     className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.2em] transition-colors py-2"
                   >
-                    CANCEL MISSION
+                    CANCEL
                   </button>
                 </div>
               </form>
@@ -243,7 +243,7 @@ const ProjectSetup = () => {
           {/* Right: Live Preview (Hidden on Mobile, replaced by Summary) */}
           <div className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-32 order-1 lg:order-2">
             <div className="space-y-6">
-              <h2 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] px-4">LIVE MISSION PREVIEW</h2>
+              <h2 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] px-4">PROJECT PREVIEW</h2>
               
               <div className="bg-black border border-white/30 rounded-2xl overflow-hidden shadow-3xl group relative">
                 
@@ -251,18 +251,18 @@ const ProjectSetup = () => {
                   {/* Status Badge */}
                   <div className="flex justify-between items-start">
                     <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10">
-                       <p className="text-[8px] font-black tracking-widest uppercase text-white/50">STATUS: INITIALIZING</p>
+                       <p className="text-[8px] font-black tracking-widest uppercase text-white/50">STATUS: PENDING</p>
                     </div>
                   </div>
 
                   {/* Project Name & Objective */}
                   <div className="space-y-3">
                     <h2 className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${mission.name ? 'text-2xl text-white' : 'text-xl text-white/10 italic'}`}>
-                        {mission.name || 'PROJECT_CODENAME'}
+                        {mission.name || 'PROJECT_NAME'}
                     </h2>
                     <div className="w-12 h-1 bg-primary/40 group-hover:w-20 transition-all duration-700" />
                     <p className={`text-[10px] leading-relaxed uppercase tracking-widest transition-all duration-300 ${mission.objective ? 'text-white/60' : 'text-white/5'}`}>
-                      {mission.objective || 'Mission objectives will manifest here...'}
+                      {mission.objective || 'Your project description will appear here...'}
                     </p>
                   </div>
 
@@ -284,7 +284,7 @@ const ProjectSetup = () => {
 
                   {/* Team Reveal */}
                   <div className="space-y-4">
-                    <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">ASSIGNED ASSETS</p>
+                    <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">ASSIGNED TEAMS</p>
                     <div className="flex flex-wrap gap-2">
                       {mission.teams.length > 0 ? mission.teams.map(team => (
                         <span key={team} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[9px] font-black text-white/80 uppercase tracking-widest">
@@ -326,19 +326,18 @@ const MobileSummary = ({ mission }) => (
     <div className="flex justify-between items-start">
       <div className="space-y-2">
         <h2 className={`font-black uppercase tracking-tight leading-none ${mission.name ? 'text-xl text-white' : 'text-lg text-white/20 italic'}`}>
-          {mission.name || 'NEW_MISSION'}
+          {mission.name || 'NEW_PROJECT'}
         </h2>
-        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">MISSION PREVIEW ENGINE</p>
+        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">PROJECT SUMMARY</p>
       </div>
       <div className="text-right">
-        <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">TARGET_ID</p>
         <p className="text-[10px] font-black text-white">NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</p>
       </div>
     </div>
     
     <div className="flex items-center gap-4 pt-4 border-t border-white/10">
       <div className="flex-1">
-        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">TEAM_UNITS</p>
+        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">TEAM_ASSIGNMENTS</p>
         <div className="flex flex-wrap gap-1.5">
           {mission.teams.slice(0, 3).map(team => (
             <span key={team} className="w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
@@ -358,7 +357,7 @@ const MobileSummary = ({ mission }) => (
       </div>
       <div className="text-right">
         <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">STATUS</p>
-        <span className="text-[9px] font-black text-status-success uppercase tracking-widest animate-pulse">Initializing</span>
+        <span className="text-[9px] font-black text-status-success uppercase tracking-widest animate-pulse">Created</span>
       </div>
     </div>
   </div>

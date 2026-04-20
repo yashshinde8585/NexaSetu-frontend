@@ -68,7 +68,7 @@ const Team = () => {
       const res = await TeamService.getMembers();
       setTeam(res.data || { members: [], invitations: [] });
     } catch (err) {
-      setError(err.message || 'Mission protocols interrupted. Failed to link Personnel Registry.');
+      setError(err.message || 'We couldn\'t load the team directory. Please check your internet or try again later.');
     } finally {
       setLoading(false);
     }
@@ -138,7 +138,7 @@ const Team = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in slide-in-from-top duration-700">
         <div className="space-y-4">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none uppercase">
-            Team Personnel Directory
+            Team Directory
           </h1>
         </div>
 
@@ -147,8 +147,8 @@ const Team = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-primary transition-colors" size={16} />
             <input
               type="text"
-              placeholder="Query personnel by name, email, or role..."
-              aria-label="Search personnel by name, email, or role"
+              placeholder="Search by name, email, or role..."
+              aria-label="Search by name, email, or role"
               className="w-full bg-white/[0.06] border border-white/20 text-white rounded-2xl pl-12 pr-6 py-4 focus:outline-none focus:border-primary/40 focus:bg-white/[0.08] transition-all text-sm font-medium placeholder:text-white/40 shadow-2xl"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -158,7 +158,7 @@ const Team = () => {
             onClick={() => navigate('/team/add')}
             className="px-8 py-4 bg-primary text-black font-bold uppercase tracking-[0.05em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
           >
-            <UserPlus size={18} /> <span className="hidden sm:inline">Invite Operative</span>
+            <UserPlus size={18} /> <span className="hidden sm:inline">Invite Member</span>
           </button>
         </div>
       </div>
@@ -167,7 +167,7 @@ const Team = () => {
         <div className="bg-status-error/10 border border-status-error/20 p-6 rounded-[2rem] flex items-start gap-4 animate-in zoom-in-95 duration-500">
           <AlertCircle className="text-status-error shrink-0 mt-1" size={20} />
           <div>
-            <h4 className="text-sm font-black text-white uppercase tracking-widest mb-1">Telemetry Failure</h4>
+            <h4 className="text-sm font-black text-white uppercase tracking-widest mb-1">Connection Lost</h4>
             <p className="text-xs text-status-error/80 font-bold">{error}</p>
           </div>
           <button onClick={fetchTeam} className="ml-auto p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
@@ -180,9 +180,9 @@ const Team = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in duration-1000 delay-200">
         {[
           { label: 'Active Teams', value: groupedTeams.length, icon: <Layout className="text-secondary" size={16} /> },
-          { label: 'Personnel Count', value: team.members.length, icon: <Users size={16} className="text-primary" /> },
-          { label: 'Reserve Pool', value: unassignedMembers.length, icon: <Clock size={16} className="text-status-warning" /> },
-          { label: 'In-Transit', value: team.invitations.length, icon: <Mail size={16} className="text-status-info" /> }
+          { label: 'Total Members', value: team.members.length, icon: <Users size={16} className="text-primary" /> },
+          { label: 'Available Pool', value: unassignedMembers.length, icon: <Clock size={16} className="text-status-warning" /> },
+          { label: 'Pending Invites', value: team.invitations.length, icon: <Mail size={16} className="text-status-info" /> }
         ].map((stat, i) => (
           <div key={i} className="bg-white/[0.04] border border-white/20 rounded-2xl p-4 flex items-center gap-4">
             <div className="p-2.5 rounded-xl bg-white/10 border border-white/10">{stat.icon}</div>
@@ -198,7 +198,7 @@ const Team = () => {
         {/* Managed Squads Section */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 px-1">
-            <h2 className="text-xs font-black text-white/60 uppercase tracking-[0.4em] whitespace-nowrap">Tactical Units</h2>
+            <h2 className="text-xs font-black text-white/60 uppercase tracking-[0.4em] whitespace-nowrap">Assigned Teams</h2>
             <div className="h-[1px] w-full bg-white/10" />
           </div>
 
@@ -208,12 +208,12 @@ const Team = () => {
                 <Box size={32} className="text-white/10" />
                </div>
                <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">
-                 {searchTerm ? 'No Matches Found' : 'No Active Squads'}
+                 {searchTerm ? 'No results found' : 'No teams found'}
                </h3>
                <p className="text-white/20 text-xs font-bold max-w-xs leading-relaxed uppercase tracking-widest">
                  {searchTerm 
-                   ? `Your query for "${searchTerm}" returned no personnel or units.` 
-                   : 'Awaiting project deployments or personnel assignment.'}
+                   ? `We couldn't find any teams or members matching "${searchTerm}".` 
+                   : 'Teams will appear here once projects or members are assigned.'}
                </p>
             </div>
           )}
@@ -244,7 +244,7 @@ const Team = () => {
                     </h3>
                     <div className="flex items-center gap-2">
                        <ShieldCheck size={12} className="text-primary/50" />
-                       <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{group.members.length} Operators Assigned</span>
+                       <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{group.members.length} Members Assigned</span>
                     </div>
                   </div>
 
@@ -264,7 +264,7 @@ const Team = () => {
                         </div>
                       )}
                     </div>
-                    <div className="text-[10px] font-black text-white/40 group-hover:text-white/60 transition-colors">VIEW HUB</div>
+                    <div className="text-[10px] font-black text-white/40 group-hover:text-white/60 transition-colors">VIEW TEAM</div>
                   </div>
                 </div>
               </div>
@@ -276,7 +276,7 @@ const Team = () => {
         {filteredData.unassigned.length > 0 && (
           <section className="space-y-6">
             <div className="flex items-center gap-4 px-1">
-              <h2 className="text-xs font-black text-white/50 uppercase tracking-[0.4em] whitespace-nowrap">Reserve Operators</h2>
+              <h2 className="text-xs font-black text-white/50 uppercase tracking-[0.4em] whitespace-nowrap">Unassigned Members</h2>
               <div className="h-[1px] w-full bg-white/10" />
             </div>
 
@@ -289,7 +289,7 @@ const Team = () => {
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-sm font-bold text-white truncate">{m.name}</span>
-                      <span className="text-[10px] text-white/50 font-mono truncate">{m.jobTitle || 'UNASSIGNED'}</span>
+                      <span className="text-[10px] text-white/50 font-mono truncate">{m.jobTitle || 'NO POSITION ASSIGNED'}</span>
                     </div>
                   </div>
                 ))}
@@ -302,7 +302,7 @@ const Team = () => {
         {team.invitations.length > 0 && (
           <section className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <div className="flex items-center gap-4 px-1">
-              <h2 className="text-xs font-black text-status-warning/40 uppercase tracking-[0.4em] whitespace-nowrap">Transit Pipeline</h2>
+              <h2 className="text-xs font-black text-status-warning/40 uppercase tracking-[0.4em] whitespace-nowrap">Pending Invitations</h2>
               <div className="h-[1px] w-full bg-status-warning/5" />
             </div>
 
@@ -320,7 +320,7 @@ const Team = () => {
                     </div>
                     <div className="flex flex-col items-end gap-1.5">
                       <span className="px-3 py-1 bg-status-warning/10 border border-status-warning/20 text-[8px] font-black text-status-warning uppercase tracking-widest rounded-lg">
-                        Access Pending
+                        Invited
                       </span>
                       <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{invite.role}</span>
                     </div>
@@ -331,14 +331,14 @@ const Team = () => {
                       {invite.email}
                     </h4>
                     <div className="text-[10px] font-bold text-white/50 truncate flex items-center gap-2">
-                       <Box size={10} /> Destination: <span className="text-white/60 uppercase">{invite.projectId?.name || 'GLOBAL CORE'}</span>
+                       <Box size={10} /> Assigned Project: <span className="text-white/60 uppercase">{invite.projectId?.name || 'GLOBAL CORE'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-5 border-t border-white/5 relative z-10">
                     <div className="flex items-center gap-2">
                        <Clock size={12} className="text-status-warning/30" />
-                       <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">Awaiting Uplink</span>
+                       <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">Awaiting response</span>
                     </div>
                     <button 
                       aria-label="Remove pending invitation"

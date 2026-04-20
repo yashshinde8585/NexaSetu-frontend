@@ -1,86 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import React, { useMemo } from 'react';
+import { useSystemIntegrity } from '../../hooks/useSystemIntegrity';
+import { Activity, Database, Cpu, HardDrive } from 'lucide-react';
 
 /**
- * System Integrity Monitoring Dashboard
- * Provides real-time visibility into the health of critical connection pathways.
+ * System Integrity Status Component
+ * Displays real-time health metrics of the core infrastructure.
  */
 const SystemIntegrityStatus = () => {
-    const [integrity, setIntegrity] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { integrity, loading, error } = useSystemIntegrity(30000);
 
-    const fetchIntegrity = async () => {
-        try {
-            const res = await api.get('/health/integrity');
-            setIntegrity(res.data);
-            setError(null);
-        } catch (err) {
-            setError('Strategic Sync Failure');
-            console.error('[INTEGRITY] Connection terminated:', err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const systemTime = useMemo(() => {
+        const time = integrity?.dependencies?.systemTime || new Date();
+        return new Date(time).toLocaleTimeString();
+    }, [integrity?.dependencies?.systemTime]);
 
-    useEffect(() => {
-        fetchIntegrity();
-        const interval = setInterval(fetchIntegrity, 30000); // Poll every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    if (loading && !integrity) return <div style={{ color: '#888', fontSize: '10px' }}>INITIALIZING SCAN...</div>;
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'connected': return '#00e87a';
-            case 'operational': return '#00e87a';
-            case 'degraded': return '#f5a623';
-            case 'critical': return '#ff4444';
-            default: return '#888';
-        }
-    };
+    if (loading && !integrity) {
+        return (
+            <div className="bg-black/90 border border-white/10 p-3 rounded-sm w-[240px] animate-pulse">
+                <div className="text-[10px] text-zinc-500 tracking-widest mb-2 uppercase">Initializing Scan...</div>
+            </div>
+        );
+    }
 
     return (
-        <div style={{
-            background: 'rgba(5, 5, 5, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            padding: '12px',
-            fontFamily: "'Inter', monospace",
-            fontSize: '11px',
-            color: '#fff',
-            borderRadius: '2px',
-            width: '240px'
-        }}>
-            <h4 style={{ margin: '0 0 10px 0', fontSize: '10px', letterSpacing: '0.1em', color: '#888' }}>CENTRAL INTELLIGENCE LINKS</h4>
+        <div className="bg-black/90 border border-white/10 p-4 font-mono text-[11px] text-white rounded-sm w-[260px] shadow-2xl backdrop-blur-sm">
+            <header className="flex justify-between items-center mb-4">
+                <h4 className="text-[10px] letter-spacing-[0.15em] text-zinc-500 font-bold uppercase">
+                    Central Intelligence Links
+                </h4>
+                <Activity size={12} className="text-primary animate-pulse" />
+            </header>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <LinkItem label="DATABASE" status={integrity?.dependencies?.database || 'offline'} color={getStatusColor(integrity?.dependencies?.database)} />
-                <LinkItem label="MEMORY GRID" status={integrity?.dependencies?.cache || 'offline'} color={getStatusColor(integrity?.dependencies?.cache)} />
-                <LinkItem label="AI ENGINE" status="active" color="#00e87a" />
+            <div className="flex flex-col gap-3">
+                <LinkItem 
+                    icon={<Database size={12} />}
+                    label="DATABASE" 
+                    status={integrity?.dependencies?.database || 'offline'} 
+                />
+                <LinkItem 
+                    icon={<HardDrive size={12} />}
+                    label="MEMORY GRID" 
+                    status={integrity?.dependencies?.cache || 'offline'} 
+                />
+                <LinkItem 
+                    icon={<Cpu size={12} />}
+                    label="AI ENGINE" 
+                    status="active" 
+                    isStatic 
+                />
             </div>
 
             {error && (
-                <div style={{ marginTop: '10px', color: '#ff4444', fontSize: '9px', borderTop: '1px solid rgba(255,68,68,0.2)', paddingTop: '5px' }}>
-                    {error}
+                <div className="mt-3 text-[9px] text-red-500 border-t border-red-500/20 pt-2 animate-in fade-in slide-in-from-top-1">
+                    ERR_SYNC_FAILURE: {error}
                 </div>
             )}
             
-            <div style={{ marginTop: '10px', textAlign: 'right', fontSize: '9px', color: '#444' }}>
-                SCAN: {new Date(integrity?.dependencies?.systemTime || new Date()).toLocaleTimeString()}
+            <footer className="mt-4 flex justify-between items-center text-[9px]">
+                <span className="text-zinc-600 uppercase tracking-tighter">Status: Nominal</span>
+                <span className="text-zinc-500 font-bold">
+                    SCAN: {systemTime}
+                </span>
+            </footer>
+        </div>
+    );
+};
+
+/**
+ * Sub-component for individual link items
+ */
+const LinkItem = ({ icon, label, status, isStatic }) => {
+    const getStatusTheme = (currentStatus) => {
+        const s = currentStatus?.toLowerCase();
+        if (s === 'connected' || s === 'operational' || s === 'active') {
+            return { color: 'text-green-400', bg: 'bg-green-400' };
+        }
+        if (s === 'degraded' || s === 'warning') {
+            return { color: 'text-amber-500', bg: 'bg-amber-500' };
+        }
+        if (s === 'critical' || s === 'offline') {
+            return { color: 'text-red-500', bg: 'bg-red-500' };
+        }
+        return { color: 'text-zinc-500', bg: 'bg-zinc-500' };
+    };
+
+    const theme = getStatusTheme(status);
+
+    return (
+        <div className="flex justify-between items-center group cursor-default">
+            <div className="flex items-center gap-2">
+                <span className="text-zinc-500 group-hover:text-primary transition-colors duration-300">
+                    {icon}
+                </span>
+                <span className="text-zinc-400 group-hover:text-white transition-colors duration-300">
+                    {label}
+                </span>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className={`text-[9px] font-black tracking-widest ${theme.color}`}>
+                    {status.toUpperCase()}
+                </span>
+                <div className={`w-1.5 h-1.5 rounded-full ${theme.bg} shadow-[0_0_8px] ${theme.bg.replace('bg-', 'shadow-')}`}></div>
             </div>
         </div>
     );
 };
 
-const LinkItem = ({ label, status, color }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#aaa' }}>{label}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '9px', color: color }}>{status.toUpperCase()}</span>
-            <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }}></div>
-        </div>
-    </div>
-);
-
-export default SystemIntegrityStatus;
+export default React.memo(SystemIntegrityStatus);
