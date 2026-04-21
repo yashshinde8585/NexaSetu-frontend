@@ -52,8 +52,15 @@ export const useDashboard = (user, initialSprintId = null) => {
   });
 
   const createMutation = useMutation({
-    mutationFn: ({ name, sprintId }) =>
-      ProjectService.createProject({ name, sprint: sprintId }),
+    mutationFn: (projectData) => {
+      // Map frontend 'objective' to backend 'description'
+      const { objective, sprintId, ...rest } = projectData;
+      return ProjectService.createProject({
+        ...rest,
+        description: objective,
+        sprint: sprintId
+      });
+    },
     onSuccess: () => {
       setNewProjectName('');
       setShowForm(false);
@@ -175,7 +182,6 @@ export const useDashboard = (user, initialSprintId = null) => {
       completed: 0,
       total: 0,
     },
-    recentActivity: statsQuery.data?.recentActivity,
     isLoading:
       statsQuery.isLoading || sprintsQuery.isLoading || actionsQuery.isLoading,
     error: statsQuery.error || sprintsQuery.error,
@@ -185,7 +191,6 @@ export const useDashboard = (user, initialSprintId = null) => {
     showForm,
     setShowForm,
     handleCreateProject,
-    handleOptimizePath,
     pendingActions: actionsQuery.data || [],
     approveAction: approveMutation.mutate,
     rejectAction: rejectMutation.mutate,

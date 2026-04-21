@@ -13,7 +13,7 @@ const TaskCard = ({
   return (
     <div
       onClick={onNavigate}
-      className="group glass-dark border border-white/5 rounded-3xl p-8 hover:border-primary/30 transition-all duration-500 flex flex-col gap-6 relative overflow-hidden cursor-pointer"
+      className="group glass-dark border border-white/5 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden cursor-pointer"
     >
       {/* Status Glow */}
       <div
@@ -44,7 +44,7 @@ const TaskCard = ({
                 {task.priority || 'Medium'}
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-primary transition-colors">
+            <h3 className="text-xl font-bold text-white tracking-tight">
               {task.title}
             </h3>
           </div>
@@ -64,9 +64,9 @@ const TaskCard = ({
               : task.status.replace('_', ' ')}
           </div>
         </div>
-        <p className="text-sm text-text-muted leading-relaxed line-clamp-3 font-medium">
+        {/* <p className="text-sm text-text-muted leading-relaxed line-clamp-3 font-medium">
           {task.description}
-        </p>
+        </p> */}
 
         {showAssignedUser && (
           <div className="flex items-center gap-2 mt-2">

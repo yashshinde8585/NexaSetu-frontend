@@ -104,15 +104,15 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-8 text-center font-mono border border-status-error/20">
         <AlertCircle size={48} className="text-status-error mb-6" />
-        <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">System Access Denied</h2>
+        <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Connection Error</h2>
         <p className="text-white/40 max-w-md text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8">
-            The administrative link to the workspace backbone has been severed. Re-authentication may be required.
+            We couldn't load the admin dashboard. This might be due to a connection issue or an expired session.
         </p>
         <button 
           onClick={() => window.location.reload()}
           className="flex items-center gap-3 px-8 py-3 bg-white text-black text-[10px] uppercase font-bold tracking-[0.2em] rounded-lg hover:bg-white/80 transition-all active:scale-95"
         >
-          <RefreshCcw size={14} /> Establish Re-Link
+          <RefreshCcw size={14} /> Retry Connection
         </button>
       </div>
     );
@@ -134,7 +134,7 @@ const AdminDashboard = () => {
       <div id="admin-metrics-strip" className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <MetricStripItem 
             icon={<Users size={14} />} 
-            label="Total Personnel" 
+            label="Total Users" 
             value={overview?.totalUsers || 0} 
             color="text-primary" 
             accent="bg-primary"
@@ -148,14 +148,14 @@ const AdminDashboard = () => {
         />
         <MetricStripItem 
             icon={<LinkIcon size={14} />} 
-            label="System Links" 
+            label="Integrations" 
             value={overview?.integrations || 0} 
             color="text-status-warning" 
             accent="bg-status-warning"
         />
         <MetricStripItem 
             icon={<Activity size={14} />} 
-            label="Platform Status" 
+            label="System Status" 
             value={overview?.status || 'ONLINE'} 
             color="text-status-info" 
             accent="bg-status-info"
@@ -167,13 +167,13 @@ const AdminDashboard = () => {
         {/* Main Column: User Operations */}
         <div className="lg:col-span-8 flex flex-col gap-12">
           
-          <DashboardSection title="Member Directory" icon={<Users size={14} />}>
+          <DashboardSection title="User Management" icon={<Users size={14} />}>
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 px-2">
               <div className="relative group flex-1 max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={14} />
                 <input
                   type="text"
-                  placeholder="FILTER BY NAME, EMAIL, OR ROLE..."
+                  placeholder="SEARCH BY NAME, EMAIL, OR ROLE..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
                 className="px-6 py-3 bg-primary text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <UserPlus size={14} />
-                Invite Personnel
+                Invite User
               </button>
             </div>
 
@@ -195,8 +195,8 @@ const AdminDashboard = () => {
               <table className="w-full text-left border-separate border-spacing-0">
                 <thead>
                   <tr className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-white/10">
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Operator Identity</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Role Designation</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5">User Details</th>
+                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Role</th>
                     <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Status</th>
                     <th className="pb-6 pt-2 px-6 border-b border-white/5 text-right">Actions</th>
                   </tr>
@@ -238,7 +238,7 @@ const AdminDashboard = () => {
                   )) : (
                     <tr>
                       <td colSpan="4" className="py-20 text-center border-b border-white/5">
-                        <span className="text-[10px] font-bold text-white/10 uppercase tracking-[0.4em]">No matching personnel detected.</span>
+                        <span className="text-[10px] font-bold text-white/10 uppercase tracking-[0.4em]">No users found matching your search.</span>
                       </td>
                     </tr>
                   )}
@@ -249,7 +249,7 @@ const AdminDashboard = () => {
             {filteredUsers.length > itemsPerPage && (
               <div className="p-6 flex items-center justify-between mt-4">
                 <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
-                   Showing {startIndex}-{endIndex} of {filteredUsers.length}
+                   Showing {startIndex} to {endIndex} of {filteredUsers.length} users
                 </span>
                 <div className="flex items-center gap-2">
                    <button
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
             )}
           </DashboardSection>
 
-          <DashboardSection title="Integration Backbone" icon={<LinkIcon size={14} />}>
+          <DashboardSection title="Integrations" icon={<LinkIcon size={14} />}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-2">
               {integrations.map((tool, i) => (
                 <button 
@@ -297,28 +297,28 @@ const AdminDashboard = () => {
                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">{tool.name}</span>
                     <div className="flex items-center gap-1.5">
                        <div className={`w-1 h-1 rounded-full ${tool.status === 'connected' ? 'bg-status-success' : 'bg-white/10'}`} />
-                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">{tool.status === 'connected' ? 'LINKED' : 'OFFLINE'}</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">{tool.status === 'connected' ? 'CONNECTED' : 'DISCONNECTED'}</span>
                     </div>
                   </div>
                 </button>
               ))}
             </div>
-            <p className="mt-6 text-[10px] text-white/20 uppercase font-bold tracking-[0.2em] text-center border-t border-white/5 pt-6">Additional enterprise links available in professional tier.</p>
+            <p className="mt-6 text-[10px] text-white/20 uppercase font-bold tracking-[0.2em] text-center border-t border-white/5 pt-6">Upgrade to Professional for more integrations.</p>
           </DashboardSection>
         </div>
 
         {/* Sidebar Column: Strategic Config */}
         <div className="lg:col-span-4 flex flex-col gap-12">
           
-          <DashboardSection title="Organization Units" icon={<Zap size={14} />}>
+          <DashboardSection title="Teams" icon={<Zap size={14} />}>
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-center px-1 mb-2">
-                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Active Units: {teams.length}</span>
+                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Active Teams: {teams.length}</span>
                  <button 
                     onClick={() => navigate('/admin/teams/create')}
                     className="p-1 px-3 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2"
                   >
-                    <Plus size={12} /> New Unit
+                    <Plus size={12} /> Add Team
                   </button>
               </div>
               {teams.map((t, i) => (
@@ -326,7 +326,7 @@ const AdminDashboard = () => {
                   <div className="flex flex-col gap-1">
                     <span className="text-[12px] font-bold text-white uppercase tracking-tight">{t.name}</span>
                     <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest flex items-center gap-2">
-                       <Users size={12} className="text-primary/40" /> {t.members} PERSONNEL
+                       <Users size={12} className="text-primary/40" /> {t.members} MEMBERS
                     </span>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -338,15 +338,15 @@ const AdminDashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Access Permissions" icon={<Shield size={14} />}>
+          <DashboardSection title="Roles & Permissions" icon={<Shield size={14} />}>
              <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center px-1 mb-2">
-                   <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Auth Schema: CUSTOM</span>
+                   <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Security: CUSTOM</span>
                    <button 
                       onClick={() => setIsCreateRoleModalOpen(true)}
                       className="text-[10px] font-bold uppercase text-primary tracking-widest hover:brightness-125"
                     >
-                      Define Role
+                      Add Role
                     </button>
                 </div>
                 <div className="flex flex-col gap-2 max-h-[240px] overflow-y-auto pr-2 custom-scrollbar">
@@ -369,13 +369,13 @@ const AdminDashboard = () => {
              </div>
           </DashboardSection>
 
-          <DashboardSection title="Infrastructure Config" icon={<SettingsIcon size={14} />}>
+          <DashboardSection title="Workspace Settings" icon={<SettingsIcon size={14} />}>
             <div className="flex flex-col gap-2 py-2">
               {[
-                { label: 'Deployment Region', key: 'timezone', value: settings?.timezone, icon: <Globe size={14} /> },
-                { label: 'Operation Window', key: 'workingHours', value: settings?.workingHours, icon: <Clock size={14} /> },
-                { label: 'Security Rules', key: 'notificationRules', value: settings?.notificationRules, icon: <Shield size={14} /> },
-                { label: 'Node Defaults', key: 'projectDefaults', value: settings?.projectDefaults, icon: <Zap size={14} /> }
+                { label: 'Timezone', key: 'timezone', value: settings?.timezone, icon: <Globe size={14} /> },
+                { label: 'Working Hours', key: 'workingHours', value: settings?.workingHours, icon: <Clock size={14} /> },
+                { label: 'Notifications', key: 'notificationRules', value: settings?.notificationRules, icon: <Shield size={14} /> },
+                { label: 'Project Defaults', key: 'projectDefaults', value: settings?.projectDefaults, icon: <Zap size={14} /> }
               ].map((setting, i) => (
                 <button
                   key={i}
@@ -386,11 +386,11 @@ const AdminDashboard = () => {
                     <div className="text-white/20 group-hover:text-primary transition-colors">{setting.icon}</div>
                     <span className="text-[10px] font-bold text-white/40 group-hover:text-white transition-colors uppercase tracking-widest">{setting.label}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-tighter truncate max-w-[120px]">{setting.value || 'NOMINAL'}</span>
+                  <span className="text-[10px] font-mono text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-tighter truncate max-w-[120px]">{setting.value || 'DEFAULT'}</span>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-[9px] text-white/10 text-center uppercase tracking-widest font-bold">Hardened infrastructure. Access strictly regulated.</p>
+            <p className="mt-4 text-[9px] text-white/10 text-center uppercase tracking-widest font-bold">These settings apply to all workspace members.</p>
           </DashboardSection>
         </div>
       </div>

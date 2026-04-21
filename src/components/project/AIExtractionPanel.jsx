@@ -33,7 +33,7 @@ const AIExtractionPanel = ({
         
         <div className="space-y-6">
           <textarea
-            className="w-full bg-black border border-white/25 text-[13px] font-black text-white px-6 py-5 rounded-xl focus:border-primary focus:bg-white/5 focus:outline-none placeholder:text-white/40 transition-all leading-relaxed min-h-[140px] uppercase tracking-widest shadow-inner"
+            className="w-full bg-black border border-white/25 text-[13px] font-black text-white px-6 py-5 rounded-xl focus:border-primary focus:bg-white/5 focus:outline-none placeholder:text-white/40 transition-all leading-relaxed min-h-[140px] tracking-widest shadow-inner"
             placeholder="e.g., 'OPTIMIZE AUTHENTICATION MIDDLEWARE FOR JWT STANDARDS AND UPDATE API DOCUMENTATION...'"
             value={aiInput}
             onChange={(e) => setAiInput(e.target.value)}
@@ -74,7 +74,7 @@ const AIExtractionPanel = ({
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-white/5 border border-white/25 text-sm font-black text-white px-6 py-4 rounded-xl focus:border-primary focus:outline-none transition-all uppercase tracking-tighter"
+                  className="w-full bg-white/5 border border-white/25 text-sm font-black text-white px-6 py-4 rounded-xl focus:border-primary focus:outline-none transition-all tracking-tighter"
                   value={aiSuggestion.title}
                   onChange={(e) => setAiSuggestion({ ...aiSuggestion, title: e.target.value })}
                 />
@@ -86,7 +86,7 @@ const AIExtractionPanel = ({
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-widest"
+                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all appearance-none cursor-pointer tracking-widest"
                     value={aiSuggestion.priority || 'medium'}
                     onChange={(e) => setAiSuggestion({ ...aiSuggestion, priority: e.target.value })}
                   >
@@ -104,8 +104,8 @@ const AIExtractionPanel = ({
               <div className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
                 <Activity size={12} className="text-primary" /> DESCRIPTION
               </div>
-              <textarea
-                className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-8 py-6 rounded-2xl focus:border-primary transition-all h-[120px] resize-none uppercase tracking-widest leading-relaxed shadow-inner"
+                <textarea
+                className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-8 py-6 rounded-2xl focus:border-primary transition-all h-[120px] resize-none tracking-widest leading-relaxed shadow-inner"
                 placeholder="DETAILED OPERATIONAL SPECIFICATIONS..."
                 value={aiSuggestion.description}
                 onChange={(e) => setAiSuggestion({ ...aiSuggestion, description: e.target.value })}
@@ -122,13 +122,13 @@ const AIExtractionPanel = ({
                     <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">ASSIGN TO</label>
                   </div>
                   <select
-                    className="bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-1.5 rounded-lg focus:border-primary transition-all cursor-pointer uppercase tracking-widest outline-none min-w-[160px]"
+                    className="bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-1.5 rounded-lg focus:border-primary transition-all cursor-pointer tracking-widest outline-none min-w-[160px]"
                     value={aiSuggestion.assignedUser || ''}
                     onChange={(e) => setAiSuggestion({ ...aiSuggestion, assignedUser: e.target.value })}
                   >
                     <option value="" className="bg-[#121212]">UNASSIGNED</option>
                     {project?.members?.filter(m => m.role !== 'WORKSPACE_ADMIN').map(m => (
-                      <option key={m._id} value={m._id} className="bg-[#121212]">{m.name.toUpperCase()}</option>
+                      <option key={m._id} value={m._id} className="bg-[#121212]">{m.name}</option>
                     ))}
                   </select>
                 </div>
@@ -137,14 +137,14 @@ const AIExtractionPanel = ({
                   <label className="flex items-center gap-2 text-[10px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
                     <Layers size={12} className="text-primary" /> SPRINT PHASE
                   </label>
-                  <select
-                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all cursor-pointer uppercase tracking-widest"
+                    <select
+                    className="w-full bg-white/5 border border-white/25 text-[11px] font-black text-white px-6 py-4 rounded-xl focus:border-primary transition-all cursor-pointer tracking-widest"
                     value={aiSuggestion.sprint || ''}
                     onChange={(e) => setAiSuggestion({ ...aiSuggestion, sprint: e.target.value })}
                   >
                     <option value="" className="bg-[#121212]">NO ACTIVE SPRINT</option>
                     {(sprints || []).map(s => (
-                      <option key={s._id} value={s._id} className="bg-[#121212]">{s.name.toUpperCase()}</option>
+                      <option key={s._id} value={s._id} className="bg-[#121212]">{s.name}</option>
                     ))}
                   </select>
                 </div>
@@ -152,20 +152,20 @@ const AIExtractionPanel = ({
 
               {/* Time & Constraints Parameters */}
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-1 border-b border-white/5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-8 py-1 border-b border-white/5">
                   <div className="flex items-center gap-3 shrink-0">
                     <Clock size={12} className="text-white/20" />
                     <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">DURATION</label>
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 justify-start sm:justify-end">
-                    <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/10 shrink-0">
-                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: Math.max(0, (aiSuggestion.estimatedDuration || 0) - 5) })} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-all"><Minus size={14}/></button>
-                      <input type="number" className="bg-transparent text-xs font-black text-white text-center w-8 focus:outline-none" value={aiSuggestion.estimatedDuration || 30} onChange={(e) => setAiSuggestion({ ...aiSuggestion, estimatedDuration: parseInt(e.target.value) || 0 })} />
-                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: (aiSuggestion.estimatedDuration || 0) + 5 })} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-all"><Plus size={14}/></button>
+                  <div className="flex flex-wrap items-center gap-4 justify-start">
+                    <div className="flex items-center bg-white/5 rounded-lg border border-white/10 shrink-0 h-9 overflow-hidden">
+                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: Math.max(0, (aiSuggestion.estimatedDuration || 0) - 5) })} className="w-9 h-full flex items-center justify-center text-white/30 hover:text-white transition-all border-r border-white/5"><Minus size={14}/></button>
+                      <input type="number" className="bg-transparent text-xs font-black text-white text-center w-10 focus:outline-none" value={aiSuggestion.estimatedDuration || 30} onChange={(e) => setAiSuggestion({ ...aiSuggestion, estimatedDuration: parseInt(e.target.value) || 0 })} />
+                      <button type="button" onClick={() => setAiSuggestion({ ...aiSuggestion, estimatedDuration: (aiSuggestion.estimatedDuration || 0) + 5 })} className="w-9 h-full flex items-center justify-center text-white/30 hover:text-white transition-all border-l border-white/5"><Plus size={14}/></button>
                     </div>
-                    <button type="button" onClick={() => {const u=['min','hours','days']; setAiSuggestion({...aiSuggestion, durationUnit:u[(u.indexOf(aiSuggestion.durationUnit||'min')+1)%3]});}} className="px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-lg text-[9px] font-black text-primary uppercase">{aiSuggestion.durationUnit||'min'}</button>
-                    <div className="flex gap-3 pl-4 border-l border-white/10 h-6 items-center">
-                      {['30M','1H','1D'].map((l,i) => <button key={l} type="button" onClick={()=>setAiSuggestion({...aiSuggestion, estimatedDuration:[30,1,1][i], durationUnit:['min','hours','days'][i]})} className="text-[9px] font-black text-white/20 hover:text-white transition-all">{l}</button>)}
+                    <button type="button" onClick={() => {const u=['min','hours','days']; setAiSuggestion({...aiSuggestion, durationUnit:u[(u.indexOf(aiSuggestion.durationUnit||'min')+1)%3]});}} className="px-4 h-9 bg-primary/10 border border-primary/20 rounded-lg text-[9px] font-black text-primary uppercase transition-all hover:bg-primary/20 active:scale-95">{aiSuggestion.durationUnit||'min'}</button>
+                    <div className="flex gap-4 pl-6 border-l border-white/10 h-9 items-center ml-2">
+                      {['30M','1H','1D'].map((l,i) => <button key={l} type="button" onClick={()=>setAiSuggestion({...aiSuggestion, estimatedDuration:[30,1,1][i], durationUnit:['min','hours','days'][i]})} className="text-[10px] font-black text-white/20 hover:text-white transition-all uppercase tracking-tighter">{l}</button>)}
                     </div>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ const AIExtractionPanel = ({
             <Button
               onClick={() => handleCreateTask(aiSuggestion)}
               variant="primary"
-              className="flex-1 h-14 text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-primary/40 bg-primary text-black"
+              className="flex-1 h-14 text-[11px] font-black uppercase tracking-[0.3em] bg-primary text-black"
             >
               <Check size={18} strokeWidth={3} className="mr-3" /> COMMIT OBJECTIVE
             </Button>

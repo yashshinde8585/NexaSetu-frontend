@@ -13,29 +13,11 @@ import { useMagic } from '../context/MagicContext';
 // Components
 import StatCards from '../components/dashboard/StatCards';
 import SprintList from '../components/dashboard/SprintList';
-import ActivityFeed from '../components/dashboard/ActivityFeed';
 import RoleAnalytics from '../components/dashboard/RoleAnalytics';
-import ProjectCard from '../components/ProjectCard';
 import ApprovalPanel from '../components/portfolio/ApprovalPanel';
-
 import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
 import ProjectHealthSummary from '../components/dashboard/ProjectHealthSummary';
 import CenteredLoading from '../components/atoms/CenteredLoading';
-
-
-
-// Specialized Dashboards
-import VPEDashboard from './VPEDashboard';
-import EMDashboard from './EMDashboard';
-import TLDashboard from './TLDashboard';
-import SEDashboard from './SEDashboard';
-import SWEDashboard from './SWEDashboard';
-import QADashboard from './QADashboard';
-import SQADashboard from './SQADashboard';
-import QALeadDashboard from './QALeadDashboard';
-import PeopleOpsDashboard from './PeopleOpsDashboard';
-import JREDashboard from './JREDashboard';
-import InternDashboard from './InternDashboard';
 
 import { resolveDashboard } from './dashboard/DashboardRegistry';
 
@@ -52,8 +34,6 @@ const Dashboard = () => {
     sprints,
     selectedSprintId,
     setSelectedSprintId,
-    sprintStats,
-    recentActivity,
     isLoading,
     error,
     createMutation,

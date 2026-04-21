@@ -27,82 +27,46 @@ export default function ServerWakeupBanner() {
     <div
       role="status"
       aria-live="polite"
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '8px 16px',
-        fontSize: '10px',
-        fontFamily: "'Inter', sans-serif",
-        fontWeight: 800,
-        letterSpacing: '0.25em',
-        textTransform: 'uppercase',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-        transition: 'background 0.4s ease',
-        background: isAwake
-          ? 'rgba(0, 200, 100, 0.15)'
+      className={`sticky top-0 z-[9999] flex items-center justify-center px-4 py-2 text-[10px] font-extrabold tracking-[0.25em] uppercase backdrop-blur-md border-b border-white/10 transition-colors duration-500 animate-banner-slide-in ${
+        isAwake
+          ? 'bg-[rgba(0,200,100,0.15)]'
           : isFailed
-          ? 'rgba(220, 40, 40, 0.18)'
-          : 'rgba(10, 10, 10, 0.88)',
-        animation: 'nexaBannerSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
-      }}
+          ? 'bg-[rgba(220,40,40,0.18)]'
+          : 'bg-[#0a0a0a]/88'
+      }`}
     >
-      <style>{`
-        @keyframes nexaBannerSlideIn {
-          from { opacity: 0; transform: translateY(-100%); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes nexaPulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-        .nexa-dot-pulse {
-          animation: nexaPulse 1.1s ease-in-out infinite;
-        }
-      `}</style>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="flex items-center gap-2.5 text-center">
         <span
-          className={isWaking ? 'nexa-dot-pulse' : ''}
-          style={{
-            display: 'inline-block',
-            width: 7,
-            height: 7,
-            borderRadius: '50%',
-            flexShrink: 0,
-            background: isAwake ? '#00e87a' : isFailed ? '#ff4444' : '#f5a623',
-            boxShadow: isAwake
-              ? '0 0 8px #00e87a'
+          className={`${
+            isWaking ? 'animate-dot-pulse' : ''
+          } inline-block w-[7px] h-[7px] rounded-full shrink-0 transition-all duration-500 ${
+            isAwake
+              ? 'bg-[#00e87a] shadow-[0_0_8px_#00e87a]'
               : isFailed
-              ? '0 0 8px #ff4444'
-              : '0 0 8px #f5a623',
-          }}
+              ? 'bg-[#ff4444] shadow-[0_0_8px_#ff4444]'
+              : 'bg-[#f5a623] shadow-[0_0_8px_#f5a623]'
+          }`}
         />
 
         <span
-          style={{
-            color: isAwake ? '#00e87a' : isFailed ? '#ff6b6b' : '#c8c8c8',
-          }}
+          className={
+            isAwake ? 'text-[#00e87a]' : isFailed ? 'text-[#ff6b6b]' : 'text-[#c8c8c8]'
+          }
         >
           {isWaking && (
             <>
               Waking intel server&nbsp;—&nbsp;
-              <span style={{ color: '#f5a623' }}>{elapsed}s</span>
+              <span className="text-[#f5a623]">{elapsed}s</span>
               &nbsp;elapsed. Stand by.
             </>
           )}
           {isAwake && (
-            <span style={{ color: '#00e87a' }}>
+            <span className="text-[#00e87a]">
               Central Intelligence Online — Link Established
             </span>
           )}
           {isFailed && (
-            <span style={{ color: '#ff6b6b' }}>
+            <span className="text-[#ff6b6b]">
               Connection Failed — Server Unreachable. Retry your action.
             </span>
           )}
@@ -113,21 +77,7 @@ export default function ServerWakeupBanner() {
         <button
           onClick={() => setDismissed(true)}
           aria-label="Dismiss server wakeup notice"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'rgba(255,255,255,0.4)',
-            fontSize: '14px',
-            lineHeight: 1,
-            padding: '0 4px',
-            flexShrink: 0,
-            transition: 'color 0.2s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')
-          }
+          className="bg-transparent border-none cursor-pointer text-white/40 text-[14px] leading-none px-1 shrink-0 absolute right-4 transition-colors duration-200 hover:text-white"
         >
           ✕
         </button>

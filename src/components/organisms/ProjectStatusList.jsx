@@ -113,12 +113,12 @@ const ProjectStatusList = ({
                 {isAssigned ? (
                   <div className="flex items-center gap-4">
                     {quickTicketProject === project._id ? (
-                      <form
+                        <form
                         onSubmit={(e) => {
                           e.preventDefault();
                           createTicket(project._id, selectedSprintId);
                         }}
-                        className="flex items-center gap-3 animate-in fade-in slide-in-from-right-10 duration-500"
+                        className="flex items-center gap-3 animate-[fadeIn_500ms_ease_forwards,slideInFromRight_500ms_ease_forwards]"
                       >
                         <div className="relative">
                           <input

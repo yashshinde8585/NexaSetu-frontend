@@ -48,7 +48,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
     <div className="mt-6">
       {/* Content */}
       {isExpanded && (
-        <div className="p-4 pt-0 animate-in slide-in-from-bottom-4 duration-500">
+        <div className="p-4 pt-0 animate-[fadeIn_500ms_cubic-bezier(0.4,0,0.2,1)_forwards,slideInFromBottom_500ms_cubic-bezier(0.4,0,0.2,1)_forwards]">
            <div className="h-px w-full bg-white/20 mb-6" />
            
            {loading ? (
@@ -74,8 +74,10 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                         <Sparkles size={12} className="text-primary animate-pulse" />
                         INTELLIGENCE INSIGHT
                       </h5>
-                         <LazyMarkdown>{data.explanation}</LazyMarkdown>
-
+                          <div className="nexa-prose">
+                             <LazyMarkdown>{data.explanation}</LazyMarkdown>
+                          </div>
+ 
                       {/* Tactical Strategy */}
                       {!helpData && !helpLoading && (
                          <button 
@@ -87,16 +89,16 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                             <ArrowRight size={14} className="text-white/30 group-hover/help:translate-x-1 group-hover/help:text-primary transition-all" />
                          </button>
                       )}
-
+ 
                       {helpLoading && (
                          <div className="flex items-center gap-3 py-6 animate-pulse">
                             <Loader2 size={20} className="text-primary animate-spin" />
                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/60">ARCHITECTING SOLUTIONS...</span>
                          </div>
                       )}
-
+ 
                       {helpData && (
-                         <div className="animate-in fade-in slide-in-from-top-6 duration-1000">
+                         <div className="animate-[fadeIn_1000ms_ease_forwards,slideInFromTop_1000ms_ease_forwards]">
                              {/* Divider */}
                              <div className="h-px w-full bg-linear-to-r from-white/20 via-white/10 to-transparent mb-10" />
                              
@@ -104,7 +106,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                                <ListChecks size={14} className="text-secondary" />
                                TACTICAL IMPLEMENTATION STRATEGY
                              </h5>
-                             <div className="prose-epi text-base font-bold text-white/80 leading-relaxed max-w-none">
+                             <div className="nexa-prose">
                                 <LazyMarkdown>{helpData}</LazyMarkdown>
                              </div>
                          </div>

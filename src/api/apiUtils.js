@@ -26,11 +26,3 @@ export const normalizeError = (error) => {
   };
 };
 
-// Normalizes successful API responses for a consistent structure across the app.
-export const normalizeResponse = (response) => {
-  return {
-    data: response.data,
-    status: response.status,
-    headers: response.headers,
-  };
-};

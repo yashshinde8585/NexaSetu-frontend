@@ -212,7 +212,7 @@ const AddTeamMember = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        const emailText = `Hi ${res.name || 'there'},\n\nYou've been invited to join the NexaSetu workspace.\n\nLogin: ${res.email}\nTemp Password: ${res.email}\nDashboard: ${window.location.origin}/login\n\nPlease change your password after logging in.`;
+                        const emailText = `Hi ${res.name || 'there'},\n\nYou’ve been invited to join the NexaSetu workspace.\n\n**Login Details:**\n\n* Email: [${res.email}](mailto:${res.email})\n* Temporary Password: [${res.email}](mailto:${res.email})\n\n**Access your dashboard:**\n${window.location.origin}/login\n\nFor security reasons, please log in and change your password immediately.\n\nIf you face any issues while accessing your account, feel free to reach out.\n\nBest regards,\nNexaSetu Team`;
                         copyToClipboard(emailText, `invite-${i}`);
                       }}
                       className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white'}`}

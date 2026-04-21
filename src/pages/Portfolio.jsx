@@ -103,10 +103,10 @@ const Portfolio = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex-1">
           <h1 className="text-4xl font-black text-white tracking-tighter mb-2">
-            Portfolio Orchestration
+            Portfolio Management
           </h1>
           <p className="text-text-muted text-xs font-bold uppercase tracking-[0.2em] opacity-60">
-            Aggregate Strategic Control Layer
+            Portfolio Overview
           </p>
         </div>
         {hasPermission(PERMISSIONS.GENERATE_EXEC_BRIEF) && (
@@ -228,13 +228,13 @@ const Portfolio = () => {
         <div className="flex items-center gap-3">
           <span className="p-2 bg-status-error/20 rounded-lg text-status-error text-xl animate-pulse"></span>
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-status-error">
-            Critical High-Risk Escalations
+            Critical Issues
           </h2>
         </div>
         {escalations.length === 0 ? (
           <div className="bg-background-light/40 border-2 border-dashed border-white/10 rounded-[3rem] p-16 flex flex-col items-center justify-center text-center">
             <h3 className="text-xl font-bold text-status-success italic">
-              All Projects are within Optimal Execution Boundaries
+              All Projects are within Optimal Status
             </h3>
           </div>
         ) : (
@@ -278,7 +278,7 @@ const Portfolio = () => {
             🛰️
           </div>
           <h3 className="text-2xl font-black text-white mb-4">
-            Health Prediction Ready
+            AI Health Insights
           </h3>
           <p className="text-white/60 leading-relaxed mb-6">
             Our AI engine is currently analyzing historical patterns to predict

@@ -35,15 +35,15 @@ const AdminService = {
   /**
    * Create a new team
    */
-  createTeam: (teamData) => apiClient.post('/v1/admin/create-team', teamData),
+  createTeam: (teamData) => apiClient.post('/v1/admin/teams', teamData),
   /**
    * Update an existing team
    */
-  updateTeam: (id, teamData) => apiClient.patch(`/v1/admin/update-team/${id}`, teamData),
+  updateTeam: (id, teamData) => apiClient.patch(`/v1/admin/teams/${id}`, teamData),
   /**
    * Delete a team
    */
-  deleteTeam: (id) => apiClient.delete(`/v1/admin/delete-team/${id}`),
+  deleteTeam: (id) => apiClient.delete(`/v1/admin/teams/${id}`),
   /**
    * Update permissions for a specific role
    */
@@ -51,7 +51,7 @@ const AdminService = {
   /**
    * Create a new role
    */
-  createRole: (roleName, permissions) => apiClient.post('/v1/admin/create-role', { roleName, permissions })
+  createRole: (roleName, permissions) => apiClient.post('/v1/admin/roles', { roleName, permissions })
 };
 
 export default AdminService;

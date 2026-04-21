@@ -154,12 +154,14 @@ const Team = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button
-            onClick={() => navigate('/team/add')}
-            className="px-8 py-4 bg-primary text-black font-bold uppercase tracking-[0.05em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
-          >
-            <UserPlus size={18} /> <span className="hidden sm:inline">Invite Member</span>
-          </button>
+          {hasPermission(PERMISSIONS.INVITE_USERS) && (
+            <button
+              onClick={() => navigate('/team/add')}
+              className="px-8 py-4 bg-primary text-black font-bold uppercase tracking-[0.05em] text-xs rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95 hover:brightness-110"
+            >
+              <UserPlus size={18} /> <span className="hidden sm:inline">Invite Member</span>
+            </button>
+          )}
         </div>
       </div>
 
