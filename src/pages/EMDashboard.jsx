@@ -1,8 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Package, Clock, Shield, Users, Flame, Target, Activity, Zap, 
   AlertTriangle, ArrowRight, TrendingUp, BarChart3, ShieldAlert,
-  Layers, CheckCircle2, ChevronRight
+  Layers, CheckCircle2, ChevronRight, ExternalLink
 } from 'lucide-react';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
@@ -11,12 +12,14 @@ import StatusBadge from '../components/molecules/dashboard/StatusBadge';
 import PipelineStep from '../components/molecules/dashboard/PipelineStep';
 import ActivityItem from '../components/molecules/dashboard/ActivityItem';
 import CenteredLoading from '../components/atoms/CenteredLoading';
+import { ROUTES } from '../constants';
 
 /**
  * Engineering Manager Dashboard
  * Focused on team metrics, sprint velocity, and operational blockers.
  */
 const EMDashboard = () => {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useRoleDashboard('em');
 
   if (isLoading || !data) return <CenteredLoading />;
@@ -36,6 +39,12 @@ const EMDashboard = () => {
     activity = [], 
     distribution = { backend: 0, frontend: 0, qa: 0, other: 0 } 
   } = data || {};
+
+  const handleSync = () => {
+    // Logic for project sync - could be an API call
+    console.log('SYNC_SEQUENCE_INITIATED');
+    alert('SYSTEM: Synchronizing sprint operational parameters...');
+  };
 
   return (
     <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1700px] mx-auto flex flex-col gap-12">
@@ -96,10 +105,17 @@ const EMDashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-white/[0.02]">
                   {taskBoard.map((task, i) => (
-                    <tr key={i} className="group hover:bg-white/[0.015] transition-all">
+                    <tr 
+                      key={i} 
+                      className="group hover:bg-white/[0.015] transition-all cursor-pointer"
+                      onClick={() => navigate(ROUTES.TASK_DETAIL(task.id))}
+                    >
                       <td className="py-4 px-2">
                         <div className="flex flex-col gap-1 pr-4">
-                           <span className="text-[12px] font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">{task.title}</span>
+                           <div className="flex items-center gap-2">
+                             <span className="text-[12px] font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">{task.title}</span>
+                             <ExternalLink size={10} className="text-white/0 group-hover:text-primary/40 transition-all" />
+                           </div>
                            {task.blocked && (
                              <span className="text-[8px] text-status-error font-bold uppercase tracking-widest leading-none">BLOCKED</span>
                            )}
@@ -122,14 +138,14 @@ const EMDashboard = () => {
                     </tr>
                   ))}
                   {taskBoard.length === 0 && (
-                     <tr>
-                        <td colSpan={5} className="py-24 text-center">
-                           <div className="flex flex-col items-center gap-4 text-white/10 italic">
-                             <Package size={48} className="mb-2" />
-                             <span className="text-[10px] font-bold uppercase tracking-[0.4em]">No active tasks found in the current sprint.</span>
-                           </div>
-                        </td>
-                     </tr>
+                    <tr>
+                      <td colSpan={5} className="py-24 text-center">
+                        <div className="flex flex-col items-center gap-4 text-white/10 italic">
+                          <Package size={48} className="mb-2" />
+                          <span className="text-[10px] font-bold uppercase tracking-[0.4em]">No active tasks found in the current sprint.</span>
+                        </div>
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
@@ -193,10 +209,14 @@ const EMDashboard = () => {
           <DashboardSection title="Active Blockers" icon={<ShieldAlert size={14} />}>
             <div className="flex flex-col gap-4 py-2">
               {blockers.map((blocker, i) => (
-                <div key={i} className="p-6 bg-status-error/[0.02] border border-status-error/10 rounded flex flex-col gap-3 group hover:border-status-error/40 transition-all">
+                <div 
+                  key={i} 
+                  className="p-6 bg-status-error/[0.02] border border-status-error/10 rounded flex flex-col gap-3 group hover:border-status-error/40 transition-all cursor-pointer"
+                  onClick={() => navigate(ROUTES.TASK_DETAIL(blocker.id))}
+                >
                   <div className="flex items-center gap-3">
                      <AlertTriangle size={14} className="text-status-error" />
-                     <span className="text-white text-[11px] font-bold uppercase tracking-tight leading-none">{blocker.title}</span>
+                     <span className="text-white text-[11px] font-bold uppercase tracking-tight leading-none group-hover:text-status-error transition-colors">{blocker.title}</span>
                   </div>
                   <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-normal pl-7 italic">Reason: {blocker.reason}</span>
                 </div>
@@ -228,24 +248,29 @@ const EMDashboard = () => {
         </div>
       </div>
 
-      {/* Global Sync Overlay */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-8">
-        <div className="bg-black/80 backdrop-blur-xl border border-white/10 p-5 rounded flex items-center justify-between shadow-2xl">
-          <div className="flex items-center gap-8">
-            <div className="w-12 h-12 rounded border border-status-warning/20 flex items-center justify-center text-status-warning bg-status-warning/5">
-              <Zap size={24} fill="currentColor" />
+      {/* Global Sync Overlay - Only shown if risk is high or blockers exist */}
+      {(sprintControl.delayRisk === 'HIGH' || sprintControl.blockedTasks > 0) && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
+          <div className="bg-black/80 backdrop-blur-xl border border-white/10 p-5 rounded flex items-center justify-between shadow-2xl">
+            <div className="flex items-center gap-8">
+              <div className="w-12 h-12 rounded border border-status-warning/20 flex items-center justify-center text-status-warning bg-status-warning/5">
+                <Zap size={24} fill="currentColor" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <h4 className="text-[11px] font-bold text-white uppercase tracking-widest leading-none italic">Project Sync Required</h4>
+                <p className="text-[10px] text-white/20 uppercase font-bold tracking-tight">Synchronize sprint operational parameters to mitigate {sprintControl.delayRisk} risk.</p>
+              </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <h4 className="text-[11px] font-bold text-white uppercase tracking-widest leading-none italic">Project Sync Required</h4>
-              <p className="text-[10px] text-white/20 uppercase font-bold tracking-tight">Synchronize sprint operational parameters.</p>
-            </div>
-          </div>
 
-          <button className="flex items-center gap-4 bg-white text-black font-bold uppercase text-[10px] px-8 py-3 rounded hover:bg-primary transition-all tracking-widest active:scale-95 group">
-             Project Sync <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+            <button 
+              onClick={handleSync}
+              className="flex items-center gap-4 bg-white text-black font-bold uppercase text-[10px] px-8 py-3 rounded hover:bg-primary transition-all tracking-widest active:scale-95 group"
+            >
+               Project Sync <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
@@ -271,9 +296,10 @@ const DistributionBar = ({ label, value, total, color }) => {
 
 const getPriorityTextColor = (p) => {
   switch (p?.toLowerCase()) {
-    case 'high': return 'text-status-error';
-    case 'medium': return 'text-status-warning';
-    case 'low': return 'text-primary';
+    case 'urgent': return 'text-status-error';
+    case 'high': return 'text-status-warning';
+    case 'medium': return 'text-primary';
+    case 'low': return 'text-white/40';
     default: return 'text-white/20';
   }
 };
@@ -285,3 +311,4 @@ const getDueColor = (due) => {
 };
 
 export default EMDashboard;
+

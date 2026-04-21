@@ -25,7 +25,7 @@ const Input = ({
         {...props}
       />
       {isError && errorMsg && (
-        <span className="text-xs text-status-error/90 mt-1 block px-1 animate-in slide-in-from-top-1">
+        <span className="text-xs text-status-error/90 mt-1 block px-1 animate-[fadeIn_200ms_ease_forwards,slideInFromTop_200ms_ease_forwards]">
           {errorMsg}
         </span>
       )}

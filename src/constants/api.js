@@ -62,18 +62,18 @@ export const API_ENDPOINTS = {
     EXECUTE: '/magic/execute',
   },
   DASHBOARDS: {
-    TACTICAL: (role) => `/v1/engineering/workspace`, // Internal IC roles (SWE, SE, JRE, Intern)
-    MANAGEMENT: `/v1/leadership/dashboard`,         // Management roles (EM, VPE, CTO)
-    OPERATIONS: `/v1/operations/dashboard`,         // Operations roles (QA, PeopleOps)
+    TACTICAL: (role) => `/engineering/workspace`, 
+    MANAGEMENT: `/leadership/dashboard`,         
+    OPERATIONS: `/operations/dashboard`,         
   },
   CTO: {
-    DASHBOARD: '/v1/leadership/dashboard',
-    FUNCTION_DRILLDOWN: (category) => `/cto/function/${category}/roles`,
-    INDIVIDUAL_DRILLDOWN: (role) => `/cto/roles/${role}/individuals`,
+    DASHBOARD: `/leadership/dashboard`,
+    FUNCTION_DRILLDOWN: (category) => `/leadership/function/${category}/roles`,
+    INDIVIDUAL_DRILLDOWN: (role) => `/leadership/roles/${role}/individuals`,
   },
   VPE: {
-    DASHBOARD: '/v1/leadership/dashboard',
-    TEAM_DRILLDOWN: (teamName) => `/vpe/team/${teamName}`,
+    DASHBOARD: `/leadership/dashboard`,
+    TEAM_DRILLDOWN: (teamName) => `/leadership/team/${teamName}`,
   },
 };
 

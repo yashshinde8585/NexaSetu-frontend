@@ -94,6 +94,9 @@ export const useProjectManagement = (id, user) => {
       } else if (task.durationUnit === 'days') {
         payload.estimatedDuration = (task.estimatedDuration || 0) * 1440; // 24 * 60
       }
+
+      // Remove frontend-only helper fields before sending to strict backend
+      delete payload.durationUnit;
       
       return TaskService.createTask(payload);
     },
@@ -122,8 +125,10 @@ export const useProjectManagement = (id, user) => {
   });
 
   const statusMutation = useMutation({
-    mutationFn: ({ taskId, status }) =>
-      TaskService.updateTaskStatus(taskId, status),
+    mutationFn: ({ taskId, status }) => {
+      const task = tasksQuery.data?.find(t => t._id === taskId);
+      return TaskService.updateTaskStatus(taskId, status, task?.__v);
+    },
     onMutate: async ({ taskId, status }) => {
       const queryKey = ['tasks', id, selectedSprintId];
       await queryClient.cancelQueries({ queryKey });

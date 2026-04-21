@@ -9,17 +9,15 @@ import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
 import { ROUTES } from '../../constants/routes';
 
-// A dynamic navigation bar that handles breadcrumbs, global search, and user profile access.
 const Navbar = ({ onToggleSidebar }) => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 py-3 sm:py-4 bg-black border-b border-white/15 transition-all duration-300">
+    <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 lg:px-10 py-3 sm:py-4 bg-black border-b border-white/15">
       {user ? (
         <>
-          {/* Left Column: Breadcrumb */}
           <div className="flex items-center gap-4 shrink-0 px-2 h-9 min-h-[36px]">
             <button
               onClick={onToggleSidebar}
@@ -29,7 +27,7 @@ const Navbar = ({ onToggleSidebar }) => {
               <Menu size={24} aria-hidden="true" />
             </button>
             <div className="text-xs font-semibold text-white flex items-center h-full">
-              <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent uppercase tracking-[0.15em] pointer-events-none">
+              <span className="text-white uppercase tracking-[0.15em] pointer-events-none">
                 {(() => {
                   const path = location.pathname;
                   const breadcrumbMap = {
@@ -70,13 +68,11 @@ const Navbar = ({ onToggleSidebar }) => {
             </div>
           </div>
 
-          {/* Center Column: MagicBar */}
           <div className="hidden md:flex flex-1 justify-center max-w-4xl px-8">
             {location.pathname === '/dashboard' &&
               hasPermission(PERMISSIONS.USE_MAGIC_BAR) && <MagicBar />}
           </div>
 
-          {/* Right Column: Activities & Profile */}
           <div className="flex items-center gap-4 shrink-0 h-9 min-h-[36px]">
             <NotificationTray />
             <ProfileDropdown />
@@ -86,18 +82,13 @@ const Navbar = ({ onToggleSidebar }) => {
         <>
           <Link to="/" className="flex items-center gap-3 group/logo relative">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/25 blur-lg rounded-xl group-hover/logo:bg-primary/40 transition-all"></div>
-              {/* Premium NexaSetu Logo - Unified Brand Mark */}
-              <div className="relative w-9 h-9 bg-brand rounded-xl flex items-center justify-center p-2 shadow-2xl group-hover/logo:scale-105 transition-transform duration-500 overflow-hidden ring-1 ring-white/20">
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-50" />
-                <div className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer-logo pointer-events-none" />
+              {/* Flat NexaSetu Logo - Unified Brand Mark */}
+              <div className="relative w-9 h-9 bg-brand rounded-xl flex items-center justify-center p-2 group-hover/logo:scale-105 transition-transform duration-500 overflow-hidden ring-1 ring-white/20">
                 <div className="grid grid-cols-2 gap-1.5 w-5 h-5 relative z-10" aria-hidden="true">
-                  <div className="bg-white rounded-[2px] shadow-sm transform group-hover/logo:rotate-3 transition-transform duration-500" />
-                  <div className="bg-white/80 rounded-[2px] shadow-sm" />
-                  <div className="bg-white/80 rounded-[2px] shadow-sm" />
-                  <div className="bg-white rounded-[2px] shadow-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-primary/20 animate-pulse" />
-                  </div>
+                  <div className="bg-white rounded-[2px] transform group-hover/logo:rotate-3 transition-transform duration-500" />
+                  <div className="bg-white/80 rounded-[2px]" />
+                  <div className="bg-white/80 rounded-[2px]" />
+                  <div className="bg-white rounded-[2px] relative overflow-hidden" />
                 </div>
               </div>
             </div>
@@ -118,7 +109,7 @@ const Navbar = ({ onToggleSidebar }) => {
             {location.pathname !== ROUTES.REGISTER && (
               <Link
                 to={ROUTES.REGISTER}
-                className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all shadow-xl hover:shadow-white/20 active:scale-95 whitespace-nowrap"
+                className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap"
               >
                 Get Started
               </Link>

@@ -85,7 +85,7 @@ const GithubPanel = ({
             />
             <Button
               onClick={handleConnectGithub}
-              className="h-12 px-10 text-[10px] font-black uppercase tracking-widest bg-white text-black hover:bg-white/90"
+              className="h-12 px-10 text-[10px] font-black tracking-widest bg-primary text-black hover:bg-primary-dark"
             >
               LINK ACCOUNT
             </Button>

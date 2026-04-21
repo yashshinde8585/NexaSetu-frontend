@@ -1,45 +1,65 @@
 import React from 'react';
 
-// A high-level component that catches and handles errors in its child tree.
+/**
+ * 🛡️ Global Error Boundary
+ * Prevents a single component crash from triggering the "White Screen of Death".
+ * Provides a graceful fallback UI and logs the error for production monitoring.
+ */
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
-  // Updates the component state after an error is detected in a child component.
   static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
-  // Logs the caught error and its details to the console.
   componentDidCatch(error, errorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    // You can also log the error to an error reporting service like Sentry
+    console.error('[CRITICAL] UI Component Crash Detected:', error, errorInfo);
   }
 
-  // Displays a fallback error UI or the child components if no error exists.
   render() {
     if (this.state.hasError) {
+      // Premium, monochromatic fallback UI matching NexaSetu aesthetic
       return (
-        <div className="min-h-screen bg-background-dark flex items-center justify-center p-6 text-center">
-          <div className="max-w-md w-full bg-background-light p-10 rounded-3xl border border-status-error/20 shadow-2xl">
-            <div className="w-20 h-20 bg-status-error/10 text-status-error rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-4xl">⚠️</span>
-            </div>
-            <h1 className="text-3xl font-black text-white mb-4 tracking-tighter">
-              System Failure
-            </h1>
-            <p className="text-text-muted mb-8 text-sm italic font-medium leading-relaxed">
-              The interface encountered an unexpected exception. Our failsafe
-              systems have isolated the error.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-8 rounded-2xl transition-all shadow-xl shadow-primary/20 active:scale-95 uppercase text-xs tracking-widest"
-            >
-              Reboot Interface
-            </button>
-          </div>
+        <div style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#0a0a0a',
+          color: '#ffffff',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          textAlign: 'center',
+          padding: '2rem'
+        }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>
+            System Integrity Compromised
+          </h1>
+          <p style={{ color: '#888888', marginBottom: '2rem', maxWidth: '400px' }}>
+            A critical UI component has failed. The system has been locked to prevent further state corruption.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#ffffff',
+              color: '#000000',
+              border: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'opacity 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.opacity = '0.8'}
+            onMouseOut={(e) => e.target.style.opacity = '1'}
+          >
+            Force Reboot
+          </button>
         </div>
       );
     }

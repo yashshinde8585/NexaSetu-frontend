@@ -1,6 +1,21 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, Activity, GitBranch, Cpu, Plus, Sparkles, X as CloseIcon, User as UserIcon, Calendar as CalendarIcon, Clock as ClockIcon } from 'lucide-react';
+import { 
+  Plus, 
+  GitBranch, 
+  Sparkles, 
+  Search, 
+  LayoutGrid, 
+  List, 
+  X as CloseIcon, 
+  ChevronDown, 
+  Users, 
+  Calendar,
+  Settings,
+  MoreVertical,
+  ChevronLeft, 
+  ChevronRight 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
 import { TICKETS_PROJECT_ID, TASK_STATUS } from '../constants';
@@ -9,6 +24,7 @@ import { TICKETS_PROJECT_ID, TASK_STATUS } from '../constants';
 import GithubPanel from '../components/project/GithubPanel';
 import AIExtractionPanel from '../components/project/AIExtractionPanel';
 import TaskBoard from '../components/project/TaskBoard';
+import TaskTable from '../components/project/TaskTable';
 import TaskForm from '../components/project/TaskForm';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import Button from '../components/atoms/Button';
@@ -43,6 +59,15 @@ const ProjectDetail = () => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [assigneeFilter, setAssigneeFilter] = React.useState('all');
   const [dateFilter, setDateFilter] = React.useState('all');
+  const [cardLayout, setCardLayout] = React.useState('standard');
+  const [activeDropdown, setActiveDropdown] = React.useState(null); // 'operator' | 'date' | 'layout' | 'sprint' | 'pagesize' | null
+
+  // Close dropdowns on outside click
+  React.useEffect(() => {
+    const handleClick = () => setActiveDropdown(null);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
 
   const DATE_OPTIONS = [
     { value: 'all', label: 'ALL TIME' },
@@ -99,6 +124,53 @@ const ProjectDetail = () => {
     };
   }, [groupedTasks, searchTerm, assigneeFilter, dateFilter]);
 
+  const filteredTasks = React.useMemo(() => {
+    const allTasks = Object.values(filteredGroupedTasks).flat();
+    
+    // Sort strictly by Ticket ID (taskNumber) in descending order
+    return [...allTasks].sort((a, b) => {
+      const numA = parseInt(a.taskNumber, 10) || 0;
+      const numB = parseInt(b.taskNumber, 10) || 0;
+      return numB - numA;
+    });
+  }, [filteredGroupedTasks]);
+
+  // Tactical Pagination Logic
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
+
+  const totalTasks = filteredTasks.length;
+  const totalPages = Math.ceil(totalTasks / pageSize) || 1;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalTasks);
+  
+  const paginatedTasks = React.useMemo(() => {
+    return filteredTasks.slice(startIndex, endIndex);
+  }, [filteredTasks, startIndex, endIndex]);
+
+  const paginatedGroupedTasks = React.useMemo(() => {
+    // For Board view, we show all columns but limit total visible tasks if needed.
+    // However, usually boards don't paginate well. 
+    // We'll show the grouped version of paginatedTasks to keep it consistent.
+    const result = {
+      [TASK_STATUS.TODO]: [],
+      [TASK_STATUS.IN_PROGRESS]: [],
+      [TASK_STATUS.IN_REVIEW]: [],
+      [TASK_STATUS.DONE]: [],
+    };
+    
+    paginatedTasks.forEach(task => {
+      if (result[task.status]) result[task.status].push(task);
+    });
+    
+    return result;
+  }, [paginatedTasks]);
+
+  // Sync: Reset page on filter change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, assigneeFilter, dateFilter]);
+
   const isTicketView = id === TICKETS_PROJECT_ID;
 
   const columns = [
@@ -111,105 +183,106 @@ const ProjectDetail = () => {
   if (isLoading) return <CenteredLoading />;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12 pr-6 sm:pr-12 lg:pr-20">
-      <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-10">
+      <div className="w-full space-y-12">
         
         {/* Error Manifest */}
         {error && (
           <div className="p-4 bg-status-error/10 border border-status-error/40 rounded-xl flex items-center gap-4 text-status-error overflow-hidden shadow-2xl">
              <div className="w-1.5 h-10 bg-status-error rounded-full shrink-0" />
              <div className="flex-1">
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-0.5">System Warning</div>
-                <p className="text-xs font-bold leading-relaxed">{error.message || 'Linkage synchronization failed.'}</p>
+                <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mb-0.5">System Warning</div>
+                <p className="text-[10px] sm:text-xs font-bold leading-relaxed">{error.message || 'Linkage synchronization failed.'}</p>
              </div>
           </div>
         )}
 
         {/* High-Contrast Tactical Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-white/15 pb-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
           <div className="space-y-4 flex-1 w-full">
             <div className="flex flex-wrap items-center gap-3">
             </div>
             
-            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1] flex flex-col gap-1">
-              {isTicketView && (
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="px-2 py-0.5 bg-secondary/10 border border-secondary/40 rounded text-[9px] font-bold text-secondary uppercase tracking-widest">Global Support</span>
-                  <span className="px-2 py-0.5 bg-secondary/10 border border-secondary/40 rounded text-[9px] font-bold text-secondary uppercase tracking-wider">Global Support</span>
-                </div>
-              )}
-              {project?.name || 'Loading Project...'}
-            </h1>
+            {/* Project Name Removed */}
 
             <div className="flex flex-wrap items-center gap-8 pt-2">
-                <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Lead Operator</span>
-                  <div className="flex items-center gap-2.5">
-                     <div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center text-[10px] font-bold text-white border border-white/20">
-                        {project?.lead?.name ? project.lead.name[0].toUpperCase() : 'A'}
-                     </div>
-                     <span className="text-[13px] font-bold text-white uppercase tracking-tight">{project?.lead?.name || 'ALPH-1'}</span>
-                  </div>
-               </div>
-
-               <div className="w-px h-10 bg-white/20" />
+                {/* Lead Operator Removed */}
 
                {!isTicketView && (
                  <>
-                    <div className="flex flex-col gap-2">
-                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Active Sprint</span>
-                      <div className="flex items-center gap-2.5">
-                         <CalendarIcon size={14} className="text-primary-light" />
-                         <select
-                           className="bg-transparent text-[13px] font-bold text-white uppercase focus:outline-none cursor-pointer hover:text-primary transition-colors pr-4"
-                           value={project?.sprint || ''}
-                           onChange={(e) => updateProjectMutation.mutate({ sprint: e.target.value })}
-                         >
-                           <option value="" className="bg-[#121212]">NO SPRINT SELECTED</option>
-                           {(sprints || []).map((s) => (
-                             <option key={s._id} value={s._id} className="bg-[#121212]">{s.name}</option>
-                           ))}
-                         </select>
-                      </div>
-                   </div>
+                     <div className="flex flex-col gap-2 relative" onClick={(e) => e.stopPropagation()}>
+                       <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Active Sprint</span>
+                       <button
+                         onClick={() => setActiveDropdown(activeDropdown === 'sprint' ? null : 'sprint')}
+                         className="flex items-center gap-2.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all group"
+                       >
+                          <Calendar size={14} className="text-primary-light group-hover:scale-110 transition-transform" />
+                          <span className="text-[13px] font-bold text-white uppercase tracking-tight">
+                            {sprints?.find(s => s._id === project?.sprint)?.name || 'NO SPRINT SELECTED'}
+                          </span>
+                          <ChevronDown size={14} className={`text-white/40 transition-transform duration-300 ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`} />
+                       </button>
+
+                       {activeDropdown === 'sprint' && (
+                         <div className="absolute top-full left-0 mt-2 w-64 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                           <div className="p-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+                             <button
+                               onClick={() => { updateProjectMutation.mutate({ sprint: '' }); setActiveDropdown(null); }}
+                               className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                                 !project?.sprint ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                               }`}
+                             >
+                               NO SPRINT SELECTED
+                             </button>
+                             {(sprints || []).map((s) => (
+                               <button
+                                 key={s._id}
+                                 onClick={() => { updateProjectMutation.mutate({ sprint: s._id }); setActiveDropdown(null); }}
+                                 className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                                   project?.sprint === s._id ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                 }`}
+                               >
+                                 {s.name}
+                               </button>
+                             ))}
+                           </div>
+                         </div>
+                       )}
+                    </div>
                  </>
                )}
-
-
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 w-full lg:w-auto">
+          <div className="grid grid-cols-2 lg:flex lg:flex-nowrap gap-2 sm:gap-3 w-full lg:w-auto">
              {!isTicketView && (
                 <button
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
-                  className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
-                    ui.showGithubPanel 
-                      ? 'bg-white/20 text-white border-white/40 ring-1 ring-white/20' 
-                      : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
-                  }`}
+                  className="h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all flex items-center justify-center gap-2 sm:gap-3 shadow-lg bg-background-light text-white border-white/20 hover:border-white/60 hover:bg-white/5"
                 >
-                  <GitBranch size={16} /> REPO
+                  {ui.showGithubPanel ? <CloseIcon size={18} /> : <GitBranch size={16} />}
+                  {ui.showGithubPanel ? 'ABORT' : 'REPO'}
                 </button>
              )}
 
              <button
                onClick={() => ui.setShowAiInput(!ui.showAiInput)}
-               className={`flex-1 sm:flex-none h-12 px-8 rounded-xl border font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-3 shadow-xl ${
+               className={`h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all flex items-center justify-center gap-2 sm:gap-3 shadow-lg ${
                  ui.showAiInput 
-                   ? 'bg-status-success text-black border-status-success shadow-status-success/40' 
-                   : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                   ? 'bg-status-error text-white border-status-error shadow-status-error/20' 
+                   : 'bg-primary text-black border-primary'
                }`}
              >
-               <Sparkles size={16} /> {isTicketView ? 'AI ASST' : 'AI ENGINE'}
+               {ui.showAiInput ? <CloseIcon size={18} /> : <Sparkles size={16} />}
+               {ui.showAiInput ? 'ABORT' : (isTicketView ? 'AI GEN' : 'AI TASK')}
              </button>
              
              <button
                 onClick={() => ui.setShowTaskForm(!ui.showTaskForm)}
-                className={`flex-1 sm:flex-none h-12 px-8 rounded-xl font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${
+                className={`col-span-2 sm:col-auto h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] flex items-center justify-center gap-2 sm:gap-3 transition-all active:scale-95 shadow-lg ${
                   ui.showTaskForm
-                    ? 'bg-status-error text-white shadow-status-error/20'
-                    : 'bg-primary text-black hover:bg-primary-dark shadow-primary/40'
+                    ? 'bg-status-error text-white border-status-error shadow-status-error/20'
+                    : 'bg-primary text-black border-primary hover:bg-primary-dark hover:border-primary-dark'
                 }`}
               >
                 {ui.showTaskForm ? <CloseIcon size={18} /> : <Plus size={18} strokeWidth={3} />}
@@ -219,129 +292,280 @@ const ProjectDetail = () => {
         </div>
 
         {/* Dynamic Context Panels */}
-        <div className="space-y-6">
-           {ui.showGithubPanel && (
-              <div className="animate-in slide-in-from-top-4 duration-500">
-                 <GithubPanel
-                   project={project}
-                   githubConnected={github.connected}
-                   githubToken={github.token}
-                   setGithubToken={github.setToken}
-                   handleConnectGithub={github.connect}
-                   repos={github.repos}
-                   loadingRepos={github.loadingRepos}
-                   handleLinkRepo={github.linkRepo}
-                   fetchRepos={github.fetchRepos}
-                   githubSuggestions={github.suggestions}
-                   fetchGithubActivity={github.syncActivity}
-                   isFetchingGithub={github.isFetchingActivity}
-                   handleApproveGithubTask={(s) => github.approveTasks([s])}
-                   handleApproveAllGithubTasks={() => github.approveTasks(github.suggestions)}
-                   setProject={(proj) => queryClient.setQueryData(['project', id], proj)}
-                   setGithubSuggestions={github.setSuggestions}
-                 />
-              </div>
-           )}
-
-           {ui.showAiInput && (
-              <div className="animate-in slide-in-from-top-4 duration-500">
-                 <AIExtractionPanel
-                   aiInput={ai.input}
-                   setAiInput={ai.setInput}
-                   handleAiExtract={ai.extract}
-                   isAiProcessing={ai.processing}
-                   aiSuggestion={ai.suggestion}
-                   setAiSuggestion={ai.setSuggestion}
-                   handleCreateTask={(task) => createTaskMutation.mutate(task)}
-                   project={project}
-                   sprints={sprints}
-                 />
-              </div>
-           )}
-
-           {ui.showTaskForm && (
-              <div className="animate-in slide-in-from-top-4 duration-500">
-                 <TaskForm
-                   sprints={sprints}
-                   newTask={newTask}
-                   setNewTask={setNewTask}
-                   handleCreateTask={(task) => createTaskMutation.mutate(task)}
-                 />
-              </div>
-           )}
-        </div>
-
-        {/* Tactical Search & Filter Bar */}
-        <div className="bg-black border border-white/20 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center p-1.5 gap-1.5 shadow-2xl">
-          {/* Primary Search Container - Expanded on Desktop */}
-          <div className="flex-1 flex items-center h-12 bg-white/[0.03] rounded-xl px-4 border border-white/5 focus-within:border-primary/50 transition-all group">
-            <Search size={16} className="text-white/40 group-focus-within:text-primary shrink-0 transition-colors" />
-            <input
-              type="text"
-              placeholder="SEARCH NOMENCLATURE..."
-              className="flex-1 bg-transparent px-3 text-[10px] font-bold text-white uppercase placeholder:text-white/20 focus:outline-none tracking-widest truncate"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <button onClick={() => setSearchTerm('')} className="text-white/20 hover:text-white transition-colors p-1">
-                <CloseIcon size={14} />
-              </button>
-            )}
+        {(ui.showGithubPanel || ui.showAiInput || ui.showTaskForm) && (
+          <div className="space-y-6">
+             {ui.showGithubPanel && (
+                <div>
+                   <GithubPanel
+                     project={project}
+                     githubConnected={github.connected}
+                     githubToken={github.token}
+                     setGithubToken={github.setToken}
+                     handleConnectGithub={github.connect}
+                     repos={github.repos}
+                     loadingRepos={github.loadingRepos}
+                     handleLinkRepo={github.linkRepo}
+                     fetchRepos={github.fetchRepos}
+                     githubSuggestions={github.suggestions}
+                     fetchGithubActivity={github.syncActivity}
+                     isFetchingGithub={github.isFetchingActivity}
+                     handleApproveGithubTask={(s) => github.approveTasks([s])}
+                     handleApproveAllGithubTasks={() => github.approveTasks(github.suggestions)}
+                     setProject={(proj) => queryClient.setQueryData(['project', id], proj)}
+                     setGithubSuggestions={github.setSuggestions}
+                   />
+                </div>
+             )}
+  
+             {ui.showAiInput && (
+                <div>
+                   <AIExtractionPanel
+                     aiInput={ai.input}
+                     setAiInput={ai.setInput}
+                     handleAiExtract={ai.extract}
+                     isAiProcessing={ai.processing}
+                     aiSuggestion={ai.suggestion}
+                     setAiSuggestion={ai.setSuggestion}
+                     handleCreateTask={(task) => createTaskMutation.mutate(task)}
+                     project={project}
+                     sprints={sprints}
+                   />
+                </div>
+             )}
+  
+             {ui.showTaskForm && (
+                <div>
+                   <TaskForm
+                     sprints={sprints}
+                     newTask={newTask}
+                     setNewTask={setNewTask}
+                     handleCreateTask={(task) => createTaskMutation.mutate(task)}
+                   />
+                </div>
+             )}
           </div>
+        )}
 
-          {/* Secondary Controls - Grid on mobile, Horizontal Flex on desktop */}
-          <div className="grid grid-cols-2 md:flex items-center gap-1.5">
-            {/* Operator Select */}
-            <div className="h-12 bg-white/[0.03] border border-white/5 rounded-xl px-3 flex items-center gap-2 hover:border-white/20 transition-all overflow-hidden">
-              <UserIcon size={14} className="text-white/30 shrink-0" />
-              <select
-                value={assigneeFilter}
-                onChange={(e) => setAssigneeFilter(e.target.value)}
-                className="bg-transparent text-[9px] font-black text-white/80 uppercase tracking-widest focus:outline-none cursor-pointer truncate min-w-0"
-              >
-                <option value="all" className="bg-[#000]">OPERATOR: ALL</option>
-                <option value={user?._id} className="bg-[#000]">SELF ONLY</option>
-              </select>
+        {/* Unified Work Console */}
+        <div className="space-y-2">
+          {/* Tactical Search & Filter Bar */}
+          <div className="bg-black border border-white/20 rounded-2xl flex flex-row items-center p-1.5 gap-1.5 shadow-2xl">
+            {/* Primary Search Container - Flexible */}
+            <div className="flex-1 flex items-center h-12 bg-white/[0.03] rounded-xl px-3 sm:px-4 border border-white/5 focus-within:border-primary/50 transition-all group min-w-0">
+              <Search size={16} className="text-white/40 group-focus-within:text-primary shrink-0 transition-colors" />
+              <input
+                type="text"
+                placeholder="SEARCH..."
+                className="flex-1 bg-transparent px-2 sm:px-3 text-[10px] font-bold text-white placeholder:text-white/20 focus:outline-none tracking-widest truncate"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button onClick={() => setSearchTerm('')} className="text-white/20 hover:text-white transition-colors p-1 hidden sm:block">
+                  <CloseIcon size={14} />
+                </button>
+              )}
             </div>
 
-            {/* Temporal Dropdown */}
-            <div className="h-12 bg-white/[0.03] border border-white/5 rounded-xl px-3 flex items-center gap-2 hover:border-white/20 transition-all overflow-hidden">
-              <ClockIcon size={14} className="text-white/30 shrink-0" />
-              <select
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="bg-transparent text-[9px] font-black text-white/80 uppercase tracking-widest focus:outline-none cursor-pointer truncate min-w-0"
-              >
-                {DATE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-[#000]">
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Secondary Controls - Custom Icon Bar */}
+            <div className="flex items-center gap-2">
+              {/* Operator Select */}
+              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'operator' ? null : 'operator')}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
+                    activeDropdown === 'operator' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  }`}
+                >
+                  <Users size={18} />
+                </button>
+                {activeDropdown === 'operator' && (
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-2 space-y-1">
+                      {[
+                        { id: 'all', label: 'ALL OPERATORS' },
+                        { id: user?._id, label: 'SELF ONLY' }
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          onClick={() => { setAssigneeFilter(opt.id); setActiveDropdown(null); }}
+                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                            assigneeFilter === opt.id ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            {/* Clear All - Full width on smallest mobile, inline on desktop */}
-            {hasActiveFilters && (
-              <button
-                onClick={clearAllFilters}
-                className="col-span-2 md:col-auto h-12 px-5 bg-status-error/10 border border-status-error/30 text-status-error rounded-xl text-[9px] font-black uppercase tracking-[0.2em] hover:bg-status-error hover:text-white transition-all active:scale-95"
-              >
-                RESET
-              </button>
+              {/* Temporal Dropdown */}
+              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'date' ? null : 'date')}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
+                    activeDropdown === 'date' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  }`}
+                >
+                  <Calendar size={18} />
+                </button>
+                {activeDropdown === 'date' && (
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-2 space-y-1">
+                      {DATE_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => { setDateFilter(opt.value); setActiveDropdown(null); }}
+                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                            dateFilter === opt.value ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Layout Toggle */}
+              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'layout' ? null : 'layout')}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
+                    activeDropdown === 'layout' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  }`}
+                >
+                  {cardLayout === 'list' ? <List size={18} /> : <LayoutGrid size={18} />}
+                </button>
+                {activeDropdown === 'layout' && (
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-2 space-y-1">
+                      {[
+                        { id: 'standard', label: 'BOARD VIEW', icon: <LayoutGrid size={14} /> },
+                        { id: 'list', label: 'LIST VIEW', icon: <List size={14} /> }
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          onClick={() => { setCardLayout(opt.id); setActiveDropdown(null); }}
+                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all flex items-center gap-3 ${
+                            cardLayout === opt.id ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          {opt.icon}
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Clear All - Tactical Reset */}
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="h-12 w-12 flex items-center justify-center bg-status-error/10 border-2 border-status-error text-status-error rounded-xl hover:bg-status-error hover:text-white transition-all active:scale-95 shadow-lg"
+                  title="RESET FILTERS"
+                >
+                  <CloseIcon size={18} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Global Task Execution Engine */}
+          <div className="relative z-10 space-y-4">
+            {cardLayout === 'list' ? (
+              <div className="w-full overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 pb-4 px-1 sm:px-0">
+                <div className="min-w-[1000px]">
+                  <TaskTable
+                    tasks={paginatedTasks}
+                    onTaskClick={(task) => navigate(`/task/${task._id}`)}
+                    handleStatusChange={(taskId, status) => statusMutation.mutate({ taskId, status })}
+                  />
+                </div>
+              </div>
+            ) : (
+              <TaskBoard
+                groupedTasks={filteredGroupedTasks}
+                user={user}
+                columns={columns}
+                handleStatusChange={(taskId, status) => statusMutation.mutate({ taskId, status })}
+                onTaskClick={(task) => navigate(`/task/${task._id}`)}
+                cardLayout={cardLayout}
+                currentPage={currentPage}
+                pageSize={pageSize}
+              />
+            )}
+
+            {/* Tactical Pagination Interface */}
+            {totalTasks > 0 && (
+              <div className="flex items-center justify-between gap-2 bg-background-light border-2 border-white/30 rounded-2xl p-2 mt-6 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                {/* Left: Page Size Selector - Custom UI */}
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    onClick={() => setActiveDropdown(activeDropdown === 'pagesize' ? null : 'pagesize')}
+                    className="flex items-center gap-2 bg-background-elevated border-2 border-white/20 rounded-xl px-3 h-10 hover:border-primary/60 transition-all shadow-inner"
+                  >
+                    <span className="text-[11px] font-black text-white tracking-tighter">{pageSize}</span>
+                    <ChevronDown size={12} className={`text-white/40 transition-transform duration-300 ${activeDropdown === 'pagesize' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeDropdown === 'pagesize' && (
+                    <div className="absolute bottom-full left-0 mb-2 w-24 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      <div className="p-1.5 space-y-1">
+                        {[10, 20, 30].map(size => (
+                          <button
+                            key={size}
+                            onClick={() => { setPageSize(size); setCurrentPage(1); setActiveDropdown(null); }}
+                            className={`w-full text-center py-2 text-[11px] font-black uppercase rounded-lg transition-all ${
+                              pageSize === size ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: Info & Controls Grouped */}
+                <div className="flex items-center gap-1.5">
+                  <div className="hidden sm:flex h-10 bg-background-elevated border-2 border-white/20 rounded-xl px-4 items-center gap-3 shadow-inner">
+                    <span className="text-[11px] font-black text-white">{currentPage}</span>
+                    <span className="text-[10px] font-black text-white/40">/</span>
+                    <span className="text-[10px] font-black text-white/90">{totalPages}</span>
+                  </div>
+                  
+                  {/* Compact Mobile Page Info */}
+                  <div className="sm:hidden h-10 bg-background-elevated border-2 border-white/20 rounded-xl px-3 flex items-center shadow-inner">
+                    <span className="text-[10px] font-black text-white">{currentPage}/{totalPages}</span>
+                  </div>
+
+                  <div className="flex items-center bg-background-elevated border-2 border-white/20 rounded-xl overflow-hidden h-10 shadow-inner">
+                    <button 
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      className="w-10 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed border-r-2 border-white/20"
+                    >
+                      <ChevronLeft size={16} strokeWidth={4} />
+                    </button>
+                    <button 
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      className="w-10 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight size={16} strokeWidth={4} />
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-        </div>
-
-        {/* Global Task Execution Engine */}
-        <div className="relative z-10 animate-in slide-in-from-bottom-6 duration-1000">
-           <TaskBoard
-             groupedTasks={filteredGroupedTasks}
-             user={user}
-             columns={columns}
-             handleStatusChange={(taskId, status) => statusMutation.mutate({ taskId, status })}
-             onTaskClick={(task) => navigate(`/task/${task._id}`)}
-           />
         </div>
 
       </div>

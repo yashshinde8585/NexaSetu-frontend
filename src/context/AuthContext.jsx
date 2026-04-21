@@ -10,7 +10,7 @@ import AuthService from '../api/authService';
 
 const AuthContext = createContext();
 
-// Manages global authentication state, sessions, and user connectivity methods.
+// Manages global authentication, session persistence, and logout signaling
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser();
 
-    // Binds a listener for global logout events triggered by API interceptors.
+    // Listener for forced logouts triggered by API interceptors (e.g. session expired)
     const handleGlobalLogout = () => {
       localStorage.removeItem('token');
       setUser(null);
@@ -50,14 +50,16 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('auth:logout', handleGlobalLogout);
   }, []);
 
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email, password, config = {}) => {
     try {
-      const res = await AuthService.login(email, password);
+      const res = await AuthService.login(email, password, config);
       if (res.token) localStorage.setItem('token', res.token);
       setUser(res.data.user);
       return res;
     } catch (err) {
-      setUser(null);
+      if (err.name !== 'AbortError') {
+        setUser(null);
+      }
       throw err;
     }
   }, []);
@@ -71,7 +73,8 @@ export const AuthProvider = ({ children }) => {
       assignedProjectId = null,
       workspaceName = null,
       plan = 'free',
-      admin = null
+      admin = null,
+      config = {}
     ) => {
       try {
         const payload = { name, email, password };
@@ -81,7 +84,7 @@ export const AuthProvider = ({ children }) => {
         if (plan) payload.plan = plan;
         if (admin !== null && admin !== undefined) payload.admin = admin;
 
-        const res = await AuthService.register(payload);
+        const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
         setUser(res.data.user);
         return res;

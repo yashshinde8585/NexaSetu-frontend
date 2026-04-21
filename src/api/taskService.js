@@ -21,8 +21,8 @@ class TaskService {
   }
 
   // Update the status of a specific task.
-  updateTaskStatus(taskId, status) {
-    return apiClient.patch(API_ENDPOINTS.TASKS.DETAIL(taskId), { status });
+  updateTaskStatus(taskId, status, version) {
+    return apiClient.patch(`${API_ENDPOINTS.TASKS.DETAIL(taskId)}/status`, { status, version });
   }
 
   // Update one or more fields for a specific task.

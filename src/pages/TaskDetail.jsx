@@ -146,7 +146,7 @@ const TaskDetailPage = () => {
                 <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNCED</span>
               )}
             </div>
-            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-full mt-1.5 uppercase">{taskData.title}</h1>
+            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-full mt-1.5">{taskData.title}</h1>
           </div>
         </div>
 
