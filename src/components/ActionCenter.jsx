@@ -63,7 +63,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       ></div>
-      <div className="relative w-full max-w-md bg-background-dark/90 backdrop-blur-2xl border-l border-white/10 h-full flex flex-col shadow-2xl animate-in slide-in-from-right-full duration-300">
+      <div className="relative w-full max-w-md bg-background-dark/90 backdrop-blur-2xl border-l border-white/10 h-full flex flex-col shadow-2xl animate-[slideInFromRightFull_300ms_ease_forwards]">
         {/* Header */}
         <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
           <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar]:h-[4px] [&::-webkit-scrollbar-thumb]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/15">
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>

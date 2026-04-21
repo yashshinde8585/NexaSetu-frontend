@@ -234,9 +234,9 @@ const InviteModal = ({ isOpen, onClose }) => {
                 onClick={() => {
                   const hubUrl = window.location.origin;
                   const credList = provisionedUnits
-                    .map((res) => `- ${res.email} (Password: ${res.email})`)
-                    .join('\n');
-                  const text = `Welcome to the squad! Your NexaSetu accounts have been provisioned. \n\nAccess the Hub: ${hubUrl}/login \nTemporary Password: Use your Email address. \n\nProvisioned Units:\n${credList || 'Manual confirmation required via dashboard'}\n\nSee you in the workspace! 🛰️`;
+                    .map((res) => `* Member: ${res.name || 'Engineer'}\n  * Email: [${res.email}](mailto:${res.email})\n  * Password: [${res.email}](mailto:${res.email})`)
+                    .join('\n\n');
+                  const text = `Hi Squad,\n\nYou’ve been invited to join the NexaSetu workspace.\n\n**Login Details:**\n\n${credList || 'Manual confirmation required via dashboard'}\n\n**Access your dashboard:**\n${hubUrl}/login\n\nFor security reasons, please log in and change your password immediately.\n\nIf you face any issues while accessing your account, feel free to reach out.\n\nBest regards,\nNexaSetu Team`;
                   navigator.clipboard.writeText(text);
                   alert('Full Onboarding Brief copied to clipboard!');
                 }}

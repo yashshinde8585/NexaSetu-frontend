@@ -11,86 +11,72 @@ const TaskBoard = ({
   columns,
   handleStatusChange,
   onTaskClick,
+  cardLayout,
+  currentPage = 1,
+  pageSize = 10
 }) => {
-  const [pageState, setPageState] = useState({});
-  const ITEMS_PER_PAGE = 10;
-
-  const handlePageChange = (columnId, newPage) => {
-    setPageState((prev) => ({ ...prev, [columnId]: newPage }));
-  };
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-      {columns.map((column) => {
-        const currentTasks = groupedTasks[column.id] || [];
-        const totalPages = Math.ceil(currentTasks.length / ITEMS_PER_PAGE) || 1;
-        const currentPage = Math.min(pageState[column.id] || 1, totalPages);
-        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        const paginatedTasks = currentTasks.slice(
-          startIndex,
-          startIndex + ITEMS_PER_PAGE
-        );
+    <div>
+      <div className="bg-background-light border-2 border-white/20 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x-2 divide-white/15 items-stretch">
+          {columns.map((column) => {
+            const allColumnTasks = groupedTasks[column.id] || [];
+            const paginatedColumnTasks = allColumnTasks.slice(startIndex, endIndex);
 
-        return (
-          <div 
-            key={column.id} 
-            className="flex-1 min-w-[280px] flex flex-col h-full bg-white/[0.04] border border-white/20 rounded-3xl overflow-hidden shadow-2xl"
-          >
-            {/* Column Header */}
-            <div className={`p-5 border-b-2 border-white/10 ${column.color.replace('text-', 'bg-')}/10 flex items-center justify-between`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${column.color.replace('text-', 'bg-')} shadow-[0_0_10px_rgba(255,255,255,0.2)]`} />
-                <h3 className="text-[11px] font-black uppercase tracking-[0.25em] text-white/90">{column.title}</h3>
-                <span className="px-2 py-0.5 rounded bg-black/40 border border-white/20 text-[9px] font-black text-white/70">
-                  {currentTasks.length}
-                </span>
-              </div>
-            </div>
-            
-            <div className="p-3 space-y-4 flex-grow">
-              {paginatedTasks.length > 0 ? (
-                paginatedTasks.map((task) => (
-                  <TaskCard
-                    key={task._id}
-                    task={task}
-                    user={user}
-                    columns={columns}
-                    handleStatusChange={handleStatusChange}
-                    onTaskClick={onTaskClick}
-                  />
-                ))
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center opacity-10 py-20 grayscale">
-                   <div className="w-12 h-1 bg-white/40 mb-2 rounded-full" />
-                   <span className="text-[8px] font-black uppercase tracking-widest">Zone Clear</span>
+            return (
+              <div
+                key={column.id}
+                className="flex-1 min-w-[280px] flex flex-col h-full bg-background-light"
+              >
+                {/* Tactical Column Header */}
+                <div className="p-6 border-b-2 border-white/20 flex items-center justify-between bg-background-elevated sticky top-0 z-20">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} shadow-[0_0_20px_rgba(255,255,255,0.15)]`} />
+                      <div className={`absolute inset-0 w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} animate-ping opacity-30`} />
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white leading-none">
+                        {column.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-[1px] bg-white/20" />
+                    <span className="px-2.5 py-1 bg-black/40 border-2 border-white/30 text-[10px] font-black text-white font-mono">
+                      {allColumnTasks.length.toString().padStart(2, '0')}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </div>
 
-            {totalPages > 1 && (
-              <div className="mx-6 mb-6 mt-2 flex items-center justify-between pt-4 border-t border-white/5">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(column.id, currentPage - 1)}
-                  className="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 disabled:opacity-20 rounded-lg hover:bg-white/10 transition-colors text-white/60"
-                >
-                  Prev
-                </button>
-                <span className="text-[9px] text-white/40 font-black tracking-[0.3em] uppercase">
-                  {currentPage} — {totalPages}
-                </span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(column.id, currentPage + 1)}
-                  className="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 disabled:opacity-20 rounded-lg hover:bg-white/10 transition-colors text-white/60"
-                >
-                  Next
-                </button>
+                <div className="px-2 py-3 space-y-3 flex-grow min-h-[500px]">
+                  {paginatedColumnTasks.length > 0 ? (
+                    paginatedColumnTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        user={user}
+                        columns={columns}
+                        handleStatusChange={handleStatusChange}
+                        onTaskClick={onTaskClick}
+                        cardLayout={cardLayout}
+                      />
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center grayscale opacity-30 py-32 select-none pointer-events-none">
+                      <div className="w-20 h-1 bg-white/40 mb-4" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">Sector Clear</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

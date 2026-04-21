@@ -31,14 +31,7 @@ const StrategicGraph = ({ projectId }) => {
         const formattedNodes = backendNodes.map((node, index) => ({
           ...node,
           position: { x: (index % 5) * 250, y: Math.floor(index / 5) * 150 },
-          style: {
-            background: node.data.type === 'intent' ? '#6366f1' : '#1e293b',
-            color: '#fff',
-            borderRadius: '8px',
-            padding: '10px',
-            width: 200,
-            border: '1px solid #475569'
-          }
+          className: `${node.data.type === 'intent' ? 'bg-[#6366f1]' : 'bg-[#1e293b]'} text-[#fff] rounded-[8px] p-[10px] w-[200px] border border-[#475569]`
         }));
 
         setNodes(formattedNodes);

@@ -208,7 +208,7 @@ const SprintDetailsCard = ({
           </button>
 
           {showWorkload && (
-            <div className="mt-8 animate-in fade-in slide-in-from-top-6 duration-500">
+            <div className="mt-8 animate-[fadeIn_500ms_ease_forwards,slideInFromTop_500ms_ease_forwards]">
                {metrics.workload?.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {metrics.workload.map((wp, idx) => (

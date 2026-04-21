@@ -34,13 +34,13 @@ const CreateTeamModal = ({ isOpen, onClose, onCreate, users = [] }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div 
-        className="absolute inset-0 bg-black/90 backdrop-blur-sm animate-in fade-in" 
+        className="absolute inset-0 bg-black/90 backdrop-blur-sm animate-[fadeIn_200ms_ease_forwards]" 
         onClick={onClose} 
       />
       
       <form 
         onSubmit={handleSubmit}
-        className="relative w-full max-w-2xl bg-slate-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-2xl bg-slate-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-[zoomIn95_200ms_ease_forwards]"
       >
         {/* Header */}
         <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
@@ -62,7 +62,7 @@ const CreateTeamModal = ({ isOpen, onClose, onCreate, users = [] }) => {
           </button>
         </div>
 
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[70vh] overflow-y-auto [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar]:h-[4px] [&::-webkit-scrollbar-thumb]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/15">
           
           {/* Left: Metadata */}
           <div className="space-y-6">
@@ -111,7 +111,7 @@ const CreateTeamModal = ({ isOpen, onClose, onCreate, users = [] }) => {
           {/* Right: Member Selection */}
           <div className="space-y-4">
              <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1 block mb-2">Select Members ({selectedMembers.length})</label>
-             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar]:h-[4px] [&::-webkit-scrollbar-thumb]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/15">
                 {users.map(u => (
                   <div 
                     key={u.id}

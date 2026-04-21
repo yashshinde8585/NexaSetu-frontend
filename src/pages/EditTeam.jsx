@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAdminDashboard } from '../hooks/useAdminDashboard';
 import { ROUTES } from '../constants';
 import CenteredLoading from '../components/atoms/CenteredLoading';
-import SquadAssemblyForm from '../components/organisms/admin/SquadAssemblyForm';
+import TeamBuilderForm from '../components/organisms/admin/SquadAssemblyForm';
 
 const EditTeam = () => {
   const { id } = useParams();
@@ -25,9 +25,9 @@ const EditTeam = () => {
   };
 
   return (
-    <SquadAssemblyForm 
-      title="Edit Team"
-      description="Update team details, change leadership, or reassign members."
+    <TeamBuilderForm 
+      title="Team Configuration"
+      description="Update team details, change leadership, or reassign resources."
       submitLabel="Save Changes"
       onSubmit={handleUpdate}
       users={users}
