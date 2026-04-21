@@ -28,11 +28,28 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      
+      // Optimization: If no token exists, don't block the UI with an API call
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await AuthService.getCurrentUser();
+        // Add a timeout controller for the /me request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const res = await AuthService.getCurrentUser({ signal: controller.signal });
+        clearTimeout(timeoutId);
         setUser(res.data.user);
       } catch (err) {
+        // Silently fail auth check if token is invalid or request fails
         setUser(null);
+        if (err.name === 'AbortError') {
+          console.warn('[AUTH] Authentication check timed out.');
+        }
       } finally {
         setLoading(false);
       }
@@ -40,7 +57,6 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser();
 
-    // Listener for forced logouts triggered by API interceptors (e.g. session expired)
     const handleGlobalLogout = () => {
       localStorage.removeItem('token');
       setUser(null);
