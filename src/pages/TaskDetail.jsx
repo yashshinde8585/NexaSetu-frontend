@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { BackButton } from '../components/atoms';
 import TaskComments from '../components/organisms/TaskComments';
+import { ResilientPage } from '../components/states';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -117,10 +118,6 @@ const TaskDetailPage = () => {
     return `${rounded || 0}m`;
   };
 
-  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-110px)] bg-black"><div className="relative"><div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse blur-[30px]" /><Loader2 size={40} className="text-primary animate-spin relative" /></div></div>;
-
-  if (error || !taskData) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h2 className="text-xl font-black text-white mb-4 uppercase tracking-tighter">Task not found</h2><button onClick={() => navigate(-1)} className="bg-primary/20 text-primary border border-primary/30 px-6 py-2 rounded-xl font-bold">Back to project</button></div>;
-
   const columns = [
     { id: TASK_STATUS.TODO, title: 'To Do', color: 'text-status-error', bg: 'bg-black', border: 'border-status-error' },
     { id: TASK_STATUS.IN_PROGRESS, title: 'In Progress', color: 'text-status-warning', bg: 'bg-black', border: 'border-status-warning' },
@@ -132,7 +129,12 @@ const TaskDetailPage = () => {
   const getStatusTitle = (status) => columns.find((c) => c.id === status)?.title || status;
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-screen md:h-[calc(100vh-80px)] flex flex-col gap-3 py-3 md:overflow-hidden animate-in fade-in duration-500">
+    <ResilientPage 
+      isLoading={isLoading} 
+      error={error}
+      onRetry={() => queryClient.invalidateQueries({ queryKey: ['task', taskId] })}
+    >
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-screen md:h-[calc(100vh-80px)] flex flex-col gap-3 py-3 md:overflow-hidden animate-in fade-in duration-500">
       {/* Header */}
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shrink-0 pb-4 border-b border-white/10">
         <div className="flex items-center gap-4 w-full md:w-auto">
@@ -448,6 +450,7 @@ const TaskDetailPage = () => {
         </div>
       )}
     </div>
+    </ResilientPage>
   );
 };
 
