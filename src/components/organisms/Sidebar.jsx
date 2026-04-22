@@ -93,20 +93,20 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <aside
-        className={`w-64 bg-black border-r border-white/20 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-3xl md:shadow-none`}
+        className={`w-64 bg-black border-r border-white/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-3xl md:shadow-none`}
       >
-        <div className="p-6">
+        <div className="p-6 shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-              <Zap size={20} fill="currentColor" />
+            <div className="w-6 h-6 bg-primary flex items-center justify-center text-black transition-transform">
+              <Zap size={14} fill="currentColor" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              NexaSetu
+            <span className="text-[12px] font-black tracking-[0.2em] text-white uppercase">
+              NEXA_SETU
             </span>
           </Link>
         </div>
 
-        <nav className="flex-1 mt-4 px-0 space-y-1">
+        <nav className="flex-1 mt-2 px-0 space-y-1 overflow-y-auto custom-scrollbar">
           <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4">
             Workspace
           </div>
@@ -115,12 +115,12 @@ const Sidebar = ({ isOpen, onClose }) => {
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `relative flex items-center gap-3 px-6 py-3 text-sm font-bold transition-all group ${
+                `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
                   item.disabled
                     ? 'opacity-40 cursor-not-allowed'
                     : isActive
-                      ? 'text-white bg-linear-to-r from-primary/10 via-primary/5 to-transparent'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      ? 'text-white bg-white/5'
+                      : 'text-white/40 hover:text-white hover:bg-white/5'
                 }`
               }
               onClick={(e) => {
@@ -131,14 +131,14 @@ const Sidebar = ({ isOpen, onClose }) => {
               {({ isActive }) => (
                 <>
                   {!item.disabled && isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
                   )}
 
                   <span
-                    className={`transition-all duration-300 ${
+                    className={`transition-all ${
                       !item.disabled && isActive
-                        ? 'text-primary drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] scale-110'
-                        : 'text-white/50 group-hover:text-white'
+                        ? 'text-primary'
+                        : 'text-white/20 group-hover:text-white/50'
                     }`}
                   >
                     {item.icon}
@@ -192,25 +192,25 @@ const Sidebar = ({ isOpen, onClose }) => {
                 to={item.path}
                 onClick={item.disabled ? (e) => e.preventDefault() : onClose}
                 className={({ isActive }) =>
-                  `relative flex items-center gap-3 px-6 py-3 text-sm font-bold transition-all group ${
+                  `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
                     item.disabled
                       ? 'opacity-40 cursor-not-allowed'
                       : isActive
-                        ? 'text-white bg-linear-to-r from-secondary/10 via-secondary/5 to-transparent'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                        ? 'text-white bg-white/5'
+                        : 'text-white/40 hover:text-white hover:bg-white/5'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
                     {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-secondary shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary" />
                     )}
                     <span
-                      className={`transition-all duration-300 ${
+                      className={`transition-all ${
                         isActive
-                          ? 'text-secondary drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] scale-110'
-                          : 'text-white/50 group-hover:text-white'
+                          ? 'text-secondary'
+                          : 'text-white/20 group-hover:text-white/50'
                       }`}
                     >
                       {item.icon}
@@ -227,12 +227,12 @@ const Sidebar = ({ isOpen, onClose }) => {
             <Link
               to="/team/add"
               onClick={onClose}
-              className="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-primary/80 hover:text-primary hover:bg-primary/5 transition-all group mt-4 border-t border-white/5 pt-6"
+              className="w-full flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase text-primary hover:text-black hover:bg-primary transition-all group mt-4 border-t border-white/5 pt-2 mb-4"
             >
-              <span className="p-1 px-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <UserPlus size={16} />
+              <span className="transition-colors">
+                <UserPlus size={14} />
               </span>
-              Invite Colleague
+              INVITE_COLLEAGUE
             </Link>
           )}
         </nav>

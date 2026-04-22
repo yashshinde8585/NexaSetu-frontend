@@ -11,10 +11,6 @@ import DrilldownModal from '../components/molecules/dashboard/DrilldownModal';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { Activity, Zap, AlertTriangle } from 'lucide-react';
 
-/**
- * CTO Dashboard
- * Refactored for professional clarity and organization health visibility.
- */
 const CTODashboard = () => {
   const {
     data,
@@ -35,9 +31,9 @@ const CTODashboard = () => {
   const { global, functionalBreakdown, functionalTable, blockers, pipeline } = data;
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary selection:text-white max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary selection:text-white max-w-screen-2xl mx-auto">
       {/* 1. Global Performance metrics */}
-      <div id="cto-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+      <div id="cto-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <MetricStripItem label="Projects At risk" value={global.projectsAtRisk} color="text-status-error" accent="bg-status-error" />
         <MetricStripItem label="Active Blockers" value={global.totalBlockers} color="text-status-warning" accent="bg-status-warning" />
         <MetricStripItem label="Avg Drift" value={`+${global.orgDeliveryDrift}d`} color="text-primary" accent="bg-primary" />
@@ -45,12 +41,12 @@ const CTODashboard = () => {
         <MetricStripItem label="Teams At capacity" value={global.teamsOverloaded} color="text-status-warning" accent="bg-status-warning" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: Strategy & Operations */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
+        <div className="lg:col-span-8 flex flex-col gap-6">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FunctionalCard 
               id="strategic-leadership"
               title="Leadership" 
@@ -81,24 +77,24 @@ const CTODashboard = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-separate border-spacing-0">
                 <thead>
-                  <tr className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-white/10">
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Department</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Workload %</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Blockers</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Delay</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Status</th>
+                  <tr className="text-white/40 text-[9px] uppercase font-black tracking-[0.2em] border-b border-white/10">
+                    <th className="py-3 px-4 border-b border-white/5">DEPARTMENT</th>
+                    <th className="py-3 px-4 border-b border-white/5 text-center">WORKLOAD %</th>
+                    <th className="py-3 px-4 border-b border-white/5 text-center">BLOCKERS</th>
+                    <th className="py-3 px-4 border-b border-white/5">DELAY</th>
+                    <th className="py-3 px-4 border-b border-white/5">STATUS</th>
                   </tr>
                 </thead>
-                <tbody className="text-[12px]">
+                <tbody className="text-[10px] font-black uppercase tracking-widest">
                   {functionalTable.map((row, i) => (
                     <tr key={i} 
                       onClick={() => handleDrilldown(row.function.split(' ')[0])}
                       className="hover:bg-white/[0.02] transition-colors cursor-pointer group group/row">
-                      <td className="py-5 px-6 font-bold border-b border-white/[0.03] group-hover/row:text-primary transition-colors uppercase tracking-tight">{row.function}</td>
-                      <td className="py-5 px-6 text-center font-bold text-white border-b border-white/[0.03]">{row.load}%</td>
-                      <td className="py-5 px-6 text-center font-bold text-white border-b border-white/[0.03]">{row.blockers}</td>
-                      <td className="py-5 px-6 font-bold text-white/60 border-b border-white/[0.03]">{row.delay}</td>
-                      <td className="py-5 px-6 border-b border-white/[0.03]">
+                      <td className="py-3 px-4 border-b border-white/[0.03] group-hover/row:text-primary transition-colors">{row.function}</td>
+                      <td className="py-3 px-4 text-center text-white border-b border-white/[0.03]">{row.load}%</td>
+                      <td className="py-3 px-4 text-center text-white border-b border-white/[0.03]">{row.blockers}</td>
+                      <td className="py-3 px-4 text-white/60 border-b border-white/[0.03]">{row.delay}</td>
+                      <td className="py-3 px-4 border-b border-white/[0.03]">
                         <StatusIndicator color={row.status} />
                       </td>
                     </tr>
@@ -110,9 +106,9 @@ const CTODashboard = () => {
         </div>
 
         {/* Right Column: Tactical Monitoring */}
-        <div className="lg:col-span-4 flex flex-col gap-8">
+        <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardSection title="Delivery Pipeline" icon={<Zap size={14} />}>
-             <div className="space-y-6 pt-2">
+             <div className="space-y-4 pt-2">
                 {(() => {
                   const total = (pipeline.backlog || 0) + (pipeline.dev || 0) + (pipeline.qa || 0) + (pipeline.release || 0);
                   const getProgress = (val) => total > 0 ? (val / total) * 100 : 0;
@@ -130,7 +126,7 @@ const CTODashboard = () => {
           </DashboardSection>
 
           <DashboardSection title="Critical Blockers" icon={<AlertTriangle size={14} />}>
-            <div className="space-y-8">
+            <div className="space-y-4">
               <BlockerCategory label="Engineering" items={blockers.engineering} />
               <BlockerCategory label="Quality Assurance" items={blockers.qa} />
               <BlockerCategory label="Operational" items={blockers.peopleOps} />

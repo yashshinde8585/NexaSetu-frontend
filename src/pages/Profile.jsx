@@ -34,98 +34,98 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
-      <div className="max-w-6xl mx-auto space-y-10">
+    <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-screen-xl mx-auto">
+      <div className="space-y-6">
         
         {/* Simple Professional Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center relative shadow-xl">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative">
                {user.avatar ? (
-                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-2xl" />
+                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded" />
                ) : (
-                 <span className="text-4xl font-black text-white/50">{user.name.charAt(0)}</span>
+                 <span className="text-xl font-black text-white/50">{user.name.charAt(0)}</span>
                )}
-               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-black border border-white/10 rounded-lg flex items-center justify-center text-primary">
-                  <ShieldCheck size={16} />
+               <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-black border border-white/10 rounded flex items-center justify-center text-primary">
+                  <ShieldCheck size={10} />
                </div>
             </div>
             <div>
-              <h1 className="text-3xl font-black tracking-tight mb-1">{user.name}</h1>
-              <div className="flex items-center gap-3 text-sm font-medium text-white/80">
-                <span className="uppercase tracking-widest text-primary text-[10px] font-black">{user.jobTitle || 'Team Member'}</span>
+              <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">{user.name}</h1>
+              <div className="flex items-center gap-2 text-white/80">
+                <span className="uppercase tracking-[0.2em] text-primary text-[9px] font-black">{user.jobTitle || 'TEAM MEMBER'}</span>
                 <span className="w-1 h-1 bg-white/40 rounded-full" />
-                <span>{user._id.slice(-8).toUpperCase()}</span>
+                <span className="uppercase tracking-[0.2em] text-[9px] font-black">{user._id.slice(-8)}</span>
               </div>
             </div>
           </div>
-          <div className="flex gap-3 w-full md:w-auto">
+          <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
             <Button 
               variant="outline" 
-              className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest border-white/10"
+              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest border-white/10 rounded"
               onClick={() => navigate(ROUTES.SETTINGS)}
             >
-              Settings
+              SETTINGS
             </Button>
             <Button 
               variant="danger" 
-              className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest"
+              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest rounded"
               onClick={handleLogout}
             >
-              Sign Out
+              SIGN_OUT
             </Button>
           </div>
         </div>
 
         {/* Informational Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Main Info Columns */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className="lg:col-span-2 space-y-6">
             
             {/* Account Details Section */}
-            <section className="space-y-6">
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/70 border-l-2 border-primary pl-4">Account Information</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                <InfoRow label="Full Name" value={user.name} icon={<User size={14} />} />
-                <InfoRow label="Email Address" value={user.email} icon={<Mail size={14} />} />
-                <InfoRow label="Account Role" value={user.role.replace('_', ' ')} icon={<Shield size={14} />} />
-                <InfoRow label="Access Level" value="L4 Engineering" icon={<BadgeCheck size={14} />} />
-                <InfoRow label="Joined Workspace" value={new Date(user.createdAt).toLocaleDateString()} icon={<Calendar size={14} />} />
-                <InfoRow label="Current Status" value="Active" icon={<Clock size={14} />} status="active" />
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">ACCOUNT_INFORMATION</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
+                <InfoRow label="FULL_NAME" value={user.name} icon={<User size={12} />} />
+                <InfoRow label="EMAIL_ADDRESS" value={user.email} icon={<Mail size={12} />} />
+                <InfoRow label="ACCOUNT_ROLE" value={user.role.replace('_', ' ')} icon={<Shield size={12} />} />
+                <InfoRow label="ACCESS_LEVEL" value="L4_ENGINEERING" icon={<BadgeCheck size={12} />} />
+                <InfoRow label="JOINED_WORKSPACE" value={new Date(user.createdAt).toLocaleDateString()} icon={<Calendar size={12} />} />
+                <InfoRow label="CURRENT_STATUS" value="ACTIVE" icon={<Clock size={12} />} status="active" />
               </div>
             </section>
 
             {/* Security Section */}
-            <section className="space-y-6">
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 border-l-2 border-primary pl-4">Security & Access</h2>
-              <div className="grid grid-cols-1 gap-4">
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">SECURITY_&_ACCESS</h2>
+              <div className="grid grid-cols-1 gap-2">
                  <ActionTile 
-                   icon={<Key size={18} />} 
-                   title="Update Password" 
-                   desc="Set a strong, unique password to keep your account secure." 
+                   icon={<Key size={14} />} 
+                   title="UPDATE_PASSWORD" 
+                   desc="SECURE ACCOUNT CREDENTIALS" 
                  />
                  <ActionTile 
-                   icon={<Lock size={18} />} 
-                   title="Two-Factor Authentication" 
-                   desc="Add an extra layer of protection to your account profile." 
-                   badge="Recommended"
+                   icon={<Lock size={14} />} 
+                   title="TWO_FACTOR_AUTHENTICATION" 
+                   desc="ADD LAYERED PROTECTION" 
+                   badge="RECOMMENDED"
                  />
               </div>
             </section>
           </div>
 
           {/* Sidebar / Preferences */}
-          <div className="space-y-12">
+          <div className="space-y-6">
             
             {/* Preferences Section */}
-            <section className="space-y-6">
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 border-l-2 border-primary pl-4">Preferences</h2>
-              <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-6">
-                 <PreferenceToggle label="Email Notifications" active />
-                 <PreferenceToggle label="Real-time Status" active />
-                 <PreferenceToggle label="Compact View" />
-                 <PreferenceToggle label="Developer Mode" />
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">PREFERENCES</h2>
+              <div className="p-4 bg-white/5 border border-white/10 rounded space-y-4">
+                 <PreferenceToggle label="EMAIL_NOTIFICATIONS" active />
+                 <PreferenceToggle label="REAL_TIME_STATUS" active />
+                 <PreferenceToggle label="COMPACT_VIEW" />
+                 <PreferenceToggle label="DEVELOPER_MODE" />
               </div>
             </section>
 
@@ -133,8 +133,8 @@ const Profile = () => {
         </div>
 
         {/* Professional Footer */}
-        <footer className="pt-20 pb-10 border-t border-white/10 flex justify-end items-center text-[9px] font-black uppercase tracking-[0.2em] text-white/50">
-           <span>Workspace ID: {user._id.slice(0, 12)}</span>
+        <footer className="pt-8 pb-4 border-t border-white/10 flex justify-end items-center text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
+           <span>WORKSPACE_ID: {user._id.slice(0, 12)}</span>
         </footer>
 
       </div>
@@ -144,11 +144,11 @@ const Profile = () => {
 
 // Sub-components for a structured, clean UI
 const InfoRow = ({ label, value, icon, status }) => (
-  <div className="bg-black p-5 flex flex-col gap-1.5">
-     <span className="text-[9px] font-black uppercase tracking-widest text-white/60 flex items-center gap-2">
+  <div className="bg-black p-3 sm:p-4 flex flex-col gap-1">
+     <span className="text-[8px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
         {icon} {label}
      </span>
-     <span className="text-sm font-bold text-white flex items-center gap-2">
+     <span className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-2 mt-1">
         {status === 'active' && <div className="w-1.5 h-1.5 bg-status-success rounded-full" />}
         {value}
      </span>
@@ -156,28 +156,28 @@ const InfoRow = ({ label, value, icon, status }) => (
 );
 
 const ActionTile = ({ icon, title, desc, badge }) => (
-  <div className="p-5 bg-white/[0.05] border border-white/10 rounded-xl flex items-center justify-between hover:bg-white/[0.08] transition-all cursor-pointer group">
-     <div className="flex items-center gap-5">
-        <div className="w-12 h-12 rounded-lg bg-black border border-white/15 flex items-center justify-center text-white/60 group-hover:text-primary transition-colors">
+  <div className="p-3 sm:p-4 bg-white/5 border border-white/10 rounded flex items-center justify-between hover:border-white/20 transition-all cursor-pointer group">
+     <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded bg-black border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors shrink-0">
            {icon}
         </div>
-        <div>
-           <div className="flex items-center gap-3 mb-0.5">
-              <h4 className="text-sm font-black uppercase tracking-tight text-white/90">{title}</h4>
-              {badge && <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-tighter">{badge}</span>}
+        <div className="min-w-0">
+           <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-[9px] font-black uppercase tracking-widest text-white truncate">{title}</h4>
+              {badge && <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">{badge}</span>}
            </div>
-           <p className="text-[10px] font-medium text-white/60 leading-relaxed max-w-sm">{desc}</p>
+           <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/40 truncate">{desc}</p>
         </div>
      </div>
-     <ChevronRight size={16} className="text-white/20 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+     <ChevronRight size={14} className="text-white/20 group-hover:text-white transition-transform transform group-hover:translate-x-1 shrink-0" />
   </div>
 );
 
 const PreferenceToggle = ({ label, active }) => (
   <div className="flex items-center justify-between group cursor-pointer">
-     <span className="text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">{label}</span>
-     <div className={`w-9 h-5 rounded-full relative transition-all ${active ? 'bg-primary' : 'bg-white/20'}`}>
-        <div className={`absolute top-1 w-3 h-3 rounded-full transition-all ${active ? 'right-1 bg-black' : 'left-1 bg-white/60'}`} />
+     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60 group-hover:text-white transition-colors">{label}</span>
+     <div className={`w-8 h-4 rounded-full relative transition-all ${active ? 'bg-primary' : 'bg-white/10'}`}>
+        <div className={`absolute top-[2px] w-3 h-3 rounded-full transition-all ${active ? 'right-[2px] bg-black' : 'left-[2px] bg-white/40'}`} />
      </div>
   </div>
 );

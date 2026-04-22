@@ -38,26 +38,26 @@ const ProfileDropdown = () => {
       {/* Toggle Button */}
       <button
         onClick={toggleDropdown}
-        className="flex items-center gap-3 p-1 sm:p-1.5 sm:pr-4 rounded-full bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.02] hover:border-white/10 shadow-sm transition-all outline-none active:scale-95 duration-300 cursor-pointer"
+        className="flex items-center gap-3 p-1 sm:p-1 border border-white/5 hover:border-white/10 transition-colors outline-none active:scale-95 duration-200 cursor-pointer group"
       >
-        <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary/40 to-[#4F46E5]/40 flex items-center justify-center border border-white/20 shadow-[0_0_10px_rgba(var(--color-primary),0.2)] overflow-hidden">
+        <div className="w-8 h-8 rounded-none bg-white/5 flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
           {user.avatar ? (
             <img
               src={user.avatar}
               alt={user.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
             />
           ) : (
-            <span className="text-white font-black text-xs uppercase drop-shadow-md">
+            <span className="text-white font-black text-[10px] uppercase">
               {user.name.charAt(0)}
             </span>
           )}
         </div>
-        <div className="hidden sm:flex flex-col items-start leading-[1.1] gap-0.5">
-          <span className="text-[13px] font-bold text-white/90 tracking-wide">
+        <div className="hidden sm:flex flex-col items-start leading-none gap-1 pr-3">
+          <span className="text-[10px] font-black text-white uppercase tracking-widest">
             {user.name}
           </span>
-          <span className="text-[8px] text-primary/80 uppercase tracking-widest font-black">
+          <span className="text-[7px] text-primary font-black uppercase tracking-[0.2em]">
             {user.jobTitle || (user.role && user.role.replace('_', ' '))}
           </span>
         </div>
@@ -65,29 +65,29 @@ const ProfileDropdown = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-72 bg-black border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="absolute right-0 mt-1 w-64 bg-black border border-white/15 rounded-none overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-200">
           {/* Header */}
-          <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-linear-to-br from-primary/40 to-secondary/40 border-2 border-white/10 flex items-center justify-center p-0.5 shadow-xl">
+          <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center p-0.5 shrink-0">
               {user.avatar ? (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-full h-full rounded-full object-cover"
+                  className="w-full h-full rounded-none object-cover grayscale"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center">
-                  <span className="text-white text-xl font-bold uppercase">
+                <div className="w-full h-full rounded-none bg-white/5 flex items-center justify-center">
+                  <span className="text-white text-base font-black uppercase">
                     {user.name.charAt(0)}
                   </span>
                 </div>
               )}
             </div>
-            <div className="flex flex-col overflow-hidden">
-              <h3 className="text-base font-black text-white uppercase truncate leading-tight tracking-widest">
+            <div className="flex flex-col overflow-hidden gap-1">
+              <h3 className="text-[11px] font-black text-white uppercase truncate leading-none tracking-widest">
                 {user.name}
               </h3>
-              <p className="text-[10px] text-white/50 font-bold uppercase tracking-wide truncate mt-0.5">
+              <p className="text-[8px] text-white/30 font-black uppercase tracking-[0.2em] truncate leading-none">
                 {user.email}
               </p>
             </div>
@@ -129,15 +129,15 @@ const ProfileDropdown = () => {
 
           <div className="h-[1px] bg-white/5 mx-2 my-1" />
 
-          <div className="p-2 space-y-0.5">
+          <div className="p-1.5">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-status-error/80 hover:bg-status-error/10 hover:text-status-error transition-all group duration-200 cursor-pointer"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-none text-status-error/60 hover:bg-status-error/5 hover:text-status-error transition-colors group cursor-pointer"
             >
-              <span className="p-1.5 rounded-lg bg-status-error/5 group-hover:bg-status-error/10 transition-colors">
-                <LogOut size={18} strokeWidth={2.2} />
+              <span className="p-1 rounded-none border border-status-error/20 bg-status-error/5 group-hover:border-status-error/40 transition-colors">
+                <LogOut size={14} />
               </span>
-              <span className="text-sm font-semibold">Log out</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Log_Out</span>
             </button>
           </div>
         </div>
@@ -150,15 +150,15 @@ const ProfileDropdown = () => {
 const DropdownItem = ({ icon, label, trailing, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all group duration-200 cursor-pointer"
+    className="w-full flex items-center justify-between px-3 py-2 rounded-none text-white/40 hover:text-white hover:bg-white/5 transition-colors group cursor-pointer"
   >
-    <div className="flex items-center gap-4">
-      <span className="p-1.5 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
-        {icon}
+    <div className="flex items-center gap-3">
+      <span className="p-1 rounded-none bg-white/5 group-hover:bg-white/10 transition-colors">
+        {React.cloneElement(icon, { size: 14 })}
       </span>
-      <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
     </div>
-    {trailing}
+    {trailing && React.cloneElement(trailing, { size: 12 })}
   </button>
 );
 
