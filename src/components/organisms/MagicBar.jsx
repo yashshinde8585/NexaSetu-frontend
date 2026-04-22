@@ -3,6 +3,7 @@ import MagicService from '../../api/magicService';
 import { useAuth } from '../../context/AuthContext';
 import { useMagic } from '../../context/MagicContext';
 import magicData from '../../data/magicCommands.json';
+import ErrorBoundary from '../ErrorBoundary';
 
 // A tactical command interface that processes natural language directives.
 const MagicBar = () => {
@@ -310,4 +311,10 @@ const MagicBar = () => {
   );
 };
 
-export default MagicBar;
+const SafeMagicBar = (props) => (
+  <ErrorBoundary>
+    <MagicBar {...props} />
+  </ErrorBoundary>
+);
+
+export default SafeMagicBar;

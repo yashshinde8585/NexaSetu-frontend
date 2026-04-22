@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationTray from './NotificationTray';
-import { Menu, Layers, Rocket, Shield, Sparkles } from 'lucide-react';
+import { Menu, Layers, Rocket, Shield, Sparkles, Zap } from 'lucide-react';
 import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
 import { ROUTES } from '../../constants/routes';
