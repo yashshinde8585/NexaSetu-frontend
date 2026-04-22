@@ -26,39 +26,53 @@ class ErrorBoundary extends React.Component {
       // Premium, monochromatic fallback UI matching NexaSetu aesthetic
       return (
         <div style={{
-          height: '100vh',
+          height: '100%',
+          minHeight: '400px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: '#000000',
           color: '#ffffff',
           fontFamily: 'Inter, system-ui, sans-serif',
           textAlign: 'center',
-          padding: '2rem'
+          padding: '2rem',
+          border: '1px border-white/10'
         }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>
-            System Integrity Compromised
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '2px solid #3b82f6',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#3b82f6',
+            fontWeight: '900',
+            fontSize: '20px'
+          }}>!</div>
+          <h1 style={{ fontSize: '12px', fontWeight: '900', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.4em' }}>
+            Component Rendering Failure
           </h1>
-          <p style={{ color: '#888888', marginBottom: '2rem', maxWidth: '400px' }}>
-            A critical UI component has failed. The system has been locked to prevent further state corruption.
+          <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '32px', maxWidth: '300px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', lineHeight: '2' }}>
+            The UI encountered an unexpected state. Partial system functionality may be affected.
           </p>
           <button
             onClick={() => window.location.reload()}
             style={{
-              padding: '0.75rem 1.5rem',
+              padding: '12px 24px',
               backgroundColor: '#ffffff',
               color: '#000000',
               border: 'none',
-              borderRadius: '4px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'opacity 0.2s'
+              borderRadius: '0',
+              fontSize: '10px',
+              fontWeight: '900',
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              cursor: 'pointer'
             }}
-            onMouseOver={(e) => e.target.style.opacity = '0.8'}
-            onMouseOut={(e) => e.target.style.opacity = '1'}
           >
-            Force Reboot
+            Attempt Recovery
           </button>
         </div>
       );

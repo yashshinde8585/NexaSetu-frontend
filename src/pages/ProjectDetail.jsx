@@ -28,6 +28,7 @@ import TaskTable from '../components/project/TaskTable';
 import TaskForm from '../components/project/TaskForm';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import Button from '../components/atoms/Button';
+import { ResilientPage } from '../components/states';
 
 /**
  * High-performance Project Board Interface.
@@ -180,22 +181,14 @@ const ProjectDetail = () => {
     { id: TASK_STATUS.DONE, title: isTicketView ? 'RESOLVED' : 'DONE', color: 'border-status-success text-status-success' },
   ];
 
-  if (isLoading) return <CenteredLoading />;
-
   return (
-    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
-      <div className="w-full space-y-6 max-w-7xl mx-auto">
-        
-        {/* Error Manifest */}
-        {error && (
-          <div className="p-4 bg-status-error/10 border border-status-error/40 rounded-xl flex items-center gap-4 text-status-error overflow-hidden shadow-2xl">
-             <div className="w-1.5 h-10 bg-status-error rounded-full shrink-0" />
-             <div className="flex-1">
-                <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mb-0.5">System Warning</div>
-                <p className="text-[10px] sm:text-xs font-bold leading-relaxed">{error.message || 'Linkage synchronization failed.'}</p>
-             </div>
-          </div>
-        )}
+    <ResilientPage 
+      isLoading={isLoading} 
+      error={error}
+      onRetry={() => queryClient.invalidateQueries({ queryKey: ['project', id] })}
+    >
+      <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+        <div className="w-full space-y-6 max-w-7xl mx-auto">
 
         {/* High-Contrast Tactical Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-white/10">
@@ -560,7 +553,7 @@ const ProjectDetail = () => {
         </div>
 
       </div>
-    </div>
+    </ResilientPage>
   );
 };
 

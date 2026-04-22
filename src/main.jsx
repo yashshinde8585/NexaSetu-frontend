@@ -16,8 +16,6 @@ const ReactQueryDevtools = import.meta.env.DEV
     )
   : null;
 
-import ErrorBoundary from './components/ErrorBoundary';
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -31,22 +29,20 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <MagicProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </MagicProvider>
-        </AuthProvider>
-        {/* DevTools: only rendered in development */}
-        {ReactQueryDevtools && (
-          <Suspense fallback={null}>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </Suspense>
-        )}
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <MagicProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </MagicProvider>
+      </AuthProvider>
+      {/* DevTools: only rendered in development */}
+      {ReactQueryDevtools && (
+        <Suspense fallback={null}>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Suspense>
+      )}
+    </QueryClientProvider>
   </StrictMode>
 );

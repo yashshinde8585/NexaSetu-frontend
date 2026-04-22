@@ -12,10 +12,18 @@ export const normalizeError = (error) => {
       status: 0,
       data: null,
       isDisconnected: true,
+      uiState: 'server-error'
     };
   }
 
   const { status, data } = error.response;
+
+  // Map status codes to UI states for resilient rendering
+  let uiState = 'error';
+  if (status === 401) uiState = 'auth-required';
+  if (status === 403) uiState = 'access-denied';
+  if (status === 404) uiState = 'not-found';
+  if (status >= 500) uiState = 'server-error';
 
   return {
     message: data.message || data.error || genericMessage,
@@ -23,6 +31,7 @@ export const normalizeError = (error) => {
     data: data,
     isDisconnected: false,
     validationErrors: data.errors || null,
+    uiState: uiState
   };
 };
 
