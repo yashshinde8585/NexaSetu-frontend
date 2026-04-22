@@ -18,6 +18,7 @@ import ApprovalPanel from '../components/portfolio/ApprovalPanel';
 import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
 import ProjectHealthSummary from '../components/dashboard/ProjectHealthSummary';
 import CenteredLoading from '../components/atoms/CenteredLoading';
+import { ResilientPage } from '../components/states';
 
 import { resolveDashboard } from './dashboard/DashboardRegistry';
 
@@ -76,7 +77,7 @@ const Dashboard = () => {
 
   const stats = React.useMemo(() => {
     let computedStats = [];
-    if (isAdmin) {
+    if (isAdmin && projects) {
       const activeCount = projects.filter((p) => p.percentage < 100).length;
       const completedCount = projects.filter(
         (p) => p.percentage === 100
@@ -169,30 +170,26 @@ const Dashboard = () => {
     }
   }, [stats, setDashboardContext]);
 
-  if (isLoading) {
-    return <CenteredLoading />;
-  }
-
-  const errorMessage = error?.message || createMutation.error?.message || '';
-
   // Strategic Role Redirection (Master Dashboard Registry)
   const TacticalDashboard = resolveDashboard(user);
 
-  if (TacticalDashboard) {
-    return (
-      <React.Suspense fallback={<CenteredLoading />}>
-        <TacticalDashboard />
-      </React.Suspense>
-    );
-  }
-
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 pb-12 space-y-12">
-      {errorMessage && (
-        <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-3 rounded-xl text-xs">
-          {errorMessage}
-        </div>
-      )}
+    <ResilientPage 
+      isLoading={isLoading} 
+      error={error}
+      onRetry={() => window.location.reload()}
+    >
+      {TacticalDashboard ? (
+        <React.Suspense fallback={<CenteredLoading />}>
+          <TacticalDashboard />
+        </React.Suspense>
+      ) : (
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 pb-12 space-y-12">
+          {createMutation.error && (
+            <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-3 rounded-xl text-xs">
+              {createMutation.error.message}
+            </div>
+          )}
 
 
 
@@ -251,9 +248,11 @@ const Dashboard = () => {
             handleApprove={approveAction}
             handleReject={rejectAction}
           />
+          </div>
         </div>
       </div>
-    </div>
+    )}
+    </ResilientPage>
   );
 };
 
