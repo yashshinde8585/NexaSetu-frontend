@@ -551,8 +551,8 @@ const ProjectDetail = () => {
             )}
           </div>
         </div>
-
       </div>
+    </div>
     </ResilientPage>
   );
 };
