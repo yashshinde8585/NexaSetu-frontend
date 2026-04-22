@@ -9,7 +9,7 @@ import { useAuth } from './context/AuthContext';
 import { ROUTES } from './constants';
 
 const App = () => {
-    const { user, loading } = useAuth();
+    const { user, loading, loadingMessage } = useAuth();
 
     /**
      * Determines the primary dashboard based on user role and job title.
@@ -41,8 +41,17 @@ const App = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="animate-spin text-primary" size={40} />
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8">
+                <div className="relative mb-8">
+                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
+                    <Loader2 className="animate-spin text-primary relative z-10" size={64} strokeWidth={1} />
+                </div>
+                <div className="text-center max-w-xs animate-pulse">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">System Status</p>
+                    <p className="text-white/60 text-xs font-medium tracking-tight leading-relaxed">
+                        {loadingMessage}
+                    </p>
+                </div>
             </div>
         );
     }

@@ -136,20 +136,20 @@ api.interceptors.response.use(
     }
 
     // Network Resilience: Automated retry with exponential backoff for transient failures
-    const isNetworkError = !error.response && error.code !== 'ERR_CANCELED';
-    const isRetryableStatus = [503, 504].includes(normalizedError.status);
     const maxRetries = 3;
+    const currentRetry = originalRequest._retryCount || 0;
+
+    const isNetworkError = !error.response && error.code !== 'ERR_CANCELED' && error.message !== 'duplicate_request';
+    const isRetryableStatus = [502, 503, 504].includes(normalizedError.status);
     
-    if ((isNetworkError || isRetryableStatus) && !originalRequest._retryCount) {
-      originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+    if ((isNetworkError || isRetryableStatus) && currentRetry < maxRetries) {
+      originalRequest._retryCount = currentRetry + 1;
       
-      if (originalRequest._retryCount <= maxRetries) {
-        const backoffDelay = Math.pow(2, originalRequest._retryCount) * 1000;
-        console.warn(`[API] Retrying transient error in ${backoffDelay}ms... (Attempt ${originalRequest._retryCount})`);
-        
-        await new Promise(resolve => setTimeout(resolve, backoffDelay));
-        return api(originalRequest);
-      }
+      const backoffDelay = Math.pow(2, originalRequest._retryCount) * 1000;
+      console.warn(`[API] Retrying transient error (${normalizedError.status || 'Network'}) in ${backoffDelay}ms... (Attempt ${originalRequest._retryCount}/${maxRetries})`);
+      
+      await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      return api(originalRequest);
     }
 
     // Forced Logout: Handle unrecoverable 401s (e.g. after refresh fails)

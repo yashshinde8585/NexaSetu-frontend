@@ -2,8 +2,8 @@ import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
 class AuthService {
-  getCurrentUser() {
-    return apiClient.get(API_ENDPOINTS.AUTH.ME);
+  getCurrentUser(config = {}) {
+    return apiClient.get(API_ENDPOINTS.AUTH.ME, config);
   }
 
   login(email, password, config = {}) {
