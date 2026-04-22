@@ -24,12 +24,12 @@ import Button from '../atoms/Button';
  * Optimized for professional clarity and high-density information.
  */
 const DeckWrapper = ({ title, children }) => (
-  <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 sm:p-10 space-y-8 relative overflow-hidden">
-    <div className="flex items-center gap-4 mb-2">
-       <div className="h-5 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(var(--color-primary),0.5)]"></div>
-       <h2 className="text-xl font-black text-white uppercase tracking-tight">{title}</h2>
+  <div className="bg-white/5 border border-white/10 rounded p-4 sm:p-6 space-y-6 relative overflow-hidden">
+    <div className="flex items-center gap-3 mb-2">
+       <div className="h-4 w-1 bg-primary rounded-full"></div>
+       <h2 className="text-[12px] font-black text-white uppercase tracking-widest">{title}</h2>
     </div>
-    <div className="space-y-8 relative z-10">{children}</div>
+    <div className="space-y-6 relative z-10">{children}</div>
   </div>
 );
 
@@ -37,45 +37,45 @@ const DeckWrapper = ({ title, children }) => (
  * Clean Identity section for profile management.
  */
 export const IdentitySection = ({ user }) => (
-  <DeckWrapper title="User Profile">
-    <div className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-black border border-white/10 rounded-2xl">
-      <div className="relative">
-        <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 p-1 shadow-2xl">
-          <div className="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden">
+  <DeckWrapper title="USER_PROFILE">
+    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-black border border-white/10 rounded">
+      <div className="relative shrink-0">
+        <div className="w-16 h-16 rounded bg-white/5 border border-white/10 p-1">
+          <div className="w-full h-full bg-black rounded flex items-center justify-center overflow-hidden">
             {user.avatar ? (
               <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
             ) : (
-              <span className="text-3xl font-black text-white/50">{user.name.charAt(0)}</span>
+              <span className="text-xl font-black text-white/50">{user.name.charAt(0)}</span>
             )}
           </div>
         </div>
-        <button className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center text-primary-light hover:text-white transition-colors cursor-pointer shadow-xl">
-           <Camera size={14} />
+        <button className="absolute -bottom-2 -right-2 w-6 h-6 rounded bg-black border border-white/10 flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer">
+           <Camera size={12} />
         </button>
       </div>
-      <div className="flex-1 space-y-2 text-center sm:text-left">
-        <div className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em]">Active User</div>
-        <h3 className="text-3xl font-black text-white uppercase tracking-tight leading-tight">{user.name}</h3>
-        <p className="text-[10px] text-white/80 font-medium uppercase tracking-widest">{user.email}</p>
+      <div className="flex-1 space-y-1 text-center sm:text-left min-w-0">
+        <div className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">ACTIVE_USER</div>
+        <h3 className="text-[14px] font-black text-white uppercase tracking-widest truncate">{user.name}</h3>
+        <p className="text-[9px] text-white/60 font-black uppercase tracking-widest truncate">{user.email}</p>
       </div>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1">Full Name</label>
-         <TacticalInput icon={<UserCircle size={16} />} value={user.name} className="bg-black/40" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-1">
+         <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">FULL_NAME</label>
+         <TacticalInput icon={<UserCircle size={14} />} value={user.name} className="h-9" />
       </div>
-      <div className="space-y-1.5">
-         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Email Address</label>
-         <TacticalInput icon={<AtSign size={16} />} value={user.email} className="bg-black/40" />
+      <div className="space-y-1">
+         <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">EMAIL_ADDRESS</label>
+         <TacticalInput icon={<AtSign size={14} />} value={user.email} className="h-9" />
       </div>
-      <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Current Role</label>
-         <TacticalInput icon={<BadgeCheck size={16} />} value={user.jobTitle || 'Team Member'} disabled className="bg-black/20" />
+      <div className="space-y-1">
+          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">CURRENT_ROLE</label>
+         <TacticalInput icon={<BadgeCheck size={14} />} value={user.jobTitle || 'TEAM MEMBER'} disabled className="h-9 opacity-50" />
       </div>
-      <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Member Since</label>
-         <TacticalInput icon={<Clock size={16} />} value={new Date(user.createdAt).toLocaleDateString()} disabled className="bg-black/20" />
+      <div className="space-y-1">
+          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">MEMBER_SINCE</label>
+         <TacticalInput icon={<Clock size={14} />} value={new Date(user.createdAt).toLocaleDateString()} disabled className="h-9 opacity-50" />
       </div>
     </div>
   </DeckWrapper>
@@ -85,30 +85,30 @@ export const IdentitySection = ({ user }) => (
  * Professional Security section.
  */
 export const SecuritySection = () => (
-  <DeckWrapper title="Account Security">
-    <div className="grid grid-cols-1 gap-4">
-      <SecurityRow icon={<Lock size={18} />} title="Change Password" desc="Recommended to update every 90 days." />
-      <SecurityRow icon={<Fingerprint size={18} />} title="Two-Factor Authentication" desc="Add an extra security layer via app or SMS." badge="Recommended" />
-      <SecurityRow icon={<Database size={18} />} title="Privacy Settings" desc="Manage session persistence and visibility." />
+  <DeckWrapper title="ACCOUNT_SECURITY">
+    <div className="grid grid-cols-1 gap-2">
+      <SecurityRow icon={<Lock size={14} />} title="CHANGE_PASSWORD" desc="UPDATE EVERY 90 DAYS." />
+      <SecurityRow icon={<Fingerprint size={14} />} title="TWO_FACTOR_AUTHENTICATION" desc="ADD EXTRA SECURITY LAYER." badge="RECOMMENDED" />
+      <SecurityRow icon={<Database size={14} />} title="PRIVACY_SETTINGS" desc="MANAGE SESSION VISIBILITY." />
     </div>
   </DeckWrapper>
 );
 
 const SecurityRow = ({ icon, title, desc, badge }) => (
-  <div className="p-5 bg-black border border-white/10 hover:border-white/15 rounded-xl flex items-center justify-between group cursor-pointer transition-all">
-     <div className="flex items-center gap-5">
-        <div className="w-10 h-10 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center text-white/70 group-hover:text-primary transition-colors">
+  <div className="p-3 bg-black border border-white/10 hover:border-white/20 rounded flex items-center justify-between group cursor-pointer transition-all">
+     <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors shrink-0">
            {icon}
         </div>
-        <div>
-           <div className="flex items-center gap-3 mb-0.5">
-              <h4 className="text-sm font-black uppercase text-white/90">{title}</h4>
-              {badge && <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full uppercase">{badge}</span>}
+        <div className="min-w-0">
+           <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-[9px] font-black uppercase tracking-widest text-white truncate">{title}</h4>
+              {badge && <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">{badge}</span>}
            </div>
-           <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">{desc}</p>
+           <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] truncate">{desc}</p>
         </div>
      </div>
-     <ChevronRight size={16} className="text-white/20 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+     <ChevronRight size={14} className="text-white/20 group-hover:text-white transition-transform transform group-hover:translate-x-1 shrink-0" />
   </div>
 );
 
@@ -116,19 +116,19 @@ const SecurityRow = ({ icon, title, desc, badge }) => (
  * System Preferences section.
  */
 export const PreferencesSection = () => (
-  <DeckWrapper title="Platform Preferences">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] ml-1">Platform Theme</label>
-          <TacticalSelect icon={<Monitor size={16} />} options={['Modern Dark', 'Classic Amber', 'High Contrast']} value="Modern Dark" />
+  <DeckWrapper title="PLATFORM_PREFERENCES">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-1">
+          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">PLATFORM_THEME</label>
+          <TacticalSelect icon={<Monitor size={14} />} options={['MODERN DARK', 'CLASSIC AMBER', 'HIGH CONTRAST']} value="MODERN DARK" className="h-9 text-[10px]" />
       </div>
-      <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Timezone</label>
-          <TacticalSelect icon={<Globe size={16} />} options={['Asia/Kolkata (IST)', 'UTC (GMT)', 'US/New York (EST)']} value="Asia/Kolkata (IST)" />
+      <div className="space-y-1">
+          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">TIMEZONE</label>
+          <TacticalSelect icon={<Globe size={14} />} options={['ASIA/KOLKATA (IST)', 'UTC (GMT)', 'US/NEW YORK (EST)']} value="ASIA/KOLKATA (IST)" className="h-9 text-[10px]" />
        </div>
-       <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Notification Settings</label>
-          <TacticalSelect icon={<Bell size={16} />} options={['All Notifications', 'Critical Only', 'Muted']} value="All Notifications" />
+       <div className="space-y-1">
+          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">NOTIFICATION_SETTINGS</label>
+          <TacticalSelect icon={<Bell size={14} />} options={['ALL NOTIFICATIONS', 'CRITICAL ONLY', 'MUTED']} value="ALL NOTIFICATIONS" className="h-9 text-[10px]" />
       </div>
     </div>
   </DeckWrapper>

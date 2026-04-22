@@ -30,10 +30,10 @@ const JREDashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1600px] mx-auto flex flex-col gap-12">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. Performance Overview */}
-      <div id="jre-metrics-strip" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div id="jre-metrics-strip" className="grid grid-cols-1 md:grid-cols-3 gap-4">
          <MetricStripItem 
             icon={<Target size={14} />} 
             label="Daily Assignments" 
@@ -56,84 +56,84 @@ const JREDashboard = () => {
          />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
          {/* Main Column: Active Engineering Sprint */}
-         <div className="lg:col-span-8 flex flex-col gap-12">
+         <div className="lg:col-span-8 flex flex-col gap-6">
             <DashboardSection title="Active Engineering Tasks" icon={<Zap size={14} />}>
-               <div className="flex flex-col gap-8 py-2">
+               <div className="flex flex-col gap-6 py-2">
                   {guidedTasks?.map((task, idx) => (
-                    <div key={idx} className="bg-white/[0.02] border border-white/5 rounded p-8 group hover:border-primary/30 transition-all relative overflow-hidden">
-                       <div className="absolute top-0 left-0 w-1 h-full bg-white/5 group-hover:bg-primary/40 transition-all" />
+                    <div key={idx} className="bg-white/5 border border-white/10 rounded-sm p-6 group hover:border-primary/40 transition-colors relative overflow-hidden">
+                       <div className="absolute top-0 left-0 w-0.5 h-full bg-white/10 group-hover:bg-primary transition-colors" />
                        
-                       <div className="flex flex-col md:flex-row gap-8">
+                       <div className="flex flex-col md:flex-row gap-6">
                           <div className="flex-1">
-                             <div className="flex items-center gap-4 mb-6">
-                                <StatusBadge status={task.status === 'ACTIVE' ? 'active' : 'pending'} text={task.status} mini />
-                                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">DEADLINE: {task.due}</span>
+                             <div className="flex items-center gap-4 mb-4">
+                                <StatusBadge status={task.status === 'ACTIVE' ? 'active' : 'pending'} />
+                                <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">DEADLINE: {task.due}</span>
                              </div>
                              
-                             <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight group-hover:text-primary transition-colors">{task.title}</h3>
-                             <p className="text-[11px] font-bold text-white/40 uppercase leading-relaxed tracking-tight mb-8 max-w-xl">{task.description || 'Follow standard execution protocols. Ensure quality validation benchmarks are met.'}</p>
+                             <h3 className="text-lg font-black text-white mb-2 uppercase tracking-widest group-hover:text-primary transition-colors">{task.title}</h3>
+                             <p className="text-[9px] font-black text-white/40 uppercase leading-relaxed tracking-widest mb-6 max-w-xl">{task.description || 'FOLLOW_STANDARD_PROTOCOLS'}</p>
                              
                              <div className="flex flex-col gap-2">
                                 {task.steps?.map((step, sIdx) => (
-                                  <div key={sIdx} className="flex items-center gap-4 p-4 bg-black border border-white/5 rounded hover:border-white/20 transition-all group/step cursor-pointer">
-                                     <div className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
+                                  <div key={sIdx} className="flex items-center gap-3 p-3 bg-black border border-white/5 rounded-none hover:border-white/20 transition-colors group/step cursor-pointer">
+                                     <div className={`w-5 h-5 rounded-none flex items-center justify-center transition-all ${
                                        step.completed ? 'bg-status-success/20 text-status-success border border-status-success/30' : 'bg-white/5 text-white/20 border border-white/5'
                                      }`}>
-                                        {step.completed ? <Check size={12} strokeWidth={3} /> : <span className="text-[10px] font-bold">{sIdx + 1}</span>}
+                                        {step.completed ? <Check size={10} strokeWidth={3} /> : <span className="text-[9px] font-black">{sIdx + 1}</span>}
                                      </div>
-                                     <span className={`text-[11px] font-bold uppercase tracking-tight ${step.completed ? 'text-white/20 line-through' : 'text-white/60 group-hover/step:text-white'}`}>{step.text}</span>
+                                     <span className={`text-[10px] font-black uppercase tracking-widest ${step.completed ? 'text-white/20 line-through' : 'text-white/60 group-hover/step:text-white'}`}>{step.text}</span>
                                   </div>
                                 ))}
                              </div>
                           </div>
                           
-                          <div className="md:w-56 flex flex-col gap-6 md:border-l border-white/10 md:pl-8">
-                             <div className="flex flex-col gap-3">
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Task Controls</span>
-                                <button className="w-full py-3 bg-white/[0.02] border border-white/10 rounded text-white/60 text-[10px] font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-all">
-                                   Update Status
+                          <div className="md:w-48 flex flex-col gap-4 md:border-l border-white/10 md:pl-6">
+                             <div className="flex flex-col gap-2">
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">TASK_CONTROLS</span>
+                                <button className="w-full py-2 bg-white/5 border border-white/10 rounded-none text-white/60 text-[9px] font-black uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-colors">
+                                   UPDATE_STATUS
                                 </button>
                              </div>
                              
                              {task.blocked && (
-                               <div className="p-4 bg-status-error/5 border border-status-error/20 rounded flex flex-col gap-1 items-center justify-center">
-                                  <ShieldAlert size={16} className="text-status-error mb-1" />
-                                  <span className="text-[10px] font-bold text-status-error uppercase tracking-widest leading-none">Operation Blocked</span>
+                               <div className="p-3 bg-status-error/5 border border-status-error/20 rounded-none flex flex-col gap-1 items-center justify-center">
+                                  <ShieldAlert size={14} className="text-status-error mb-1" />
+                                  <span className="text-[9px] font-black text-status-error uppercase tracking-widest leading-none">BLOCKED</span>
                                </div>
                              )}
                              
-                             <button className="flex items-center justify-center gap-2 text-[10px] font-bold text-white/20 hover:text-white transition-all uppercase tracking-widest mt-auto group/btn">
-                                SPECIFICATIONS <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                             <button className="flex items-center justify-center gap-2 text-[9px] font-black text-white/20 hover:text-white transition-colors uppercase tracking-[0.2em] mt-auto group/btn">
+                                SPEC <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                              </button>
                           </div>
                        </div>
                     </div>
                   ))}
                   {(!guidedTasks || guidedTasks.length === 0) && (
-                    <div className="py-24 text-center flex flex-col items-center gap-4 bg-white/[0.01] border border-white/5 border-dashed rounded">
-                       <Zap size={32} className="text-white/10" />
-                       <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">Operational Quotas Meta. No active tasks.</span>
+                    <div className="py-16 text-center flex flex-col items-center gap-4 bg-white/5 border border-white/10 border-dashed rounded-none">
+                       <Zap size={24} className="text-white/10" />
+                       <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">NO_ACTIVE_TASKS</span>
                     </div>
                   )}
                </div>
             </DashboardSection>
 
             {/* Bottom Grid: Mentorship & Activity */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <DashboardSection title="Mentorship Hub" icon={<MessageSquare size={14} />}>
-                  <div className="flex flex-col gap-6 py-4">
-                     <p className="text-[11px] font-bold text-white/30 uppercase tracking-tight leading-relaxed italic">Direct communication channels with engineering leadership units.</p>
-                     <div className="flex flex-col gap-3">
-                        <MentorAction icon={<Star size={16} />} label="Technical Lead" sub="Performance Review" />
-                        <MentorAction icon={<MessageCircle size={16} />} label="Senior Mentor" sub="Strategic Guidance" />
+                  <div className="flex flex-col gap-4 py-4">
+                     <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] leading-relaxed italic">DIRECT_COMMUNICATION_CHANNELS</p>
+                     <div className="flex flex-col gap-2">
+                        <MentorAction icon={<Star size={16} />} label="TECH_LEAD" sub="REVIEW" />
+                        <MentorAction icon={<MessageCircle size={16} />} label="SENIOR_MENTOR" sub="GUIDANCE" />
                      </div>
                   </div>
                </DashboardSection>
 
                <DashboardSection title="Engagement Log" icon={<ShieldCheck size={14} />}>
-                  <div className="flex flex-col gap-4 py-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="flex flex-col gap-2 py-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                      {activity?.map((a, idx) => (
                        <ActivityItem 
                           key={idx} 
@@ -144,7 +144,7 @@ const JREDashboard = () => {
                        />
                      ))}
                      {(!activity || activity.length === 0) && (
-                       <div className="py-12 text-center text-[10px] text-white/10 uppercase font-bold tracking-widest">No transaction history.</div>
+                       <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest">ZERO_HISTORY</div>
                      )}
                   </div>
                </DashboardSection>
@@ -152,43 +152,43 @@ const JREDashboard = () => {
          </div>
 
          {/* Sidebar: Coordination & Progress */}
-         <div className="lg:col-span-4 flex flex-col gap-12">
+         <div className="lg:col-span-4 flex flex-col gap-6">
             <DashboardSection title="Bottleneck Mitigation" icon={<HelpCircle size={14} />}>
-               <div className="flex flex-col gap-4 py-2">
+               <div className="flex flex-col gap-3 py-2">
                   {stuckGuidance?.map((s, idx) => (
-                    <div key={idx} className="bg-white/[0.02] border border-white/5 p-5 rounded group hover:border-status-error/30 transition-all">
-                       <span className="block text-[11px] font-bold text-white/80 mb-3 uppercase tracking-tight">{s.issue}</span>
-                       <div className="p-4 bg-status-error/5 border border-status-error/10 rounded mb-4">
-                          <span className="text-[9px] font-bold text-status-error uppercase tracking-widest block mb-1">Recommended Action</span>
-                          <p className="text-[10px] font-bold text-white/60 leading-relaxed uppercase">{s.suggestedAction}</p>
+                    <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-none group hover:bg-white/10 transition-colors">
+                       <span className="block text-[10px] font-black text-white uppercase tracking-widest mb-2">{s.issue}</span>
+                       <div className="p-3 bg-status-error/5 border border-status-error/20 rounded-none mb-3">
+                          <span className="text-[8px] font-black text-status-error uppercase tracking-[0.2em] block mb-1">RECOMMENDED_ACTION</span>
+                          <p className="text-[9px] font-black text-white/60 leading-relaxed uppercase tracking-widest">{s.suggestedAction}</p>
                        </div>
-                       <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                          <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Escalate To:</span>
-                          <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{s.suggestedPerson}</span>
+                       <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                          <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">ESCALATE_TO</span>
+                          <span className="text-[9px] font-black text-primary uppercase tracking-widest">{s.suggestedPerson}</span>
                        </div>
                     </div>
                   ))}
                   {(!stuckGuidance || stuckGuidance.length === 0) && (
-                    <div className="py-12 text-center text-[10px] text-white/10 uppercase font-bold tracking-widest flex flex-col items-center gap-4">
-                       <ShieldCheck size={24} className="text-status-success/20" /> No active blockers.
+                    <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest flex flex-col items-center gap-4">
+                       <ShieldCheck size={20} className="text-status-success/20" /> ZERO_BLOCKERS
                     </div>
                   )}
                </div>
             </DashboardSection>
 
             <DashboardSection title="Execution Efficiency" icon={<Zap size={14} />}>
-               <div className="flex flex-col gap-6 py-4">
+               <div className="flex flex-col gap-4 py-4 px-5 bg-white/5 border border-white/10 rounded-none">
                   <div className="flex items-center justify-between">
                      <div className="flex flex-col gap-1">
-                        <span className="text-4xl font-black text-white tracking-tighter tabular-nums leading-none">{progress?.percentage || 0}%</span>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Efficiency Rate</span>
+                        <span className="text-3xl font-black text-white tracking-widest leading-none">{progress?.percentage || 0}%</span>
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">EFFICIENCY_RATE</span>
                      </div>
-                     <div className="px-4 py-3 bg-white/[0.02] border border-primary/20 rounded flex flex-col items-center">
-                        <span className="text-xl font-black text-primary leading-none tabular-nums">{progress?.completed || 0}</span>
-                        <span className="text-[8px] font-bold text-primary uppercase tracking-widest mt-1">Units</span>
+                     <div className="px-3 py-2 bg-black border border-primary/20 rounded-none flex flex-col items-center">
+                        <span className="text-lg font-black text-primary leading-none">{progress?.completed || 0}</span>
+                        <span className="text-[7px] font-black text-primary uppercase tracking-[0.2em] mt-1">UNITS</span>
                      </div>
                   </div>
-                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
                      <div 
                         className="h-full bg-primary transition-all duration-1000"
                         style={{ width: `${progress?.percentage || 0}%` }}
@@ -198,16 +198,16 @@ const JREDashboard = () => {
             </DashboardSection>
 
             <DashboardSection title="Next Operational Phase" icon={<Sparkles size={14} />}>
-               <div className="flex flex-col gap-4 py-2">
-                  <div className="p-6 bg-white/[0.02] border border-white/10 rounded relative overflow-hidden group hover:border-primary/20 transition-all">
-                     <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.1] transition-all">
-                        <ArrowRight size={48} className="text-primary" />
+               <div className="flex flex-col gap-2 py-2">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-none relative overflow-hidden group hover:bg-white/10 transition-colors">
+                     <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-colors">
+                        <ArrowRight size={40} className="text-primary" />
                      </div>
-                     <span className="flex items-center gap-2 text-[9px] font-bold text-primary uppercase tracking-widest mb-3">
-                        <Zap size={12} fill="currentColor" /> Priority Directive
+                     <span className="flex items-center gap-2 text-[8px] font-black text-primary uppercase tracking-[0.2em] mb-2">
+                        <Zap size={10} fill="currentColor" /> PRIORITY_DIRECTIVE
                      </span>
-                     <p className="text-[14px] font-bold text-white uppercase tracking-tight leading-tight mb-2">{nextSteps?.main || 'AWAITING_PROTOCOLS'}</p>
-                     <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest italic">{nextSteps?.minor || 'STANDBY'}</p>
+                     <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">{nextSteps?.main || 'AWAITING_PROTOCOLS'}</p>
+                     <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">{nextSteps?.minor || 'STANDBY'}</p>
                   </div>
                </div>
             </DashboardSection>
@@ -218,14 +218,14 @@ const JREDashboard = () => {
 };
 
 const MentorAction = ({ icon, label, sub }) => (
-  <button className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/5 rounded-lg hover:border-primary/40 hover:bg-white/[0.04] group transition-all w-full text-left">
-     <div className="flex items-center gap-4">
-        <div className="p-3 bg-black border border-white/10 rounded group-hover:border-primary/40 text-white/20 group-hover:text-primary transition-all">
+  <button className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none hover:bg-white/10 group transition-colors w-full text-left">
+     <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-black border border-white/10 rounded-none group-hover:border-primary text-white/20 group-hover:text-primary transition-colors">
            {icon}
         </div>
         <div className="flex flex-col">
-           <span className="text-[11px] font-bold text-white uppercase tracking-widest leading-none mb-1">{label}</span>
-           <span className="text-[9px] font-bold uppercase text-white/20 tracking-widest leading-none group-hover:text-primary/60 transition-colors">{sub}</span>
+           <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{label}</span>
+           <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em] leading-none group-hover:text-primary/60 transition-colors">{sub}</span>
         </div>
      </div>
      <ChevronRight size={14} className="text-white/10 group-hover:text-primary transition-transform group-hover:translate-x-1" />

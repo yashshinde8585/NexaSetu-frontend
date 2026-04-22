@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import ProjectService from '../api/projectService';
 import CenteredLoading from '../components/atoms/CenteredLoading';
+import { BackButton } from '../components/atoms';
 
 /**
  * Tactical Project Settings Interface.
@@ -66,15 +67,7 @@ const ProjectSettings = () => {
         
         {/* Navigation & Status Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="group flex items-center gap-3 text-white/50 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em]"
-          >
-            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary/40 group-hover:bg-white/10">
-              <ChevronLeft size={16} />
-            </div>
-            Back to Dashboard
-          </button>
+          <BackButton />
 
           <div className="flex items-center gap-4">
             <span className="px-3 py-1.5 bg-primary/20 border border-primary/40 rounded-full text-[9px] font-black text-primary uppercase tracking-widest shadow-lg">

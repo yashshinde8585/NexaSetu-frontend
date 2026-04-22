@@ -18,10 +18,13 @@ import {
   BrainCircuit,
   Tag,
   Loader2,
-  AlertTriangle,
   Minus,
-  Plus
+  Plus,
+  Paperclip,
+  File,
+  ExternalLink
 } from 'lucide-react';
+import { BackButton } from '../components/atoms';
 import TaskComments from '../components/organisms/TaskComments';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
 import DatePicker from 'react-datepicker';
@@ -129,14 +132,14 @@ const TaskDetailPage = () => {
   const getStatusTitle = (status) => columns.find((c) => c.id === status)?.title || status;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:h-[calc(100vh-110px)] flex flex-col gap-4 py-4 md:overflow-hidden animate-in fade-in duration-500 bg-black">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-screen md:h-[calc(100vh-80px)] flex flex-col gap-3 py-3 md:overflow-hidden animate-in fade-in duration-500">
       {/* Header */}
-      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shrink-0 pb-6 border-b border-white/20">
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shrink-0 pb-4 border-b border-white/10">
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-black border border-white/30 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-all shadow-sm shrink-0"><ArrowLeft size={18} /></button>
+          <BackButton className="shrink-0" />
           <div className="flex flex-col min-w-0">
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              <span className="text-[9px] md:text-[10px] font-black text-primary px-1.5 py-0.5 bg-black rounded uppercase tracking-wider border border-primary shrink-0 shadow-[0_0_10px_rgba(59,130,246,0.2)]">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
+              <span className="text-[9px] font-black text-primary px-1.5 py-0.5 bg-black rounded uppercase tracking-wider border border-primary shrink-0 shadow-[0_0_10px_rgba(59,130,246,0.2)]">{taskData.projectKey}-{taskData.taskNumber || '0'}</span>
               {taskData.blocked && (
                 <span className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse shrink-0">
                   <ShieldAlert size={10} /> BLOCKED
@@ -146,7 +149,7 @@ const TaskDetailPage = () => {
                 <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNCED</span>
               )}
             </div>
-            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight truncate max-w-full mt-1.5">{taskData.title}</h1>
+            <h1 className="text-lg md:text-xl font-black text-white tracking-tighter truncate max-w-full mt-1">{taskData.title}</h1>
           </div>
         </div>
 
@@ -227,13 +230,13 @@ const TaskDetailPage = () => {
         </div>
       </header>
 
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 md:overflow-hidden min-h-0 pb-10 md:pb-0">
-        <div className="lg:col-span-8 flex flex-col gap-6 overflow-hidden min-h-0">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 md:overflow-hidden min-h-0 pb-6 md:pb-0">
+        <div className="lg:col-span-8 flex flex-col gap-4 overflow-hidden min-h-0">
           {/* Task Description */}
-          <section className="flex-1 flex flex-col bg-black border border-white/20 rounded-[2rem] md:rounded-[32px] overflow-hidden shadow-2xl min-h-[300px] md:min-h-0">
-             <div className="px-6 py-5 border-b border-white/20 flex items-center justify-between shrink-0 bg-white/[0.02]">
-                <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] flex items-center gap-2.5">
-                   <Tag size={14} className="text-primary" /> Task brief
+          <section className="flex-1 flex flex-col bg-white/5 border border-white/20 rounded-2xl overflow-hidden shadow-2xl min-h-[250px] md:min-h-0">
+             <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between shrink-0">
+                <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">
+                   TASK BRIEF
                 </h3>
                 
                 <div className="flex items-center gap-4">
@@ -253,8 +256,42 @@ const TaskDetailPage = () => {
                   </button>
                 </div>
              </div>
-             <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-black leading-relaxed">
-                <p className="text-[14px] md:text-[15px] text-white/60 font-medium whitespace-pre-wrap selection:bg-primary selection:text-white uppercase tracking-tight">{taskData.description || "No description provided."}</p>
+             <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar leading-relaxed">
+                <p className="text-[12px] md:text-[13px] text-white/80 font-black whitespace-pre-wrap selection:bg-primary selection:text-white tracking-tight">{taskData.description || "No description provided."}</p>
+                
+                {/* Attachments Display */}
+                {taskData.attachments?.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
+                       MISSION ASSETS ({taskData.attachments.length})
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {taskData.attachments.map((file, idx) => (
+                        <a 
+                          key={idx} 
+                          href={file.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-3 bg-white/[0.03] border border-white/10 p-2.5 rounded-xl group hover:bg-white/5 hover:border-primary/30 transition-all"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center text-primary/60 group-hover:text-primary transition-colors shrink-0">
+                              <File size={14} />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-[10px] font-black text-white/80 truncate group-hover:text-white">{file.name}</span>
+                              <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest leading-none mt-0.5">
+                                {(file.size / 1024).toFixed(1)} KB
+                              </span>
+                            </div>
+                          </div>
+                          <ExternalLink size={12} className="text-white/20 group-hover:text-primary transition-colors shrink-0" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <TaskEPIExplanation 
                    taskId={taskId} 
                    isExpanded={isEpiExpanded}
@@ -265,13 +302,13 @@ const TaskDetailPage = () => {
           </section>
 
           {/* Task Metrics */}
-          <section className="bg-black border border-white/20 p-5 md:p-6 rounded-[2rem] grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-6 md:gap-4 shrink-0 shadow-xl overflow-hidden px-8">
+          <section className="bg-white/5 border border-white/20 p-4 rounded-xl grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-4 shrink-0 shadow-xl overflow-hidden px-6">
               <div className="flex items-center gap-2 shrink-0">
                   <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-primary flex items-center justify-center text-[8px] font-black text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)] uppercase">
                      {taskData.assignedUser?.name[0] || '?'}
                  </div>
                 <div className="min-w-0">
-                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Assignee</span>
+                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">ASSIGNEE</span>
                     <p className="text-[10px] md:text-[11px] font-black text-white truncate tracking-tight uppercase leading-none">{taskData.assignedUser?.name?.split(' ')[0] || 'Unassigned'}</p>
                 </div>
              </div>
@@ -283,7 +320,7 @@ const TaskDetailPage = () => {
                     <User size={10} />
                 </div>
                 <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Created by</span>
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">CREATED BY</span>
                    <p className="text-[10px] md:text-[11px] font-black text-white/60 tracking-tight uppercase truncate leading-none">{taskData.createdBy?.name?.split(' ')[0] || 'System'}</p>
                 </div>
              </div>
@@ -295,7 +332,7 @@ const TaskDetailPage = () => {
                     <Calendar size={10} />
                 </div>
                 <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">Sprint</span>
+                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">SPRINT</span>
                    <p className="text-[10px] md:text-[11px] font-black text-secondary tracking-tight uppercase truncate leading-none">{taskData.sprintInfo?.name || 'Backlog'}</p>
                 </div>
              </div>
@@ -308,7 +345,7 @@ const TaskDetailPage = () => {
                       <Clock size={10} className="text-status-success" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Est. Time</span>
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">EST. TIME</span>
                      <p className="text-lg font-black text-white tracking-tighter uppercase leading-none">
                        {(() => {
                          let mins = taskData.estimatedDuration || 0;
@@ -332,7 +369,7 @@ const TaskDetailPage = () => {
                       <Calendar size={10} className="text-primary" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">Due date</span>
+                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">DUE DATE</span>
                      <div className="relative">
                         <DatePicker
                            selected={taskData.dueDate ? new Date(taskData.dueDate) : null}
@@ -353,8 +390,8 @@ const TaskDetailPage = () => {
         </div>
 
         {/* Activity Feed */}
-        <aside className="lg:col-span-4 flex flex-col gap-6 md:overflow-hidden min-h-[400px] md:min-h-0">
-          <section className="flex-1 flex flex-col min-h-0 bg-black border border-white/20 rounded-[2rem] md:rounded-[32px] overflow-hidden shadow-xl">
+        <aside className="lg:col-span-4 flex flex-col gap-4 md:overflow-hidden min-h-[300px] md:min-h-0">
+          <section className="flex-1 flex flex-col min-h-0 bg-white/5 border border-white/20 rounded-2xl overflow-hidden shadow-xl">
              <TaskComments taskId={taskId} />
           </section>
         </aside>

@@ -15,10 +15,10 @@ const Navbar = ({ onToggleSidebar }) => {
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 flex items-start justify-between px-4 sm:px-8 lg:px-10 py-3 sm:py-4 bg-black border-b border-white/15">
+    <nav className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 h-14 bg-black border-b border-white/10">
       {user ? (
         <>
-          <div className="flex items-center gap-4 shrink-0 px-2 h-9 min-h-[36px]">
+          <div className="flex items-center gap-4 shrink-0 px-2 h-9">
             <button
               onClick={onToggleSidebar}
               className="p-2 -ml-2 text-white/60 hover:text-white md:hidden transition-colors"
@@ -26,8 +26,8 @@ const Navbar = ({ onToggleSidebar }) => {
             >
               <Menu size={24} aria-hidden="true" />
             </button>
-            <div className="text-xs font-semibold text-white flex items-center h-full">
-              <span className="text-white uppercase tracking-[0.15em] pointer-events-none">
+            <div className="text-[10px] font-black text-white flex items-center h-full">
+              <span className="text-white uppercase tracking-[0.2em] pointer-events-none">
                 {(() => {
                   const path = location.pathname;
                   const breadcrumbMap = {
@@ -73,7 +73,7 @@ const Navbar = ({ onToggleSidebar }) => {
               hasPermission(PERMISSIONS.USE_MAGIC_BAR) && <MagicBar />}
           </div>
 
-          <div className="flex items-center gap-4 shrink-0 h-9 min-h-[36px]">
+          <div className="flex items-center gap-4 shrink-0 h-9">
             <NotificationTray />
             <ProfileDropdown />
           </div>
@@ -81,19 +81,11 @@ const Navbar = ({ onToggleSidebar }) => {
       ) : (
         <>
           <Link to="/" className="flex items-center gap-3 group/logo relative">
-            <div className="relative">
-              {/* Flat NexaSetu Logo - Unified Brand Mark */}
-              <div className="relative w-9 h-9 bg-brand rounded-xl flex items-center justify-center p-2 group-hover/logo:scale-105 transition-transform duration-500 overflow-hidden ring-1 ring-white/20">
-                <div className="grid grid-cols-2 gap-1.5 w-5 h-5 relative z-10" aria-hidden="true">
-                  <div className="bg-white rounded-[2px] transform group-hover/logo:rotate-3 transition-transform duration-500" />
-                  <div className="bg-white/80 rounded-[2px]" />
-                  <div className="bg-white/80 rounded-[2px]" />
-                  <div className="bg-white rounded-[2px] relative overflow-hidden" />
-                </div>
-              </div>
+            <div className="w-6 h-6 bg-primary flex items-center justify-center text-black transition-transform">
+              <Zap size={14} fill="currentColor" />
             </div>
-            <span className="text-xl font-black tracking-tighter text-white">
-              NexaSetu
+            <span className="text-[12px] font-black tracking-[0.2em] text-white uppercase">
+              NEXA_SETU
             </span>
           </Link>
 
@@ -101,17 +93,17 @@ const Navbar = ({ onToggleSidebar }) => {
             {location.pathname !== ROUTES.LOGIN && (
               <Link
                 to={ROUTES.LOGIN}
-                className="text-xs sm:text-sm font-black text-white/70 hover:text-white uppercase tracking-widest transition-colors whitespace-nowrap"
+                className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] transition-colors whitespace-nowrap"
               >
-                Sign In
+                SIGN_IN
               </Link>
             )}
             {location.pathname !== ROUTES.REGISTER && (
               <Link
                 to={ROUTES.REGISTER}
-                className="text-xs sm:text-sm font-black bg-white hover:bg-white/90 text-black px-4 sm:px-6 py-2.5 rounded-xl uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap"
+                className="text-[10px] font-black bg-white hover:bg-white/90 text-black h-9 px-4 sm:px-6 flex items-center justify-center rounded uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap"
               >
-                Get Started
+                GET_STARTED
               </Link>
             )}
           </div>

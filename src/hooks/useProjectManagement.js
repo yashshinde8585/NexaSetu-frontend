@@ -25,6 +25,7 @@ export const useProjectManagement = (id, user) => {
     estimatedDuration: 30,
     durationUnit: 'min',
     dueDate: '',
+    attachments: [],
   });
   const [githubToken, setGithubToken] = useState('');
   const [githubSuggestions, setGithubSuggestions] = useState([]);
@@ -112,6 +113,7 @@ export const useProjectManagement = (id, user) => {
         estimatedDuration: 30,
         durationUnit: 'min',
         dueDate: '',
+        attachments: [],
       });
       queryClient.invalidateQueries({
         queryKey: ['tasks', id, selectedSprintId],

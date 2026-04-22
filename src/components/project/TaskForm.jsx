@@ -1,10 +1,50 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, Minus, Plus } from 'lucide-react';
+import { Clock, Minus, Plus, Paperclip, X, FileIcon, Loader2 } from 'lucide-react';
+import StorageService from '../../services/storageService';
+import { useAuth } from '../../context/AuthContext';
 
 // A form component for manually creating new tasks with specific titles, sprints, and descriptions.
 const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
+  const { user } = useAuth();
+  const [uploading, setUploading] = React.useState(false);
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const uploadPromises = files.map(file => 
+        StorageService.uploadAttachment(file, user.workspaceId, newTask.project || 'global', 'new')
+      );
+      
+      const results = await Promise.all(uploadPromises);
+      setNewTask(prev => ({
+        ...prev,
+        attachments: [...(prev.attachments || []), ...results]
+      }));
+    } catch (err) {
+      alert('Failed to upload one or more files. Please try again.');
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const removeAttachment = async (index) => {
+    const attachment = newTask.attachments[index];
+    try {
+      setNewTask(prev => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, i) => i !== index)
+      }));
+    } catch (err) {
+      console.error('Failed to remove attachment:', err);
+    }
+  };
+
   return (
     <div className="bg-background-light p-6 rounded-lg mb-8 shadow-md border border-background-dark/30 animate-in fade-in zoom-in-95 duration-200">
       <form
@@ -158,6 +198,47 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                popperPlacement="bottom-start"
              />
            </div>
+        </div>
+
+        {/* Attachment System */}
+        <div className="space-y-3 pt-2">
+          <label className="block text-sm font-medium mb-1 tracking-tight uppercase tracking-[0.2em] text-[10px] text-white/50">
+            Attachments
+          </label>
+          
+          <div className="flex flex-wrap gap-2">
+            {newTask.attachments?.map((file, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-xl group transition-all hover:bg-white/10">
+                <FileIcon size={14} className="text-primary-light" />
+                <span className="text-[10px] font-bold text-white/80 truncate max-w-[120px]">{file.name}</span>
+                <button 
+                  type="button"
+                  onClick={() => removeAttachment(idx)}
+                  className="text-white/20 hover:text-status-error transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+            
+            <label className={`flex items-center gap-2 px-4 py-2 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all ${uploading ? 'opacity-50 cursor-wait' : ''}`}>
+              {uploading ? (
+                <Loader2 size={16} className="text-primary animate-spin" />
+              ) : (
+                <Paperclip size={16} className="text-white/40" />
+              )}
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+                {uploading ? 'UPLOADING...' : 'ATTACH FILES'}
+              </span>
+              <input 
+                type="file" 
+                multiple 
+                className="hidden" 
+                onChange={handleFileChange}
+                disabled={uploading}
+              />
+            </label>
+          </div>
         </div>
         <button
           type="submit"

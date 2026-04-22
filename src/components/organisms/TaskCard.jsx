@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Clock, MapPin, CheckCircle2, Play } from 'lucide-react';
+import { Clock, MapPin, CheckCircle2, Play, Paperclip } from 'lucide-react';
 import { TASK_STATUS } from '../../constants';
 
 // A card component that displays task details, status, and management actions.
@@ -105,6 +105,13 @@ const TaskCard = ({
               )}
             </div>
           </div>
+
+          {task.attachments?.length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-white/5 border-white/10 text-primary-light/60">
+              <Paperclip size={14} />
+              <span className="text-[10px] font-black">{task.attachments.length}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

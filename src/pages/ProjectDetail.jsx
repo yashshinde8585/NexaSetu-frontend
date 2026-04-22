@@ -183,8 +183,8 @@ const ProjectDetail = () => {
   if (isLoading) return <CenteredLoading />;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-10">
-      <div className="w-full space-y-12">
+    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+      <div className="w-full space-y-6 max-w-7xl mx-auto">
         
         {/* Error Manifest */}
         {error && (
@@ -198,30 +198,26 @@ const ProjectDetail = () => {
         )}
 
         {/* High-Contrast Tactical Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-white/10">
           <div className="space-y-4 flex-1 w-full">
             <div className="flex flex-wrap items-center gap-3">
             </div>
             
             {/* Project Name Removed */}
 
-            <div className="flex flex-wrap items-center gap-8 pt-2">
-                {/* Lead Operator Removed */}
-
-               {!isTicketView && (
-                 <>
-                     <div className="flex flex-col gap-2 relative" onClick={(e) => e.stopPropagation()}>
-                       <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Active Sprint</span>
-                       <button
-                         onClick={() => setActiveDropdown(activeDropdown === 'sprint' ? null : 'sprint')}
-                         className="flex items-center gap-2.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all group"
-                       >
-                          <Calendar size={14} className="text-primary-light group-hover:scale-110 transition-transform" />
-                          <span className="text-[13px] font-bold text-white uppercase tracking-tight">
-                            {sprints?.find(s => s._id === project?.sprint)?.name || 'NO SPRINT SELECTED'}
-                          </span>
-                          <ChevronDown size={14} className={`text-white/40 transition-transform duration-300 ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`} />
-                       </button>
+            <div className="flex flex-wrap items-center gap-4 pt-1">
+                <div className="flex flex-col gap-1.5 relative" onClick={(e) => e.stopPropagation()}>
+                   <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">ACTIVE SPRINT</span>
+                   <button
+                     onClick={() => setActiveDropdown(activeDropdown === 'sprint' ? null : 'sprint')}
+                     className="flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded hover:bg-white/10 transition-all group"
+                   >
+                      <Calendar size={12} className="text-primary-light" />
+                      <span className="text-[11px] font-black text-white uppercase tracking-tight">
+                        {sprints?.find(s => s._id === project?.sprint)?.name || 'NO SPRINT'}
+                      </span>
+                      <ChevronDown size={12} className={`text-white/40 transition-transform ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`} />
+                   </button>
 
                        {activeDropdown === 'sprint' && (
                          <div className="absolute top-full left-0 mt-2 w-64 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -248,44 +244,44 @@ const ProjectDetail = () => {
                            </div>
                          </div>
                        )}
-                    </div>
-                 </>
-               )}
+                </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:flex lg:flex-nowrap gap-2 sm:gap-3 w-full lg:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
              {!isTicketView && (
                 <button
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
-                  className="h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all flex items-center justify-center gap-2 sm:gap-3 shadow-lg bg-background-light text-white border-white/20 hover:border-white/60 hover:bg-white/5"
+                  className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${
+                    ui.showGithubPanel ? 'bg-white text-black border-white' : 'bg-white/5 text-white/60 border-white/10 hover:border-white/30 hover:bg-white/10'
+                  }`}
                 >
-                  {ui.showGithubPanel ? <CloseIcon size={18} /> : <GitBranch size={16} />}
+                  {ui.showGithubPanel ? <CloseIcon size={14} /> : <GitBranch size={14} />}
                   {ui.showGithubPanel ? 'ABORT' : 'REPO'}
                 </button>
              )}
 
              <button
                onClick={() => ui.setShowAiInput(!ui.showAiInput)}
-               className={`h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all flex items-center justify-center gap-2 sm:gap-3 shadow-lg ${
+               className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${
                  ui.showAiInput 
-                   ? 'bg-status-error text-white border-status-error shadow-status-error/20' 
+                   ? 'bg-status-error text-white border-status-error' 
                    : 'bg-primary text-black border-primary'
                }`}
              >
-               {ui.showAiInput ? <CloseIcon size={18} /> : <Sparkles size={16} />}
+               {ui.showAiInput ? <CloseIcon size={14} /> : <Sparkles size={14} />}
                {ui.showAiInput ? 'ABORT' : (isTicketView ? 'AI GEN' : 'AI TASK')}
              </button>
              
              <button
                 onClick={() => ui.setShowTaskForm(!ui.showTaskForm)}
-                className={`col-span-2 sm:col-auto h-12 px-4 sm:px-8 rounded-xl border-2 font-black uppercase tracking-widest text-[9px] sm:text-[10px] flex items-center justify-center gap-2 sm:gap-3 transition-all active:scale-95 shadow-lg ${
+                className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all active:scale-95 ${
                   ui.showTaskForm
-                    ? 'bg-status-error text-white border-status-error shadow-status-error/20'
-                    : 'bg-primary text-black border-primary hover:bg-primary-dark hover:border-primary-dark'
+                    ? 'bg-status-error text-white border-status-error'
+                    : 'bg-primary text-black border-primary hover:bg-primary/90'
                 }`}
               >
-                {ui.showTaskForm ? <CloseIcon size={18} /> : <Plus size={18} strokeWidth={3} />}
+                {ui.showTaskForm ? <CloseIcon size={14} /> : <Plus size={14} strokeWidth={3} />}
                 {ui.showTaskForm ? 'ABORT' : (isTicketView ? 'NEW TICKET' : 'NEW TASK')}
               </button>
           </div>
@@ -349,14 +345,14 @@ const ProjectDetail = () => {
         {/* Unified Work Console */}
         <div className="space-y-2">
           {/* Tactical Search & Filter Bar */}
-          <div className="bg-black border border-white/20 rounded-2xl flex flex-row items-center p-1.5 gap-1.5 shadow-2xl">
+          <div className="bg-white/5 border border-white/20 rounded-xl flex flex-row items-center p-1 gap-1 shadow-2xl">
             {/* Primary Search Container - Flexible */}
-            <div className="flex-1 flex items-center h-12 bg-white/[0.03] rounded-xl px-3 sm:px-4 border border-white/5 focus-within:border-primary/50 transition-all group min-w-0">
-              <Search size={16} className="text-white/40 group-focus-within:text-primary shrink-0 transition-colors" />
+            <div className="flex-1 flex items-center h-10 bg-white/[0.03] rounded-lg px-3 border border-white/5 focus-within:border-primary/50 transition-all group min-w-0">
+              <Search size={14} className="text-white/40 group-focus-within:text-primary shrink-0 transition-colors" />
               <input
                 type="text"
-                placeholder="SEARCH..."
-                className="flex-1 bg-transparent px-2 sm:px-3 text-[10px] font-bold text-white placeholder:text-white/20 focus:outline-none tracking-widest truncate"
+                placeholder="SEARCH ENGINE..."
+                className="flex-1 bg-transparent px-2 text-[10px] font-black text-white placeholder:text-white/20 focus:outline-none tracking-widest truncate uppercase"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -368,20 +364,20 @@ const ProjectDetail = () => {
             </div>
 
             {/* Secondary Controls - Custom Icon Bar */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {/* Operator Select */}
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'operator' ? null : 'operator')}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
-                    activeDropdown === 'operator' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
+                    activeDropdown === 'operator' ? 'bg-white text-black border-white' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
                   }`}
                 >
-                  <Users size={18} />
+                  <Users size={14} />
                 </button>
                 {activeDropdown === 'operator' && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-2 space-y-1">
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-1.5 space-y-1">
                       {[
                         { id: 'all', label: 'ALL OPERATORS' },
                         { id: user?._id, label: 'SELF ONLY' }
@@ -389,7 +385,7 @@ const ProjectDetail = () => {
                         <button
                           key={opt.id}
                           onClick={() => { setAssigneeFilter(opt.id); setActiveDropdown(null); }}
-                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                          className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${
                             assigneeFilter === opt.id ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
                           }`}
                         >
@@ -405,20 +401,20 @@ const ProjectDetail = () => {
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'date' ? null : 'date')}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
-                    activeDropdown === 'date' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
+                    activeDropdown === 'date' ? 'bg-white text-black border-white' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
                   }`}
                 >
-                  <Calendar size={18} />
+                  <Calendar size={14} />
                 </button>
                 {activeDropdown === 'date' && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-2 space-y-1">
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-1.5 space-y-1">
                       {DATE_OPTIONS.map(opt => (
                         <button
                           key={opt.value}
                           onClick={() => { setDateFilter(opt.value); setActiveDropdown(null); }}
-                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
+                          className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${
                             dateFilter === opt.value ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
                           }`}
                         >
@@ -434,23 +430,23 @@ const ProjectDetail = () => {
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'layout' ? null : 'layout')}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-all shadow-lg ${
-                    activeDropdown === 'layout' ? 'bg-white text-black border-white' : 'bg-background-light text-white/60 border-white/20 hover:border-white/40'
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
+                    activeDropdown === 'layout' ? 'bg-white text-black border-white' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
                   }`}
                 >
-                  {cardLayout === 'list' ? <List size={18} /> : <LayoutGrid size={18} />}
+                  {cardLayout === 'list' ? <List size={14} /> : <LayoutGrid size={14} />}
                 </button>
                 {activeDropdown === 'layout' && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-2 space-y-1">
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-1.5 space-y-1">
                       {[
-                        { id: 'standard', label: 'BOARD VIEW', icon: <LayoutGrid size={14} /> },
-                        { id: 'list', label: 'LIST VIEW', icon: <List size={14} /> }
+                        { id: 'standard', label: 'BOARD VIEW', icon: <LayoutGrid size={12} /> },
+                        { id: 'list', label: 'LIST VIEW', icon: <List size={12} /> }
                       ].map(opt => (
                         <button
                           key={opt.id}
                           onClick={() => { setCardLayout(opt.id); setActiveDropdown(null); }}
-                          className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all flex items-center gap-3 ${
+                          className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center gap-2.5 ${
                             cardLayout === opt.id ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
                           }`}
                         >
@@ -467,10 +463,10 @@ const ProjectDetail = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearAllFilters}
-                  className="h-12 w-12 flex items-center justify-center bg-status-error/10 border-2 border-status-error text-status-error rounded-xl hover:bg-status-error hover:text-white transition-all active:scale-95 shadow-lg"
+                  className="h-10 w-10 flex items-center justify-center bg-status-error/10 border border-status-error/30 text-status-error rounded-lg hover:bg-status-error hover:text-white transition-all active:scale-95"
                   title="RESET FILTERS"
                 >
-                  <CloseIcon size={18} />
+                  <CloseIcon size={16} />
                 </button>
               )}
             </div>
@@ -503,25 +499,25 @@ const ProjectDetail = () => {
 
             {/* Tactical Pagination Interface */}
             {totalTasks > 0 && (
-              <div className="flex items-center justify-between gap-2 bg-background-light border-2 border-white/30 rounded-2xl p-2 mt-6 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 mt-4 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
                 {/* Left: Page Size Selector - Custom UI */}
                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                   <button 
                     onClick={() => setActiveDropdown(activeDropdown === 'pagesize' ? null : 'pagesize')}
-                    className="flex items-center gap-2 bg-background-elevated border-2 border-white/20 rounded-xl px-3 h-10 hover:border-primary/60 transition-all shadow-inner"
+                    className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg px-2.5 h-8 hover:border-primary/60 transition-all"
                   >
-                    <span className="text-[11px] font-black text-white tracking-tighter">{pageSize}</span>
-                    <ChevronDown size={12} className={`text-white/40 transition-transform duration-300 ${activeDropdown === 'pagesize' ? 'rotate-180' : ''}`} />
+                    <span className="text-[10px] font-black text-white tracking-tighter">{pageSize}</span>
+                    <ChevronDown size={10} className={`text-white/40 transition-transform ${activeDropdown === 'pagesize' ? 'rotate-180' : ''}`} />
                   </button>
 
                   {activeDropdown === 'pagesize' && (
-                    <div className="absolute bottom-full left-0 mb-2 w-24 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                      <div className="p-1.5 space-y-1">
+                    <div className="absolute bottom-full left-0 mb-2 w-20 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      <div className="p-1 space-y-1">
                         {[10, 20, 30].map(size => (
                           <button
                             key={size}
                             onClick={() => { setPageSize(size); setCurrentPage(1); setActiveDropdown(null); }}
-                            className={`w-full text-center py-2 text-[11px] font-black uppercase rounded-lg transition-all ${
+                            className={`w-full text-center py-1.5 text-[10px] font-black uppercase rounded-lg transition-all ${
                               pageSize === size ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
                             }`}
                           >
@@ -535,31 +531,26 @@ const ProjectDetail = () => {
 
                 {/* Right: Info & Controls Grouped */}
                 <div className="flex items-center gap-1.5">
-                  <div className="hidden sm:flex h-10 bg-background-elevated border-2 border-white/20 rounded-xl px-4 items-center gap-3 shadow-inner">
-                    <span className="text-[11px] font-black text-white">{currentPage}</span>
+                  <div className="hidden sm:flex h-8 bg-black/40 border border-white/10 rounded-lg px-3 items-center gap-2 shadow-inner">
+                    <span className="text-[10px] font-black text-white">{currentPage}</span>
                     <span className="text-[10px] font-black text-white/40">/</span>
                     <span className="text-[10px] font-black text-white/90">{totalPages}</span>
                   </div>
                   
-                  {/* Compact Mobile Page Info */}
-                  <div className="sm:hidden h-10 bg-background-elevated border-2 border-white/20 rounded-xl px-3 flex items-center shadow-inner">
-                    <span className="text-[10px] font-black text-white">{currentPage}/{totalPages}</span>
-                  </div>
-
-                  <div className="flex items-center bg-background-elevated border-2 border-white/20 rounded-xl overflow-hidden h-10 shadow-inner">
+                  <div className="flex items-center bg-black/40 border border-white/10 rounded-lg overflow-hidden h-8">
                     <button 
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      className="w-10 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed border-r-2 border-white/20"
+                      className="w-8 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed border-r border-white/10"
                     >
-                      <ChevronLeft size={16} strokeWidth={4} />
+                      <ChevronLeft size={14} strokeWidth={4} />
                     </button>
                     <button 
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                      className="w-10 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed"
+                      className="w-8 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed"
                     >
-                      <ChevronRight size={16} strokeWidth={4} />
+                      <ChevronRight size={14} strokeWidth={4} />
                     </button>
                   </div>
                 </div>
