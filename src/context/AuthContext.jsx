@@ -14,6 +14,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Initializing security protocols...');
+  const [isWakingUp, setIsWakingUp] = useState(false);
 
   const logout = useCallback(async () => {
     try {
@@ -30,27 +32,32 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       
-      // Optimization: If no token exists, don't block the UI with an API call
       if (!token) {
         setLoading(false);
         return;
       }
 
-      try {
-        // Add a timeout controller for the /me request
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const controller = new AbortController();
+      // Increase timeout for initial cold start detection
+      const timeoutId = setTimeout(() => {
+        setIsWakingUp(true);
+        setLoadingMessage('Waking up the strategic engine... (this takes ~30s on first load)');
+      }, 3000);
 
+      // Final hard timeout
+      const hardTimeoutId = setTimeout(() => controller.abort(), 40000); 
+
+      try {
         const res = await AuthService.getCurrentUser({ signal: controller.signal });
-        clearTimeout(timeoutId);
         setUser(res.data.user);
       } catch (err) {
-        // Silently fail auth check if token is invalid or request fails
         setUser(null);
         if (err.name === 'AbortError') {
-          console.warn('[AUTH] Authentication check timed out.');
+          console.warn('[AUTH] Cold start timeout exceeded.');
         }
       } finally {
+        clearTimeout(timeoutId);
+        clearTimeout(hardTimeoutId);
         setLoading(false);
       }
     };
@@ -137,13 +144,15 @@ export const AuthProvider = ({ children }) => {
     () => ({
       user,
       loading,
+      loadingMessage,
+      isWakingUp,
       login,
       register,
       activateInvite,
       logout,
       completeOnboarding,
     }),
-    [user, loading, login, register, activateInvite, logout, completeOnboarding]
+    [user, loading, loadingMessage, isWakingUp, login, register, activateInvite, logout, completeOnboarding]
   );
 
   return (
