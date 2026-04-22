@@ -3,9 +3,7 @@ import {
   Users, 
   AlertCircle, 
   Calendar, 
-  Clock, 
-  FileText, 
-  Rocket
+  FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
@@ -72,24 +70,24 @@ const ProjectSetup = () => {
   if (isLoading) return <SetupSkeleton />;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12 overflow-x-hidden">
-      <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+      <div className="w-full space-y-6 max-w-7xl mx-auto">
         
         {/* Simplified Header */}
-        <header className="border-b border-white/20 pb-6 sm:pb-10">
-          <div className="space-y-3 sm:space-y-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase leading-none">
-                Create New Project
+        <header className="border-b border-white/10 pb-6">
+          <div className="space-y-2">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
+                CREATE NEW PROJECT
             </h1>
-            <p className="text-[10px] sm:text-[11px] font-bold text-white/40 uppercase tracking-widest pl-4 sm:pl-10 flex items-center gap-3">
-              <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0 animate-pulse" />
-              Configure your workspace and start collaborating.
+            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] flex items-center gap-3">
+              <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0" />
+              CONFIGURE YOUR WORKSPACE AND START COLLABORATING.
             </p>
           </div>
         </header>
 
         {/* Main Configuration Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-start relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
           
           {/* Header/Summary for Mobile - Always Visible */}
           <div className="lg:hidden">
@@ -97,8 +95,8 @@ const ProjectSetup = () => {
           </div>
 
           {/* Left: Setup Panel */}
-          <div className="lg:col-span-7 xl:col-span-8 order-2 lg:order-1 space-y-6 sm:space-y-8">
-            <div className="bg-black border border-white/20 p-6 sm:p-10 rounded-2xl shadow-3xl relative overflow-hidden group hover:border-white/30 transition-colors">
+          <div className="lg:col-span-7 xl:col-span-8 order-2 lg:order-1 space-y-6">
+            <div className="bg-white/5 border border-white/10 p-5 sm:p-6 rounded-xl relative overflow-hidden group hover:border-white/20 transition-colors">
               
               {submitError && (
                 <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-status-error/5 border border-status-error/30 rounded-xl flex items-start gap-3 sm:gap-4 animate-in slide-in-from-top-4">
@@ -111,28 +109,27 @@ const ProjectSetup = () => {
                 {/* Section 1: Identity */}
                 <div className="space-y-6 sm:space-y-8">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                    <FileText size={16} className="text-primary" />
-                    <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-widest">PROJECT DETAILS</h2>
+                    <FileText size={14} className="text-primary" />
+                    <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">PROJECT DETAILS</h2>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Project Name</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">PROJECT NAME</label>
                       <input 
-                        placeholder="e.g., Client Portal" 
+                        placeholder="E.G., CLIENT PORTAL" 
                         value={mission.name}
-                        onChange={(e) => setMission({...mission, name: e.target.value.toUpperCase()})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-5 rounded-lg text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-white/10"
+                        onChange={(e) => setMission({...mission, name: e.target.value})}
+                        className="w-full h-9 bg-black/40 border border-white/10 px-4 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all placeholder:text-white/10"
                       />
-                      <p className="text-[8px] text-white/30 font-bold italic tracking-wider">Use a descriptive name for easy identification.</p>
                     </div>
 
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Project Type</label>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">PROJECT TYPE</label>
                       <select 
                         value={mission.type}
                         onChange={(e) => setMission({...mission, type: e.target.value})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                        className="w-full h-9 bg-black/40 border border-white/10 px-3 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                       >
                         <option value="Product Development">Product Development</option>
                         <option value="Internal Tool">Internal Tool</option>
@@ -142,35 +139,35 @@ const ProjectSetup = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Description</label>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">DESCRIPTION</label>
                     <textarea 
-                      placeholder="Describe the key goals and deliverables..." 
-                      rows={3}
+                      placeholder="DESCRIBE THE KEY GOALS AND DELIVERABLES..." 
+                      rows={2}
                       value={mission.objective}
                       onChange={(e) => setMission({...mission, objective: e.target.value})}
-                      className="w-full bg-white/5 border border-white/20 p-5 rounded-xl text-white font-black text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none placeholder:text-white/10"
+                      className="w-full bg-black/40 border border-white/10 p-4 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all resize-none placeholder:text-white/10"
                     />
                   </div>
                 </div>
 
                 {/* Section 2: Composition */}
-                <div className="space-y-6 sm:space-y-8">
+                <div className="space-y-6">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                    <Users size={16} className="text-secondary" />
-                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TEAM ASSIGNMENT</h2>
+                    <Users size={14} className="text-secondary" />
+                    <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">TEAM ASSIGNMENT</h2>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2 sm:gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {['Backend', 'Frontend', 'QA', 'DevOps', 'UI/UX', 'Hardware'].map(team => (
                       <button
                         key={team}
                         type="button"
                         onClick={() => toggleTeam(team)}
-                        className={`px-4 sm:px-6 py-3 rounded-lg border text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-4 py-2 rounded border text-[9px] font-black uppercase tracking-[0.2em] transition-all ${
                           mission.teams.includes(team)
-                            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]'
-                            : 'bg-white/5 border-white/10 text-white/40 hover:border-white/30'
+                            ? 'bg-white text-black border-white'
+                            : 'bg-white/5 border-white/10 text-white/40 hover:border-white/20'
                         }`}
                       >
                         {team}
@@ -180,42 +177,42 @@ const ProjectSetup = () => {
                 </div>
 
                 {/* Section 3: Logistics */}
-                <div className="space-y-6 sm:space-y-8">
+                <div className="space-y-6">
                   <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                    <Calendar size={16} className="text-status-success" />
-                    <h2 className="text-[11px] font-black text-white uppercase tracking-[0.3em]">TIMELINE & SCHEDULE</h2>
+                    <Calendar size={14} className="text-status-success" />
+                    <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">TIMELINE & SCHEDULE</h2>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">Start Date</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">START DATE</label>
                       <input 
                         type="date"
                         value={mission.timeline.start}
                         onChange={(e) => setMission({...mission, timeline: {...mission.timeline, start: e.target.value}})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
+                        className="w-full h-9 bg-black/40 border border-white/10 px-3 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
                       />
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-black text-white/50 uppercase tracking-widest">End Date</label>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">END DATE</label>
                       <input 
                         type="date"
                         value={mission.timeline.end}
                         onChange={(e) => setMission({...mission, timeline: {...mission.timeline, end: e.target.value}})}
-                        className="w-full h-14 bg-white/5 border border-white/20 px-4 rounded-lg text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
+                        className="w-full h-9 bg-black/40 border border-white/10 px-3 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all [color-scheme:dark]"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-8 sm:pt-10 border-t border-white/20">
-                  <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                     <button 
                       type="button" 
                       onClick={(e) => onInitialize(e)}
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto h-14 px-10 bg-gradient-to-r from-primary to-blue-600 text-black hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] rounded-xl text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
+                      className="w-full sm:w-auto h-9 px-8 bg-primary text-black hover:bg-primary/90 rounded text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                     >
                       CREATE PROJECT
                     </button>
@@ -223,7 +220,7 @@ const ProjectSetup = () => {
                       type="button"
                       onClick={(e) => onInitialize(e, true)}
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto h-14 px-8 border border-white/20 hover:border-white/40 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl"
+                      className="w-full sm:w-auto h-9 px-6 bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-[0.2em] transition-all rounded"
                     >
                       SAVE AS DRAFT
                     </button>
@@ -231,7 +228,7 @@ const ProjectSetup = () => {
                   <button 
                     type="button"
                     onClick={() => navigate('/dashboard')}
-                    className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.2em] transition-colors py-2"
+                    className="text-[9px] font-black text-white/20 hover:text-white uppercase tracking-[0.2em] transition-colors py-2"
                   >
                     CANCEL
                   </button>
@@ -241,41 +238,40 @@ const ProjectSetup = () => {
           </div>
 
           {/* Right: Live Preview (Hidden on Mobile, replaced by Summary) */}
-          <div className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-32 order-1 lg:order-2">
-            <div className="space-y-6">
-              <h2 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] px-4">PROJECT PREVIEW</h2>
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-24 order-1 lg:order-2">
+            <div className="space-y-4">
+              <h2 className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] px-2">PROJECT PREVIEW</h2>
               
-              <div className="bg-black border border-white/30 rounded-2xl overflow-hidden shadow-3xl group relative">
-                
-                <div className="p-8 space-y-8 relative z-10">
+              <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl relative">
+                <div className="p-6 space-y-6 relative z-10">
                   {/* Status Badge */}
                   <div className="flex justify-between items-start">
-                    <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10">
-                       <p className="text-[8px] font-black tracking-widest uppercase text-white/50">STATUS: PENDING</p>
+                    <div className="px-2.5 py-1 bg-white/5 rounded border border-white/10">
+                       <p className="text-[8px] font-black tracking-[0.2em] uppercase text-white/30">STATUS: PENDING</p>
                     </div>
                   </div>
 
                   {/* Project Name & Objective */}
-                  <div className="space-y-3">
-                    <h2 className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${mission.name ? 'text-2xl text-white' : 'text-xl text-white/10 italic'}`}>
+                  <div className="space-y-2">
+                    <h2 className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${mission.name ? 'text-xl text-white' : 'text-lg text-white/10'}`}>
                         {mission.name || 'PROJECT_NAME'}
                     </h2>
-                    <div className="w-12 h-1 bg-primary/40 group-hover:w-20 transition-all duration-700" />
-                    <p className={`text-[10px] leading-relaxed uppercase tracking-widest transition-all duration-300 ${mission.objective ? 'text-white/60' : 'text-white/5'}`}>
+                    <div className="w-8 h-1 bg-primary/40" />
+                    <p className={`text-[9px] leading-relaxed uppercase tracking-[0.1em] transition-all duration-300 ${mission.objective ? 'text-white/40' : 'text-white/5'}`}>
                       {mission.objective || 'Your project description will appear here...'}
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/10">
-                    <div className="space-y-2">
-                       <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">TYPE</p>
-                       <p className="text-[10px] font-black text-white uppercase tracking-wider">{mission.type}</p>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                    <div className="space-y-1">
+                       <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.1em]">TYPE</p>
+                       <p className="text-[9px] font-black text-white uppercase tracking-wider">{mission.type}</p>
                     </div>
-                    <div className="space-y-2">
-                       <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">TIMELINE</p>
+                    <div className="space-y-1">
+                       <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.1em]">TIMELINE</p>
                        <div className="flex items-center gap-2 text-white">
-                         <Calendar size={12} className="text-secondary" />
-                         <p className="text-[10px] font-black uppercase tracking-wider">
+                         <Calendar size={10} className="text-secondary" />
+                         <p className="text-[9px] font-black uppercase tracking-wider">
                            {mission.timeline.start || 'TBD'} — {mission.timeline.end || 'TBD'}
                          </p>
                        </div>
@@ -283,81 +279,58 @@ const ProjectSetup = () => {
                   </div>
 
                   {/* Team Reveal */}
-                  <div className="space-y-4">
-                    <p className="text-[8px] font-black text-white/30 tracking-widest uppercase">ASSIGNED TEAMS</p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="space-y-3">
+                    <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.1em]">ASSIGNED TEAMS</p>
+                    <div className="flex flex-wrap gap-1.5">
                       {mission.teams.length > 0 ? mission.teams.map(team => (
-                        <span key={team} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[9px] font-black text-white/80 uppercase tracking-widest">
+                        <span key={team} className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[8px] font-black text-white/50 uppercase tracking-[0.1em]">
                           {team}
                         </span>
                       )) : (
-                        <div className="w-full py-4 border border-dashed border-white/10 rounded-xl flex items-center justify-center">
-                           <span className="text-[9px] text-white/20 font-black uppercase tracking-widest">Awaiting Team Selection</span>
+                        <div className="w-full py-3 border border-dashed border-white/5 rounded flex items-center justify-center">
+                           <span className="text-[8px] text-white/10 font-black uppercase tracking-widest">AWAITING TEAM SELECTION</span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {/* ID / Metadata */}
-                  <div className="pt-6 border-t border-white/10 flex justify-end items-center opacity-40">
-                     <span className="text-[10px] font-black text-white">ID: NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</span>
-                  </div>
+                  <div className="pt-4 border-t border-white/10 flex justify-end items-center opacity-20">
+                     <span className="text-[9px] font-black text-white tracking-[0.1em]">ID: NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</span>
                 </div>
-
-                {/* Background Shimmer */}
-                <div className="absolute inset-0 bg-linear-to-tr from-primary/0 via-primary/5 to-transparent pointer-events-none" />
               </div>
-
             </div>
           </div>
-
         </div>
+
       </div>
     </div>
+  </div>
   );
 };
 
 /* Mobile-Specific Summary Component */
 const MobileSummary = ({ mission }) => (
-  <div className="bg-black border border-primary/30 rounded-2xl p-6 sm:p-8 space-y-5 animate-in slide-in-from-top-4 relative overflow-hidden">
-    <div className="absolute top-0 right-0 p-4 opacity-10">
-      <Rocket size={48} className="text-primary" />
-    </div>
+  <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4 animate-in slide-in-from-top-2 relative overflow-hidden">
     <div className="flex justify-between items-start">
-      <div className="space-y-2">
-        <h2 className={`font-black uppercase tracking-tight leading-none ${mission.name ? 'text-xl text-white' : 'text-lg text-white/20 italic'}`}>
+      <div className="space-y-1">
+        <h2 className={`font-black uppercase tracking-tight leading-none ${mission.name ? 'text-lg text-white' : 'text-md text-white/10'}`}>
           {mission.name || 'NEW_PROJECT'}
         </h2>
-        <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">PROJECT SUMMARY</p>
-      </div>
-      <div className="text-right">
-        <p className="text-[10px] font-black text-white">NEXA-{mission.name ? mission.name.substring(0, 4) : '####'}</p>
+        <p className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">PROJECT SUMMARY</p>
       </div>
     </div>
     
-    <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-      <div className="flex-1">
-        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">TEAM_ASSIGNMENTS</p>
-        <div className="flex flex-wrap gap-1.5">
-          {mission.teams.slice(0, 3).map(team => (
-            <span key={team} className="w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
-          ))}
-          {mission.teams.length > 3 && <span className="text-[8px] font-bold text-white/40">+{mission.teams.length - 3}</span>}
-          {mission.teams.length === 0 && <span className="text-[8px] font-bold text-white/20">PENDING</span>}
-        </div>
-      </div>
-    </div>
-
-    <div className="flex justify-between items-center pt-4 border-t border-white/10">
+    <div className="grid grid-cols-2 gap-4 pt-3 border-t border-white/5">
       <div className="space-y-1">
-        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">TIMELINE</p>
+        <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">TIMELINE</p>
         <p className="text-[9px] font-black text-white uppercase tracking-widest">
           {mission.timeline.start || 'TBD'} — {mission.timeline.end || 'TBD'}
         </p>
       </div>
       <div className="text-right">
-        <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1">STATUS</p>
-        <span className="text-[9px] font-black text-status-success uppercase tracking-widest animate-pulse">Created</span>
+        <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">TEAMS</p>
+        <span className="text-[9px] font-black text-primary uppercase tracking-widest">{mission.teams.length} ASSIGNED</span>
       </div>
     </div>
   </div>

@@ -177,8 +177,8 @@ const ProjectInfo = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12 overflow-x-hidden">
-      <div className="max-w-[1600px] mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+      <div className="w-full space-y-6 max-w-7xl mx-auto">
         
         <SprintCreationModal 
           show={showSprintForm} 
@@ -196,49 +196,44 @@ const ProjectInfo = () => {
         />
 
         {/* Tactical Orchestration Header */}
-        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/40 pb-12">
-          <div className="space-y-6 flex-1 w-full">
-            <div className="flex items-center gap-4">
-
+        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-white/10">
+          <div className="space-y-4 flex-1 w-full">
+            <div className="flex items-center gap-3">
               <div className="space-y-1">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight uppercase leading-none">
-                   Sprint <span className="text-primary">Intelligence</span> Core
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
+                   SPRINT <span className="text-primary">INTELLIGENCE</span> CORE
                 </h1>
-                <p className="text-[10px] sm:text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                  Mission Control for Organizational Development Cycles
+                <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                  MISSION CONTROL FOR ORGANIZATIONAL DEVELOPMENT CYCLES
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-8 pt-4">
-               <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Active Cycles</span>
-                  <div className="flex items-center gap-2.5">
-                     <Clock size={14} className="text-primary-light" />
-                     <span className="text-sm font-black text-white uppercase tracking-tight">{sprintsForUser?.length || 0} SECTORS</span>
+            <div className="flex flex-wrap items-center gap-6 pt-1">
+               <div className="flex flex-col gap-1.5">
+                  <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">ACTIVE CYCLES</span>
+                  <div className="flex items-center gap-2">
+                     <Clock size={12} className="text-primary-light" />
+                     <span className="text-[11px] font-black text-white uppercase tracking-tight">{sprintsForUser?.length || 0} SECTORS</span>
                   </div>
                </div>
-
-
-
-
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
             {canCreate && (
               <button 
                 onClick={() => setShowSprintForm(true)}
-                className="flex-1 sm:flex-none h-14 px-10 bg-primary text-black hover:bg-primary-dark rounded-xl text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/40 transition-all active:scale-95 group"
+                className="flex-1 sm:flex-none h-9 px-6 bg-primary text-black hover:bg-primary-dark rounded text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 group"
               >
-                <Plus size={18} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
+                <Plus size={14} strokeWidth={3} />
                 INITIATE NEW SPRINT
               </button>
             )}
           </div>
         </header>
 
-        <div className="grid grid-cols-1 gap-12 relative z-10">
+        <div className="grid grid-cols-1 gap-6 relative z-10">
           {selectedSprintId ? (
             <SprintDetailsCard
               sprint={selectedSprintData}
@@ -256,18 +251,18 @@ const ProjectInfo = () => {
               canCreate={canCreate}
             />
           ) : (
-            <div className="py-24 text-center bg-black border border-dashed border-white/30 rounded-[40px] animate-in zoom-in-95 duration-500 shadow-3xl group">
-               <div className="w-24 h-24 bg-black rounded-3xl border border-primary flex items-center justify-center text-primary mx-auto mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                 <Zap size={48} />
+            <div className="py-16 text-center bg-white/5 border border-dashed border-white/20 rounded-xl animate-in zoom-in-95 duration-500 group">
+               <div className="w-16 h-16 bg-black rounded-xl border border-primary flex items-center justify-center text-primary mx-auto mb-6 transition-all duration-700 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                 <Zap size={32} />
                </div>
-               <div className="space-y-4 max-w-sm mx-auto mb-12">
-                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Status: Standby</h3>
-                  <p className="text-white/60 text-[11px] font-black uppercase tracking-[0.3em] leading-relaxed">No active development cycle detected. Initialize a new sprint to begin telemetry tracking.</p>
+               <div className="space-y-2 max-w-sm mx-auto mb-8">
+                  <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">STATUS: STANDBY</h3>
+                  <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed px-4">No active development cycle detected. Initialize a new sprint to begin telemetry tracking.</p>
                </div>
                {canCreate && (
                  <button 
                    onClick={() => setShowSprintForm(true)}
-                   className="h-14 px-12 bg-white text-black hover:bg-white/90 rounded-xl text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-2xl active:scale-95"
+                   className="h-9 px-8 bg-white text-black hover:bg-white/90 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95"
                  >
                    + INITIALIZE CYCLE
                  </button>

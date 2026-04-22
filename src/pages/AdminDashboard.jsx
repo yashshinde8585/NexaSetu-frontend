@@ -128,10 +128,10 @@ const AdminDashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. System Metrics Strip */}
-      <div id="admin-metrics-strip" className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div id="admin-metrics-strip" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MetricStripItem 
             icon={<Users size={14} />} 
             label="Total Users" 
@@ -162,83 +162,81 @@ const AdminDashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Main Column: User Operations */}
-        <div className="lg:col-span-8 flex flex-col gap-12">
-          
-          <DashboardSection title="User Management" icon={<Users size={14} />}>
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 px-2">
+        <div className="lg:col-span-8 flex flex-col gap-6">
+            <DashboardSection title="User Management" icon={<Users size={14} />}>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6 px-1">
               <div className="relative group flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={14} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={14} />
                 <input
                   type="text"
-                  placeholder="SEARCH BY NAME, EMAIL, OR ROLE..."
+                  placeholder="SEARCH_OPERATIVES..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-lg py-3 pl-12 pr-4 text-[11px] text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/10 font-bold uppercase tracking-widest"
+                  className="w-full h-9 bg-black border border-white/10 rounded-none px-4 pl-10 text-[10px] text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/10 font-black uppercase tracking-widest"
                 />
               </div>
               <button 
                 onClick={() => setIsInviteModalOpen(true)}
-                className="px-6 py-3 bg-primary text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="h-9 px-6 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none transition-all flex items-center justify-center gap-2 active:scale-95"
               >
-                <UserPlus size={14} />
-                Invite User
+                <UserPlus size={14} /> INVITE_OPERATIVE
               </button>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-separate border-spacing-0">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-white/10">
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">User Details</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5">Role</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-center">Status</th>
-                    <th className="pb-6 pt-2 px-6 border-b border-white/5 text-right">Actions</th>
+                  <tr className="text-white/20 text-[9px] uppercase font-black tracking-[0.2em] border-b border-white/10">
+                    <th className="pb-3 px-2">USER DETAILS</th>
+                    <th className="pb-3 px-2">ROLE</th>
+                    <th className="pb-3 px-2 text-center">STATUS</th>
+                    <th className="pb-3 px-2 text-right">ACTIONS</th>
                   </tr>
                 </thead>
-                <tbody className="text-[12px]">
+                <tbody className="text-[10px] font-black uppercase tracking-widest">
                   {paginatedUsers.length > 0 ? paginatedUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group group/row">
-                      <td className="py-5 px-6 border-b border-white/[0.03]">
+                    <tr key={u.id} className="hover:bg-white/5 transition-colors group cursor-default">
+                      <td className="py-3 px-2 border-b border-white/5">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40 uppercase">
+                          <div className="w-7 h-7 rounded-none bg-white/5 border border-white/10 flex items-center justify-center text-[9px] font-black text-white/20 uppercase">
                              {u.name.substring(0, 2)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-white group-hover/row:text-primary transition-colors uppercase tracking-tight">{u.name}</span>
-                            <span className="text-[10px] text-white/30 font-mono tracking-tighter">{u.email}</span>
+                            <span className="text-white group-hover:text-primary transition-colors">{u.name}</span>
+                            <span className="text-[8px] text-white/20 tracking-tighter uppercase font-black">{u.email}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="py-5 px-6 border-b border-white/[0.03]">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">
+                      <td className="py-3 px-2 border-b border-white/5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
                            {u.role.replace(/_/g, ' ')}
                         </span>
                       </td>
-                      <td className="py-5 px-6 border-b border-white/[0.03]">
+                      <td className="py-3 px-2 border-b border-white/5">
                         <div className="flex items-center justify-center gap-2">
-                           <div className={`w-1.5 h-1.5 rounded-full ${u.status === 'Active' ? 'bg-status-success' : 'bg-status-error'}`} />
-                           <span className={`text-[10px] font-bold uppercase tracking-widest ${u.status === 'Active' ? 'text-status-success' : 'text-status-error'}`}>{u.status}</span>
+                           <div className={`w-1.5 h-1.5 rounded-none ${u.status === 'Active' ? 'bg-status-success' : 'bg-status-error'}`} />
+                           <span className={`text-[8px] font-black uppercase tracking-widest ${u.status === 'Active' ? 'text-status-success' : 'text-status-error'}`}>{u.status}</span>
                         </div>
                       </td>
-                      <td className="py-5 px-6 text-right border-b border-white/[0.03]">
+                      <td className="py-3 px-2 text-right border-b border-white/5">
                         <button
                           onClick={() => setEditingUser(u)}
-                          className="p-2 rounded bg-white/5 border border-white/10 text-white/30 hover:text-primary hover:border-primary/20 transition-all"
+                          className="p-1.5 rounded-none bg-white/5 border border-white/10 text-white/20 hover:text-primary hover:border-primary/40 transition-colors"
                         >
-                          <SettingsIcon size={14} />
+                          <SettingsIcon size={12} />
                         </button>
                       </td>
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan="4" className="py-20 text-center border-b border-white/5">
-                        <span className="text-[10px] font-bold text-white/10 uppercase tracking-[0.4em]">No users found matching your search.</span>
+                      <td colSpan="4" className="py-16 text-center border-b border-white/5">
+                        <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">NO_USER_RECORDS_MATCHING_CRITERIA</span>
                       </td>
                     </tr>
                   )}
@@ -247,24 +245,24 @@ const AdminDashboard = () => {
             </div>
 
             {filteredUsers.length > itemsPerPage && (
-              <div className="p-6 flex items-center justify-between mt-4">
-                <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
-                   Showing {startIndex} to {endIndex} of {filteredUsers.length} users
+              <div className="py-4 flex items-center justify-between border-t border-white/5 mt-2">
+                <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
+                   OPS_LOG: {startIndex} - {endIndex} / {filteredUsers.length} ENTRIES
                 </span>
-                <div className="flex items-center gap-2">
+                 <div className="flex items-center gap-2">
                    <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(p => p - 1)}
-                    className="p-2 rounded bg-white/5 border border-white/10 text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                    className="p-1.5 rounded-none bg-white/5 border border-white/10 text-white/20 hover:text-white disabled:opacity-10 transition-colors"
                    >
-                    <ChevronLeft size={16} />
+                    <ChevronLeft size={14} />
                    </button>
-                   <div className="flex gap-1 px-4">
+                   <div className="flex gap-1 px-2">
                       {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => (
                         <button
                           key={i + 1}
                           onClick={() => setCurrentPage(i + 1)}
-                          className={`w-7 h-7 rounded text-[10px] font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                          className={`w-6 h-6 rounded-none text-[9px] font-black transition-all ${currentPage === i + 1 ? 'bg-primary text-black' : 'text-white/20 hover:text-white'}`}
                         >
                           {i + 1}
                         </button>
@@ -273,93 +271,93 @@ const AdminDashboard = () => {
                    <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(p => p + 1)}
-                    className="p-2 rounded bg-white/5 border border-white/10 text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                    className="p-1.5 rounded-none bg-white/5 border border-white/10 text-white/20 hover:text-white disabled:opacity-10 transition-colors"
                    >
-                    <ChevronLeft size={16} className="rotate-180" />
+                    <ChevronLeft size={14} className="rotate-180" />
                    </button>
                 </div>
               </div>
             )}
           </DashboardSection>
 
-          <DashboardSection title="Integrations" icon={<LinkIcon size={14} />}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-2">
+          <DashboardSection title="INTEGRATIONS" icon={<LinkIcon size={14} />}>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {integrations.map((tool, i) => (
                 <button 
                   key={i} 
                   onClick={() => handleConnect(tool)}
-                  className="group bg-white/[0.02] border border-white/5 p-6 rounded-lg flex flex-col items-center gap-4 transition-all hover:border-primary/30 hover:bg-primary/[0.03]"
+                  className="group bg-white/5 border border-white/10 p-4 rounded-none flex flex-col items-center gap-3 transition-all hover:bg-white/10"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-black border border-white/10 flex items-center justify-center text-white/20 group-hover:text-primary transition-colors">
-                     {tool.icon === 'github' ? <GitBranch size={20} /> : tool.icon === 'slack' ? <MessageSquare size={20} /> : <LinkIcon size={20} />}
+                  <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center text-white/10 group-hover:text-primary transition-colors">
+                     {tool.icon === 'github' ? <GitBranch size={18} /> : tool.icon === 'slack' ? <MessageSquare size={18} /> : <LinkIcon size={18} />}
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">{tool.name}</span>
-                    <div className="flex items-center gap-1.5">
-                       <div className={`w-1 h-1 rounded-full ${tool.status === 'connected' ? 'bg-status-success' : 'bg-white/10'}`} />
-                       <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">{tool.status === 'connected' ? 'CONNECTED' : 'DISCONNECTED'}</span>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white/60">{tool.name}</span>
+                    <div className="flex items-center gap-1">
+                       <div className={`w-1.5 h-1.5 rounded-none ${tool.status === 'connected' ? 'bg-status-success' : 'bg-white/10'}`} />
+                       <span className="text-[7px] font-black uppercase tracking-widest text-white/20">{tool.status === 'connected' ? 'CONNECTED' : 'OFFLINE'}</span>
                     </div>
                   </div>
                 </button>
               ))}
             </div>
-            <p className="mt-6 text-[10px] text-white/20 uppercase font-bold tracking-[0.2em] text-center border-t border-white/5 pt-6">Upgrade to Professional for more integrations.</p>
+            <p className="mt-4 text-[8px] text-white/10 uppercase font-black tracking-[0.2em] text-center border-t border-white/5 pt-4">UPGRADE TO CORE_OPERATOR FOR EXPANDED ACCESS.</p>
           </DashboardSection>
         </div>
 
         {/* Sidebar Column: Strategic Config */}
-        <div className="lg:col-span-4 flex flex-col gap-12">
+        <div className="lg:col-span-4 flex flex-col gap-6">
           
-          <DashboardSection title="Teams" icon={<Zap size={14} />}>
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-center px-1 mb-2">
-                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Active Teams: {teams.length}</span>
+          <DashboardSection title="SQUAD_DIRECTIVE" icon={<Zap size={14} />}>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center px-1">
+                 <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">TOTAL_UNITS: {teams.length}</span>
                  <button 
                     onClick={() => navigate('/admin/teams/create')}
-                    className="p-1 px-3 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2"
+                    className="p-1 px-3 bg-white/5 border border-white/10 rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-colors flex items-center gap-2"
                   >
-                    <Plus size={12} /> Add Team
+                    <Plus size={12} /> ADD_UNIT
                   </button>
               </div>
               {teams.map((t, i) => (
-                <div key={i} className="group p-5 bg-white/[0.02] border border-white/5 rounded-lg flex items-center justify-between hover:border-white/10 transition-all">
+                <div key={i} className="group p-4 bg-white/5 border border-white/10 rounded-none flex items-center justify-between hover:bg-white/10 transition-colors">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[12px] font-bold text-white uppercase tracking-tight">{t.name}</span>
-                    <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest flex items-center gap-2">
-                       <Users size={12} className="text-primary/40" /> {t.members} MEMBERS
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{t.name}</span>
+                    <span className="text-[8px] text-white/20 font-black uppercase tracking-widest flex items-center gap-2">
+                       <Users size={12} className="text-primary/40" /> {t.members}_OPERATIVES
                     </span>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => navigate(`/admin/teams/edit/${t.id}`)} className="p-2 text-white/20 hover:text-primary transition-colors"><SettingsIcon size={14} /></button>
-                    <button onClick={() => deleteTeam(t.id)} className="p-2 text-white/20 hover:text-status-error transition-colors"><Trash2 size={14} /></button>
+                    <button onClick={() => navigate(`/admin/teams/edit/${t.id}`)} className="p-1.5 text-white/20 hover:text-primary transition-colors"><SettingsIcon size={12} /></button>
+                    <button onClick={() => deleteTeam(t.id)} className="p-1.5 text-white/20 hover:text-status-error transition-colors"><Trash2 size={12} /></button>
                   </div>
                 </div>
               ))}
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Roles & Permissions" icon={<Shield size={14} />}>
+          <DashboardSection title="ROLES & PERMISSIONS" icon={<Shield size={14} />}>
              <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center px-1 mb-2">
-                   <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Security: CUSTOM</span>
+                <div className="flex justify-between items-center px-1">
+                   <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">SECURITY: ENFORCED</span>
                    <button 
                       onClick={() => setIsCreateRoleModalOpen(true)}
-                      className="text-[10px] font-bold uppercase text-primary tracking-widest hover:brightness-125"
+                      className="text-[9px] font-black uppercase text-primary tracking-widest hover:brightness-125"
                     >
-                      Add Role
+                      ADD_ROLE
                     </button>
                 </div>
-                <div className="flex flex-col gap-2 max-h-[240px] overflow-y-auto pr-2 custom-scrollbar">
+                 <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
                   {roles.map((r, i) => (
                     <div 
                       key={i} 
                       onClick={() => setEditingRole(r)}
-                      className="group p-4 bg-white/[0.02] border border-white/5 rounded-lg flex items-center justify-between cursor-pointer hover:border-white/20 transition-all"
+                      className="group p-3 bg-white/5 border border-white/10 rounded-none flex items-center justify-between cursor-pointer hover:bg-white/10 transition-colors"
                     >
-                      <span className="text-[11px] font-bold text-white/60 group-hover:text-white uppercase tracking-widest">{r.role.replace(/_/g, ' ')}</span>
-                      <div className="flex items-center gap-4">
-                        <div className="h-1 w-10 bg-status-success/20 rounded-full overflow-hidden border border-white/5">
-                          <div className="h-full bg-status-success w-full opacity-60" />
+                      <span className="text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-widest">{r.role.replace(/_/g, ' ')}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="h-1 w-8 bg-white/5 rounded-none overflow-hidden border border-white/5">
+                          <div className="h-full bg-primary w-full opacity-40" />
                         </div>
                         <SettingsIcon size={12} className="text-white/10 group-hover:text-primary transition-colors" />
                       </div>
@@ -369,28 +367,28 @@ const AdminDashboard = () => {
              </div>
           </DashboardSection>
 
-          <DashboardSection title="Workspace Settings" icon={<SettingsIcon size={14} />}>
-            <div className="flex flex-col gap-2 py-2">
+          <DashboardSection title="WORKSPACE_SETTINGS" icon={<SettingsIcon size={14} />}>
+            <div className="flex flex-col gap-2 py-1">
               {[
-                { label: 'Timezone', key: 'timezone', value: settings?.timezone, icon: <Globe size={14} /> },
-                { label: 'Working Hours', key: 'workingHours', value: settings?.workingHours, icon: <Clock size={14} /> },
-                { label: 'Notifications', key: 'notificationRules', value: settings?.notificationRules, icon: <Shield size={14} /> },
-                { label: 'Project Defaults', key: 'projectDefaults', value: settings?.projectDefaults, icon: <Zap size={14} /> }
+                { label: 'TIMEZONE', key: 'timezone', value: settings?.timezone, icon: <Globe size={14} /> },
+                { label: 'WORK_HOURS', key: 'workingHours', value: settings?.workingHours, icon: <Clock size={14} /> },
+                { label: 'POLICIES', key: 'notificationRules', value: settings?.notificationRules, icon: <Shield size={14} /> },
+                { label: 'DEFAULTS', key: 'projectDefaults', value: settings?.projectDefaults, icon: <Zap size={14} /> }
               ].map((setting, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveSetting(setting)}
-                  className="flex items-center justify-between p-4 bg-white/[0.01] border border-white/5 rounded-lg hover:bg-white/[0.03] transition-all group"
+                  className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-none hover:bg-white/10 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="text-white/20 group-hover:text-primary transition-colors">{setting.icon}</div>
-                    <span className="text-[10px] font-bold text-white/40 group-hover:text-white transition-colors uppercase tracking-widest">{setting.label}</span>
+                    <div className="text-white/10 group-hover:text-primary transition-colors">{setting.icon}</div>
+                    <span className="text-[9px] font-black text-white/30 group-hover:text-white transition-colors uppercase tracking-[0.2em]">{setting.label}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-tighter truncate max-w-[120px]">{setting.value || 'DEFAULT'}</span>
+                  <span className="text-[9px] font-black text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-widest truncate max-w-[100px]">{setting.value || 'DEFAULT'}</span>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-[9px] text-white/10 text-center uppercase tracking-widest font-bold">These settings apply to all workspace members.</p>
+            <p className="mt-3 text-[8px] text-white/5 text-center uppercase tracking-widest font-black">SYSTEM_WIDE_DIRECTIVES_ENFORCED.</p>
           </DashboardSection>
         </div>
       </div>

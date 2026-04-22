@@ -35,10 +35,10 @@ const SQADashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1700px] mx-auto flex flex-col gap-12">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. Quality Intelligence Strip */}
-      <div id="sqa-metrics-strip" className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div id="sqa-metrics-strip" className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <MetricStripItem 
             label="Vector Failure Rate" 
             value={`${qualitySignals.failureRate}%`} 
@@ -75,27 +75,27 @@ const SQADashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 2. Failure Analysis Board */}
         <div className="lg:col-span-12">
             <DashboardSection title="Structural Failure Analysis" icon={<Microscope size={14} />}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
                     {failureAnalysis?.map((item, idx) => (
-                      <div key={idx} className="p-6 bg-white/[0.02] border border-white/5 rounded flex flex-col gap-4 group hover:bg-white/[0.04] transition-all">
+                      <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-4 group hover:bg-white/10 transition-colors">
                           <div className="flex justify-between items-start">
                              <div className="flex flex-col gap-1">
-                                <span className="text-[9px] font-bold uppercase text-white/20 tracking-widest">{item.module} Sector</span>
-                                <span className="text-4xl font-black text-white tracking-tighter leading-none">{item.failures} ERR</span>
+                                <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em]">{item.module}_SECTOR</span>
+                                <span className="text-2xl font-black text-white tracking-widest leading-none">{item.failures} ERR</span>
                              </div>
-                             <div className="p-2 bg-status-error/10 text-status-error border border-status-error/20 rounded group-hover:scale-105 transition-transform">
-                                <Fingerprint size={16} />
+                             <div className="p-1.5 bg-status-error/10 text-status-error border border-status-error/20 rounded-none transition-colors">
+                                <Fingerprint size={14} />
                              </div>
                           </div>
-                          <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-status-error/60">
-                             <TrendingUp size={12} />
-                             {item.trend} CYCLICAL
+                          <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-status-error/60">
+                             <TrendingUp size={10} />
+                             {item.trend}_CYCLICAL
                           </div>
-                          <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                          <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden">
                              <div className="h-full bg-status-error" style={{ width: `${(item.failures / 10) * 100}%` }} />
                           </div>
                       </div>
@@ -105,33 +105,33 @@ const SQADashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-         <div className="lg:col-span-4 flex flex-col gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+         <div className="lg:col-span-4 flex flex-col gap-6">
             <DashboardSection title="Validation Blockades" icon={<Network size={14} />}>
-               <div className="flex flex-col gap-3 py-2">
+               <div className="flex flex-col gap-2 py-2">
                    {advancedBlockers?.map((block, idx) => (
-                      <div key={idx} className="p-4 bg-white/[0.02] border border-white/5 rounded flex justify-between items-center group hover:border-status-warning/40 transition-all">
+                      <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-none flex justify-between items-center group hover:bg-white/10 transition-colors">
                          <div className="flex flex-col gap-1">
-                            <span className="text-[11px] font-bold text-white uppercase tracking-tight leading-none mb-1">{block.issue}</span>
-                            <span className="text-[9px] font-bold uppercase text-status-warning tracking-widest">{block.impactScope} IMPACT</span>
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{block.issue}</span>
+                            <span className="text-[8px] font-black uppercase text-status-warning tracking-[0.2em]">{block.impactScope}_IMPACT</span>
                          </div>
-                         <ChevronRight size={14} className="text-white/10 group-hover:text-status-warning transition-all" />
+                         <ChevronRight size={12} className="text-white/10 group-hover:text-status-warning transition-colors" />
                       </div>
                    ))}
                </div>
             </DashboardSection>
 
             <DashboardSection title="Instability Vector" icon={<Zap size={14} />}>
-               <div className="flex flex-col gap-3 py-2">
+               <div className="flex flex-col gap-2 py-2">
                    {flakyTests?.map((test, idx) => (
-                     <div key={idx} className="p-4 bg-white/[0.02] border border-white/5 rounded group hover:bg-status-warning/[0.05] hover:border-status-warning/20 transition-all">
-                         <div className="flex justify-between items-center mb-4 leading-none">
-                            <span className="text-[11px] font-bold text-white uppercase tracking-tight">{test.title}</span>
-                            <span className="text-[10px] font-bold text-status-warning uppercase tracking-widest">{test.frequency}</span>
+                     <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
+                         <div className="flex justify-between items-center mb-3 leading-none">
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest">{test.title}</span>
+                            <span className="text-[9px] font-black text-status-warning uppercase tracking-[0.2em]">{test.frequency}</span>
                          </div>
                          <div className="flex flex-col gap-2">
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">System Impact: {test.impact}</span>
-                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">SYSTEM_IMPACT: {test.impact}</span>
+                            <div className="h-0.5 bg-white/5 rounded-none overflow-hidden">
                                <div className="h-full bg-status-warning/40" style={{ width: test.frequency.includes('25%') ? '25%' : '10%' }} />
                             </div>
                          </div>
@@ -141,31 +141,31 @@ const SQADashboard = () => {
             </DashboardSection>
          </div>
 
-         <div className="lg:col-span-8 flex flex-col gap-10">
+         <div className="lg:col-span-8 flex flex-col gap-6">
             <DashboardSection title="Integrity Intelligence" icon={<PieChart size={14} />}>
-               <div className="overflow-x-auto py-2 px-1">
+               <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                      <thead>
-                        <tr className="text-[9px] text-white/20 uppercase font-bold tracking-widest border-b border-white/5">
-                           <th className="pb-4 px-2">Subsystem Domain</th>
-                           <th className="pb-4 px-2">Cyclical Trend</th>
-                           <th className="pb-4 px-2 text-right">Integrity</th>
+                        <tr className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] border-b border-white/5">
+                           <th className="py-3 px-3">SUBSYSTEM_DOMAIN</th>
+                           <th className="py-3 px-3">CYCLICAL_TREND</th>
+                           <th className="py-3 px-3 text-right">INTEGRITY</th>
                         </tr>
                      </thead>
                      <tbody className="divide-y divide-white/[0.02]">
                         {bugIntelligence?.map((bug, idx) => (
-                          <tr key={idx} className="group hover:bg-white/[0.015] transition-all">
-                             <td className="py-4 px-2">
+                          <tr key={idx} className="group hover:bg-white/5 transition-colors">
+                             <td className="py-3 px-3">
                                 <div className="flex flex-col gap-1">
-                                   <span className="text-[12px] font-bold text-white uppercase tracking-tight leading-none mb-1">{bug.module}</span>
-                                   <span className="text-[9px] text-status-error/60 font-bold uppercase tracking-widest">{bug.severity} PRIORITY</span>
+                                   <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{bug.module}</span>
+                                   <span className="text-[8px] text-status-error/60 font-black uppercase tracking-[0.2em]">{bug.severity}_PRIORITY</span>
                                 </div>
                              </td>
-                             <td className={`py-4 px-2 text-[10px] font-bold uppercase tracking-widest ${bug.trend.includes('Increasing') ? 'text-status-error' : 'text-status-success'}`}>
+                             <td className={`py-3 px-3 text-[9px] font-black uppercase tracking-[0.2em] ${bug.trend.includes('Increasing') ? 'text-status-error' : 'text-status-success'}`}>
                                 {bug.trend}
                              </td>
-                             <td className="py-4 px-2 text-right">
-                                <div className={`h-1.5 w-1.5 rounded-full inline-block ml-auto ${bug.trend.includes('Increasing') ? 'bg-status-error shadow-[0_0_8px_rgba(var(--color-status-error),0.6)]' : 'bg-status-success'}`} />
+                             <td className="py-3 px-3 text-right">
+                                <div className={`h-1.5 w-1.5 rounded-none inline-block ml-auto ${bug.trend.includes('Increasing') ? 'bg-status-error' : 'bg-status-success'}`} />
                              </td>
                           </tr>
                         ))}
@@ -174,18 +174,18 @@ const SQADashboard = () => {
                </div>
             </DashboardSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <DashboardSection title="Regression Recurrence" icon={<BarChart3 size={14} />}>
-                  <div className="flex flex-col gap-3 py-2">
+                  <div className="flex flex-col gap-2 py-2">
                       {regressionFailures?.map((fail, idx) => (
-                        <div key={idx} className="flex items-center p-4 bg-white/[0.02] hover:bg-white/[0.04] border-l-2 border-status-error rounded-r transition-all group">
+                        <div key={idx} className="flex items-center p-3 bg-white/5 hover:bg-white/10 border-l-2 border-status-error rounded-none transition-colors group">
                            <div className="flex flex-col gap-1">
-                              <span className="text-[12px] font-bold text-white uppercase tracking-tight leading-none mb-1">{fail.module}</span>
-                              <span className="text-[9px] font-bold uppercase text-status-error/40 tracking-widest">{fail.failures} RECURRING TRACES</span>
+                              <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{fail.module}</span>
+                              <span className="text-[8px] font-black uppercase text-status-error/40 tracking-[0.2em]">{fail.failures}_RECURRING_TRACES</span>
                            </div>
                            <div className="ml-auto flex flex-col items-end gap-1">
-                              <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">IMPACT</span>
-                              <span className="text-[9px] font-bold text-status-error uppercase tracking-widest leading-none">{fail.impact}</span>
+                              <span className="text-[7px] font-black text-white/10 uppercase tracking-[0.2em]">IMPACT</span>
+                              <span className="text-[9px] font-black text-status-error uppercase tracking-[0.2em] leading-none">{fail.impact}</span>
                            </div>
                         </div>
                       ))}
@@ -193,14 +193,12 @@ const SQADashboard = () => {
                </DashboardSection>
 
                <DashboardSection title="Integrity Feedback" icon={<Users size={14} />}>
-                  <div className="flex flex-col gap-4 py-2">
+                  <div className="flex flex-col gap-2 py-2">
                       {supportSignals?.map((sig, idx) => (
                         <ActivityItem 
                            key={idx} 
-                           icon={<Target size={12} />} 
                            text={sig.issue} 
                            time={sig.user} 
-                           type="info"
                         />
                       ))}
                   </div>
@@ -209,40 +207,40 @@ const SQADashboard = () => {
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
          {/* 6. Release Authority Analysis */}
          <div className="lg:col-span-8">
             <DashboardSection title="Strategic Quality Variance" icon={<TrendingUp size={14} />}>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 py-8 px-8 bg-white/[0.01] rounded border border-white/5">
-                  <TrendDisplay label="Aggregate Failure Quota" value={`${qualityTrends.failureRate.now}%`} lastValue={`${qualityTrends.failureRate.lastWeek}%`} color="text-status-error" upIsBad />
-                  <TrendDisplay label="Global Validation Quota" value={`${qualityTrends.passRate.now}%`} lastValue={`${qualityTrends.passRate.lastWeek}%`} color="text-status-success" />
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
+                  <TrendDisplay label="FAILURE_QUOTA" value={`${qualityTrends.failureRate.now}%`} lastValue={`${qualityTrends.failureRate.lastWeek}%`} color="text-status-error" upIsBad />
+                  <TrendDisplay label="VALIDATION_QUOTA" value={`${qualityTrends.passRate.now}%`} lastValue={`${qualityTrends.passRate.lastWeek}%`} color="text-status-success" />
                </div>
             </DashboardSection>
          </div>
 
          <div className="lg:col-span-4">
-            <DashboardSection title="Deployment Integrity Risk" icon={<ShieldAlert size={14} />}>
-               <div className={`py-1 rounded border ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20 bg-status-error/[0.02]' : 'border-status-success/20 bg-status-success/[0.02]'}`}>
-                  <div className="flex flex-col items-center py-6">
-                      <div className={`p-4 rounded-full border-2 ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20' : 'border-status-success/20'}`}>
-                          <div className={`w-16 h-16 rounded-full flex items-center justify-center font-black text-2xl tracking-tighter shadow-[0_0_20px_rgba(var(--color-${releaseRiskBreakdown.risk === 'HIGH' ? 'status-error' : 'status-success'}),0.2)] ${releaseRiskBreakdown.risk === 'HIGH' ? 'text-status-error bg-status-error/10' : 'text-status-success bg-status-success/10'}`}>
+            <DashboardSection title="Deployment Risk" icon={<ShieldAlert size={14} />}>
+               <div className={`rounded-none border ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20 bg-status-error/[0.02]' : 'border-status-success/20 bg-status-success/[0.02]'}`}>
+                  <div className="flex flex-col items-center py-4">
+                      <div className={`p-3 rounded-none border-2 ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20' : 'border-status-success/20'}`}>
+                          <div className={`w-12 h-12 rounded-none flex items-center justify-center font-black text-xl tracking-widest ${releaseRiskBreakdown.risk === 'HIGH' ? 'text-status-error bg-status-error/10' : 'text-status-success bg-status-success/10'}`}>
                               {releaseRiskBreakdown.risk || 'NONE'}
                           </div>
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest mt-4 text-white/30">Vector Risk Appraisal</span>
+                      <span className="text-[8px] font-black uppercase tracking-[0.2em] mt-3 text-white/20">VECTOR_RISK</span>
                   </div>
                   <div className="grid grid-cols-3 gap-px bg-white/5 border-t border-white/5">
-                     <div className="flex flex-col items-center justify-center p-4 bg-black">
-                        <span className="text-xl font-bold text-status-error leading-none">{releaseRiskBreakdown.criticalBugs}</span>
-                        <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-2">DEFECTS</span>
+                     <div className="flex flex-col items-center justify-center p-3 bg-black">
+                        <span className="text-lg font-black text-status-error leading-none">{releaseRiskBreakdown.criticalBugs}</span>
+                        <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">DEFECTS</span>
                      </div>
-                     <div className="flex flex-col items-center justify-center p-4 bg-black">
-                        <span className="text-xl font-bold text-status-error leading-none">{releaseRiskBreakdown.highFailures}</span>
-                        <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-2">FAILURES</span>
+                     <div className="flex flex-col items-center justify-center p-3 bg-black">
+                        <span className="text-lg font-black text-status-error leading-none">{releaseRiskBreakdown.highFailures}</span>
+                        <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">FAILURES</span>
                      </div>
-                     <div className="flex flex-col items-center justify-center p-4 bg-black">
-                        <span className="text-xl font-bold text-status-warning leading-none">{releaseRiskBreakdown.flakyTests}</span>
-                        <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-2">FLAKY</span>
+                     <div className="flex flex-col items-center justify-center p-3 bg-black">
+                        <span className="text-lg font-black text-status-warning leading-none">{releaseRiskBreakdown.flakyTests}</span>
+                        <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">FLAKY</span>
                      </div>
                   </div>
                </div>
@@ -251,18 +249,18 @@ const SQADashboard = () => {
       </div>
 
       <DashboardSection title="Domain Coverage Gaps" icon={<Target size={14} />}>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-2">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-2">
              {coverageGaps?.map((gap, idx) => (
-               <div key={idx} className="flex flex-col gap-4 p-5 bg-white/[0.02] border border-white/5 rounded group hover:border-status-error/40 transition-all">
+               <div key={idx} className="flex flex-col gap-3 p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
                   <div className="flex justify-between items-center leading-none">
-                     <span className="text-[11px] font-bold text-white uppercase tracking-tight">{gap.module} Vector</span>
-                     <span className="text-[9px] font-bold uppercase text-status-error tracking-widest">{gap.alert}</span>
+                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{gap.module}_VECTOR</span>
+                     <span className="text-[8px] font-black uppercase text-status-error tracking-[0.2em]">{gap.alert}</span>
                   </div>
                   <div className="flex items-center gap-4 py-1">
-                     <div className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
+                     <div className="h-0.5 flex-1 bg-white/5 rounded-none overflow-hidden">
                         <div className={`h-full ${gap.coverage > 80 ? 'bg-status-success' : 'bg-status-error'}`} style={{ width: `${gap.coverage}%` }} />
                      </div>
-                     <span className="text-[11px] font-bold text-white/40 tracking-tighter tabular-nums">{gap.coverage}%</span>
+                     <span className="text-[10px] font-black text-white/40 tracking-widest tabular-nums">{gap.coverage}%</span>
                   </div>
                </div>
              ))}
@@ -278,15 +276,15 @@ const TrendDisplay = ({ label, value, lastValue, color, upIsBad }) => {
 
   return (
     <div className="flex flex-col gap-2">
-       <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">{label}</span>
-       <div className="flex items-end gap-3 px-1 leading-none">
-          <span className={`text-5xl font-black tracking-tighter ${color}`}>{value}</span>
-          <div className="flex flex-col gap-1 mb-1.5">
-             <div className={`flex items-center gap-1 text-[11px] font-bold ${trendColor}`}>
+       <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">{label}</span>
+       <div className="flex items-end gap-2 px-1 leading-none">
+          <span className={`text-3xl font-black tracking-widest ${color}`}>{value}</span>
+          <div className="flex flex-col gap-1 mb-1">
+             <div className={`flex items-center gap-1 text-[10px] font-black ${trendColor}`}>
                 {isUp ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
                 {isUp ? 'SEC' : 'DEC'}
              </div>
-             <span className="text-[8px] font-bold text-white/10 uppercase tracking-tighter">vs Cycle Base</span>
+             <span className="text-[7px] font-black text-white/10 uppercase tracking-[0.2em]">CYCLE_BASE</span>
           </div>
        </div>
     </div>

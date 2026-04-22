@@ -9,11 +9,8 @@ import {
   Users,
   CheckCircle
 } from 'lucide-react';
+import { BackButton } from '../../atoms';
 
-/**
- * TeamBuilderForm - Centralized component for team creation and modification.
- * Implements a premium, high-contrast interface for team management.
- */
 const TeamBuilderForm = ({ 
   title, 
   description, 
@@ -60,36 +57,30 @@ const TeamBuilderForm = ({
   const glowClass = isPrimary ? 'shadow-[0_0_40px_rgba(var(--primary-rgb),0.1)]' : 'shadow-[0_0_40px_rgba(var(--secondary-rgb),0.1)]';
 
   return (
-    <div className="h-[calc(100vh-100px)] max-w-screen-xl mx-auto px-6 py-4 flex flex-col space-y-6 overflow-hidden animate-[fadeIn_500ms_ease_forwards]">
+    <div className="h-[calc(100vh-64px)] max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 flex flex-col gap-4 overflow-hidden selection:bg-primary">
       
-      {/* 🧭 Navigation & Breadcrumbs */}
-      <div className="flex items-center justify-between">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white transition-all group"
-        >
-          <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-xs font-bold uppercase tracking-widest">Back</span>
-        </button>
-        <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] font-black text-white/10">
-          <span>Administration</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-white/5" />
-          <span className={`${isPrimary ? 'text-primary/60' : 'text-secondary/60'}`}>
-            {isPrimary ? 'Team Builder' : 'Team Settings'}
+      {/* Navigation & Breadcrumbs */}
+      <div className="flex items-center justify-between shrink-0">
+        <BackButton />
+        <div className="hidden sm:flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] font-black text-white/10">
+          <span>ADMINISTRATION</span>
+          <span className="w-1 h-1 rounded-full bg-white/5" />
+          <span className={`${isPrimary ? 'text-primary/40' : 'text-secondary/40'}`}>
+            {isPrimary ? 'SQUAD_ASSEMBLY' : 'UNIT_RECONFIGURATION'}
           </span>
         </div>
       </div>
 
-      {/* 🚀 Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5 pb-6 shrink-0">
-        <div className="space-y-2">
-          <div className="flex items-center gap-4">
-             <div className={`w-10 h-10 rounded-xl ${bgColorClass} border ${borderColorClass} flex items-center justify-center ${colorClass} ${glowClass}`}>
-                <Users size={20} />
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5 pb-4 shrink-0">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+             <div className={`w-8 h-8 rounded bg-white/5 border ${borderColorClass} flex items-center justify-center ${colorClass}`}>
+                <Users size={16} />
              </div>
-             <h1 className="text-3xl font-black tracking-tighter text-white uppercase leading-none">{title}</h1>
+             <h1 className="text-xl font-black tracking-tight text-white uppercase leading-none">{title}</h1>
           </div>
-          <p className="text-white/40 max-w-xl text-[11px] font-medium leading-relaxed">{description}</p>
+          <p className="text-white/20 max-w-xl text-[9px] font-black uppercase tracking-widest leading-relaxed">{description}</p>
         </div>
       </div>
 
@@ -97,75 +88,75 @@ const TeamBuilderForm = ({
         
         {/* Column 1: Team Foundation */}
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-6 space-y-6 shadow-2xl backdrop-blur-xl h-full flex flex-col group/card transition-all hover:border-white/20">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 gap-5 shadow-2xl flex flex-col h-full">
             <div className="flex items-center gap-3 shrink-0">
-              <div className={`p-1.5 rounded-lg ${bgColorClass} ${colorClass}`}>
-                <Layout size={16} />
+              <div className={`p-1 rounded bg-black ${colorClass}`}>
+                <Layout size={14} />
               </div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-tight">Configuration</h2>
+              <h2 className="text-[10px] font-black text-white uppercase tracking-widest">CONFIGURATION</h2>
             </div>
 
-            <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-black px-1">Team Identity</label>
+            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 block">TEAM IDENTITY</label>
                 <input 
                   required
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. CORE PLATFORM"
-                  className={`w-full bg-black/40 border border-white/10 rounded-2xl py-3 px-5 text-lg font-black text-white focus:border-${themeColor}/50 placeholder:text-white/5 outline-none transition-all shadow-inner uppercase tracking-tight`}
+                  placeholder="E.G. CORE PLATFORM"
+                  className="w-full h-9 bg-black border border-white/10 rounded px-4 text-[11px] font-black text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/5 uppercase tracking-tight"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-black px-1">Mission Objective</label>
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 block">MISSION OBJECTIVE</label>
                 <textarea 
-                  rows={4}
+                  rows={3}
                   value={mission}
                   onChange={(e) => setMission(e.target.value)}
-                  placeholder="Define the primary focus and goals of this team..."
-                  className={`w-full bg-black/40 border border-white/10 rounded-2xl py-3 px-5 text-xs text-white/70 focus:border-${themeColor}/50 placeholder:text-white/5 outline-none transition-all resize-none shadow-inner leading-relaxed`}
+                  placeholder="DEFINE PRIMARY SQUAD GOALS..."
+                  className="w-full bg-black border border-white/10 rounded p-3 text-[10px] font-black text-white/60 focus:border-primary/50 outline-none transition-all resize-none placeholder:text-white/5 leading-relaxed uppercase"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-black px-1 flex items-center justify-between">
-                  Technical Lead 
-                  <Shield size={12} className="text-secondary/60" />
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 flex items-center justify-between">
+                  TECHNICAL LEAD 
+                  <Shield size={10} className="text-secondary/40" />
                 </label>
                 <div className="relative group/select">
                   <select 
                     required
                     value={lead}
                     onChange={(e) => setLead(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-3 px-5 text-xs text-white focus:border-secondary/50 outline-none transition-all cursor-pointer appearance-none group-hover/select:bg-white/[0.02]"
+                    className="w-full h-9 bg-black border border-white/10 rounded px-4 text-[10px] font-black text-white focus:border-secondary/50 outline-none transition-all cursor-pointer appearance-none pr-10 uppercase"
                   >
-                    <option value="" disabled className="bg-slate-900">Select leadership...</option>
+                    <option value="" disabled>SELECT LEADERSHIP...</option>
                     {users.map(u => (
-                      <option key={u.id} value={u.id} className="bg-slate-900">{u.name} — {u.role.replace(/_/g, ' ')}</option>
+                      <option key={u.id} value={u.id}>{u.name} — {u.role.replace(/_/g, ' ')}</option>
                     ))}
                   </select>
-                  <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white/20 group-hover/select:text-secondary transition-colors">
-                    <Shield size={18} />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover/select:text-secondary transition-colors">
+                    <Shield size={14} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 pt-6 mt-auto border-t border-white/5 shrink-0">
+            <div className="flex flex-col gap-2 pt-5 mt-auto border-t border-white/5 shrink-0">
               <button 
                 type="submit"
-                className={`w-full ${isPrimary ? 'bg-primary' : 'bg-secondary'} hover:brightness-110 text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2`}
+                className={`w-full h-10 ${isPrimary ? 'bg-primary' : 'bg-secondary'} text-black rounded font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center gap-2`}
               >
                 <Save size={14} /> {submitLabel}
               </button>
               <button 
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-full text-white/20 hover:text-white font-black text-[9px] uppercase tracking-widest transition-colors py-2"
+                className="w-full text-white/10 hover:text-white font-black text-[9px] uppercase tracking-widest transition-colors py-1"
               >
-                Discard Changes
+                DISCARD_CHANGES
               </button>
             </div>
           </div>
@@ -173,13 +164,13 @@ const TeamBuilderForm = ({
 
         {/* Column 2: Pool A (Available) */}
         <div className="flex flex-col h-full overflow-hidden">
-           <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl h-full flex flex-col transition-all hover:border-white/20">
-             <div className="px-6 py-4 border-b border-white/5 bg-status-success/[0.03] flex items-center justify-between shrink-0">
+           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col h-full">
+             <div className="px-4 py-3 border-b border-white/5 bg-status-success/[0.03] flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_rgba(var(--status-success-rgb),0.4)]" />
-                  <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Available</span>
+                  <div className="w-1 h-1 rounded-full bg-status-success" />
+                  <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">AVAILABLE_PERSONNEL</span>
                 </div>
-                <div className={`bg-status-success/10 text-status-success text-[8px] font-black px-2 py-0.5 rounded-full border border-status-success/20`}>
+                <div className="bg-status-success/10 text-status-success text-[8px] font-black px-2 py-0.5 rounded border border-status-success/20">
                    {users.filter(u => !u.teams || u.teams.length === 0).length}
                 </div>
              </div>
@@ -202,15 +193,15 @@ const TeamBuilderForm = ({
 
         {/* Column 3: Pool B (Current/Active) */}
         <div className="flex flex-col h-full overflow-hidden">
-           <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl h-full flex flex-col transition-all hover:border-white/20">
-             <div className={`px-6 py-4 border-b border-white/5 ${isPrimary ? 'bg-secondary/[0.03]' : 'bg-primary/[0.03]'} flex items-center justify-between shrink-0`}>
+           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col h-full">
+             <div className={`px-4 py-3 border-b border-white/5 ${isPrimary ? 'bg-secondary/[0.03]' : 'bg-primary/[0.03]'} flex items-center justify-between shrink-0`}>
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'} shadow-[0_0_8px_rgba(var(--secondary-rgb),0.4)]`} />
-                  <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
-                    {isPrimary ? 'Selected' : 'Active'}
+                  <div className={`w-1 h-1 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'}`} />
+                  <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                    {isPrimary ? 'SELECTED_UNITS' : 'ACTIVE_DEPLOYMENTS'}
                   </span>
                 </div>
-                <div className={`${bgColorClass} ${colorClass} text-[8px] font-black px-2 py-0.5 rounded-full border ${borderColorClass}`}>
+                <div className={`${bgColorClass} ${colorClass} text-[8px] font-black px-2 py-0.5 rounded border ${borderColorClass}`}>
                    {selectedMembers.filter(id => users.find(u => u.id === id)?.teams?.length > 0).length}
                 </div>
              </div>
@@ -241,36 +232,36 @@ const TeamBuilderForm = ({
 const MemberItem = ({ user, isActive, onToggle, showTeam, themeColor }) => (
   <div 
     onClick={onToggle}
-    className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group/item ${
+    className={`flex items-center justify-between p-3 rounded border transition-all cursor-pointer group/item ${
       isActive
-        ? `bg-${themeColor}/10 border-${themeColor}/40 text-white ring-1 ring-${themeColor}/20`
-        : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/20 text-white/40'
+        ? `bg-primary/10 border-primary/40 text-white`
+        : 'bg-black border-white/5 hover:bg-white/5 hover:border-white/10 text-white/20'
     }`}
   >
-    <div className="flex items-center gap-3">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 ${
-        isActive ? `bg-${themeColor}/20 text-${themeColor}` : 'bg-white/5 text-white/20 group-hover/item:bg-white/10 group-hover/item:scale-105'
+    <div className="flex items-center gap-3 min-w-0">
+      <div className={`w-8 h-8 rounded flex items-center justify-center transition-all shrink-0 ${
+        isActive ? `bg-primary/20 text-primary` : 'bg-white/5 text-white/10 group-hover/item:text-white/30'
       }`}>
-        <User size={16} />
+        <User size={14} />
       </div>
-      <div className="flex flex-col">
-        <span className={`text-xs font-black uppercase tracking-tight transition-colors ${isActive ? 'text-white' : 'group-hover/item:text-white'}`}>{user.name}</span>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">{user.role.replace(/_/g, ' ')}</span>
+      <div className="flex flex-col min-w-0">
+        <span className={`text-[11px] font-black uppercase tracking-tight truncate ${isActive ? 'text-white' : 'group-hover/item:text-white'}`}>{user.name}</span>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[8px] font-black uppercase tracking-widest opacity-20">{user.role.replace(/_/g, ' ')}</span>
           {showTeam && user.teams?.[0] && (
-            <span className="text-[8px] px-2 py-0.5 rounded-md bg-white/10 text-white/40 font-black border border-white/10 uppercase tracking-tighter">
+            <span className="text-[7px] px-1.5 py-0.5 rounded-sm bg-white/5 text-white/20 font-black border border-white/10 uppercase tracking-tighter">
               {user.teams[0]}
             </span>
           )}
         </div>
       </div>
     </div>
-    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
+    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
       isActive 
-        ? `border-${themeColor} bg-${themeColor} scale-110` 
-        : 'border-white/10 bg-transparent scale-90'
+        ? `border-primary bg-primary` 
+        : 'border-white/10 bg-transparent'
     }`}>
-      {isActive && <CheckCircle size={12} className="text-black" />}
+      {isActive && <CheckCircle size={10} className="text-black" />}
     </div>
   </div>
 );

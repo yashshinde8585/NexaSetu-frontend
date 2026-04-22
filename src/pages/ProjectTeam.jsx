@@ -90,52 +90,50 @@ const ProjectTeam = () => {
     });
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
-      <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+      <div className="w-full space-y-6 max-w-7xl mx-auto">
         
         {/* Navigation & Context Header */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <button
             onClick={() => navigate('/team')}
-            className="group flex items-center gap-3 text-white/50 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em]"
+            className="group flex items-center gap-2 text-white/30 hover:text-white transition-all text-[9px] font-black uppercase tracking-[0.2em]"
           >
-            <div className="w-8 h-8 rounded-lg bg-black border border-white/20 flex items-center justify-center group-hover:border-primary group-hover:bg-white/5">
-              <ChevronLeft size={16} />
+            <div className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center group-hover:border-primary">
+              <ChevronLeft size={14} />
             </div>
-            Back to Directory
+            BACK TO DIRECTORY
           </button>
 
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-white/20 pb-12">
-            <div className="flex items-center gap-6">
-              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center border border-white/20 shadow-2xl ${projectId === 'unassigned' ? 'bg-black text-white/60' : 'bg-primary/20 text-primary border-primary shadow-primary/10'}`}>
-                {projectId === 'unassigned' ? <Users size={32} /> : <Box size={32} />}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-6">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded border flex items-center justify-center ${projectId === 'unassigned' ? 'bg-white/5 border-white/10 text-white/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
+                {projectId === 'unassigned' ? <Users size={20} /> : <Box size={20} />}
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight uppercase leading-none truncate max-w-[280px] sm:max-w-md">
-                    {data.projectName}
-                  </h1>
-                </div>
-                <div className="flex items-center gap-4 text-[10px] font-bold text-white/50 uppercase tracking-wider">
+              <div className="space-y-1">
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none truncate max-w-[240px] sm:max-w-md">
+                  {data.projectName}
+                </h1>
+                <div className="flex items-center gap-3 text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">
                    <span className="flex items-center gap-2">
-                      <Users size={12} className="text-primary" />
-                      Member List
+                      <Users size={10} className="text-primary" />
+                      MEMBER LIST
                    </span>
-                   <div className="w-1 h-1 bg-white/20 rounded-full" />
-                   <span className="text-white/80">{data.members.length} Total Members</span>
+                   <div className="w-1 h-1 bg-white/10 rounded-full" />
+                   <span className="text-white/50">{data.members.length} TOTAL MEMBERS</span>
                 </div>
               </div>
             </div>
 
-            <div className="w-full lg:max-w-md relative group">
+            <div className="w-full lg:max-w-xs relative group">
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors"
-                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors"
+                size={14}
               />
               <input
                 type="text"
-                placeholder="Search by name or email..."
-                className="w-full h-14 bg-black border border-white/20 text-white rounded-xl pl-12 pr-6 focus:outline-none focus:border-primary/60 focus:bg-white/5 transition-all text-xs font-bold placeholder:text-white/30"
+                placeholder="SEARCH PERSONNEL..."
+                className="w-full h-9 bg-black border border-white/10 text-white rounded px-4 pl-10 focus:outline-none focus:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -144,50 +142,46 @@ const ProjectTeam = () => {
         </div>
 
         {/* Tactical Personnel Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
           {loading ? (
             [...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-[210px] bg-black border border-white/20 rounded-2xl animate-pulse shadow-xl"
+                className="h-[160px] bg-white/5 border border-white/10 rounded-xl animate-pulse"
               />
             ))
           ) : (
             filteredMembers.map((member) => (
               <div
                 key={member.email}
-                className="bg-black p-8 rounded-2xl border border-white/20 hover:border-primary/60 transition-all duration-300 group flex flex-col h-full relative overflow-hidden shadow-xl"
+                className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-primary/40 transition-all group flex flex-col h-full relative overflow-hidden"
               >
-                <div className="flex items-start gap-5 mb-8">
-                  <div className="w-14 h-14 bg-black rounded-xl flex items-center justify-center text-xl font-black text-white border border-white/20 group-hover:border-primary group-hover:bg-primary/10 transition-all shrink-0 shadow-lg">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-10 h-10 bg-black rounded flex items-center justify-center text-lg font-black text-white border border-white/10 group-hover:border-primary/40 transition-all shrink-0">
                     {member.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-lg text-white tracking-tight truncate leading-tight mb-1 group-hover:text-primary-light transition-colors uppercase">
+                    <h3 className="font-black text-[13px] text-white tracking-tight truncate leading-tight mb-1 group-hover:text-primary transition-colors uppercase">
                       {member.name}
                     </h3>
-                    <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-3">
+                    <div className="text-[9px] font-black text-primary uppercase tracking-[0.1em] mb-2">
                       {member.jobTitle || 'POSITION NOT SET'}
                     </div>
-                    <div className="flex items-center gap-2 text-white/60 text-[11px] font-bold truncate">
-                      <Mail size={12} className="text-white/20" />
+                    <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-widest truncate">
+                      <Mail size={10} className="text-white/10" />
                       {member.email}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/20">
-                  <div className="flex items-center gap-2 text-white/50 text-[10px] font-black uppercase tracking-widest">
-                    <Clock size={12} />
-                    <span>JOINED</span>
-                    <span className="text-white/80">{new Date(member.createdAt).toLocaleDateString()}</span>
+                <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                  <div className="flex items-center gap-2 text-white/20 text-[9px] font-black uppercase tracking-[0.1em]">
+                    <Clock size={10} />
+                    <span>JOINED {new Date(member.createdAt).toLocaleDateString()}</span>
                   </div>
                   <ShieldCheck
-                    size={20}
+                    size={16}
                     className={`transition-all duration-500 ${getRoleVisuals(member.jobTitle).color}`}
-                    style={{
-                      filter: `drop-shadow(0 0 10px ${getRoleVisuals(member.jobTitle).shadow})`,
-                    }}
                   />
                 </div>
 
@@ -202,13 +196,13 @@ const ProjectTeam = () => {
 
         {/* Empty State Manifest */}
         {!loading && filteredMembers.length === 0 && (
-          <div className="py-24 text-center bg-black border border-dashed border-white/20 rounded-[32px] animate-in zoom-in-95 duration-500 shadow-2xl">
-            <Users size={64} className="mx-auto text-white/20 mb-8" />
-            <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-3">
-              No members found
+          <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl">
+            <Users size={40} className="mx-auto text-white/10 mb-6" />
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">
+              ZERO PERSONNEL DETECTED
             </h3>
-            <p className="text-white/40 text-[11px] font-black uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
-              We couldn't find any team members matching your search for this project.
+            <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em] max-w-sm mx-auto">
+              NO MEMBERS MATCH THE CURRENT SEARCH PARAMETERS FOR THIS SECTOR.
             </p>
           </div>
         )}

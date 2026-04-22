@@ -30,10 +30,10 @@ const InternDashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1600px] mx-auto flex flex-col gap-12">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. Global Performance metrics */}
-      <div id="intern-metrics-strip" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div id="intern-metrics-strip" className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MetricStripItem 
             icon={<Target size={14} />} 
             label="Daily Assignments" 
@@ -56,85 +56,85 @@ const InternDashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
          
          {/* 2. Main Track: Current Assignment */}
-         <div className="lg:col-span-8 flex flex-col gap-12">
+         <div className="lg:col-span-8 flex flex-col gap-6">
             
             <DashboardSection title="Current Assignment" icon={<Terminal size={14} />}>
                {currentTask ? (
-                 <div className="flex flex-col gap-10 py-2">
+                 <div className="flex flex-col gap-6 py-2">
                     <div className="flex items-center gap-4">
-                        <StatusBadge status="active" text="Executing" mini />
+                        <StatusBadge status="active" />
                         <div className="h-px bg-white/5 flex-1" />
-                        <span className="text-[10px] text-white/20 uppercase font-bold tracking-widest tabular-nums">ID: {currentTask.id || 'TASK-####'}</span>
-                    </div>
-                    
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-3xl font-bold text-white uppercase tracking-tight leading-tight">{currentTask.title}</h2>
-                        <div className="bg-white/[0.015] border border-white/5 p-8 rounded">
-                           <span className="text-[9px] font-bold uppercase tracking-widest text-primary block mb-4">OBJECTIVE</span>
-                           <p className="text-[12px] font-bold text-white/60 uppercase leading-relaxed tracking-tight">{currentTask.objective}</p>
-                        </div>
+                        <span className="text-[9px] text-white/20 uppercase font-black tracking-[0.2em] tabular-nums">ID: {currentTask.id || 'TASK-####'}</span>
                     </div>
                     
                     <div className="flex flex-col gap-4">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-2">Steps</span>
+                        <h2 className="text-xl font-black text-white uppercase tracking-widest leading-tight">{currentTask.title}</h2>
+                        <div className="bg-white/5 border border-white/10 p-6 rounded-none">
+                           <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary block mb-3">OBJECTIVE</span>
+                           <p className="text-[10px] font-black text-white/60 uppercase leading-relaxed tracking-widest">{currentTask.objective}</p>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">STEPS</span>
                         {currentTask.steps?.map((step, idx) => (
-                           <div key={idx} className="flex items-center gap-6 p-5 bg-white/[0.01] border border-white/5 rounded group/step transition-all hover:bg-white/[0.02]">
-                              <div className={`w-10 h-10 rounded border flex items-center justify-center transition-all ${
+                           <div key={idx} className="flex items-center gap-4 p-3 bg-black border border-white/5 rounded-none group/step transition-colors hover:bg-white/5">
+                              <div className={`w-8 h-8 rounded-none border flex items-center justify-center transition-all ${
                                 step.completed ? 'bg-status-success/10 border-status-success/30 text-status-success' : 'border-white/10 text-white/10'
                               }`}>
-                                 {step.completed ? <CheckCircle2 size={18} /> : <span className="text-[12px] font-bold tabular-nums">{idx + 1}</span>}
+                                 {step.completed ? <CheckCircle2 size={14} /> : <span className="text-[10px] font-black tabular-nums">{idx + 1}</span>}
                               </div>
-                              <span className={`text-[12px] font-bold uppercase tracking-tight transition-all ${step.completed ? 'text-white/20 line-through' : 'text-white/60 group-hover/step:text-white'}`}>
+                              <span className={`text-[10px] font-black uppercase tracking-widest transition-all ${step.completed ? 'text-white/20 line-through' : 'text-white/60 group-hover/step:text-white'}`}>
                                  {step.text}
                               </span>
                            </div>
                         ))}
                     </div>
 
-                    <div className="flex items-center justify-between p-6 bg-white/[0.03] border border-white/10 rounded group hover:border-primary/40 transition-all">
-                       <span className="text-[10px] font-bold text-white/20 flex items-center gap-3 uppercase tracking-widest leading-none">
-                          <ExternalLink size={14} className="text-primary/40" /> Documentation Repository
+                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none group hover:border-primary/40 transition-colors">
+                       <span className="text-[9px] font-black text-white/20 flex items-center gap-3 uppercase tracking-widest leading-none">
+                          <ExternalLink size={12} className="text-primary/40" /> DOC_REPOSITORY
                        </span>
-                       <a href={currentTask.reference} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-primary uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 group-hover:translate-x-1">
-                          OPEN_LINK <ChevronRight size={12} />
+                       <a href={currentTask.reference} target="_blank" rel="noreferrer" className="text-[9px] font-black text-primary uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 group-hover:translate-x-1">
+                          OPEN_LINK <ChevronRight size={10} />
                        </a>
                     </div>
                  </div>
                ) : (
-                 <div className="py-24 text-center flex flex-col items-center gap-6 bg-white/[0.01] border border-white/5 border-dashed rounded">
-                    <Compass size={48} className="text-white/5" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/10 italic">Awaiting strategic assignment...</span>
+                 <div className="py-16 text-center flex flex-col items-center gap-4 bg-white/5 border border-white/10 border-dashed rounded-none">
+                    <Compass size={32} className="text-white/5" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10 italic">AWAITING_ASSIGNMENT</span>
                  </div>
                )}
             </DashboardSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <DashboardSection title="Feedback Cluster" icon={<Award size={14} />}>
-                  <div className="flex flex-col gap-4 py-2">
+                  <div className="flex flex-col gap-3 py-2">
                      {feedback?.map((f, idx) => (
-                       <div key={idx} className="p-6 bg-white/[0.015] border border-white/5 rounded flex flex-col gap-3 group hover:border-status-success/40 transition-all border-l-2 border-l-white/20">
-                          <span className="text-[11px] font-bold text-status-success uppercase tracking-widest leading-none">{f.title}</span>
-                          <p className="text-[10px] font-bold text-white/30 uppercase leading-snug tracking-tight group-hover:text-white/60 italic">"{f.message}"</p>
+                       <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-2 group hover:border-status-success/40 transition-colors border-l-2 border-l-white/20">
+                          <span className="text-[9px] font-black text-status-success uppercase tracking-[0.2em] leading-none">{f.title}</span>
+                          <p className="text-[9px] font-black text-white/30 uppercase leading-snug tracking-widest group-hover:text-white/60 italic">"{f.message}"</p>
                        </div>
                      ))}
                      {(!feedback || feedback.length === 0) && (
-                       <div className="py-16 text-center text-[10px] text-white/10 uppercase font-bold tracking-widest italic border border-white/5 border-dashed rounded">No performance data clusters identified.</div>
+                       <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic border border-white/10 border-dashed rounded-none">ZERO_FEEDBACK</div>
                      )}
                   </div>
                </DashboardSection>
 
-               <div className="bg-primary/5 border border-primary/20 rounded p-10 flex flex-col items-center text-center gap-8 group hover:border-primary/40 transition-all relative overflow-hidden">
-                  <div className="w-20 h-20 bg-black border border-primary/20 rounded flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                     <GraduationCap size={40} />
+               <div className="bg-primary/5 border border-primary/20 rounded-none p-6 flex flex-col items-center text-center gap-6 group hover:bg-primary/10 transition-colors relative overflow-hidden">
+                  <div className="w-16 h-16 bg-black border border-primary/20 rounded-none flex items-center justify-center text-primary group-hover:border-primary transition-colors">
+                     <GraduationCap size={32} />
                   </div>
-                  <div className="flex flex-col gap-3">
-                     <h3 className="text-xl font-bold text-white tracking-widest uppercase leading-none">Initiate Review</h3>
-                     <p className="text-[10px] font-bold text-white/20 uppercase leading-relaxed max-w-[15rem]">Signal module completion to mentoring units for performance audit.</p>
+                  <div className="flex flex-col gap-2">
+                     <h3 className="text-lg font-black text-white tracking-widest uppercase leading-none">Initiate Review</h3>
+                     <p className="text-[9px] font-black text-white/20 uppercase leading-relaxed max-w-[15rem]">SIGNAL_MODULE_COMPLETION</p>
                   </div>
-                  <button className="w-full py-4 bg-primary text-black text-[10px] font-bold uppercase tracking-widest rounded hover:bg-white transition-all shadow-2xl shadow-primary/20 active:scale-95">
+                  <button className="w-full py-3 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none hover:bg-primary/90 transition-colors active:scale-95">
                      SIGNAL_COMPLETION
                   </button>
                </div>
@@ -142,43 +142,43 @@ const InternDashboard = () => {
          </div>
 
          {/* 3. Sidebar Track: Logistics & Progression */}
-         <div className="lg:col-span-4 flex flex-col gap-12">
+         <div className="lg:col-span-4 flex flex-col gap-6">
             
             <DashboardSection title="Mentorship Coordination" icon={<Users size={14} />}>
-               <div className="flex flex-col items-center text-center py-6">
-                  <div className="w-24 h-24 rounded bg-white/[0.02] border border-white/10 p-2 mb-6 group hover:border-primary/40 transition-all relative overflow-hidden">
-                      <div className="w-full h-full rounded border border-white/5 flex items-center justify-center bg-black relative z-10 transition-colors group-hover:bg-primary/5">
-                        <UserCheck size={36} className="text-white/10 group-hover:text-primary transition-colors" />
+               <div className="flex flex-col items-center text-center py-4">
+                  <div className="w-20 h-20 rounded-none bg-white/5 border border-white/10 p-2 mb-4 group hover:border-primary/40 transition-colors relative overflow-hidden">
+                      <div className="w-full h-full rounded-none border border-white/5 flex items-center justify-center bg-black relative z-10 transition-colors group-hover:bg-primary/5">
+                        <UserCheck size={32} className="text-white/10 group-hover:text-primary transition-colors" />
                       </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-white uppercase tracking-tight mb-2 leading-none">{currentTask?.mentor?.name || 'CENTRAL_UNIT'}</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mb-10 leading-none">Engineering Mentor Lead</p>
+                  <h3 className="text-xl font-black text-white uppercase tracking-widest mb-1 leading-none">{currentTask?.mentor?.name || 'CENTRAL_UNIT'}</h3>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary mb-8 leading-none">MENTOR_LEAD</p>
                   
-                  <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden w-full">
-                     <button className="flex flex-col items-center justify-center gap-2 py-5 bg-black text-[9px] font-bold uppercase tracking-widest hover:text-primary transition-all">
-                        <MessageCircle size={16} /> COMM-LINK
+                  <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-none overflow-hidden w-full">
+                     <button className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors">
+                        <MessageCircle size={14} /> COMM_LINK
                      </button>
-                     <button className="flex flex-col items-center justify-center gap-2 py-5 bg-black text-[9px] font-bold uppercase tracking-widest hover:text-primary transition-all">
-                        <HelpCircle size={16} /> SYNC_REQ
+                     <button className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors">
+                        <HelpCircle size={14} /> SYNC_REQ
                      </button>
                   </div>
                </div>
             </DashboardSection>
 
             <DashboardSection title="Learning Resources" icon={<Layers size={14} />}>
-               <div className="flex flex-col gap-6 py-2">
-                  <div className="px-4 py-2 bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold uppercase tracking-widest rounded self-start leading-none">
+               <div className="flex flex-col gap-4 py-2">
+                  <div className="px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-[0.2em] rounded-none self-start leading-none">
                      MODULE: {learningSection?.topic || 'UNASSIGNED'}
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2">
                      {learningSection?.resources?.map((res, idx) => (
                         <a 
                           key={idx} 
                           href={res.link} 
-                          className="flex items-center justify-between p-5 bg-white/[0.015] border border-white/5 rounded hover:border-primary/40 hover:bg-white/[0.03] transition-all group"
+                          className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none hover:bg-white/10 transition-colors group"
                         >
-                           <span className="text-[11px] font-bold text-white/30 group-hover:text-white uppercase tracking-tight leading-none truncate pr-4">{res.title}</span>
-                           <ChevronRight size={14} className="text-white/10 group-hover:text-primary transition-transform group-hover:translate-x-1" />
+                           <span className="text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-widest leading-none truncate pr-4">{res.title}</span>
+                           <ChevronRight size={12} className="text-white/10 group-hover:text-primary transition-transform group-hover:translate-x-1" />
                         </a>
                      ))}
                   </div>
@@ -186,29 +186,29 @@ const InternDashboard = () => {
             </DashboardSection>
 
             <DashboardSection title="Operation Blockers" icon={<ShieldAlert size={14} />}>
-               <div className="flex flex-col gap-3 py-2">
+               <div className="flex flex-col gap-2 py-2">
                   {blockerOptions?.map((opt, idx) => (
                     <button 
                       key={idx} 
-                      className="flex items-center justify-between p-5 bg-white/[0.015] border border-white/5 rounded text-[10px] font-bold uppercase tracking-widest text-white/10 hover:bg-status-error/5 hover:border-status-error/40 hover:text-status-error transition-all group"
+                      className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none text-[9px] font-black uppercase tracking-[0.2em] text-white/20 hover:bg-status-error/5 hover:border-status-error/40 hover:text-status-error transition-colors group"
                     >
                        {opt.label}
-                       <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                       <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                     </button>
                   ))}
                </div>
             </DashboardSection>
 
             <DashboardSection title="Overall Progress" icon={<Target size={14} />}>
-               <div className="flex flex-col gap-8 py-4 px-2">
+               <div className="flex flex-col gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
                   <div className="flex items-end justify-between leading-none">
-                     <div className="flex flex-col gap-2">
-                        <span className="text-5xl font-bold text-white tracking-tighter tabular-nums">{progress?.percentage || 0}%</span>
-                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Aggregate Efficiency</span>
+                     <div className="flex flex-col gap-1.5">
+                        <span className="text-4xl font-black text-white tracking-widest tabular-nums">{progress?.percentage || 0}%</span>
+                        <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">EFFICIENCY</span>
                      </div>
-                     <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-1 tabular-nums">{progress?.completed || 0} / {progress?.total || 0} UNITS</span>
+                     <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-1 tabular-nums">{progress?.completed || 0} / {progress?.total || 0}</span>
                   </div>
-                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
                      <div 
                         className="h-full bg-primary transition-all duration-1000"
                         style={{ width: `${progress?.percentage || 0}%` }}

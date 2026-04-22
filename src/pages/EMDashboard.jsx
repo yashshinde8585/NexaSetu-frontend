@@ -14,10 +14,6 @@ import ActivityItem from '../components/molecules/dashboard/ActivityItem';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { ROUTES } from '../constants';
 
-/**
- * Engineering Manager Dashboard
- * Focused on team metrics, sprint velocity, and operational blockers.
- */
 const EMDashboard = () => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useRoleDashboard('em');
@@ -47,10 +43,10 @@ const EMDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 lg:p-12 font-mono selection:bg-primary max-w-[1700px] mx-auto flex flex-col gap-12">
+    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. Global Performance metrics */}
-      <div id="em-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+      <div id="em-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricStripItem 
           icon={<TrendingUp size={14} />} 
           label="Sprint Progress" 
@@ -87,51 +83,51 @@ const EMDashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* 2. Main Column: Sprint Task Board */}
-        <div className="lg:col-span-8 flex flex-col gap-12">
+        <div className="lg:col-span-8 flex flex-col gap-6">
           <DashboardSection title="Sprint Task Board" icon={<Target size={14} />}>
             <div className="overflow-x-auto py-2">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="text-[10px] text-white/30 uppercase font-bold tracking-widest border-b border-white/5">
-                    <th className="pb-4 px-2">Task Title</th>
-                    <th className="pb-4 px-2">Owner</th>
-                    <th className="pb-4 px-2 text-center">Status</th>
-                    <th className="pb-4 px-2 text-center">Due</th>
-                    <th className="pb-4 px-2 text-right">Priority</th>
+                  <tr className="text-[9px] text-white/40 uppercase font-black tracking-[0.2em] border-b border-white/5">
+                    <th className="pb-3 px-4">TASK_TITLE</th>
+                    <th className="pb-3 px-4">OWNER</th>
+                    <th className="pb-3 px-4 text-center">STATUS</th>
+                    <th className="pb-3 px-4 text-center">DUE</th>
+                    <th className="pb-3 px-4 text-right">PRIORITY</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.02]">
+                <tbody className="divide-y divide-white/[0.02] text-[10px] font-black uppercase tracking-widest">
                   {taskBoard.map((task, i) => (
                     <tr 
                       key={i} 
                       className="group hover:bg-white/[0.015] transition-all cursor-pointer"
                       onClick={() => navigate(ROUTES.TASK_DETAIL(task.id))}
                     >
-                      <td className="py-4 px-2">
+                      <td className="py-3 px-4">
                         <div className="flex flex-col gap-1 pr-4">
                            <div className="flex items-center gap-2">
-                             <span className="text-[12px] font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">{task.title}</span>
+                             <span className="text-white group-hover:text-primary transition-colors">{task.title}</span>
                              <ExternalLink size={10} className="text-white/0 group-hover:text-primary/40 transition-all" />
                            </div>
                            {task.blocked && (
-                             <span className="text-[8px] text-status-error font-bold uppercase tracking-widest leading-none">BLOCKED</span>
+                             <span className="text-[8px] text-status-error tracking-[0.2em]">BLOCKED</span>
                            )}
                         </div>
                       </td>
-                      <td className="py-4 px-2 text-[10px] font-bold text-white/40 uppercase tracking-widest tabular-nums">{task.owner}</td>
-                      <td className="py-4 px-2 text-center">
+                      <td className="py-3 px-4 text-white/40">{task.owner}</td>
+                      <td className="py-3 px-4 text-center">
                         <div className="flex justify-center">
-                           <StatusBadge status={task.status} text={task.status} mini />
+                           <StatusBadge status={task.status} />
                         </div>
                       </td>
-                      <td className="py-4 px-2 text-center">
-                        <span className={`px-2 py-0.5 rounded border text-[9px] font-bold uppercase tracking-widest leading-none ${getDueColor(task.due)}`}>{task.due}</span>
+                      <td className="py-3 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded border text-[8px] font-black tracking-[0.2em] ${getDueColor(task.due)}`}>{task.due}</span>
                       </td>
-                      <td className="py-4 px-2 text-right">
-                         <span className={`text-[10px] font-bold tracking-widest uppercase ${getPriorityTextColor(task.priority)}`}>
+                      <td className="py-3 px-4 text-right">
+                         <span className={getPriorityTextColor(task.priority)}>
                             {task.priority}
                          </span>
                       </td>
@@ -139,10 +135,10 @@ const EMDashboard = () => {
                   ))}
                   {taskBoard.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-24 text-center">
+                      <td colSpan={5} className="py-20 text-center">
                         <div className="flex flex-col items-center gap-4 text-white/10 italic">
-                          <Package size={48} className="mb-2" />
-                          <span className="text-[10px] font-bold uppercase tracking-[0.4em]">No active tasks found in the current sprint.</span>
+                          <Package size={32} />
+                          <span className="text-[9px] uppercase font-black tracking-[0.2em]">NO_ACTIVE_TASKS</span>
                         </div>
                       </td>
                     </tr>
@@ -153,23 +149,23 @@ const EMDashboard = () => {
           </DashboardSection>
 
           <DashboardSection title="Team Workload" icon={<Users size={14} />}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
               {teamWorkload.map((member, i) => (
-                <div key={i} className="bg-white/[0.015] border border-white/5 p-6 rounded flex flex-col gap-5 group hover:border-white/20 transition-all border-l-2 border-l-white/10">
+                <div key={i} className="bg-white/5 border border-white/10 p-4 rounded flex flex-col gap-4 group hover:bg-white/10 transition-colors border-l-2 border-l-white/20">
                   <div className="flex justify-between items-center leading-none">
-                    <span className="text-[12px] text-white font-bold uppercase tracking-tight group-hover:text-primary transition-colors">{member.member}</span>
-                    <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(var(--color-status),0.5)] ${member.status === 'red' ? 'bg-status-error' : member.status === 'yellow' ? 'bg-status-warning' : 'bg-status-success'}`}></div>
+                    <span className="text-[10px] text-white font-black uppercase tracking-widest group-hover:text-primary transition-colors">{member.member}</span>
+                    <div className={`w-1.5 h-1.5 rounded-sm ${member.status === 'red' ? 'bg-status-error' : member.status === 'yellow' ? 'bg-status-warning' : 'bg-status-success'}`} />
                   </div>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex justify-between items-end text-[9px] uppercase font-bold tracking-widest leading-none">
-                      <span className="text-white/20">Operational Load</span>
-                      <span className={member.load > 100 ? 'text-status-error' : 'text-white/40'}>{member.load}%</span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-end text-[8px] uppercase font-black tracking-[0.2em]">
+                      <span className="text-white/40">OPERATIONAL_LOAD</span>
+                      <span className={member.load > 100 ? 'text-status-error' : 'text-white/60'}>{member.load}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
                       <div 
                         className={`h-full ${member.load > 100 ? 'bg-status-error' : member.load > 85 ? 'bg-status-warning' : 'bg-primary'} transition-all duration-1000`} 
                         style={{ width: `${Math.min(member.load, 100)}%` }}
-                      ></div>
+                      />
                     </div>
                   </div>
                 </div>
@@ -179,52 +175,52 @@ const EMDashboard = () => {
         </div>
 
         {/* 3. Sidebar Column: Sprint Metrics */}
-        <div className="lg:col-span-4 flex flex-col gap-12">
+        <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardSection title="Sprint Burndown" icon={<BarChart3 size={14} />}>
              <div className="flex flex-col gap-px bg-white/10 border border-white/10 rounded overflow-hidden mt-2">
                 <div className="grid grid-cols-2 gap-px bg-white/10">
-                  <div className="bg-black p-8 flex flex-col items-center gap-3 group hover:bg-white/[0.02] transition-all">
-                    <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-none">Planned Tasks</span>
-                    <span className="text-4xl font-bold text-white tabular-nums tracking-tighter">{burndown.planned}</span>
+                  <div className="bg-black p-4 flex flex-col items-center gap-2 group hover:bg-white/[0.02] transition-colors">
+                    <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">PLANNED_TASKS</span>
+                    <span className="text-2xl font-black text-white tracking-widest">{burndown.planned}</span>
                   </div>
-                  <div className="bg-black p-8 flex flex-col items-center gap-3 group hover:bg-white/[0.02] transition-all">
-                    <span className="text-[9px] text-status-success/30 uppercase font-bold tracking-widest leading-none">Completed</span>
-                    <span className="text-4xl font-bold text-status-success tabular-nums tracking-tighter">{burndown.completed}</span>
+                  <div className="bg-black p-4 flex flex-col items-center gap-2 group hover:bg-white/[0.02] transition-colors">
+                    <span className="text-[8px] text-status-success/60 uppercase font-black tracking-[0.2em]">COMPLETED</span>
+                    <span className="text-2xl font-black text-status-success tracking-widest">{burndown.completed}</span>
                   </div>
                 </div>
 
-                <div className="bg-black p-8 flex justify-between items-center group hover:bg-white/[0.02] transition-all">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-none">Days Left</span>
-                    <span className="text-3xl font-bold text-status-warning tabular-nums tracking-tighter leading-none">{burndown.daysLeft} DAYS</span>
+                <div className="bg-black p-4 flex justify-between items-center group hover:bg-white/[0.02] transition-colors">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">DAYS_LEFT</span>
+                    <span className="text-xl font-black text-status-warning tracking-widest uppercase">{burndown.daysLeft} DAYS</span>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-none">Remaining</span>
-                    <span className="text-xl font-bold text-white tabular-nums tracking-tighter leading-none">{burndown.remaining} TASKS</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">REMAINING</span>
+                    <span className="text-[12px] font-black text-white tracking-widest uppercase">{burndown.remaining} TASKS</span>
                   </div>
                 </div>
              </div>
           </DashboardSection>
 
           <DashboardSection title="Active Blockers" icon={<ShieldAlert size={14} />}>
-            <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2 pt-2">
               {blockers.map((blocker, i) => (
                 <div 
                   key={i} 
-                  className="p-6 bg-status-error/[0.02] border border-status-error/10 rounded flex flex-col gap-3 group hover:border-status-error/40 transition-all cursor-pointer"
+                  className="p-4 bg-status-error/5 border border-status-error/20 rounded flex flex-col gap-2 group hover:border-status-error/40 transition-colors cursor-pointer"
                   onClick={() => navigate(ROUTES.TASK_DETAIL(blocker.id))}
                 >
-                  <div className="flex items-center gap-3">
-                     <AlertTriangle size={14} className="text-status-error" />
-                     <span className="text-white text-[11px] font-bold uppercase tracking-tight leading-none group-hover:text-status-error transition-colors">{blocker.title}</span>
+                  <div className="flex items-center gap-2">
+                     <AlertTriangle size={12} className="text-status-error" />
+                     <span className="text-white text-[10px] font-black uppercase tracking-widest group-hover:text-status-error transition-colors truncate">{blocker.title}</span>
                   </div>
-                  <span className="text-[9px] text-white/20 uppercase font-bold tracking-widest leading-normal pl-7 italic">Reason: {blocker.reason}</span>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em] pl-5 italic truncate">REASON: {blocker.reason}</span>
                 </div>
               ))}
               {blockers.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16 text-center opacity-10 border border-white/5 border-dashed rounded">
-                  <Shield size={48} className="mb-4" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest">No active blockers.</span>
+                <div className="flex flex-col items-center justify-center py-12 text-center opacity-20 border border-white/10 border-dashed rounded">
+                  <Shield size={32} className="mb-2" />
+                  <span className="text-[9px] uppercase font-black tracking-[0.2em]">NO_ACTIVE_BLOCKERS</span>
                 </div>
               )}
             </div>
@@ -250,23 +246,23 @@ const EMDashboard = () => {
 
       {/* Global Sync Overlay - Only shown if risk is high or blockers exist */}
       {(sprintControl.delayRisk === 'HIGH' || sprintControl.blockedTasks > 0) && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
-          <div className="bg-black/80 backdrop-blur-xl border border-white/10 p-5 rounded flex items-center justify-between shadow-2xl">
-            <div className="flex items-center gap-8">
-              <div className="w-12 h-12 rounded border border-status-warning/20 flex items-center justify-center text-status-warning bg-status-warning/5">
-                <Zap size={24} fill="currentColor" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 animate-in fade-in slide-in-from-bottom-5 duration-500">
+          <div className="bg-black border border-white/10 p-4 rounded flex items-center justify-between shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded border border-status-warning/20 flex items-center justify-center text-status-warning bg-status-warning/10">
+                <Zap size={20} fill="currentColor" />
               </div>
               <div className="flex flex-col gap-1">
-                <h4 className="text-[11px] font-bold text-white uppercase tracking-widest leading-none italic">Project Sync Required</h4>
-                <p className="text-[10px] text-white/20 uppercase font-bold tracking-tight">Synchronize sprint operational parameters to mitigate {sprintControl.delayRisk} risk.</p>
+                <h4 className="text-[10px] font-black text-white uppercase tracking-widest italic leading-none">PROJECT_SYNC_REQUIRED</h4>
+                <p className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">MITIGATE {sprintControl.delayRisk} RISK_PROTOCOL</p>
               </div>
             </div>
 
             <button 
               onClick={handleSync}
-              className="flex items-center gap-4 bg-white text-black font-bold uppercase text-[10px] px-8 py-3 rounded hover:bg-primary transition-all tracking-widest active:scale-95 group"
+              className="flex items-center gap-3 bg-white text-black font-black uppercase text-[9px] px-6 py-2 rounded hover:bg-primary transition-colors tracking-widest group"
             >
-               Project Sync <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+               SYNC <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
@@ -279,16 +275,16 @@ const EMDashboard = () => {
 const DistributionBar = ({ label, value, total, color }) => {
   const percent = total > 0 ? Math.round((value / total) * 100) : 0;
   return (
-    <div className="flex flex-col gap-3">
-       <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest leading-none">
+    <div className="flex flex-col gap-2">
+       <div className="flex justify-between items-end text-[8px] font-black uppercase tracking-[0.2em] leading-none">
           <span className="text-white/20">{label}</span>
-          <span className="text-white/60 tabular-nums">{percent}%</span>
+          <span className="text-white/60">{percent}%</span>
        </div>
-       <div className="h-1.5 w-full bg-white/3 text-white bg-opacity-5 rounded-full overflow-hidden border border-white/5">
+       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
           <div 
             className={`h-full ${color} transition-all duration-1000 ease-out`} 
             style={{ width: `${percent}%` }}
-          ></div>
+          />
        </div>
     </div>
   );
