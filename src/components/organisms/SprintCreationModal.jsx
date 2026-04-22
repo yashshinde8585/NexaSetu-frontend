@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
+import ErrorBoundary from '../ErrorBoundary';
 
 // A modal component for creating new sprints with custom names and date ranges.
 const SprintCreationModal = ({
@@ -102,7 +103,13 @@ const SprintCreationModal = ({
   );
 };
 
-SprintCreationModal.propTypes = {
+const SafeSprintCreationModal = (props) => (
+  <ErrorBoundary>
+    <SprintCreationModal {...props} />
+  </ErrorBoundary>
+);
+
+SafeSprintCreationModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   sprintData: PropTypes.object.isRequired,
@@ -112,4 +119,4 @@ SprintCreationModal.propTypes = {
   projects: PropTypes.array,
 };
 
-export default SprintCreationModal;
+export default SafeSprintCreationModal;
