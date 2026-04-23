@@ -1,12 +1,7 @@
 import React from 'react';
 import { TASK_STATUS, USER_ROLES } from '../../constants';
-import { ChevronRight, Clock, ShieldCheck, GitBranch, Activity } from 'lucide-react';
+import { ChevronRight, Clock, ShieldCheck, GitBranch, Activity, Calendar } from 'lucide-react';
 
-/**
- * Tactical Task Card.
- * High-density information container for task orchestration and status lifecycle.
- * Optimized for sunlight legibility and rapid data verification.
- */
 const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLayout = 'standard' }) => {
   const isCompact = cardLayout === 'compact';
   const isMinimal = cardLayout === 'minimal';
@@ -75,9 +70,21 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
                 {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
               </span>
               {!isCompact && (
-                <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
-                  {task.createdFormatted}
-                </span>
+                <>
+                  <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
+                    {task.createdFormatted || 'NEW'}
+                  </span>
+                  <span className={`text-[8px] font-black uppercase tracking-[0.2em] border px-2 py-0.5 ${
+                    task.type === 'bug' ? 'border-status-error text-status-error bg-status-error/5' :
+                    task.type === 'epic' ? 'border-secondary text-secondary bg-secondary/5' :
+                    task.type === 'story' ? 'border-status-success text-status-success bg-status-success/5' :
+                    task.type === 'spike' ? 'border-primary text-primary bg-primary/5' :
+                    task.type === 'tech_debt' ? 'border-status-warning text-status-warning bg-status-warning/5' :
+                    'border-white/10 text-white/40'
+                  }`}>
+                    {task.type || 'TASK'}
+                  </span>
+                </>
               )}
             </div>
           )}
@@ -109,6 +116,25 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
       {!isMinimal && task.timelineHistory?.length > 0 && (
         <div className="mt-2 text-[9px] font-black text-secondary uppercase tracking-[0.2em] flex items-center gap-2 bg-secondary/5 border border-secondary/20 px-2 py-1 w-fit">
            <Activity size={10} className="animate-pulse" strokeWidth={3} /> AI OPTIMIZED
+        </div>
+      )}
+
+      {/* Due Date Indicator */}
+      {(task.dueDate || (task.estimatedDuration && task.status !== TASK_STATUS.DONE)) && !isMinimal && (
+        <div className="mt-3 flex items-center gap-2 px-1">
+           <Calendar size={10} className={task.dueDate && new Date(task.dueDate) < new Date() && task.status !== TASK_STATUS.DONE ? 'text-status-error' : 'text-white/30'} />
+           <span className={`text-[9px] font-black uppercase tracking-widest ${
+             task.dueDate && new Date(task.dueDate) < new Date() && task.status !== TASK_STATUS.DONE ? 'text-status-error' : (task.dueDate ? 'text-white/60' : 'text-primary/80')
+           }`}>
+             {task.dueDate 
+               ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()
+               : (() => {
+                   const mins = task.estimatedDuration || 0;
+                   const durationInMs = mins * 60 * 1000;
+                   const suggested = new Date(Date.now() + durationInMs);
+                   return `~ ${suggested.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`;
+                 })()}
+           </span>
         </div>
       )}
 

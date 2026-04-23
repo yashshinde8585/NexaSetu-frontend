@@ -22,9 +22,11 @@ export const useProjectManagement = (id, user) => {
     status: TASK_STATUS.TODO,
     sprint: '',
     priority: 'medium',
+    type: 'task',
     estimatedDuration: 30,
-    durationUnit: 'min',
+    durationUnit: 'minutes',
     dueDate: '',
+    startDate: '',
     attachments: [],
   });
   const [githubToken, setGithubToken] = useState('');
@@ -89,16 +91,14 @@ export const useProjectManagement = (id, user) => {
         projectQuery.data?.sprint;
       const payload = { ...task, project: id, sprint: currentSprintId };
       
-      // Convert to minutes based on unit
+      // Convert to minutes based on unit for estimatedDuration calculation, 
+      // but keep the unit for persistence
       if (task.durationUnit === 'hours') {
         payload.estimatedDuration = (task.estimatedDuration || 0) * 60;
       } else if (task.durationUnit === 'days') {
         payload.estimatedDuration = (task.estimatedDuration || 0) * 1440; // 24 * 60
       }
 
-      // Remove frontend-only helper fields before sending to strict backend
-      delete payload.durationUnit;
-      
       return TaskService.createTask(payload);
     },
     onSuccess: () => {
@@ -111,8 +111,9 @@ export const useProjectManagement = (id, user) => {
         sprint: '',
         priority: 'medium',
         estimatedDuration: 30,
-        durationUnit: 'min',
+        durationUnit: 'minutes',
         dueDate: '',
+        startDate: '',
         attachments: [],
       });
       queryClient.invalidateQueries({
@@ -170,7 +171,19 @@ export const useProjectManagement = (id, user) => {
         suggestion.sprint =
           projectQuery.data.sprint._id || projectQuery.data.sprint;
       }
-      suggestion.durationUnit = 'min'; // Default unit for AI extraction
+      
+      // Improve UX: Convert minutes to most appropriate unit for display
+      let mins = suggestion.estimatedDuration || 30;
+      if (mins >= 1440 && mins % 1440 === 0) {
+        suggestion.estimatedDuration = mins / 1440;
+        suggestion.durationUnit = 'days';
+      } else if (mins >= 60 && mins % 60 === 0) {
+        suggestion.estimatedDuration = mins / 60;
+        suggestion.durationUnit = 'hours';
+      } else {
+        suggestion.durationUnit = 'minutes';
+      }
+
       setAiSuggestion(suggestion);
       setAiInput('');
     },
