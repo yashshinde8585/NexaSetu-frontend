@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import TaskService from '../api/taskService';
 import { TASK_STATUS } from '../constants';
 
@@ -7,35 +8,66 @@ export const useTasks = (
   initialScope = 'personal',
   initialFilter = 'active'
 ) => {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState(initialFilter);
   const [scope, setScope] = useState(initialScope);
   const [search, setSearch] = useState('');
 
-  const fetchTasks = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await TaskService.getMyTasks(scope);
-      setTasks(res.data?.tasks || []);
-    } catch (err) {
-      console.error('Failed to fetch tasks:', err);
-      setError(err.message || 'Failed to fetch tasks');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Synchronized Data Fetching: Utilizes React Query's SWR strategy
+  const { 
+    data: tasks = [], 
+    isLoading, 
+    error,
+    refetch 
+  } = useQuery({
+    queryKey: ['my-tasks', scope],
+    queryFn: () => TaskService.getMyTasks(scope).then(res => res.data?.tasks || []),
+    staleTime: 30000, // Keep data fresh for 30s
+    gcTime: 1000 * 60 * 5, // Garbage collect after 5 mins
+  });
 
-  useEffect(() => {
-    fetchTasks();
-  }, [scope]);
+  // Atomic Status Update with Optimistic UI & Targeted Cache Invalidation
+  const statusMutation = useMutation({
+    mutationFn: ({ taskId, newStatus }) => TaskService.updateTaskStatus(taskId, newStatus),
+    
+    // Step 1: Optimistic Update
+    onMutate: async ({ taskId, newStatus }) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['my-tasks', scope] });
+
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData(['my-tasks', scope]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(['my-tasks', scope], (old) => {
+        if (!old) return [];
+        return old.map(task => 
+          task._id === taskId ? { ...task, status: newStatus } : task
+        );
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousTasks };
+    },
+
+    // Step 2: Rollback on Error
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['my-tasks', scope], context.previousTasks);
+      console.error('Optimistic update failed, rolling back:', err);
+    },
+
+    // Step 3: Final Sync
+    onSettled: () => {
+      // Invalidate both scope variations to ensure consistency across dashboards
+      queryClient.invalidateQueries({ queryKey: ['my-tasks'] });
+      // Also invalidate dashboard stats since status changes impact progress metrics
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+    },
+  });
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
-      await TaskService.updateTaskStatus(taskId, newStatus);
-      await fetchTasks();
+      await statusMutation.mutateAsync({ taskId, newStatus });
       return true;
     } catch (err) {
       console.error('Status update failed:', err);
@@ -70,8 +102,8 @@ export const useTasks = (
   return {
     tasks: filteredTasks,
     allTasks: tasks,
-    loading,
-    error,
+    loading: isLoading,
+    error: error?.message || null,
     filter,
     setFilter,
     scope,
@@ -79,7 +111,7 @@ export const useTasks = (
     search,
     setSearch,
     handleStatusChange,
-    refreshTasks: fetchTasks,
+    refreshTasks: refetch,
   };
 };
 
