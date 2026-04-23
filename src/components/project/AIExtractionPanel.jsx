@@ -6,11 +6,8 @@ import StorageService from '../../services/storageService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../atoms/Button';
 
-/**
- * Tactical AI Extraction Engine.
- * Converts natural language directives into structured task objects with high-precision metadata.
- * Optimized for industrial sunlight legibility.
- */
+import { TASK_TYPE } from '../../constants';
+
 const AIExtractionPanel = ({
   aiInput,
   setAiInput,
@@ -104,7 +101,7 @@ const AIExtractionPanel = ({
 
           <div className="space-y-5">
             {/* Phase 1: Identity (Title & Priority) */}
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_180px_180px] gap-4">
               <div className="space-y-1.5">
                 <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
                   TASK TITLE
@@ -115,6 +112,24 @@ const AIExtractionPanel = ({
                   value={aiSuggestion.title}
                   onChange={(e) => setAiSuggestion({ ...aiSuggestion, title: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+                  TYPE
+                </label>
+                <select
+                  className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-5 py-3.5 rounded-xl focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer tracking-widest"
+                  value={aiSuggestion.type || TASK_TYPE.TASK}
+                  onChange={(e) => setAiSuggestion({ ...aiSuggestion, type: e.target.value })}
+                >
+                  <option value={TASK_TYPE.EPIC} className="bg-[#121212]">EPIC</option>
+                  <option value={TASK_TYPE.STORY} className="bg-[#121212]">STORY</option>
+                  <option value={TASK_TYPE.TASK} className="bg-[#121212]">TASK</option>
+                  <option value={TASK_TYPE.BUG} className="bg-[#121212]">BUG</option>
+                  <option value={TASK_TYPE.SPIKE} className="bg-[#121212]">SPIKE</option>
+                  <option value={TASK_TYPE.TECH_DEBT} className="bg-[#121212]">TECH DEBT</option>
+                </select>
               </div>
 
               <div className="space-y-1.5">
@@ -146,8 +161,8 @@ const AIExtractionPanel = ({
               />
             </div>
 
-            {/* Phase 3: Logistics (Assignee, Sprint, Duration) */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 border-t border-white/5">
+            {/* Phase 3: Logistics (Assignee, Sprint, Duration, Start Date) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-4 border-t border-white/5">
               <div className="space-y-1.5">
                 <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
                   <UserPlus size={12} className="text-white/30" /> ASSIGN TO
@@ -192,12 +207,25 @@ const AIExtractionPanel = ({
                   </div>
                   <button 
                     type="button" 
-                    onClick={() => {const u=['min','hours','days']; setAiSuggestion({...aiSuggestion, durationUnit:u[(u.indexOf(aiSuggestion.durationUnit||'min')+1)%3]});}} 
+                    onClick={() => {const u=['minutes','hours','days']; setAiSuggestion({...aiSuggestion, durationUnit:u[(u.indexOf(aiSuggestion.durationUnit||'minutes')+1)%3]});}} 
                     className="px-4 h-[42px] bg-white/5 border border-white/10 rounded-lg text-[9px] font-black text-white/60 uppercase transition-all hover:bg-white/10 active:scale-95"
                   >
-                    {aiSuggestion.durationUnit||'min'}
+                    {aiSuggestion.durationUnit === 'minutes' ? 'min' : aiSuggestion.durationUnit || 'min'}
                   </button>
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+                  <Calendar size={12} className="text-white/30" /> START DATE
+                </label>
+                <DatePicker
+                   selected={aiSuggestion.startDate ? new Date(aiSuggestion.startDate) : new Date()}
+                   onChange={(date) => setAiSuggestion({ ...aiSuggestion, startDate: date })}
+                   className="w-full bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
+                   placeholderText="SELECT START DATE"
+                   dateFormat="MMM d, yyyy"
+                />
               </div>
             </div>
           </div>
