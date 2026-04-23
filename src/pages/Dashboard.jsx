@@ -175,7 +175,6 @@ const Dashboard = () => {
 
   return (
     <ResilientPage 
-      isLoading={isLoading} 
       error={error}
       onRetry={() => window.location.reload()}
     >
@@ -191,10 +190,8 @@ const Dashboard = () => {
             </div>
           )}
 
-
-
       <div className="space-y-12">
-        <StatCards stats={stats} />
+        <StatCards stats={stats} isLoading={isLoading} />
         
         <ProjectHealthSummary sprintId={selectedSprintId} />
 
@@ -238,6 +235,7 @@ const Dashboard = () => {
             aiImpact={aiImpact}
             selectedSprintId={selectedSprintId}
             sprints={sprints}
+            isLoading={isLoading}
           />
         </div>
 
@@ -247,6 +245,7 @@ const Dashboard = () => {
             actions={pendingActions}
             handleApprove={approveAction}
             handleReject={rejectAction}
+            isLoading={isLoading}
           />
           </div>
         </div>
