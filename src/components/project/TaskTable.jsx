@@ -12,10 +12,11 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
               <tr className="border-b-2 border-white/20 bg-background-elevated">
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Priority</th>
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Ticket ID</th>
+                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Type</th>
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Title</th>
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Status</th>
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Operator</th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Updated At</th>
+                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Due Date</th>
                 <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">Created At</th>
               </tr>
             </thead>
@@ -48,6 +49,18 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                       <span className="text-[11px] font-black text-primary font-mono uppercase tracking-widest bg-primary/15 border-2 border-primary/40 px-3 py-1">
                         {task.projectKey}-{task.taskNumber}
                       </span>
+                    </td>
+                    <td className="px-5 py-6">
+                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 border ${
+                         task.type === 'bug' ? 'bg-status-error/10 border-status-error text-status-error' :
+                         task.type === 'epic' ? 'bg-secondary/10 border-secondary text-secondary' :
+                         task.type === 'story' ? 'bg-status-success/10 border-status-success text-status-success' :
+                         task.type === 'spike' ? 'bg-primary/10 border-primary text-primary' :
+                         task.type === 'tech_debt' ? 'bg-status-warning/10 border-status-warning text-status-warning' :
+                         'bg-white/5 border-white/20 text-white/60'
+                       }`}>
+                         {task.type || 'TASK'}
+                       </span>
                     </td>
                     <td className="px-5 py-6">
                       <span className="text-[12px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight block max-w-[220px] truncate">
@@ -90,20 +103,32 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                       )}
                     </td>
                     <td className="px-5 py-6">
-                      <span className="text-[9px] font-black text-white/80 uppercase tracking-[0.2em] whitespace-nowrap group-hover:text-white transition-colors">
-                        {task.updatedAt ? new Date(task.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '00:00'}
+                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap transition-colors ${
+                        task.dueDate && new Date(task.dueDate) < new Date() && task.status !== TASK_STATUS.DONE 
+                        ? 'text-status-error' 
+                        : (task.dueDate ? 'text-white/80 group-hover:text-white' : 'text-primary/40')
+                      }`}>
+                        {task.dueDate 
+                          ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()
+                          : task.estimatedDuration 
+                            ? (() => {
+                                const mins = task.estimatedDuration || 0;
+                                const suggested = new Date(Date.now() + mins * 60 * 1000);
+                                return `~ ${suggested.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`;
+                              })()
+                            : 'NOT SET'}
                       </span>
                     </td>
                     <td className="px-5 py-6">
                       <span className="text-[9px] font-black text-white/70 uppercase tracking-[0.2em] whitespace-nowrap group-hover:text-white/90 transition-colors">
-                        {task.createdFormatted}
+                        {task.createdFormatted || 'NEW'}
                       </span>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="px-5 py-32 text-center">
+                  <td colSpan="8" className="px-5 py-32 text-center">
                     <div className="flex flex-col items-center justify-center grayscale opacity-40">
                        <div className="w-20 h-1 bg-white/40 mb-4" />
                        <span className="text-[11px] font-black uppercase tracking-[0.4em]">No Records Found</span>

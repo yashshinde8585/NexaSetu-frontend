@@ -5,6 +5,8 @@ import { Clock, Minus, Plus, Paperclip, X, FileIcon, Loader2 } from 'lucide-reac
 import StorageService from '../../services/storageService';
 import { useAuth } from '../../context/AuthContext';
 
+import { TASK_TYPE } from '../../constants';
+
 // A form component for manually creating new tasks with specific titles, sprints, and descriptions.
 const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
   const { user } = useAuth();
@@ -119,6 +121,29 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+                  Mission Type
+                </label>
+                <div className="relative">
+                  <select
+                    className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
+                    value={newTask.type || TASK_TYPE.TASK}
+                    onChange={(e) => setNewTask({ ...newTask, type: e.target.value })}
+                  >
+                    <option value={TASK_TYPE.EPIC} className="bg-black">Epic</option>
+                    <option value={TASK_TYPE.STORY} className="bg-black">Story</option>
+                    <option value={TASK_TYPE.TASK} className="bg-black">Task</option>
+                    <option value={TASK_TYPE.BUG} className="bg-black">Bug</option>
+                    <option value={TASK_TYPE.SPIKE} className="bg-black">Spike</option>
+                    <option value={TASK_TYPE.TECH_DEBT} className="bg-black">Tech Debt</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                    <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
                   Priority Level
                 </label>
                 <div className="relative">
@@ -144,18 +169,22 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
-                  Target Deadline
+                  Projected Deadline
                 </label>
-                <div className="relative z-[60]">
-                  <DatePicker
-                    selected={newTask.dueDate ? new Date(newTask.dueDate) : null}
-                    onChange={(date) => setNewTask({ ...newTask, dueDate: date })}
-                    dateFormat="MMM d, yyyy"
-                    className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest"
-                    placeholderText="SELECT_DATE"
-                    calendarClassName="nexa-datepicker"
-                    popperPlacement="bottom-end"
-                  />
+                <div className="bg-white/[0.03] border border-white/10 px-4 py-3 font-black text-[10px] text-primary uppercase tracking-widest flex items-center justify-between group transition-all hover:bg-white/[0.05]">
+                  <span>
+                    {(() => {
+                      let mins = newTask.estimatedDuration || 0;
+                      if (newTask.durationUnit === 'hours') mins *= 60;
+                      if (newTask.durationUnit === 'days') mins *= 1440;
+                      const start = newTask.startDate ? new Date(newTask.startDate) : new Date();
+                      const deadline = new Date(start.getTime() + mins * 60 * 1000);
+                      return deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    })()}
+                  </span>
+                  <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <Clock size={10} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -195,18 +224,18 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 </div>
 
                 <div className="flex gap-px bg-white/10 border border-white/10">
-                  {['min', 'hours', 'days'].map(unit => (
+                  {['minutes', 'hours', 'days'].map(unit => (
                     <button
                       key={unit}
                       type="button"
                       onClick={() => setNewTask({ ...newTask, durationUnit: unit })}
                       className={`px-3 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${
-                        (newTask.durationUnit || 'min') === unit 
+                        (newTask.durationUnit || 'minutes') === unit 
                         ? 'bg-primary text-black' 
                         : 'bg-black text-white/30 hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      {unit === 'min' ? 'MINS' : unit.toUpperCase()}
+                      {unit === 'minutes' ? 'MINS' : unit.toUpperCase()}
                     </button>
                   ))}
                 </div>
@@ -218,7 +247,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                     key={v}
                     type="button"
                     onClick={() => {
-                      if (v === 15) setNewTask({ ...newTask, estimatedDuration: 15, durationUnit: 'min' });
+                      if (v === 15) setNewTask({ ...newTask, estimatedDuration: 15, durationUnit: 'minutes' });
                       if (v === 60) setNewTask({ ...newTask, estimatedDuration: 1, durationUnit: 'hours' });
                       if (v === 480) setNewTask({ ...newTask, estimatedDuration: 1, durationUnit: 'days' });
                     }}
