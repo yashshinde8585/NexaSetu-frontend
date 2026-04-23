@@ -70,7 +70,21 @@ export const useDashboard = (user, initialSprintId = null) => {
 
   const approveMutation = useMutation({
     mutationFn: (id) => ActionService.approveAction(id),
-    onSuccess: () => {
+    onMutate: async (actionId) => {
+      await queryClient.cancelQueries({ queryKey: ['pending-actions'] });
+      const previousActions = queryClient.getQueryData(['pending-actions']);
+      
+      // Optimistically remove the action from the list
+      queryClient.setQueryData(['pending-actions'], (old) => 
+        old ? old.filter(a => a._id !== actionId) : []
+      );
+
+      return { previousActions };
+    },
+    onError: (err, id, context) => {
+      queryClient.setQueryData(['pending-actions'], context.previousActions);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     },
@@ -85,7 +99,20 @@ export const useDashboard = (user, initialSprintId = null) => {
 
   const rejectMutation = useMutation({
     mutationFn: (id) => ActionService.rejectAction(id),
-    onSuccess: () => {
+    onMutate: async (actionId) => {
+      await queryClient.cancelQueries({ queryKey: ['pending-actions'] });
+      const previousActions = queryClient.getQueryData(['pending-actions']);
+      
+      queryClient.setQueryData(['pending-actions'], (old) => 
+        old ? old.filter(a => a._id !== actionId) : []
+      );
+
+      return { previousActions };
+    },
+    onError: (err, id, context) => {
+      queryClient.setQueryData(['pending-actions'], context.previousActions);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
     },
   });

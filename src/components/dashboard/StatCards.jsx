@@ -2,7 +2,23 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // A grid of interactive cards for visualizing key performance indicators and workspace statistics.
-const StatCards = ({ stats }) => {
+const StatCards = ({ stats, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="p-5 sm:p-6 rounded-2xl border border-white/5 bg-white/[0.02] h-[110px] animate-pulse">
+            <div className="flex justify-between items-center mb-4">
+              <div className="h-2 bg-white/10 rounded w-20" />
+              <div className="h-5 w-5 bg-white/10 rounded" />
+            </div>
+            <div className="h-8 bg-white/10 rounded w-16" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div
       id="kpi-cards"

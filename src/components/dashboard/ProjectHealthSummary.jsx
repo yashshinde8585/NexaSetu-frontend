@@ -1,52 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Sparkles, Activity, AlertCircle, CheckCircle2, ChevronRight, BrainCircuit, FileText } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import LazyMarkdown from '../atoms/LazyMarkdown';
 import epiService from '../../api/epiService';
 import StakeholderReportModal from './StakeholderReportModal';
 
 /**
- * Project Health Summary
+ * Project Health Summary: Optimized with React Query for High-Density Intelligence
  */
 const ProjectHealthSummary = ({ sprintId, manualTrigger = false }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(!manualTrigger);
 
-  useEffect(() => {
-    if (!sprintId || !hasInitialized) return;
-
-    const fetchEPI = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const epiData = await epiService.getSprintEPI(sprintId);
-        setData(epiData);
-      } catch (err) {
-        console.error('Failed to fetch EPI data:', err);
-        setError('Intelligence engine unavailable');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEPI();
-  }, [sprintId, hasInitialized]);
-
-  const refreshEPI = async () => {
-    setLoading(true);
-    try {
-      const epiData = await epiService.getSprintEPI(sprintId);
-      setData(epiData);
-    } catch (err) {
-      console.error('Failed to refresh EPI data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Synchronized Intelligence Fetching
+  const { 
+    data, 
+    isLoading: loading, 
+    error: queryError,
+    refetch: refreshEPI 
+  } = useQuery({
+    queryKey: ['sprint-epi', sprintId],
+    queryFn: () => epiService.getSprintEPI(sprintId),
+    enabled: !!sprintId && hasInitialized,
+    staleTime: 60000, // Intelligence data is valid for 1 minute
+  });
 
   if (!sprintId) return null;
+
+  const error = queryError ? 'Intelligence engine unavailable' : null;
 
   const getHealthColor = (score) => {
     if (score >= 80) return 'text-status-success border-status-success/20 bg-status-success/5';
@@ -168,21 +150,17 @@ const ProjectHealthSummary = ({ sprintId, manualTrigger = false }) => {
 };
 
 const ActionItem = ({ action, sprintId, onExecuted }) => {
-    const [executing, setExecuting] = useState(false);
+    const queryClient = useQueryClient();
     const [done, setDone] = useState(false);
 
-    const handleExecute = async () => {
-        setExecuting(true);
-        try {
-            await epiService.executeEPIAction(action.type, action.metadata);
+    const actionMutation = useMutation({
+        mutationFn: () => epiService.executeEPIAction(action.type, action.metadata),
+        onSuccess: () => {
             setDone(true);
+            queryClient.invalidateQueries({ queryKey: ['sprint-epi', sprintId] });
             if (onExecuted) onExecuted();
-        } catch (err) {
-            console.error('Action failed:', err);
-        } finally {
-            setExecuting(false);
         }
-    };
+    });
 
     if (done) return (
         <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-status-success/10 border border-status-success/20 text-status-success animate-in fade-in slide-in-from-right-2">
@@ -201,11 +179,11 @@ const ActionItem = ({ action, sprintId, onExecuted }) => {
                 <p className="text-[9px] text-white/40 leading-relaxed line-clamp-1">{action.description}</p>
             </div>
             <button 
-                onClick={handleExecute}
-                disabled={executing}
-                className={`flex-shrink-0 p-2 rounded-xl border transition-all ${executing ? 'bg-primary/50 cursor-wait' : 'bg-primary/20 border-primary/40 hover:bg-primary text-white hover:border-primary active:scale-95'}`}
+                onClick={() => actionMutation.mutate()}
+                disabled={actionMutation.isPending}
+                className={`flex-shrink-0 p-2 rounded-xl border transition-all ${actionMutation.isPending ? 'bg-primary/50 cursor-wait' : 'bg-primary/20 border-primary/40 hover:bg-primary text-white hover:border-primary active:scale-95'}`}
             >
-                {executing ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={14} />}
+                {actionMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={14} />}
             </button>
         </div>
     );

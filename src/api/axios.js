@@ -22,7 +22,10 @@ api.interceptors.request.use(
     const mutatingMethods = ['post', 'put', 'patch', 'delete'];
     const isMutating = mutatingMethods.includes(config.method?.toLowerCase());
     
-    const requestKey = `${config.method}:${config.url}:${JSON.stringify(config.data)}`;
+    // Optimization: Only stringify if data is small, otherwise use a hash or just URL
+    const dataHash = config.data ? (JSON.stringify(config.data).length < 1000 ? JSON.stringify(config.data) : 'large-payload') : '';
+    const requestKey = `${config.method}:${config.url}:${dataHash}`;
+    
     if (isMutating && pendingRequests.has(requestKey)) {
       const controller = new AbortController();
       config.signal = controller.signal;
@@ -63,18 +66,9 @@ api.interceptors.response.use(
       pendingRequests.delete(response.config._requestKey);
     }
 
-    // Defensive UI: Normalize nulls to undefined
-    if (response.data && typeof response.data === 'object') {
-      const normalize = (obj) => {
-        for (const key in obj) {
-          if (obj[key] === null) obj[key] = undefined;
-          if (Array.isArray(obj[key])) obj[key].forEach(normalize);
-          else if (typeof obj[key] === 'object') normalize(obj[key]);
-        }
-      };
-      normalize(response.data);
-    }
-
+    // Performance Optimization: Removed deep-recursive null-to-undefined normalizer.
+    // Modern components should use nullish coalescing (??) for safety.
+    
     return response;
   },
   async (error) => {
