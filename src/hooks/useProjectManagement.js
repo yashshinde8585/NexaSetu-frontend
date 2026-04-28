@@ -6,6 +6,7 @@ import SprintService from '../api/sprintService';
 import AiService from '../api/aiService';
 import GithubService from '../api/githubService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
+import MetricsService from '../api/metricsService';
 
 // Manages state, mutations, and derived data for individual project environments.
 export const useProjectManagement = (id, user) => {
@@ -101,7 +102,10 @@ export const useProjectManagement = (id, user) => {
 
       return TaskService.createTask(payload);
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
+      const createdTask = res.data?.task || res.task;
+      MetricsService.trackTaskCreated(createdTask?._id, createdTask?.title);
+      
       setShowTaskForm(false);
       setAiSuggestion(null);
       setNewTask({

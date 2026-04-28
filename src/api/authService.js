@@ -29,6 +29,22 @@ class AuthService {
   completeOnboarding() {
     return apiClient.patch(API_ENDPOINTS.AUTH.ONBOARDING);
   }
+
+  forgotPassword(email) {
+    return apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+  }
+
+  resetPassword(token, password) {
+    return apiClient.patch(API_ENDPOINTS.AUTH.RESET_PASSWORD(token), { password });
+  }
+
+  updateAvatar(formData) {
+    return apiClient.patch(API_ENDPOINTS.AUTH.AVATAR, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
 }
 
 export default new AuthService();

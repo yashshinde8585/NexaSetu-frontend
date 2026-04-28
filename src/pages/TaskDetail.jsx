@@ -57,15 +57,19 @@ const TaskDetailPage = () => {
       queryClient.invalidateQueries(['tasks']);
       setIsStatusMenuOpen(false);
     },
+    onError: () => {
+    }
   });
 
   const blockMutation = useMutation({
     mutationFn: ({ blocked, reason }) => TaskService.toggleTaskBlockage(taskId, blocked, reason),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries(['task', taskId]);
       setIsBlockModalOpen(false);
       setBlockReason('');
     },
+    onError: () => {
+    }
   });
 
   const updateMutation = useMutation({
@@ -74,6 +78,8 @@ const TaskDetailPage = () => {
       queryClient.invalidateQueries(['task', taskId]);
       queryClient.invalidateQueries(['tasks']);
     },
+    onError: () => {
+    }
   });
 
   // Close menu on outside click

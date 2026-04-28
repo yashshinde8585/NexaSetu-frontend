@@ -41,11 +41,11 @@ const ProfileDropdown = () => {
         className="flex items-center gap-3 p-1 sm:p-1 border border-white/5 hover:border-white/10 transition-colors outline-none active:scale-95 duration-200 cursor-pointer group"
       >
         <div className="w-8 h-8 rounded-none bg-white/5 flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
-          {user.avatar ? (
+          {user.profilePicture ? (
             <img
-              src={user.avatar}
+              src={user.profilePicture}
               alt={user.name}
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+              className="w-full h-full object-cover group-hover:scale-110 transition-all duration-300"
             />
           ) : (
             <span className="text-white font-black text-[10px] uppercase">
@@ -68,12 +68,12 @@ const ProfileDropdown = () => {
         <div className="absolute right-0 mt-1 w-64 bg-black border border-white/15 rounded-none overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-200">
           {/* Header */}
           <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center p-0.5 shrink-0">
-              {user.avatar ? (
+            <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
+              {user.profilePicture ? (
                 <img
-                  src={user.avatar}
+                  src={user.profilePicture}
                   alt={user.name}
-                  className="w-full h-full rounded-none object-cover grayscale"
+                  className="w-full h-full rounded-none object-cover"
                 />
               ) : (
                 <div className="w-full h-full rounded-none bg-white/5 flex items-center justify-center">

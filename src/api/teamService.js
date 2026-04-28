@@ -13,6 +13,10 @@ class TeamService {
   getRoles() {
     return apiClient.get(API_ENDPOINTS.TEAM.ROLES);
   }
+
+  removeInvitation(id) {
+    return apiClient.delete(API_ENDPOINTS.TEAM.REMOVE_INVITATION(id));
+  }
 }
 
 export default new TeamService();

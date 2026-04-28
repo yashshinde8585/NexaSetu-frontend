@@ -26,6 +26,7 @@ import { USER_ROLES, ROUTES } from '../constants';
 import { useNavigate } from 'react-router-dom';
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
 import Skeleton from '../components/atoms/Skeleton';
+import EmptyState from '../components/atoms/EmptyState';
 
 const TeamSkeleton = () => (
   <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
@@ -72,6 +73,21 @@ const Team = () => {
       setLoading(false);
     }
   }, []);
+
+  const handleRemoveInvitation = async (id) => {
+    const confirmDelete = window.confirm('REMAINING_DISPATCH_WILL_BE_TERMINATED. PROCEED?');
+    if (!confirmDelete) return;
+
+    try {
+      await TeamService.removeInvitation(id);
+      // Optimistic Update
+      setTeam(prev => ({
+        ...prev,
+        invitations: prev.invitations.filter(i => i._id !== id)
+      }));
+    } catch (err) {
+    }
+  };
 
   useEffect(() => {
     const isTechLead = user?.role === USER_ROLES.TECH_LEAD;
@@ -207,17 +223,12 @@ const Team = () => {
           </div>
 
           {filteredData.groups.length === 0 && (
-            <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl">
-               <Box size={32} className="mx-auto text-white/10 mb-4" />
-               <h3 className="text-lg font-black text-white uppercase tracking-tight mb-1">
-                 {searchTerm ? 'ZERO_RESULTS' : 'NO_TEAMS_DETECTED'}
-               </h3>
-               <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em]">
-                 {searchTerm 
-                   ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.` 
-                   : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'}
-               </p>
-            </div>
+            <EmptyState 
+              title={searchTerm ? 'ZERO_RESULTS' : 'NO_TEAMS_DETECTED'}
+              message={searchTerm 
+                ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.` 
+                : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'}
+            />
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -252,9 +263,13 @@ const Team = () => {
                       {group.members.slice(0, 4).map((m, i) => (
                         <div
                           key={i}
-                          className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black"
+                          className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black overflow-hidden"
                         >
-                          {m.name.charAt(0)}
+                          {m.profilePicture ? (
+                            <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                          ) : (
+                            m.name.charAt(0)
+                          )}
                         </div>
                       ))}
                       {group.members.length > 4 && (
@@ -283,12 +298,19 @@ const Team = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {filteredData.unassigned.map((m) => (
                   <div key={m._id || m.id} className="p-3 bg-black border border-white/10 rounded-lg flex items-center gap-3 hover:border-primary/40 transition-all group">
-                    <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors">
-                      {m.name.charAt(0)}
+                    <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors overflow-hidden border border-white/10">
+                      {m.profilePicture ? (
+                        <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                      ) : (
+                        m.name.charAt(0)
+                      )}
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-[11px] font-black text-white truncate uppercase tracking-tight">{m.name}</span>
-                      <span className="text-[8px] text-white/30 font-black uppercase truncate tracking-widest">{m.jobTitle || 'UNASSIGNED'}</span>
+                      <span className="text-[9px] text-white/50 truncate tracking-wide lowercase">{m.email}</span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[8px] text-white/30 font-black uppercase truncate tracking-widest">{m.jobTitle || 'OPERATIVE'}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -339,6 +361,7 @@ const Team = () => {
                     </div>
                     <button 
                       aria-label="Remove pending invitation"
+                      onClick={() => handleRemoveInvitation(invite._id)}
                       className="p-2 text-white/10 hover:text-status-error transition-all"
                     >
                       <Trash2 size={14} />
