@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     ONBOARDING: '/auth/complete-tour',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: (token) => `/auth/reset-password/${token}`,
+    AVATAR: '/auth/avatar',
   },
   PROJECTS: {
     BASE: '/projects',

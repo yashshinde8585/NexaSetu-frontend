@@ -263,9 +263,13 @@ const Team = () => {
                       {group.members.slice(0, 4).map((m, i) => (
                         <div
                           key={i}
-                          className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black"
+                          className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black overflow-hidden"
                         >
-                          {m.name.charAt(0)}
+                          {m.profilePicture ? (
+                            <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                          ) : (
+                            m.name.charAt(0)
+                          )}
                         </div>
                       ))}
                       {group.members.length > 4 && (
@@ -294,13 +298,19 @@ const Team = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {filteredData.unassigned.map((m) => (
                   <div key={m._id || m.id} className="p-3 bg-black border border-white/10 rounded-lg flex items-center gap-3 hover:border-primary/40 transition-all group">
-                    <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors">
-                      {m.name.charAt(0)}
+                    <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors overflow-hidden border border-white/10">
+                      {m.profilePicture ? (
+                        <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                      ) : (
+                        m.name.charAt(0)
+                      )}
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-[11px] font-black text-white truncate uppercase tracking-tight">{m.name}</span>
                       <span className="text-[9px] text-white/50 truncate tracking-wide lowercase">{m.email}</span>
-                      <span className="text-[8px] text-white/30 font-black uppercase truncate tracking-widest mt-0.5">{m.jobTitle || 'UNASSIGNED'}</span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[8px] text-white/30 font-black uppercase truncate tracking-widest">{m.jobTitle || 'OPERATIVE'}</span>
+                      </div>
                     </div>
                   </div>
                 ))}

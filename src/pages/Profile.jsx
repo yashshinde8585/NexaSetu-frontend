@@ -12,8 +12,11 @@ import {
   Key,
   BadgeCheck,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Camera,
+  Loader2
 } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/atoms/Button';
 import { ROUTES } from '../constants';
@@ -23,12 +26,41 @@ import { ROUTES } from '../constants';
  * Focuses on clarity, high contrast, and structured information layouts.
  */
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateAvatar } = useAuth();
   const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleLogout = async () => {
     await logout();
     navigate(ROUTES.LOGIN);
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('FILE_SIZE_EXCEEDS_2MB_LIMIT');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      setIsUploading(true);
+      await updateAvatar(formData);
+    } catch (err) {
+      console.error('[AVATAR_UPLOAD_FAILURE]:', err);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   if (!user) return null;
@@ -40,15 +72,37 @@ const Profile = () => {
         {/* Simple Professional Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative">
-               {user.avatar ? (
-                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded" />
+            <div 
+              className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative cursor-pointer group overflow-hidden"
+              onClick={handleAvatarClick}
+            >
+               {user.profilePicture ? (
+                 <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover rounded" />
                ) : (
                  <span className="text-xl font-black text-white/50">{user.name.charAt(0)}</span>
                )}
-               <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-black border border-white/10 rounded flex items-center justify-center text-primary">
+               
+               {isUploading && (
+                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+                    <Loader2 className="animate-spin text-primary" size={20} />
+                 </div>
+               )}
+               
+               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10 backdrop-blur-[2px]">
+                  <Camera size={16} className="text-white" />
+               </div>
+
+               <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-black border border-white/10 rounded flex items-center justify-center text-primary z-30">
                   <ShieldCheck size={10} />
                </div>
+
+               <input 
+                 type="file" 
+                 ref={fileInputRef} 
+                 onChange={handleFileChange} 
+                 className="hidden" 
+                 accept="image/*" 
+               />
             </div>
             <div>
               <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">{user.name}</h1>

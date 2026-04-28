@@ -12,8 +12,11 @@ import {
   Monitor,
   Globe,
   Bell,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import TacticalInput from '../molecules/TacticalInput';
 import TacticalSelect from '../molecules/TacticalSelect';
 import SecurityActionRow from '../molecules/SecurityActionRow';
@@ -36,50 +39,101 @@ const DeckWrapper = ({ title, children }) => (
 /**
  * Clean Identity section for profile management.
  */
-export const IdentitySection = ({ user }) => (
-  <DeckWrapper title="USER_PROFILE">
-    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-black border border-white/10 rounded">
-      <div className="relative shrink-0">
-        <div className="w-16 h-16 rounded bg-white/5 border border-white/10 p-1">
-          <div className="w-full h-full bg-black rounded flex items-center justify-center overflow-hidden">
-            {user.avatar ? (
-              <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
-            ) : (
-              <span className="text-xl font-black text-white/50">{user.name.charAt(0)}</span>
-            )}
-          </div>
-        </div>
-        <button className="absolute -bottom-2 -right-2 w-6 h-6 rounded bg-black border border-white/10 flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer">
-           <Camera size={12} />
-        </button>
-      </div>
-      <div className="flex-1 space-y-1 text-center sm:text-left min-w-0">
-        <div className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">ACTIVE_USER</div>
-        <h3 className="text-[14px] font-black text-white uppercase tracking-widest truncate">{user.name}</h3>
-        <p className="text-[9px] text-white/60 font-black uppercase tracking-widest truncate">{user.email}</p>
-      </div>
-    </div>
+export const IdentitySection = ({ user }) => {
+  const { updateAvatar } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-1">
-         <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">FULL_NAME</label>
-         <TacticalInput icon={<UserCircle size={14} />} value={user.name} className="h-9" />
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('FILE_SIZE_EXCEEDS_2MB_LIMIT');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      setIsUploading(true);
+      await updateAvatar(formData);
+    } catch (err) {
+      console.error('[AVATAR_UPLOAD_FAILURE]:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <DeckWrapper title="USER_PROFILE">
+      <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-black border border-white/10 rounded">
+        <div className="relative shrink-0">
+          <div className="w-16 h-16 rounded bg-white/5 border border-white/10 p-1">
+            <div 
+              className="w-full h-full bg-black rounded flex items-center justify-center overflow-hidden cursor-pointer relative group"
+              onClick={handleAvatarClick}
+            >
+              {user.profilePicture ? (
+                <img src={user.profilePicture} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={user.name} />
+              ) : (
+                <span className="text-xl font-black text-white/50">{user.name.charAt(0)}</span>
+              )}
+              
+              {isUploading && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+                   <Loader2 className="animate-spin text-primary" size={16} />
+                </div>
+              )}
+            </div>
+          </div>
+          <button 
+            onClick={handleAvatarClick}
+            className="absolute -bottom-2 -right-2 w-6 h-6 rounded bg-black border border-white/10 flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer z-30"
+          >
+             <Camera size={12} />
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            className="hidden" 
+            accept="image/*" 
+          />
+        </div>
+        <div className="flex-1 space-y-1 text-center sm:text-left min-w-0">
+          <div className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">ACTIVE_USER</div>
+          <h3 className="text-[14px] font-black text-white uppercase tracking-widest truncate">{user.name}</h3>
+          <p className="text-[9px] text-white/60 font-black uppercase tracking-widest truncate">{user.email}</p>
+        </div>
       </div>
-      <div className="space-y-1">
-         <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">EMAIL_ADDRESS</label>
-         <TacticalInput icon={<AtSign size={14} />} value={user.email} className="h-9" />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-1">
+           <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">FULL_NAME</label>
+           <TacticalInput icon={<UserCircle size={14} />} value={user.name} className="h-9" />
+        </div>
+        <div className="space-y-1">
+           <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">EMAIL_ADDRESS</label>
+           <TacticalInput icon={<AtSign size={14} />} value={user.email} className="h-9" />
+        </div>
+        <div className="space-y-1">
+            <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">CURRENT_ROLE</label>
+           <TacticalInput icon={<BadgeCheck size={14} />} value={user.jobTitle || 'TEAM MEMBER'} disabled className="h-9 opacity-50" />
+        </div>
+        <div className="space-y-1">
+            <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">MEMBER_SINCE</label>
+           <TacticalInput icon={<Clock size={14} />} value={new Date(user.createdAt).toLocaleDateString()} disabled className="h-9 opacity-50" />
+        </div>
       </div>
-      <div className="space-y-1">
-          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">CURRENT_ROLE</label>
-         <TacticalInput icon={<BadgeCheck size={14} />} value={user.jobTitle || 'TEAM MEMBER'} disabled className="h-9 opacity-50" />
-      </div>
-      <div className="space-y-1">
-          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">MEMBER_SINCE</label>
-         <TacticalInput icon={<Clock size={14} />} value={new Date(user.createdAt).toLocaleDateString()} disabled className="h-9 opacity-50" />
-      </div>
-    </div>
-  </DeckWrapper>
-);
+    </DeckWrapper>
+  );
+};
 
 /**
  * Professional Security section.

@@ -140,6 +140,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const updateAvatar = useCallback(async (formData) => {
+    try {
+      const res = await AuthService.updateAvatar(formData);
+      setUser(res.data.user);
+      return res;
+    } catch (err) {
+      console.error('Avatar update failed:', err);
+      throw err;
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -151,8 +162,9 @@ export const AuthProvider = ({ children }) => {
       activateInvite,
       logout,
       completeOnboarding,
+      updateAvatar,
     }),
-    [user, loading, loadingMessage, isWakingUp, login, register, activateInvite, logout, completeOnboarding]
+    [user, loading, loadingMessage, isWakingUp, login, register, activateInvite, logout, completeOnboarding, updateAvatar]
   );
 
   return (
