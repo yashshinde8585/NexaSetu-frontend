@@ -13,6 +13,8 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
+import MetricsService from '../api/metricsService';
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const { register: authRegister } = useAuth();
@@ -87,6 +89,8 @@ const Register = () => {
       );
 
       if (isMounted.current) {
+        toast.success('WORKSPACE_INITIALIZED_SUCCESSFULLY');
+        MetricsService.trackSignup(formData.workspaceName, plan);
         navigate('/dashboard');
       }
     } catch (err) {

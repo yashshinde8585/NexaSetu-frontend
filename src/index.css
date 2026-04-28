@@ -18,9 +18,14 @@
   --color-text-muted: #E2E8F0;
 
   --color-status-success: #4ADE80;
+  --status-success-rgb: 74, 222, 128;
   --color-status-warning: #FBBF24;
+  --status-warning-rgb: 251, 191, 36;
   --color-status-error: #F87171;
+  --status-error-rgb: 248, 113, 113;
   --color-status-info: #7DD3FC;
+  --status-info-rgb: 125, 211, 252;
+  --primary-rgb: 96, 165, 250;
 
   /* Breakpoints */
   --breakpoint-xs: 320px;

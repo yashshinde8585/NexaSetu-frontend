@@ -120,7 +120,7 @@ const Login = () => {
                           PASSWORD
                         </label>
                         <Link
-                          to="/"
+                          to="/forgot-password"
                           className="text-[9px] text-white/40 hover:text-white transition-colors font-black uppercase tracking-widest"
                         >
                           FORGOT?

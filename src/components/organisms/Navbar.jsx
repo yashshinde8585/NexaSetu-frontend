@@ -53,6 +53,7 @@ const Navbar = ({ onToggleSidebar }) => {
                     [ROUTES.MY_TASKS]: 'Tasks',
                     '/velocity': 'Velocity',
                     [ROUTES.PROFILE || '/profile']: 'Profile',
+                    [ROUTES.PRICING]: 'Account',
                     [ROUTES.SETTINGS]: 'Settings',
                     '/theme': 'Themes',
                   };
@@ -62,7 +63,7 @@ const Navbar = ({ onToggleSidebar }) => {
                   if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
                   if (path.startsWith('/project/')) return 'Task Board';
                   if (path.startsWith('/task/')) return 'Task Detail';
-                  return 'Intelligence';
+                  return '';
                 })()}
               </span>
             </div>

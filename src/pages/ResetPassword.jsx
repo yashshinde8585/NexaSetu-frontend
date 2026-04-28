@@ -1,0 +1,146 @@
+import React, { useState } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Lock, ArrowRight, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import AuthService from '../api/authService';
+import Navbar from '../components/layouts/Navbar';
+import toast from 'react-hot-toast';
+
+const ResetPassword = () => {
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('PASSWORDS_DO_NOT_MATCH');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await AuthService.resetPassword(token, password);
+      setSuccess(true);
+      toast.success('PASSWORD_RESET_SUCCESSFUL');
+      setTimeout(() => navigate('/login'), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'FAILED_TO_RESET_PASSWORD');
+      toast.error('RESET_FAILED');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
+      <Navbar hideLinks={true} />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-black border border-white/10 rounded p-8">
+          <div className="mb-8 text-center">
+            <h2 className="text-[14px] font-black text-white mb-2 tracking-widest uppercase">
+              ESTABLISH_NEW_ACCESS
+            </h2>
+            <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
+              ENTER YOUR NEW SECURITY CREDENTIALS.
+            </p>
+          </div>
+
+          {success ? (
+            <div className="text-center space-y-6">
+              <div className="flex justify-center">
+                <CheckCircle2 className="text-green-500" size={48} strokeWidth={1} />
+              </div>
+              <p className="text-white/60 text-xs font-medium tracking-tight">
+                Your credentials have been updated successfully. Redirecting you to login...
+              </p>
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30"
+              >
+                LOG_IN_NOW <ArrowRight size={12} />
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
+                    NEW_PASSWORD
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={14} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      minLength={8}
+                      className="w-full h-11 bg-white/5 border border-white/10 focus:border-white text-white rounded pl-10 pr-10 outline-none transition-all placeholder:text-white/20 text-[11px] font-medium tracking-tight"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
+                    CONFIRM_PASSWORD
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={14} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      className="w-full h-11 bg-white/5 border border-white/10 focus:border-white text-white rounded pl-10 pr-4 outline-none transition-all placeholder:text-white/20 text-[11px] font-medium tracking-tight"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black uppercase tracking-widest text-center">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-white/90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={14} />
+                    UPDATING...
+                  </>
+                ) : (
+                  <>
+                    UPDATE_PASSWORD <ArrowRight size={14} />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ResetPassword;

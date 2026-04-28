@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
     LOGOUT: '/auth/logout',
     ACTIVATE: '/auth/activate',
     ONBOARDING: '/auth/complete-tour',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: (token) => `/auth/reset-password/${token}`,
   },
   PROJECTS: {
     BASE: '/projects',
@@ -33,7 +35,8 @@ export const API_ENDPOINTS = {
   TEAM: {
     INVITE_BULK: '/team/invite-bulk',
     MEMBERS: '/team/members',
-    ROLES: '/team/roles'
+    ROLES: '/team/roles',
+    REMOVE_INVITATION: (id) => `/team/invites/${id}`,
   },
   AI: {
     EXTRACT: '/ai/extract',
@@ -74,6 +77,9 @@ export const API_ENDPOINTS = {
   VPE: {
     DASHBOARD: `/leadership/dashboard`,
     TEAM_DRILLDOWN: (teamName) => `/leadership/team/${teamName}`,
+  },
+  METRICS: {
+    EVENT: '/metrics/event',
   },
 };
 
