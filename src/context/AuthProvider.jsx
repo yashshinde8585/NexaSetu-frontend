@@ -1,14 +1,11 @@
 import React, {
-  createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
   useMemo,
 } from 'react';
 import AuthService from '../api/authService';
-
-const AuthContext = createContext();
+import { AuthContext } from './AuthContextCore';
 
 // Manages global authentication, session persistence, and logout signaling
 export const AuthProvider = ({ children }) => {
@@ -28,56 +25,76 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const controller = new AbortController();
-      // Increase timeout for initial cold start detection
-      const timeoutId = setTimeout(() => {
-        setIsWakingUp(true);
-        setLoadingMessage('Waking up the strategic engine... (this takes ~30s on first load)');
-      }, 3000);
-
-      // Final hard timeout
-      const hardTimeoutId = setTimeout(() => controller.abort(), 40000); 
-
-      try {
-        const res = await AuthService.getCurrentUser({ signal: controller.signal });
-        setUser(res.data.user);
-      } catch (err) {
-        setUser(null);
-        if (err.name === 'AbortError') {
-          console.warn('[AUTH] Cold start timeout exceeded.');
-        }
-      } finally {
-        clearTimeout(timeoutId);
-        clearTimeout(hardTimeoutId);
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-
-    const handleGlobalLogout = () => {
+    const handleGlobalLogout = useCallback(() => {
       localStorage.removeItem('token');
       setUser(null);
-    };
+    }, []);
 
-    window.addEventListener('auth:logout', handleGlobalLogout);
-    return () => window.removeEventListener('auth:logout', handleGlobalLogout);
-  }, []);
+    useEffect(() => {
+      const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+          setIsWakingUp(true);
+          setLoadingMessage('Waking up the strategic engine... (this takes ~30s on first load)');
+        }, 3000);
+
+        const hardTimeoutId = setTimeout(() => controller.abort(), 40000); 
+
+        try {
+          const res = await AuthService.getCurrentUser({ signal: controller.signal });
+          // Post-Login Initialization: Ensure user, workspace, and role context are fully hydrated
+          setUser(res.data.user);
+        } catch (err) {
+          // Failure Path: Handle expired or invalid tokens by clearing state
+          handleGlobalLogout();
+          if (err.name === 'AbortError') {
+            console.warn('[AUTH] Cold start timeout exceeded.');
+          }
+        } finally {
+          clearTimeout(timeoutId);
+          clearTimeout(hardTimeoutId);
+          setLoading(false);
+        }
+      };
+
+      fetchUser();
+
+      // Proactive Session Validation: Verify token integrity every 5 minutes
+      const sessionValidator = setInterval(async () => {
+        if (localStorage.getItem('token')) {
+          try {
+            await AuthService.getCurrentUser();
+          } catch (err) {
+            if (err.status === 401) handleGlobalLogout();
+          }
+        }
+      }, 300000);
+
+      window.addEventListener('auth:logout', handleGlobalLogout);
+      return () => {
+        window.removeEventListener('auth:logout', handleGlobalLogout);
+        clearInterval(sessionValidator);
+      };
+    }, [handleGlobalLogout]);
 
   const login = useCallback(async (email, password, config = {}) => {
     try {
       const res = await AuthService.login(email, password, config);
       if (res.token) localStorage.setItem('token', res.token);
       setUser(res.data.user);
+      
+      // Gap 4: Track login_success
+      setTimeout(() => {
+        import('../api/metricsService').then(m => m.default.trackEvent('login_success'));
+      }, 0);
+      
       return res;
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -110,6 +127,12 @@ export const AuthProvider = ({ children }) => {
         const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
         setUser(res.data.user);
+
+        // Gap 4: Track signup_success
+        setTimeout(() => {
+          import('../api/metricsService').then(m => m.default.trackEvent('signup_success'));
+        }, 0);
+
         return res;
       } catch (err) {
         throw err;
@@ -140,17 +163,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const updateAvatar = useCallback(async (formData) => {
-    try {
-      const res = await AuthService.updateAvatar(formData);
-      setUser(res.data.user);
-      return res;
-    } catch (err) {
-      console.error('Avatar update failed:', err);
-      throw err;
-    }
-  }, []);
-
   const value = useMemo(
     () => ({
       user,
@@ -162,17 +174,13 @@ export const AuthProvider = ({ children }) => {
       activateInvite,
       logout,
       completeOnboarding,
-      updateAvatar,
     }),
-    [user, loading, loadingMessage, isWakingUp, login, register, activateInvite, logout, completeOnboarding, updateAvatar]
+    [user, loading, loadingMessage, isWakingUp, login, register, activateInvite, logout, completeOnboarding]
   );
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
-
-// Provides access to the current authentication context and user session details.
-export const useAuth = () => useContext(AuthContext);

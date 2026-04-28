@@ -157,15 +157,21 @@ const ProjectTeam = () => {
                 className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-primary/40 transition-all group flex flex-col h-full relative overflow-hidden"
               >
                 <div className="flex items-start gap-4 mb-6">
-                  <div className="w-10 h-10 bg-black rounded flex items-center justify-center text-lg font-black text-white border border-white/10 group-hover:border-primary/40 transition-all shrink-0">
-                    {member.name.charAt(0).toUpperCase()}
+                  <div className="w-10 h-10 bg-black rounded flex items-center justify-center text-lg font-black text-white border border-white/10 group-hover:border-primary/40 transition-all shrink-0 overflow-hidden">
+                    {member.profilePicture ? (
+                      <img src={member.profilePicture} alt={member.name} className="w-full h-full object-cover" />
+                    ) : (
+                      member.name.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-black text-[13px] text-white tracking-tight truncate leading-tight mb-1 group-hover:text-primary transition-colors uppercase">
                       {member.name}
                     </h3>
-                    <div className="text-[9px] font-black text-primary uppercase tracking-[0.1em] mb-2">
-                      {member.jobTitle || 'POSITION NOT SET'}
+                    <div className="flex flex-col gap-0.5 mb-2">
+                      <div className="text-[9px] font-black text-primary uppercase tracking-[0.1em]">
+                        {member.jobTitle || 'POSITION NOT SET'}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-widest truncate">
                       <Mail size={10} className="text-white/10" />

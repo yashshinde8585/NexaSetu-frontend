@@ -26,6 +26,7 @@ import TeamService from '../api/teamService';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES, JOB_TITLES } from '../constants';
 import { BackButton } from '../components/atoms';
+import MetricsService from '../api/metricsService';
 
 
 // Handles the bulk invitation of new team members, providing role assignment and project scoping capabilities.
@@ -158,11 +159,14 @@ const AddTeamMember = () => {
       const res = await TeamService.inviteBulk({ invites: validInvites });
       setResults(res);
       setStatus('success');
+      MetricsService.trackEvent('invites_sent', { count: validInvites.length });
     } catch (err) {
       setError(
         err.response?.data?.message || 'Unable to send invitations. Please try again.'
       );
       setStatus('error');
+    } finally {
+      setStatus(prev => prev === 'success' ? 'success' : 'idle');
     }
   };
 

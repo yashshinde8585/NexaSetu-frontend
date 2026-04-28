@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { normalizeError } from './apiUtils';
+import toast from 'react-hot-toast';
+import MetricsService from './metricsService';
 
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
     `${window.location.protocol}//${window.location.hostname}:5000/api`,
   withCredentials: true,
-  timeout: 60000, // Accounts for Render free tier cold starts (~30-60s)
+  timeout: 15000, // Reduced timeout to 15s (Gap 1)
 });
 
 const pendingRequests = new Map();
@@ -18,11 +20,9 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Request Locking: Prevent redundant concurrent requests for mutating operations
     const mutatingMethods = ['post', 'put', 'patch', 'delete'];
     const isMutating = mutatingMethods.includes(config.method?.toLowerCase());
     
-    // Optimization: Only stringify if data is small, otherwise use a hash or just URL
     const dataHash = config.data ? (JSON.stringify(config.data).length < 1000 ? JSON.stringify(config.data) : 'large-payload') : '';
     const requestKey = `${config.method}:${config.url}:${dataHash}`;
     
@@ -38,7 +38,6 @@ api.interceptors.request.use(
       config._requestKey = requestKey;
     }
 
-    // Idempotency: Ensures unique processing of mutating requests on unstable networks
     const idempotencyMethods = ['post', 'put', 'patch'];
     if (idempotencyMethods.includes(config.method?.toLowerCase()) && !config.headers['X-Idempotency-Key']) {
       config.headers['X-Idempotency-Key'] = crypto.randomUUID();
@@ -60,14 +59,43 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+const getSuccessMessage = (method, url) => {
+  const m = method?.toLowerCase();
+  if (url.includes('/auth/reset-password') && m === 'post') return 'PASSWORD_RESET_SUCCESSFUL';
+  if (url.includes('/auth/register') && m === 'post') return 'WORKSPACE_INITIALIZED_SUCCESSFULLY';
+  if (url.includes('/projects') && m === 'post') return 'PROJECT_INITIALIZED_SUCCESSFULLY';
+  if (url.includes('/team/invite') && m === 'post') return 'INVITATIONS_SENT_SUCCESSFULLY';
+  if (url.includes('/team/revoke') && m === 'post') return 'INVITATION_REVOKED_SUCCESSFULLY';
+  if (url.includes('/tasks') && url.includes('/status') && m === 'patch') return 'STATUS_SYNCHRONIZED';
+  if (url.includes('/tasks') && url.includes('/blockage') && m === 'patch') return 'TASK_STATE_UPDATED';
+  if (url.includes('/tasks') && m === 'put') return 'TASK_METRICS_UPDATED';
+  if (url.includes('/tasks') && m === 'post') return 'TASK_ORCHESTRATED_SUCCESSFULLY';
+  return 'OPERATION_SUCCESSFUL';
+};
+
 api.interceptors.response.use(
   (response) => {
     if (response.config._requestKey) {
       pendingRequests.delete(response.config._requestKey);
     }
 
-    // Performance Optimization: Removed deep-recursive null-to-undefined normalizer.
-    // Modern components should use nullish coalescing (??) for safety.
+    // Gap 3 & 4: Global Success Toast & Metrics Tracking
+    const isMutating = ['post', 'put', 'patch', 'delete'].includes(response.config.method?.toLowerCase());
+    const url = response.config.url || '';
+    
+    if (isMutating && !url.includes('/metrics')) {
+      const defaultMsg = getSuccessMessage(response.config.method, url);
+      toast.success(response.data?.message || defaultMsg);
+
+      // Gap 4: Trigger metrics after success (non-blocking)
+      setTimeout(() => {
+        if (url.includes('/auth/login')) MetricsService.trackEvent('login_success');
+        if (url.includes('/auth/register')) MetricsService.trackEvent('signup_success');
+        if (url.includes('/projects') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('project_created');
+        if (url.includes('/tasks') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('task_created');
+        if (url.includes('/team/invite') || url.includes('/invitations')) MetricsService.trackEvent('invite_sent');
+      }, 0);
+    }
     
     return response;
   },
@@ -77,17 +105,24 @@ api.interceptors.response.use(
     }
     
     if (error.message === 'duplicate_request') {
-      return new Promise(() => {}); // Suppress canceled duplicate logs
+      return new Promise(() => {});
     }
 
     const originalRequest = error.config;
     const normalizedError = normalizeError(error);
 
-    // Automatic Session Recovery: Broadened 401 handling for seamless token rotation
-    const isAuthRequest = originalRequest.url?.includes('/auth/login') || 
-                         originalRequest.url?.includes('/auth/register') ||
-                         originalRequest.url?.includes('/auth/refresh');
+    // Gap 3: Global Error Toast for mutations
+    const isMutating = ['post', 'put', 'patch', 'delete'].includes(originalRequest?.method?.toLowerCase());
+    if (isMutating && !originalRequest?.url?.includes('/metrics')) {
+      // Prioritize backend normalized message, otherwise fallback
+      toast.error(normalizedError.message || 'OPERATION_FAILED');
+    }
 
+    const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
+                         originalRequest?.url?.includes('/auth/register') ||
+                         originalRequest?.url?.includes('/auth/refresh');
+
+    // Gap 2: Token Refresh Flow
     if (normalizedError.status === 401 && !isAuthRequest && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -119,55 +154,34 @@ api.interceptors.response.use(
       } catch (refreshError) {
         isRefreshing = false;
         processQueue(refreshError);
-        
-        // Signal UI to show a clean "Session Expired" notification instead of a harsh redirect
-        window.dispatchEvent(new CustomEvent('auth:session-expired', { 
-          detail: 'Your security session has expired. Please sign in again to continue.' 
-        }));
-        
+        window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(normalizeError(refreshError));
       }
     }
 
-    // Network Resilience: Automated retry with exponential backoff for transient failures
-    const maxRetries = 3;
-    const currentRetry = originalRequest._retryCount || 0;
+    // Gap 1 & 5: Network Retry & Timeout Handling
+    const maxRetries = 2; // Gap 1: Max 2 retries
+    const currentRetry = originalRequest?._retryCount || 0;
 
     const isNetworkError = !error.response && error.code !== 'ERR_CANCELED' && error.message !== 'duplicate_request';
-    const isRetryableStatus = [502, 503, 504].includes(normalizedError.status);
-    
-    if ((isNetworkError || isRetryableStatus) && currentRetry < maxRetries) {
+    const is5xxError = normalizedError.status >= 500 && normalizedError.status < 600;
+    const isTimeout = error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout');
+
+    if ((isNetworkError || is5xxError || isTimeout) && currentRetry < maxRetries) {
       originalRequest._retryCount = currentRetry + 1;
       
+      if (isTimeout && currentRetry === 1) {
+        // Gap 5: Timeout Fallback Message (inform user we are retrying)
+        toast.loading('Request taking longer than expected. Retrying...', { duration: 3000 });
+      }
+
       const backoffDelay = Math.pow(2, originalRequest._retryCount) * 1000;
-      console.warn(`[API] Retrying transient error (${normalizedError.status || 'Network'}) in ${backoffDelay}ms... (Attempt ${originalRequest._retryCount}/${maxRetries})`);
-      
       await new Promise(resolve => setTimeout(resolve, backoffDelay));
       return api(originalRequest);
     }
 
-    // Forced Logout: Handle unrecoverable 401s (e.g. after refresh fails)
-    if (normalizedError.status === 401 && (isAuthRequest || originalRequest._retry)) {
+    if (normalizedError.status === 401 && (isAuthRequest || originalRequest?._retry)) {
       window.dispatchEvent(new CustomEvent('auth:logout'));
-    }
-
-    if (normalizedError.status === 403) {
-      console.warn('[API] Access forbidden: Insufficient privileges.');
-    }
-
-    // State Conflict: Signal UI when data version mismatch is detected (Optimistic Locking)
-    if (normalizedError.status === 409) {
-      window.dispatchEvent(
-        new CustomEvent('app:state-conflict', { 
-          detail: normalizedError.message || 'Concurrent modification detected. Please refresh.' 
-        })
-      );
-    }
-
-    if (normalizedError.isDisconnected) {
-      window.dispatchEvent(
-        new CustomEvent('app:server-down', { detail: normalizedError.message })
-      );
     }
 
     return Promise.reject(normalizedError);

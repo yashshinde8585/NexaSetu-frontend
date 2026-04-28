@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Users, Activity, ShieldAlert } from 'lucide-react';
+import { Search, Users, Activity, ShieldAlert, FolderX } from 'lucide-react';
+import EmptyState from '../atoms/EmptyState';
 
 // A searchable and filterable list that provides a high-level overview of all projects.
 const ProjectOverviewList = ({
@@ -79,16 +80,14 @@ const ProjectOverviewList = ({
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="p-12 sm:p-20 text-center flex flex-col items-center justify-center space-y-8 group">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20"></div>
-          <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              No matching projects found.
-            </h3>
-            <p className="text-text-muted font-bold text-xs sm:text-sm italic opacity-60">
-              Adjust your filters or create a new project.
-            </p>
-          </div>
+        <div className="p-8">
+          <EmptyState 
+            icon={FolderX}
+            title={searchQuery ? 'NO_MATCHING_PROJECTS' : 'NO_PROJECTS_DETECTED'}
+            message={searchQuery 
+              ? `THE SEARCH FOR "${searchQuery}" RETURNED NULL RESULTS WITHIN THIS SECTOR.` 
+              : 'THIS WORKSPACE IS CURRENTLY VOID OF ACTIVE PROJECTS. INITIALIZE ONE TO BEGIN.'}
+          />
         </div>
       ) : (
         <div className="overflow-visible">

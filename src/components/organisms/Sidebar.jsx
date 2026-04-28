@@ -59,13 +59,6 @@ const Sidebar = ({ isOpen, onClose }) => {
       permission: null, // Allow visibility based on user detection
     },
     {
-      name: 'Dashboard',
-      path: '/dashboard',
-      icon: <LayoutDashboard size={20} />,
-      permission: null,
-      hidden: user?.role === 'WORKSPACE_ADMIN' || user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')
-    },
-    {
       name: 'People',
       path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
       icon: <Users size={20} />,
@@ -172,19 +165,20 @@ const Sidebar = ({ isOpen, onClose }) => {
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
+                hidden: user?.role !== 'WORKSPACE_ADMIN' || location.pathname !== '/admin/dashboard'
               },
             ].filter(item => {
               const isAdmin = user?.role === 'WORKSPACE_ADMIN';
               if (isAdmin) {
                 // Admins only see Project Setup in this section, following "System Control" focus
-                return item.name === 'Project Setup';
+                return item.name === 'New Project';
               }
               const isIntern = user?.role?.toUpperCase() === 'INTERN';
               const hasRegistryPerm = item.name === 'Sprint Management';
-              const hasSetupPerm = item.name === 'Project Setup' && hasPermission(PERMISSIONS.CREATE_PROJECT);
-              const otherItems = !['Sprint Management', 'Project Setup'].includes(item.name);
+              const hasSetupPerm = item.name === 'New Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
+              const otherItems = !['Sprint Management', 'New Project'].includes(item.name);
               
-              return hasRegistryPerm || hasSetupPerm || otherItems;
+              return (hasRegistryPerm || hasSetupPerm || otherItems) && !item.hidden;
             })
             .map((item) => (
               <NavLink

@@ -13,6 +13,7 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
+import MetricsService from '../api/metricsService';
 
 const Register = () => {
   const { register: authRegister } = useAuth();
@@ -87,6 +88,7 @@ const Register = () => {
       );
 
       if (isMounted.current) {
+        MetricsService.trackSignup(formData.workspaceName, plan);
         navigate('/dashboard');
       }
     } catch (err) {

@@ -1,6 +1,6 @@
 // Defines the path strings and route generation functions for application navigation.
 export const ROUTES = {
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/',
   PROJECTS: '/projects',
   PROJECT_DETAIL: (id) => `/project/${id}`,
   MY_TASKS: '/my-tasks',
@@ -23,4 +23,6 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   PROFILE: '/profile',
+  PRICING: '/pricing',
+  BILLING: '/admin/billing',
 };

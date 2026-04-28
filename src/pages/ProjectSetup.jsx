@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
+import MetricsService from '../api/metricsService';
 
 const SetupSkeleton = () => (
   <div className="min-h-screen bg-black flex items-center justify-center">
@@ -45,14 +46,18 @@ const ProjectSetup = () => {
     setSubmitError(null);
     setIsSubmitting(true);
     try {
-      await handleCreateProject({
+      const result = await handleCreateProject({
         ...mission,
         status: isDraft ? 'draft' : 'active'
       });
+      
+      MetricsService.trackProjectCreated(result?._id, mission.name);
+      
       navigate('/project-info');
     } catch (error) {
       console.error('Failed to create project:', error);
-      setSubmitError(error?.message || 'Unable to create project. Please check your connection and try again.');
+      const message = error?.message || 'Unable to create project. Please check your connection and try again.';
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }

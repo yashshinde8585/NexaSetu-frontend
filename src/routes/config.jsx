@@ -37,11 +37,16 @@ const PeopleOpsDashboard = lazy(() => import('../pages/PeopleOpsDashboard'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const CreateTeam = lazy(() => import('../pages/CreateTeam'));
 const EditTeam = lazy(() => import('../pages/EditTeam'));
+const AdminBilling = lazy(() => import('../pages/AdminBilling'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('../pages/ResetPassword'));
 
 export const publicRoutes = [
   { path: '/', element: <Home />, exact: true },
   { path: ROUTES.LOGIN, element: <Login /> },
   { path: ROUTES.REGISTER, element: <Register /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/reset-password/:token', element: <ResetPassword /> },
   { path: '/join', element: <Join /> },
   { path: '/pricing', element: <Pricing /> },
 ];
@@ -147,5 +152,10 @@ export const privateRoutes = [
     path: '/admin/teams/edit/:id', 
     element: <EditTeam />, 
     roles: ['WORKSPACE_ADMIN'] 
+  },
+  { 
+    path: '/admin/billing', 
+    element: <AdminBilling />, 
+    roles: ['WORKSPACE_ADMIN', 'WORKSPACE_MANAGER'] 
   },
 ];

@@ -3,13 +3,16 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 import MainLayout from './components/layouts/MainLayout';
+import Toaster from './components/atoms/Toaster';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { publicRoutes, privateRoutes } from './routes/config';
 import { useAuth } from './context/AuthContext';
+import { useBilling } from './hooks/useBilling';
 import { ROUTES } from './constants';
 
 const App = () => {
     const { user, loading, loadingMessage } = useAuth();
+    const { subscription, isLoading: billingLoading } = useBilling();
 
     /**
      * Determines the primary dashboard based on user role and job title.
@@ -17,6 +20,11 @@ const App = () => {
     const homeRedirect = useMemo(() => {
         if (!user) return '/';
         
+        // If no active subscription and user is an admin, force pricing page
+        if (!billingLoading && !subscription && (user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER')) {
+            return ROUTES.PRICING;
+        }
+
         const role = user.role;
         const title = user.jobTitle?.toLowerCase() || '';
 
@@ -37,7 +45,7 @@ const App = () => {
 
         const match = mappings.find(m => m.cond);
         return match ? match.route : ROUTES.PERSONAL_WORK_CONSOLE;
-    }, [user]);
+    }, [user, subscription, billingLoading]);
 
     if (loading) {
         return (
@@ -58,6 +66,7 @@ const App = () => {
 
     return (
         <MainLayout>
+            <Toaster />
             <Suspense fallback={
                 <div className="flex items-center justify-center p-20">
                     <Loader2 className="animate-spin text-primary" size={32} />
@@ -99,7 +108,7 @@ const App = () => {
 
                     {/* Navigation Overrides */}
                     <Route path="/team" element={<Navigate to={ROUTES.TEAMS} replace />} />
-                    <Route path="*" element={<Navigate to={user ? ROUTES.DASHBOARD : '/'} replace />} />
+                    <Route path="*" element={<Navigate to={user ? homeRedirect : '/'} replace />} />
                 </Routes>
             </Suspense>
         </MainLayout>
