@@ -89,6 +89,12 @@ export const AuthProvider = ({ children }) => {
       const res = await AuthService.login(email, password, config);
       if (res.token) localStorage.setItem('token', res.token);
       setUser(res.data.user);
+      
+      // Gap 4: Track login_success
+      setTimeout(() => {
+        import('../api/metricsService').then(m => m.default.trackEvent('login_success'));
+      }, 0);
+      
       return res;
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -121,6 +127,12 @@ export const AuthProvider = ({ children }) => {
         const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
         setUser(res.data.user);
+
+        // Gap 4: Track signup_success
+        setTimeout(() => {
+          import('../api/metricsService').then(m => m.default.trackEvent('signup_success'));
+        }, 0);
+
         return res;
       } catch (err) {
         throw err;
@@ -172,6 +184,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-// Provides access to the current authentication context and user session details.
-// Hook has been moved to AuthContextCore.js to satisfy Fast Refresh rules.

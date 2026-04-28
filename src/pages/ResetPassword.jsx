@@ -3,7 +3,6 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Lock, ArrowRight, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import AuthService from '../api/authService';
 import Navbar from '../components/layouts/Navbar';
-import toast from 'react-hot-toast';
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -28,11 +27,9 @@ const ResetPassword = () => {
     try {
       await AuthService.resetPassword(token, password);
       setSuccess(true);
-      toast.success('PASSWORD_RESET_SUCCESSFUL');
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'FAILED_TO_RESET_PASSWORD');
-      toast.error('RESET_FAILED');
     } finally {
       setLoading(false);
     }

@@ -30,7 +30,6 @@ import TaskComments from '../components/organisms/TaskComments';
 import { ResilientPage } from '../components/states';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
 import { TASK_STATUS, USER_ROLES } from '../constants';
-import toast from 'react-hot-toast';
 
 const TaskDetailPage = () => {
   const { taskId } = useParams();
@@ -54,38 +53,32 @@ const TaskDetailPage = () => {
   const statusMutation = useMutation({
     mutationFn: ({ taskId, status }) => TaskService.updateTaskStatus(taskId, status),
     onSuccess: () => {
-      toast.success('STATUS_SYNCHRONIZED');
       queryClient.invalidateQueries(['task', taskId]);
       queryClient.invalidateQueries(['tasks']);
       setIsStatusMenuOpen(false);
     },
     onError: () => {
-      toast.error('STATUS_UPDATE_FAILED');
     }
   });
 
   const blockMutation = useMutation({
     mutationFn: ({ blocked, reason }) => TaskService.toggleTaskBlockage(taskId, blocked, reason),
     onSuccess: (_, variables) => {
-      toast.success(variables.blocked ? 'TASK_BLOCKED' : 'TASK_UNBLOCKED');
       queryClient.invalidateQueries(['task', taskId]);
       setIsBlockModalOpen(false);
       setBlockReason('');
     },
     onError: () => {
-      toast.error('STATE_MUTATION_FAILED');
     }
   });
 
   const updateMutation = useMutation({
     mutationFn: (data) => TaskService.updateTask(taskId, data),
     onSuccess: () => {
-      toast.success('TASK_METRICS_UPDATED');
       queryClient.invalidateQueries(['task', taskId]);
       queryClient.invalidateQueries(['tasks']);
     },
     onError: () => {
-      toast.error('UPDATE_FAILED');
     }
   });
 

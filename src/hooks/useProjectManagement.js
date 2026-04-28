@@ -7,7 +7,6 @@ import AiService from '../api/aiService';
 import GithubService from '../api/githubService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 import MetricsService from '../api/metricsService';
-import toast from 'react-hot-toast';
 
 // Manages state, mutations, and derived data for individual project environments.
 export const useProjectManagement = (id, user) => {
@@ -105,7 +104,6 @@ export const useProjectManagement = (id, user) => {
     },
     onSuccess: (res) => {
       const createdTask = res.data?.task || res.task;
-      toast.success('TASK_ORCHESTRATED_SUCCESSFULLY');
       MetricsService.trackTaskCreated(createdTask?._id, createdTask?.title);
       
       setShowTaskForm(false);
@@ -148,7 +146,6 @@ export const useProjectManagement = (id, user) => {
       return { previousTasks };
     },
     onError: (err, variables, context) => {
-      toast.error('STATUS_UPDATE_FAILED');
       if (context?.previousTasks) {
         queryClient.setQueryData(
           ['tasks', id, selectedSprintId],
@@ -157,7 +154,6 @@ export const useProjectManagement = (id, user) => {
       }
     },
     onSettled: () => {
-      toast.success('STATUS_SYNCHRONIZED');
       queryClient.invalidateQueries({
         queryKey: ['tasks', id, selectedSprintId],
       });

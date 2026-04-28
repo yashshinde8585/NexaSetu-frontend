@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { useAuth } from '../context/AuthContext';
 import MetricsService from '../api/metricsService';
-import toast from 'react-hot-toast';
 
 const SetupSkeleton = () => (
   <div className="min-h-screen bg-black flex items-center justify-center">
@@ -52,7 +51,6 @@ const ProjectSetup = () => {
         status: isDraft ? 'draft' : 'active'
       });
       
-      toast.success(isDraft ? 'DRAFT_SAVED' : 'PROJECT_INITIALIZED_SUCCESSFULLY');
       MetricsService.trackProjectCreated(result?._id, mission.name);
       
       navigate('/project-info');
@@ -60,7 +58,6 @@ const ProjectSetup = () => {
       console.error('Failed to create project:', error);
       const message = error?.message || 'Unable to create project. Please check your connection and try again.';
       setSubmitError(message);
-      toast.error('PROJECT_CREATION_FAILED');
     } finally {
       setIsSubmitting(false);
     }

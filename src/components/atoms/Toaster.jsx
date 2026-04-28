@@ -1,14 +1,10 @@
 import React from 'react';
 import { Toaster as HotToaster } from 'react-hot-toast';
 
-/**
- * Global Notification Portal
- * Configures the visual aesthetic and positioning of system-wide feedback.
- */
 const Toaster = () => {
   return (
     <HotToaster
-      position="top-right"
+      position="top-center"
       reverseOrder={false}
       gutter={8}
       toastOptions={{

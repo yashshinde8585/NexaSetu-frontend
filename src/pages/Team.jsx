@@ -27,7 +27,6 @@ import { useNavigate } from 'react-router-dom';
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
 import Skeleton from '../components/atoms/Skeleton';
 import EmptyState from '../components/atoms/EmptyState';
-import toast from 'react-hot-toast';
 
 const TeamSkeleton = () => (
   <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
@@ -81,14 +80,12 @@ const Team = () => {
 
     try {
       await TeamService.removeInvitation(id);
-      toast.success('INVITATION_REVOKED_SUCCESSFULLY');
       // Optimistic Update
       setTeam(prev => ({
         ...prev,
         invitations: prev.invitations.filter(i => i._id !== id)
       }));
     } catch (err) {
-      toast.error('FAILED_TO_REVOKE_INVITATION');
     }
   };
 
