@@ -20,6 +20,11 @@ class SocketService {
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
+      transports: ['websocket', 'polling']
+    });
+
+    this.socket.on('connect_error', (err) => {
+      console.error(`[REAL-TIME SYNC] Connection error: ${err.message}`);
     });
 
     this.socket.on('connect', () => {

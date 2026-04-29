@@ -9,14 +9,10 @@ import SprintDetailsCard from '../components/organisms/SprintDetailsCard';
 import ProjectStatusList from '../components/organisms/ProjectStatusList';
 import SprintSummaryModal from '../components/organisms/SprintSummaryModal';
 
-/**
- * Tactical Sprint Intelligence Hub.
- * Orchestrates development cycles, tracks high-level project status, and monitors organizational velocity.
- * Optimized for industrial sunlight legibility and high-density technical orchestration.
- */
+
 const ProjectInfo = () => {
   const { user } = useAuth();
-  
+
   // Tactical State Persistence
   const [selectedSprintId, setSelectedSprintId] = useState(() => localStorage.getItem('nexa_selected_sprint_id'));
   const [filterProjectId, setFilterProjectId] = useState(() => localStorage.getItem('nexa_selected_project_id'));
@@ -59,7 +55,7 @@ const ProjectInfo = () => {
   const sprintsForUser = useMemo(() => {
     if (!sprints) return [];
     if (user?.role === USER_ROLES.WORKSPACE_ADMIN || user?.role === USER_ROLES.WORKSPACE_MANAGER || user?.role === USER_ROLES.TECH_LEAD) return sprints;
-    
+
     const userProjectIds = projects.map(p => p._id);
     return sprints.filter(s => {
       const pid = s.project?._id || s.project;
@@ -69,15 +65,16 @@ const ProjectInfo = () => {
 
   // Initial selection logic
   useEffect(() => {
-    if (!selectedSprintId && sprintsForUser?.length > 0) {
+    const sprintExists = sprintsForUser.some(s => s._id === selectedSprintId);
+    if ((!selectedSprintId || !sprintExists) && sprintsForUser?.length > 0) {
       const active = sprintsForUser.find(s => s.status === 'active') || sprintsForUser[0];
       if (active) setSelectedSprintId(active._id);
     }
   }, [sprintsForUser, selectedSprintId]);
 
-  const selectedSprintData = useMemo(() => 
+  const selectedSprintData = useMemo(() =>
     sprints?.find(s => s._id === selectedSprintId),
-  [sprints, selectedSprintId]);
+    [sprints, selectedSprintId]);
 
   const sprintMetrics = useMemo(() => {
     if (!sprintStats?.metrics) {
@@ -133,12 +130,12 @@ const ProjectInfo = () => {
   const handleDownload = async () => {
     try {
       const reportData = await downloadSprintReport(selectedSprintId);
-      
+
       // Convert reportData.tasks into CSV format
       const tasks = reportData.tasks || [];
       const headers = ['Sprint', 'Task Title', 'Project', 'Assigned To', 'Status', 'Priority', 'Due Date'];
       const sprintName = reportData.sprint?.name || 'Unknown Sprint';
-      
+
       const csvContent = [
         headers.join(','),
         ...tasks.map(t => {
@@ -179,20 +176,20 @@ const ProjectInfo = () => {
   return (
     <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
       <div className="w-full space-y-6 max-w-7xl mx-auto">
-        
-        <SprintCreationModal 
-          show={showSprintForm} 
-          onClose={() => setShowSprintForm(false)} 
-          sprintData={sprintData} 
-          setSprintData={setSprintData} 
-          onSubmit={submitSprint} 
-          isLoading={createSprintLoading} 
-          projects={projects} 
+
+        <SprintCreationModal
+          show={showSprintForm}
+          onClose={() => setShowSprintForm(false)}
+          sprintData={sprintData}
+          setSprintData={setSprintData}
+          onSubmit={submitSprint}
+          isLoading={createSprintLoading}
+          projects={projects}
         />
-        
-        <SprintSummaryModal 
-          finalSummary={finalSummary} 
-          setFinalSummary={setFinalSummary} 
+
+        <SprintSummaryModal
+          finalSummary={finalSummary}
+          setFinalSummary={setFinalSummary}
         />
 
         {/* Tactical Orchestration Header */}
@@ -201,7 +198,7 @@ const ProjectInfo = () => {
             <div className="flex items-center gap-3">
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
-                   SPRINT <span className="text-primary">INTELLIGENCE</span> CORE
+                  SPRINT <span className="text-primary">INTELLIGENCE</span> CORE
                 </h1>
                 <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
                   MISSION CONTROL FOR ORGANIZATIONAL DEVELOPMENT CYCLES
@@ -210,19 +207,19 @@ const ProjectInfo = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-6 pt-1">
-               <div className="flex flex-col gap-1.5">
-                  <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">ACTIVE CYCLES</span>
-                  <div className="flex items-center gap-2">
-                     <Clock size={12} className="text-primary-light" />
-                     <span className="text-[11px] font-black text-white uppercase tracking-tight">{sprintsForUser?.length || 0} SECTORS</span>
-                  </div>
-               </div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">ACTIVE CYCLES</span>
+                <div className="flex items-center gap-2">
+                  <Clock size={12} className="text-primary-light" />
+                  <span className="text-[11px] font-black text-white uppercase tracking-tight">{sprintsForUser?.length || 0} SECTORS</span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
             {canCreate && (
-              <button 
+              <button
                 onClick={() => setShowSprintForm(true)}
                 className="flex-1 sm:flex-none h-9 px-6 bg-primary text-black hover:bg-primary-dark rounded text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 group"
               >
@@ -252,27 +249,27 @@ const ProjectInfo = () => {
             />
           ) : (
             <div className="py-16 text-center bg-white/5 border border-dashed border-white/20 rounded-xl animate-in zoom-in-95 duration-500 group">
-               <div className="w-16 h-16 bg-black rounded-xl border border-primary flex items-center justify-center text-primary mx-auto mb-6 transition-all duration-700 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                 <Zap size={32} />
-               </div>
-               <div className="space-y-2 max-w-sm mx-auto mb-8">
-                  <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">STATUS: STANDBY</h3>
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed px-4">No active development cycle detected. Initialize a new sprint to begin telemetry tracking.</p>
-               </div>
-               {canCreate && (
-                 <button 
-                   onClick={() => setShowSprintForm(true)}
-                   className="h-9 px-8 bg-white text-black hover:bg-white/90 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95"
-                 >
-                   + INITIALIZE CYCLE
-                 </button>
-               )}
+              <div className="w-16 h-16 bg-black rounded-xl border border-primary flex items-center justify-center text-primary mx-auto mb-6 transition-all duration-700 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                <Zap size={32} />
+              </div>
+              <div className="space-y-2 max-w-sm mx-auto mb-8">
+                <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">STATUS: STANDBY</h3>
+                <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed px-4">No active development cycle detected. Initialize a new sprint to begin telemetry tracking.</p>
+              </div>
+              {canCreate && (
+                <button
+                  onClick={() => setShowSprintForm(true)}
+                  className="h-9 px-8 bg-white text-black hover:bg-white/90 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95"
+                >
+                  + INITIALIZE CYCLE
+                </button>
+              )}
             </div>
           )}
 
           <div className="pt-8">
-            <ProjectStatusList 
-              projects={projects} 
+            <ProjectStatusList
+              projects={projects}
               currentSprintId={selectedSprintId}
               onLinkProject={handleLinkProject}
               canLink={canCreate}

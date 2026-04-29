@@ -158,7 +158,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               {
                 name: 'Sprints',
                 path: '/project-info',
-                icon: <Settings size={18} />,
+                icon: <Rocket size={18} />,
               },
               {
                 name: 'New Project',
@@ -168,17 +168,19 @@ const Sidebar = ({ isOpen, onClose }) => {
                 hidden: user?.role !== 'WORKSPACE_ADMIN' || location.pathname !== '/admin/dashboard'
               },
             ].filter(item => {
+              if (item.hidden) return false;
+              if (item.permission && !hasPermission(item.permission)) return false;
+
+              // Ensure "Sprints" is visible to everyone
+              if (item.name === 'Sprints') return true;
+
               const isAdmin = user?.role === 'WORKSPACE_ADMIN';
               if (isAdmin) {
-                // Admins only see Project Setup in this section, following "System Control" focus
+                // Admins primarily focus on "New Project" in this section
                 return item.name === 'New Project';
               }
-              const isIntern = user?.role?.toUpperCase() === 'INTERN';
-              const hasRegistryPerm = item.name === 'Sprint Management';
-              const hasSetupPerm = item.name === 'New Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
-              const otherItems = !['Sprint Management', 'New Project'].includes(item.name);
-              
-              return (hasRegistryPerm || hasSetupPerm || otherItems) && !item.hidden;
+
+              return true;
             })
             .map((item) => (
               <NavLink

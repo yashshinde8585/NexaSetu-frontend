@@ -73,22 +73,22 @@ const Login = () => {
           <div className="bg-black border border-white/10 rounded overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="lg:col-span-5 p-6 flex flex-col items-start text-left border-b lg:border-b-0 lg:border-r border-white/10">
-                <h2 className="text-[14px] font-black text-white mb-2 tracking-widest uppercase">
-                  WELCOME_BACK
+                <h2 className="text-[14px] font-black text-white mb-2">
+                  Welcome back
                 </h2>
-                <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed max-w-[280px] mb-6 lg:mb-auto">
-                  SIGN IN TO MANAGE WORKSPACE.
+                <p className="text-white/40 text-[9px] font-black leading-relaxed max-w-[280px] mb-6 lg:mb-auto">
+                  Sign in to manage workspace.
                 </p>
 
                 <div className="mt-8 pt-4 border-t border-white/10 hidden lg:block w-full">
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-widest mb-2">
-                    NO_ACCOUNT?
+                  <p className="text-white/40 text-[9px] font-black mb-2">
+                    No account?
                   </p>
                   <Link
                     to="/register"
-                    className="text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30 underline-offset-4 transition-all"
+                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4 transition-all"
                   >
-                    CREATE_WORKSPACE
+                    Create workspace
                   </Link>
                 </div>
               </div>
@@ -98,14 +98,14 @@ const Login = () => {
                   <div className="space-y-4">
                     {/* Email */}
                     <div className="space-y-1">
-                      <label htmlFor="email" className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                        EMAIL_ADDRESS
+                      <label htmlFor="email" className="text-[9px] font-black text-white/40 block">
+                        Email Address
                       </label>
                       <input
                         id="email"
                         type="email"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest"
-                        placeholder="NAME@COMPANY.COM" 
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        placeholder="name@company.com" 
                         required
                         maxLength={255}
                         value={formData.email}
@@ -116,21 +116,21 @@ const Login = () => {
                     {/* Password */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <label htmlFor="password" className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                          PASSWORD
+                        <label htmlFor="password" className="text-[9px] font-black text-white/40 block">
+                          Password
                         </label>
                         <Link
                           to="/forgot-password"
-                          className="text-[9px] text-white/40 hover:text-white transition-colors font-black uppercase tracking-widest"
+                          className="text-[9px] text-white/40 hover:text-white transition-colors font-black"
                         >
-                          FORGOT?
+                          Forgot?
                         </Link>
                       </div>
                       <div className="relative group/input">
                         <input
                           id="password"
                           type={showPassword ? 'text' : 'password'}
-                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest pr-10"
+                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black pr-10"
                           placeholder="••••••••"
                           required
                           maxLength={128}
@@ -149,7 +149,7 @@ const Login = () => {
                   </div>
 
                   {error && (
-                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest py-2 px-3 text-center rounded">
+                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[9px] font-black py-2 px-3 text-center rounded">
                       {error}
                     </div>
                   )}
@@ -157,18 +157,18 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full h-9 bg-white text-black text-[9px] font-black uppercase tracking-[0.2em] transition-all rounded flex items-center justify-center gap-2 ${
+                    className={`w-full h-9 bg-white text-black text-[9px] font-black transition-all rounded flex items-center justify-center gap-2 ${
                       loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/90 active:scale-[0.98]'
                     }`}
                   >
                     {loading ? (
                       <>
                         <Activity className="animate-pulse" size={12} />
-                        <span>VERIFYING...</span>
+                        <span>Verifying...</span>
                       </>
                     ) : (
                       <>
-                        <span>SIGN_IN</span>
+                        <span>Sign In</span>
                         <ArrowRight size={12} />
                       </>
                     )}
@@ -176,14 +176,14 @@ const Login = () => {
                 </form>
 
                 <div className="mt-6 lg:hidden text-center pt-4 border-t border-white/10">
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-widest mb-1">
-                    NO_ACCOUNT?
+                  <p className="text-white/40 text-[9px] font-black mb-1">
+                    No account?
                   </p>
                   <Link
                     to="/register"
-                    className="text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30 underline-offset-4"
+                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4"
                   >
-                    CREATE_WORKSPACE
+                    Create workspace
                   </Link>
                 </div>
               </div>

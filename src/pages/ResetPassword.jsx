@@ -41,11 +41,11 @@ const ResetPassword = () => {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-black border border-white/10 rounded p-8">
           <div className="mb-8 text-center">
-            <h2 className="text-[14px] font-black text-white mb-2 tracking-widest uppercase">
-              ESTABLISH_NEW_ACCESS
+            <h2 className="text-[14px] font-black text-white mb-2">
+              Establish new access
             </h2>
-            <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-              ENTER YOUR NEW SECURITY CREDENTIALS.
+            <p className="text-white/40 text-[9px] font-black">
+              Enter your new security credentials.
             </p>
           </div>
 
@@ -59,17 +59,17 @@ const ResetPassword = () => {
               </p>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30"
+                className="inline-flex items-center gap-2 text-white text-[9px] font-black hover:underline decoration-white/30"
               >
-                LOG_IN_NOW <ArrowRight size={12} />
+                Log in now <ArrowRight size={12} />
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                    NEW_PASSWORD
+                  <label className="text-[9px] font-black text-white/40 block">
+                    New Password
                   </label>
                   <div className="relative group">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={14} />
@@ -93,8 +93,8 @@ const ResetPassword = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                    CONFIRM_PASSWORD
+                  <label className="text-[9px] font-black text-white/40 block">
+                    Confirm Password
                   </label>
                   <div className="relative group">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={14} />
@@ -111,7 +111,7 @@ const ResetPassword = () => {
               </div>
 
               {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black uppercase tracking-widest text-center">
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black text-center">
                   {error}
                 </div>
               )}
@@ -119,16 +119,16 @@ const ResetPassword = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-white/90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-11 bg-white text-black text-[10px] font-black transition-all hover:bg-white/90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 className="animate-spin" size={14} />
-                    UPDATING...
+                    Updating...
                   </>
                 ) : (
                   <>
-                    UPDATE_PASSWORD <ArrowRight size={14} />
+                    Update password <ArrowRight size={14} />
                   </>
                 )}
               </button>

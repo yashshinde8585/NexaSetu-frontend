@@ -111,22 +111,22 @@ const Register = () => {
           <div className="bg-black border border-white/10 rounded overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="lg:col-span-5 p-6 flex flex-col items-start text-left border-b lg:border-b-0 lg:border-r border-white/10 lg:sticky lg:top-0">
-                <h2 className="text-[14px] font-black text-white mb-2 tracking-widest uppercase">
-                  CREATE_WORKSPACE
+                <h2 className="text-[14px] font-black text-white mb-2">
+                  Create workspace
                 </h2>
-                <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed max-w-[280px] mb-6 lg:mb-auto">
-                  SET UP ENVIRONMENT AND COLLABORATE.
+                <p className="text-white/40 text-[9px] font-black leading-relaxed max-w-[280px] mb-6 lg:mb-auto">
+                  Set up environment and collaborate.
                 </p>
 
                 <div className="mt-8 pt-4 border-t border-white/10 hidden lg:block w-full">
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-widest mb-2">
-                    ALREADY_HAVE_ACCOUNT?
+                  <p className="text-white/40 text-[9px] font-black mb-2">
+                    Already have account?
                   </p>
                   <Link
                     to="/login"
-                    className="text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30 underline-offset-4 transition-all"
+                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4 transition-all"
                   >
-                    LOG_IN
+                    Log in
                   </Link>
                 </div>
               </div>
@@ -136,14 +136,14 @@ const Register = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Workspace Name */}
                     <div className="md:col-span-2 space-y-1">
-                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                        COMPANY_OR_TEAM_NAME
+                      <label className="text-[9px] font-black text-white/40 block">
+                        Company or Team Name
                       </label>
                       <input
                         id="workspaceName"
                         type="text"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest"
-                        placeholder="E.G. ACME CORP"
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        placeholder="e.g. Acme Corp"
                         required
                         maxLength={100}
                         value={formData.workspaceName}
@@ -153,14 +153,14 @@ const Register = () => {
 
                     {/* Administrator Name */}
                     <div className="md:col-span-2 space-y-1">
-                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                        ADMINISTRATOR_NAME
+                      <label className="text-[9px] font-black text-white/40 block">
+                        Administrator Name
                       </label>
                       <input
                         id="admin"
                         type="text"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest"
-                        placeholder="WORKSPACE ADMINISTRATOR"
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        placeholder="Workspace Administrator"
                         required
                         maxLength={50}
                         value={formData.admin}
@@ -170,14 +170,14 @@ const Register = () => {
 
                     {/* User Full Name */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                        FULL_NAME
+                      <label className="text-[9px] font-black text-white/40 block">
+                        Full Name
                       </label>
                       <input
                         id="name"
                         type="text"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest"
-                        placeholder="JANE COOPER"
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        placeholder="Jane Cooper"
                         required
                         maxLength={50}
                         value={formData.name}
@@ -187,14 +187,14 @@ const Register = () => {
 
                     {/* Email Address */}
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                        EMAIL_ADDRESS
+                      <label className="text-[9px] font-black text-white/40 block">
+                        Email Address
                       </label>
                       <input
                         id="email"
                         type="email"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest"
-                        placeholder="JANE@COMPANY.COM"
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        placeholder="jane@company.com"
                         required
                         maxLength={255}
                         value={formData.email}
@@ -205,18 +205,18 @@ const Register = () => {
                     {/* Password */}
                     <div className="md:col-span-2 space-y-1">
                       <div className="flex items-center justify-between">
-                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 block">
-                          PASSWORD
+                        <label className="text-[9px] font-black text-white/40 block">
+                          Password
                         </label>
-                        <span className="text-[8px] text-white/20 font-black uppercase tracking-widest">
-                          MIN 8 CHARACTERS
+                        <span className="text-[8px] text-white/20 font-black">
+                          Min 8 characters
                         </span>
                       </div>
                       <div className="relative group/input">
                         <input
                           id="password"
                           type={showPassword ? 'text' : 'password'}
-                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black uppercase tracking-widest pr-10"
+                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black pr-10"
                           placeholder="••••••••"
                           required
                           maxLength={128}
@@ -235,7 +235,7 @@ const Register = () => {
                   </div>
 
                   {error && (
-                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest py-2 px-3 text-center rounded">
+                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[9px] font-black py-2 px-3 text-center rounded">
                       {error}
                     </div>
                   )}
@@ -243,18 +243,18 @@ const Register = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full h-9 bg-white text-black text-[9px] font-black uppercase tracking-[0.2em] transition-all rounded flex items-center justify-center gap-2 ${
+                    className={`w-full h-9 bg-white text-black text-[9px] font-black transition-all rounded flex items-center justify-center gap-2 ${
                       loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/90 active:scale-[0.98]'
                     }`}
                   >
                     {loading ? (
                       <>
                         <Activity className="animate-pulse" size={12} />
-                        <span>INITIALIZING...</span>
+                        <span>Initializing...</span>
                       </>
                     ) : (
                       <>
-                        <span>COMPLETE_SETUP</span>
+                        <span>Complete Setup</span>
                         <ArrowRight size={12} />
                       </>
                     )}
@@ -262,14 +262,14 @@ const Register = () => {
                 </form>
 
                 <div className="mt-6 lg:hidden text-center pt-4 border-t border-white/10">
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-widest mb-1">
-                    ALREADY_HAVE_ACCOUNT?
+                  <p className="text-white/40 text-[9px] font-black mb-1">
+                    Already have account?
                   </p>
                   <Link
                     to="/login"
-                    className="text-white text-[9px] font-black uppercase tracking-widest hover:underline decoration-white/30 underline-offset-4"
+                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4"
                   >
-                    LOG_IN
+                    Log in
                   </Link>
                 </div>
               </div>
