@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import NotificationService from '../api/notificationService';
+import socketService from '../services/socketService';
 
 /**
  * Shared async error wrapper — runs fn(), returns true on success or false on
@@ -37,7 +38,21 @@ const useNotifications = (pollInterval = 10000) => {
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, pollInterval);
-    return () => clearInterval(interval);
+    
+    // Real-time Push Integration
+    socketService.connect();
+    
+    const handleNewNotification = (notif) => {
+      setNotifications(prev => [notif, ...prev]);
+      setUnreadCount(prev => prev + 1);
+    };
+
+    socketService.onEvent('NOTIFICATION_RECEIVED', handleNewNotification);
+
+    return () => {
+      clearInterval(interval);
+      socketService.offEvent('NOTIFICATION_RECEIVED');
+    };
   }, [fetchNotifications, pollInterval]);
 
   const markAsRead = (id) =>

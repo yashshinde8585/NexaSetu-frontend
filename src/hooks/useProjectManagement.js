@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import socketService from '../services/socketService';
 import ProjectService from '../api/projectService';
 import TaskService from '../api/taskService';
 import SprintService from '../api/sprintService';
@@ -11,6 +12,36 @@ import MetricsService from '../api/metricsService';
 // Manages state, mutations, and derived data for individual project environments.
 export const useProjectManagement = (id, user) => {
   const queryClient = useQueryClient();
+
+  // Real-time Synchronizer: Manages project room lifecycle and event-driven cache invalidation
+  useEffect(() => {
+    if (!id || id === 'null') return;
+
+    // Join the tactical project frequency
+    socketService.joinProject(id);
+
+    // Synchronize local cache with remote changes
+    const handleTaskUpdate = (payload) => {
+      console.debug('[SOCKET] Task update received, invalidating queries');
+      queryClient.invalidateQueries({ queryKey: ['tasks', id] });
+      queryClient.invalidateQueries({ queryKey: ['analytics', id] });
+    };
+
+    const handleAgentActivity = (activity) => {
+      console.debug('[SOCKET] Agent activity detected:', activity.type);
+      // Optional: Update activity log or show pulse animation
+    };
+
+    socketService.onEvent('task_updated', handleTaskUpdate);
+    socketService.onEvent('AGENT_ACTIVITY', handleAgentActivity);
+
+    // Teardown: Prevent zombie subscriptions and memory leaks
+    return () => {
+      socketService.leaveProject(id);
+      socketService.offEvent('task_updated');
+      socketService.offEvent('AGENT_ACTIVITY');
+    };
+  }, [id, queryClient]);
 
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showAiInput, setShowAiInput] = useState(false);

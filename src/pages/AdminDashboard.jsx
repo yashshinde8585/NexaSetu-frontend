@@ -181,12 +181,7 @@ const AdminDashboard = () => {
                   className="w-full h-9 bg-black border border-white/10 rounded-none px-4 pl-10 text-[10px] text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/10 font-black uppercase tracking-widest"
                 />
               </div>
-              <button 
-                onClick={() => setIsInviteModalOpen(true)}
-                className="h-9 px-6 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none transition-all flex items-center justify-center gap-2 active:scale-95"
-              >
-                <UserPlus size={14} /> INVITE_OPERATIVE
-              </button>
+
             </div>
 
             <div className="overflow-x-auto">

@@ -35,25 +35,67 @@ class SocketService {
    * Joins a specific mission (task) room to receive localized tactical signals.
    */
   joinMission(taskId) {
+    if (!taskId) return;
     if (!this.socket) this.connect();
-    this.socket.emit('join_task', taskId);
+    this.socket.emit('join_task', taskId.toString());
+    console.debug(`[SOCKET] Joined mission room: ${taskId}`);
+  }
+
+  /**
+   * Leaves a mission room to prevent signal interference.
+   */
+  leaveMission(taskId) {
+    if (!taskId || !this.socket) return;
+    this.socket.emit('leave_task', taskId.toString());
+    console.debug(`[SOCKET] Left mission room: ${taskId}`);
+  }
+
+  /**
+   * Joins a project room for broad-spectrum task updates and agent activity.
+   */
+  joinProject(projectId) {
+    if (!projectId) return;
+    if (!this.socket) this.connect();
+    this.socket.emit('join_project', projectId.toString());
+    console.debug(`[SOCKET] Joined project room: ${projectId}`);
+  }
+
+  /**
+   * Leaves a project room when exiting the project dashboard.
+   */
+  leaveProject(projectId) {
+    if (!projectId || !this.socket) return;
+    this.socket.emit('leave_project', projectId.toString());
+    console.debug(`[SOCKET] Left project room: ${projectId}`);
+  }
+
+  /**
+   * Listens for any registered system event.
+   */
+  onEvent(event, callback) {
+    if (!this.socket) this.connect();
+    this.socket.on(event, callback);
+  }
+
+  /**
+   * Removes a specific event listener.
+   */
+  offEvent(event) {
+    if (this.socket) {
+      this.socket.off(event);
+    }
   }
 
   /**
    * Listens for new incoming signals (comments) on the current mission frequency.
+   * @deprecated Use onEvent('new_signal', callback) instead.
    */
   onSignal(callback) {
-    if (!this.socket) this.connect();
-    this.socket.on('new_signal', callback);
+    this.onEvent('new_signal', callback);
   }
 
-  /**
-   * Cleans up signal listeners to prevent telemetry interference.
-   */
   offSignal() {
-    if (this.socket) {
-      this.socket.off('new_signal');
-    }
+    this.offEvent('new_signal');
   }
 
   disconnect() {

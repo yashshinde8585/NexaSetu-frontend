@@ -74,7 +74,7 @@ const App = () => {
             }>
                 <Routes>
                     {/* Public Routes */}
-                    {publicRoutes.map(({ path, element, exact }) => (
+                    {publicRoutes.map(({ path, component: Component, exact }) => (
                         <Route 
                             key={path} 
                             path={path} 
@@ -82,14 +82,14 @@ const App = () => {
                                 (path === '/' || path === ROUTES.LOGIN || path === ROUTES.REGISTER) && user ? (
                                     <Navigate to={homeRedirect} replace />
                                 ) : (
-                                    element
+                                    <Component />
                                 )
                             } 
                         />
                     ))}
 
                     {/* Protected Routes */}
-                    {privateRoutes.map(({ path, element, permission, roles, titles, fallback }) => (
+                    {privateRoutes.map(({ path, component: Component, permission, roles, titles, fallback }) => (
                         <Route 
                             key={path} 
                             path={path} 
@@ -100,7 +100,7 @@ const App = () => {
                                     titles={titles} 
                                     fallback={fallback}
                                 >
-                                    {element}
+                                    <Component />
                                 </ProtectedRoute>
                             } 
                         />
