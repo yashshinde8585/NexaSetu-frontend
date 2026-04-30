@@ -138,7 +138,7 @@ const CTODashboard = () => {
             <div className="space-y-4">
               <BlockerCategory label="Engineering" items={blockers.engineering} />
               <BlockerCategory label="Quality Assurance" items={blockers.qa} />
-              <BlockerCategory label="Operational" items={blockers.peopleOps} />
+              <BlockerCategory label="Operational" items={blockers.hr} />
             </div>
           </DashboardSection>
 

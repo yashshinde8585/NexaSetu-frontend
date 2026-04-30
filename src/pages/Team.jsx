@@ -89,12 +89,30 @@ const Team = () => {
     }
   };
 
-  useEffect(() => {
-    const isTechLead = user?.role === USER_ROLES.TECH_LEAD;
-    const primaryProjectId =
-      user?.assignedProjectId?._id || user?.assignedProjectId;
+  const handleAssignProject = async (memberId, projectId) => {
+    if (!projectId) return;
+    try {
+      await TeamService.updateMemberProject(memberId, projectId);
+      // Refresh to update groupings
+      fetchTeam();
+    } catch (err) {
+      setError('FAILED_TO_ASSIGN_SECTOR. PLEASE_RETRY.');
+    }
+  };
 
-    if (isTechLead && primaryProjectId) {
+  useEffect(() => {
+    // Roles identified for direct tactical sector routing
+    const IC_ROLES = [
+      USER_ROLES.SENIOR_ENGINEER,
+      USER_ROLES.SOFTWARE_ENGINEER,
+      USER_ROLES.PROJECT_MEMBER,
+      USER_ROLES.INTERN
+    ];
+
+    const isIC = IC_ROLES.includes(user?.role);
+    const primaryProjectId = user?.assignedProjectId?._id || user?.assignedProjectId;
+
+    if (isIC && primaryProjectId) {
       navigate(`/team/project/${primaryProjectId}`, { replace: true });
       return;
     }
@@ -105,6 +123,8 @@ const Team = () => {
   // Performance Optimization: Memoized groupings
   const { groupedTeams, unassignedMembers } = useMemo(() => {
     const members = team.members || [];
+    const userProjectId = user?.assignedProjectId?._id || user?.assignedProjectId;
+
     const groups = members.reduce((acc, member) => {
       const projectId = member.assignedProjectId?._id || 'unassigned';
       const projectName = member.assignedProjectId?.name || 'Reserve Operations';
@@ -119,11 +139,18 @@ const Team = () => {
     const unassigned = groups['unassigned']?.members || [];
     delete groups['unassigned'];
 
+    // Sort to put user's assigned project first
+    const sortedGroups = Object.values(groups).sort((a, b) => {
+      if (a.id === userProjectId) return -1;
+      if (b.id === userProjectId) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
     return {
-      groupedTeams: Object.values(groups),
+      groupedTeams: sortedGroups,
       unassignedMembers: unassigned
     };
-  }, [team.members]);
+  }, [team.members, user?.assignedProjectId]);
 
   // Combined Search Filter
   const filteredData = useMemo(() => {
@@ -152,12 +179,11 @@ const Team = () => {
       {/* Dynamic Command Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
+          <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
             TEAM DIRECTORY
           </h1>
-          <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-1 h-1 bg-primary rounded-full" />
-            MANAGE GLOBAL PERSONNEL AND SECTOR ASSIGNMENTS.
+          <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
+            VIEW AND MANAGE ALL TEAM MEMBERS IN YOUR WORKSPACE.
           </p>
         </div>
 
@@ -249,7 +275,7 @@ const Team = () => {
                   </div>
 
                    <div>
-                    <h3 className="text-sm font-black text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors uppercase">
+                    <h3 className="text-sm font-black text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors">
                       {group.name}
                     </h3>
                     <div className="flex items-center gap-2">
@@ -297,21 +323,41 @@ const Team = () => {
             <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {filteredData.unassigned.map((m) => (
-                  <div key={m._id || m.id} className="p-3 bg-black border border-white/10 rounded-lg flex items-center gap-3 hover:border-primary/40 transition-all group">
-                    <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors overflow-hidden border border-white/10">
-                      {m.profilePicture ? (
-                        <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
-                      ) : (
-                        m.name.charAt(0)
-                      )}
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[11px] font-black text-white truncate uppercase tracking-tight">{m.name}</span>
-                      <span className="text-[9px] text-white/50 truncate tracking-wide lowercase">{m.email}</span>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[8px] text-white/30 font-black uppercase truncate tracking-widest">{m.jobTitle || 'OPERATIVE'}</span>
+                  <div key={m._id || m.id} className="p-3 bg-black border border-white/10 rounded-lg flex flex-col gap-3 hover:border-primary/40 transition-all group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors overflow-hidden border border-white/10 shrink-0">
+                        {m.profilePicture ? (
+                          <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                        ) : (
+                          m.name.charAt(0)
+                        )}
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-[11px] font-black text-white truncate tracking-tight">{m.name}</span>
+                        <span className="text-[8px] text-primary/50 font-black uppercase truncate tracking-[0.1em]">{m.jobTitle || 'OPERATIVE'}</span>
                       </div>
                     </div>
+
+                    {hasPermission(PERMISSIONS.INVITE_USERS) && (
+                      <div className="pt-3 border-t border-white/5 flex items-center gap-2">
+                         <select 
+                            className="flex-1 bg-black border border-white/10 text-[8px] font-black uppercase text-white/50 h-7 rounded px-2 focus:border-primary/50 outline-none transition-all"
+                            onChange={(e) => m.selectedProjectId = e.target.value}
+                            defaultValue=""
+                         >
+                            <option value="" disabled>SELECT SECTOR...</option>
+                            {groupedTeams.map(g => (
+                              <option key={g.id} value={g.id}>{g.name}</option>
+                            ))}
+                         </select>
+                         <button 
+                            onClick={() => handleAssignProject(m._id || m.id, m.selectedProjectId)}
+                            className="px-3 h-7 bg-primary text-black text-[8px] font-black uppercase rounded hover:bg-white transition-colors"
+                         >
+                            ASSIGN
+                         </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -346,7 +392,7 @@ const Team = () => {
                   </div>
 
                   <div className="min-w-0">
-                    <h4 className="text-[11px] font-black text-white truncate mb-1 uppercase tracking-tight">
+                    <h4 className="text-[11px] font-black text-white truncate mb-1 tracking-tight">
                       {invite.email}
                     </h4>
                     <div className="text-[8px] font-black text-white/30 truncate flex items-center gap-2 uppercase tracking-widest">

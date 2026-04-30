@@ -34,7 +34,7 @@ const App = () => {
             { cond: role === 'ENGINEERING_MANAGER' || title.includes('engineering manager'), route: ROUTES.TEAM_COMMAND_CENTER },
             { cond: role === 'TECH_LEAD' || title.includes('tech lead'), route: ROUTES.SYSTEM_HEALTH_CONTROL },
             { cond: title.includes('qa lead'), route: ROUTES.QUALITY_COMMAND },
-            { cond: role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager'), route: ROUTES.PEOPLE_OPS },
+            { cond: role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager'), route: ROUTES.HR } ,
             { cond: title.includes('senior qa engineer'), route: ROUTES.QUALITY_STRATEGY },
             { cond: role === 'QA_ENGINEER' || title.includes('qa engineer'), route: ROUTES.QUALITY_CONTROL },
             { cond: role === 'SENIOR_ENGINEER' || title.includes('senior engineer'), route: ROUTES.EXECUTION_CONTROL },

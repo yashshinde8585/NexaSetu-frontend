@@ -18,7 +18,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
     'WORKSPACE_ADMIN', 'WORKSPACE_MANAGER', 'VP_ENGINEERING', 
     'ENGINEERING_MANAGER', 'TECH_LEAD', 'SENIOR_ENGINEER', 
     'SOFTWARE_ENGINEER', 'JUNIOR_ENGINEER', 'QA_LEAD', 
-    'PEOPLE_OPS', 'INTERN'
+    'HR', 'INTERN'
   ];
 
   return (

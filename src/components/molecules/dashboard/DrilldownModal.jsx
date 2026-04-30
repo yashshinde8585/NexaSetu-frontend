@@ -1,11 +1,13 @@
 import React from 'react';
 import StatusIndicator from './StatusIndicator';
-import { X } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * DrilldownModal - Detailed personnel/performance visibility layer.
  */
 const DrilldownModal = ({ isOpen, onClose, category, type, data = [] }) => {
+  const navigate = useNavigate();
   if (!isOpen) return null;
 
   return (
@@ -49,6 +51,7 @@ const DrilldownModal = ({ isOpen, onClose, category, type, data = [] }) => {
                 <th className="py-4 px-8 border-b border-white/5">{type === 'role' ? 'Headcount' : 'Load'}</th>
                 <th className="py-4 px-8 border-b border-white/5 text-center">Utilization</th>
                 <th className="py-4 px-8 border-b border-white/5">Status</th>
+                <th className="py-4 px-8 border-b border-white/5 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -65,6 +68,18 @@ const DrilldownModal = ({ isOpen, onClose, category, type, data = [] }) => {
                   </td>
                   <td className="py-4 px-8 border-b border-white/[0.03]">
                     <StatusIndicator color={row.status} />
+                  </td>
+                  <td className="py-4 px-8 border-b border-white/[0.03] text-right">
+                    <button 
+                      onClick={() => {
+                        const target = row.role ? `?role=${row.role}` : `?user=${row.id}`;
+                        navigate(`/team${target}`);
+                        onClose();
+                      }}
+                      className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:border-primary/50 transition-all"
+                    >
+                      Context <ExternalLink size={10} />
+                    </button>
                   </td>
                 </tr>
               )) : (

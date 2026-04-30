@@ -66,7 +66,7 @@ export const JOB_TITLES = [
     category: 'Quality Assurance (Testing Track)',
     roles: [
       {
-        title: 'QA Engineer / Software Tester',
+        title: 'QA Engineer',
         role: USER_ROLES.SOFTWARE_ENGINEER,
         description: 'Quality verification & testing',
       },
@@ -86,7 +86,7 @@ export const JOB_TITLES = [
     category: 'People / Operations',
     roles: [
       {
-        title: 'HR Manager / People Ops',
+        title: 'HR',
         role: USER_ROLES.WORKSPACE_MANAGER,
         description: 'Human resources & operations',
       },
@@ -113,6 +113,7 @@ export const PERMISSIONS = {
 export const ROLE_PERMISSIONS = {
   [USER_ROLES.WORKSPACE_ADMIN]: ['*'],
   [USER_ROLES.WORKSPACE_MANAGER]: [
+    PERMISSIONS.INVITE_USERS,
     PERMISSIONS.VIEW_PORTFOLIO,
     PERMISSIONS.EDIT_PROJECT,
     PERMISSIONS.ASSIGN_TASKS,

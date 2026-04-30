@@ -65,7 +65,7 @@ const AddTeamMember = () => {
     ? dynJobTitles.map((group) => ({
         ...group,
         roles: group.roles.filter((r) =>
-          ['Senior Engineer', 'Software Engineer', 'Junior Engineer', 'Intern', 'QA Engineer / Software Tester'].includes(r.title)
+          ['Senior Engineer', 'Software Engineer', 'Junior Engineer', 'Intern', 'QA Engineer'].includes(r.title)
         ),
       })).filter((group) => group.roles.length > 0)
     : dynJobTitles;
@@ -254,6 +254,18 @@ const AddTeamMember = () => {
 
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-5xl mx-auto">
+      {/* Strategic Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
+        <div className="space-y-1">
+          <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
+            INVITE TEAM MEMBERS
+          </h1>
+          <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
+            Expand your workspace by inviting new personnel and assigning tactical roles.
+          </p>
+        </div>
+      </div>
+
       <form onSubmit={handleSendAll} className="space-y-4">
         <div className="space-y-4">
           {invites.map((invite, idx) => (

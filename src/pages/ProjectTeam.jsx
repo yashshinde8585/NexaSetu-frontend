@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users, Box, Search, Mail, Clock, ShieldCheck, ChevronLeft } from 'lucide-react';
+import { Users, Box, Search, Mail, Clock, ShieldCheck } from 'lucide-react';
 import TeamService from '../api/teamService';
 import { USER_ROLES } from '../constants';
+import { useAuth } from '../context/AuthContext';
 
 
 const ProjectTeam = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [data, setData] = useState({ projectName: '', members: [] });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const IC_ROLES = [
+    USER_ROLES.SENIOR_ENGINEER,
+    USER_ROLES.SOFTWARE_ENGINEER,
+    USER_ROLES.PROJECT_MEMBER,
+    USER_ROLES.INTERN
+  ];
+
+
 
   useEffect(() => {
     const fetchProjectSquad = async () => {
@@ -48,14 +59,14 @@ const ProjectTeam = () => {
     CTO: 1,
     'VP Engineering': 2,
     'Engineering Manager': 3,
-    'HR Manager / People Ops': 4,
+    'HR': 4,
     'Tech Lead': 5,
     'QA Lead': 5,
     'Senior Engineer': 6,
     'Senior QA Engineer': 6,
     'Software Engineer': 7,
     'Junior Engineer': 8,
-    'QA Engineer / Software Tester': 8,
+    'QA Engineer': 8,
     Intern: 9,
   };
 
@@ -64,7 +75,7 @@ const ProjectTeam = () => {
       case 'CTO':
       case 'VP Engineering':
       case 'Engineering Manager':
-      case 'HR Manager / People Ops':
+      case 'HR':
         return { color: 'text-status-success', shadow: 'rgba(34, 197, 94, 0.4)' };
       case 'Tech Lead':
       case 'QA Lead':
@@ -95,25 +106,12 @@ const ProjectTeam = () => {
         
         {/* Navigation & Context Header */}
         <div className="space-y-6">
-          <button
-            onClick={() => navigate('/team')}
-            className="group flex items-center gap-2 text-white/30 hover:text-white transition-all text-[9px] font-black uppercase tracking-[0.2em]"
-          >
-            <div className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center group-hover:border-primary">
-              <ChevronLeft size={14} />
-            </div>
-            BACK TO DIRECTORY
-          </button>
+
 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-6">
             <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded border flex items-center justify-center ${projectId === 'unassigned' ? 'bg-white/5 border-white/10 text-white/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
-                {projectId === 'unassigned' ? <Users size={20} /> : <Box size={20} />}
-              </div>
               <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none truncate max-w-[240px] sm:max-w-md">
-                  {data.projectName}
-                </h1>
+
                 <div className="flex items-center gap-3 text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">
                    <span className="flex items-center gap-2">
                       <Users size={10} className="text-primary" />
@@ -122,6 +120,9 @@ const ProjectTeam = () => {
                    <div className="w-1 h-1 bg-white/10 rounded-full" />
                    <span className="text-white/50">{data.members.length} TOTAL MEMBERS</span>
                 </div>
+                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold mt-3 leading-relaxed max-w-2xl">
+                  View all team members assigned to this project.
+                </p>
               </div>
             </div>
 

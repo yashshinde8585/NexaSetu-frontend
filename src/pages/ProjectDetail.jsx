@@ -14,7 +14,8 @@ import {
   Settings,
   MoreVertical,
   ChevronLeft, 
-  ChevronRight 
+  ChevronRight,
+  Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
@@ -31,10 +32,6 @@ import CenteredLoading from '../components/atoms/CenteredLoading';
 import Button from '../components/atoms/Button';
 import { ResilientPage } from '../components/states';
 
-/**
- * High-performance Project Board Interface.
- * Optimized for tactical clarity, high-density orchestration, and sunlight legibility.
- */
 const ProjectDetail = () => {
   const { user } = useAuth();
   const { id } = useParams();
@@ -53,10 +50,15 @@ const ProjectDetail = () => {
     github,
     sprints,
     updateProjectMutation,
-    newTask,
     setNewTask,
+    newTask,
     queryClient,
+    directives
   } = useProjectManagement(id, user);
+
+  const activeStabilize = directives?.find(d => d.type === 'STABILIZE' && d.status === 'issued');
+  const isManager = user?.role === USER_ROLES.TECH_LEAD || user?.role === USER_ROLES.WORKSPACE_ADMIN;
+  const isProjectLocked = !!activeStabilize && !isManager;
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [assigneeFilter, setAssigneeFilter] = React.useState('all');
@@ -191,6 +193,26 @@ const ProjectDetail = () => {
       <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
         <div className="w-full space-y-6 max-w-7xl mx-auto">
 
+        {/* --- DIRECTIVE ENFORCEMENT HUD --- */}
+        {activeStabilize && (
+          <div className="bg-status-error/10 border-2 border-status-error/50 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-center gap-4">
+              <div className="bg-status-error p-3 rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+                <ShieldAlert className="text-white" size={24} />
+              </div>
+              <div>
+                <h2 className="text-[12px] font-black text-status-error uppercase tracking-[0.3em]">ACTIVE DIRECTIVE: STABILIZE</h2>
+                <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">{activeStabilize.title}</p>
+              </div>
+            </div>
+            <div className="bg-status-error/20 px-4 py-2 rounded-xl border border-status-error/30">
+              <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
+                SYSTEM LOCK: NEW TASKS DISABLED • ONLY REVIEWS ALLOWED
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* High-Contrast Tactical Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-white/10">
           <div className="space-y-4 flex-1 w-full">
@@ -203,21 +225,22 @@ const ProjectDetail = () => {
                 <div className="flex flex-col gap-1.5 relative" onClick={(e) => e.stopPropagation()}>
                    <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">ACTIVE SPRINT</span>
                    <button
+                     disabled={isProjectLocked}
                      onClick={() => setActiveDropdown(activeDropdown === 'sprint' ? null : 'sprint')}
-                     className="flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded hover:bg-white/10 transition-all group"
+                     className={`flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded hover:bg-white/10 transition-all group ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''}`}
                    >
                       <Calendar size={12} className="text-primary-light" />
                       <span className="text-[11px] font-black text-white uppercase tracking-tight">
                         {sprints?.find(s => s._id === project?.sprint)?.name || 'NO SPRINT'}
                       </span>
-                      <ChevronDown size={12} className={`text-white/40 transition-transform ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`} />
+                      {!isProjectLocked && <ChevronDown size={12} className={`text-white/40 transition-transform ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`} />}
                    </button>
 
-                       {activeDropdown === 'sprint' && (
+                       {activeDropdown === 'sprint' && !isProjectLocked && (
                          <div className="absolute top-full left-0 mt-2 w-64 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                            <div className="p-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
                              <button
-                               onClick={() => { updateProjectMutation.mutate({ sprint: '' }); setActiveDropdown(null); }}
+                               onClick={() => { updateProjectMutation.mutate({ sprint: null }); setActiveDropdown(null); }}
                                className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
                                  !project?.sprint ? 'bg-white text-black' : 'text-white/60 hover:bg-white/5 hover:text-white'
                                }`}
@@ -243,7 +266,7 @@ const ProjectDetail = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-             {!isTicketView && (user?.role === USER_ROLES.TECH_LEAD || user?.role === USER_ROLES.WORKSPACE_ADMIN) && (
+             {!isTicketView && isManager && (
                 <button
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
                   className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${
@@ -256,8 +279,9 @@ const ProjectDetail = () => {
              )}
 
              <button
+               disabled={isProjectLocked}
                onClick={() => ui.setShowAiInput(!ui.showAiInput)}
-               className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${
+               className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''} ${
                  ui.showAiInput 
                    ? 'bg-status-error text-white border-status-error' 
                    : 'bg-primary text-black border-primary'
@@ -268,8 +292,9 @@ const ProjectDetail = () => {
              </button>
              
              <button
-                onClick={() => ui.setShowTaskForm(!ui.showTaskForm)}
-                className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                disabled={isProjectLocked}
+                onClick={() => ui.setShowTaskForm(!ui.setShowTaskForm)}
+                className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all active:scale-95 ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''} ${
                   ui.showTaskForm
                     ? 'bg-status-error text-white border-status-error'
                     : 'bg-primary text-black border-primary hover:bg-primary/90'
@@ -278,6 +303,16 @@ const ProjectDetail = () => {
                 {ui.showTaskForm ? <CloseIcon size={14} /> : <Plus size={14} strokeWidth={3} />}
                 {ui.showTaskForm ? 'ABORT' : (isTicketView ? 'NEW TICKET' : 'NEW TASK')}
               </button>
+
+             {!isTicketView && (
+                <button
+                  onClick={() => navigate(`/war-room/${id}`)}
+                  className="h-9 px-4 rounded border border-secondary text-secondary bg-secondary/5 font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all hover:bg-secondary hover:text-white"
+                >
+                  <Zap size={14} />
+                  WAR ROOM
+                </button>
+             )}
           </div>
         </div>
 

@@ -126,13 +126,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      
-      {/* Navigation Breadcrumbs */}
-      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">
-        <Link to="/" className="hover:text-primary transition-colors">WORKSPACE</Link>
-        <ChevronLeft size={10} className="rotate-180 opacity-20" />
-        <span className="text-white">ADMIN_PANEL</span>
-      </div>
 
       {/* 1. System Metrics Strip */}
       <div id="admin-metrics-strip" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">

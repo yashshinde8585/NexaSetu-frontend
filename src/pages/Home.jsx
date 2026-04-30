@@ -225,7 +225,7 @@ const Home = () => {
             { role: 'Technical', target: 'Architects', outcome: 'Enforced Standards' },
             { role: 'Quality', target: 'QA Managers', outcome: 'Early Risk Signals' },
             { role: 'Junior', target: 'New Grads', outcome: 'Guided Action' },
-            { role: 'Talent', target: 'People Ops', outcome: 'Burnout Detection' }
+            { role: 'Talent', target: 'HR', outcome: 'Burnout Detection' }
           ].map((v, i) => (
             <div key={i} className="bg-background-light p-8 sm:p-12 hover:bg-background-elevated transition-colors flex flex-col min-h-[240px] md:min-h-[280px]">
               <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/20 mb-4">{v.role}</span>

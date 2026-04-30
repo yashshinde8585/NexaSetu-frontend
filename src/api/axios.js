@@ -64,13 +64,14 @@ const getSuccessMessage = (method, url) => {
   if (url.includes('/auth/reset-password') && m === 'post') return 'PASSWORD_RESET_SUCCESSFUL';
   if (url.includes('/auth/register') && m === 'post') return 'WORKSPACE_INITIALIZED_SUCCESSFULLY';
   if (url.includes('/projects') && m === 'post') return 'PROJECT_INITIALIZED_SUCCESSFULLY';
+  if (url.includes('/projects') && m === 'patch') return 'PROJECT_STATE_SYNCHRONIZED';
   if (url.includes('/team/invite') && m === 'post') return 'INVITATIONS_SENT_SUCCESSFULLY';
   if (url.includes('/team/revoke') && m === 'post') return 'INVITATION_REVOKED_SUCCESSFULLY';
   if (url.includes('/tasks') && url.includes('/status') && m === 'patch') return 'STATUS_SYNCHRONIZED';
   if (url.includes('/tasks') && url.includes('/blockage') && m === 'patch') return 'TASK_STATE_UPDATED';
   if (url.includes('/tasks') && m === 'put') return 'TASK_METRICS_UPDATED';
   if (url.includes('/tasks') && m === 'post') return 'TASK_ORCHESTRATED_SUCCESSFULLY';
-  return 'OPERATION_SUCCESSFUL';
+  return 'ACTION_COMPLETED';
 };
 
 api.interceptors.response.use(

@@ -19,6 +19,7 @@ import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
 import ProjectHealthSummary from '../components/dashboard/ProjectHealthSummary';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { ResilientPage } from '../components/states';
+import DirectiveBanner from '../components/molecules/dashboard/DirectiveBanner';
 
 import { resolveDashboard } from './dashboard/DashboardRegistry';
 

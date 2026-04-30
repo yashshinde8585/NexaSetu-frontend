@@ -34,20 +34,20 @@ const Sidebar = ({ isOpen, onClose }) => {
             (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? 'Team Overview' :
             (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'Systems Health' :
             (title.includes('qa lead')) ? 'Quality Overview' :
-            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Dashboard' :
+            (user?.role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager')) ? 'Dashboard' :
             (title.includes('senior qa engineer')) ? 'Test Strategy' :
             (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Test Dashboard' :
             (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Development Dashboard' :
             (title.includes('junior engineer')) ? 'My Tasks' :
             (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Hub' :
-            user?.role === 'WORKSPACE_ADMIN' ? 'Workspace Admin' :
+            user?.role === 'WORKSPACE_ADMIN' ? 'Dashboard' :
             'My Dashboard',
       path: title.includes('cto') ? '/cto-dashboard' :
             title.includes('vp engineering') ? '/execution-commander' : 
             (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
             (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? '/system-health-control' :
             (title.includes('qa lead')) ? '/quality-command' :
-            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? '/people-ops' :
+            (user?.role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager')) ? '/hr' :
             (title.includes('senior qa engineer')) ? '/quality-strategy' :
             (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? '/quality-control' :
             (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? '/execution-control' :
@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       permission: null, // Allow visibility based on user detection
     },
     {
-      name: 'People',
+      name: 'Team',
       path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
       icon: <Users size={20} />,
       permission: null,

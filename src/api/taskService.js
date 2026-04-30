@@ -48,6 +48,11 @@ class TaskService {
   updateTaskSteps(taskId, steps) {
     return apiClient.patch(`${API_ENDPOINTS.TASKS.DETAIL(taskId)}/steps`, { steps });
   }
+
+  // Submit a task review result (approved/rejected).
+  submitTaskReview(taskId, result, notes) {
+    return apiClient.post(`${API_ENDPOINTS.TASKS.DETAIL(taskId)}/review`, { result, notes });
+  }
 }
 
 export default new TaskService();

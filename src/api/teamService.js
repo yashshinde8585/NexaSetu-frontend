@@ -17,6 +17,10 @@ class TeamService {
   removeInvitation(id) {
     return apiClient.delete(API_ENDPOINTS.TEAM.REMOVE_INVITATION(id));
   }
+  
+  updateMemberProject(id, projectId) {
+    return apiClient.patch(`/team/members/${id}/project`, { projectId });
+  }
 }
 
 export default new TeamService();

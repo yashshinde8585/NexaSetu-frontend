@@ -18,7 +18,7 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
     { value: 'SOFTWARE_ENGINEER', label: 'Software Engineer' },
     { value: 'JUNIOR_ENGINEER', label: 'Junior Engineer' },
     { value: 'QA_LEAD', label: 'QA Lead' },
-    { value: 'PEOPLE_OPS', label: 'People Ops / HR' },
+    { value: 'HR', label: 'HR' },
     { value: 'INTERN', label: 'Intern' },
   ];
 

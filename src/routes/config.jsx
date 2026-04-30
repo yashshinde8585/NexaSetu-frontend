@@ -9,6 +9,7 @@ const Home = lazy(() => import('../pages/Home'));
 const Join = lazy(() => import('../pages/Join'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const ProjectDetail = lazy(() => import('../pages/ProjectDetail'));
+const ProjectWarRoom = lazy(() => import('../pages/ProjectWarRoom'));
 const Pricing = lazy(() => import('../pages/Pricing'));
 const Team = lazy(() => import('../pages/Team'));
 const ProjectTeam = lazy(() => import('../pages/ProjectTeam'));
@@ -33,7 +34,7 @@ const InternDashboard = lazy(() => import('../pages/InternDashboard'));
 const QADashboard = lazy(() => import('../pages/QADashboard'));
 const SQADashboard = lazy(() => import('../pages/SQADashboard'));
 const QALeadDashboard = lazy(() => import('../pages/QALeadDashboard'));
-const PeopleOpsDashboard = lazy(() => import('../pages/PeopleOpsDashboard'));
+const HRDashboard = lazy(() => import('../pages/HRDashboard'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const CreateTeam = lazy(() => import('../pages/CreateTeam'));
 const EditTeam = lazy(() => import('../pages/EditTeam'));
@@ -61,6 +62,7 @@ export const privateRoutes = [
   { path: ROUTES.GUIDED_WORK_ASSISTANT, component: JREDashboard },
   { path: ROUTES.LEARNING_WORKSPACE, component: InternDashboard },
   { path: '/project/:id', component: ProjectDetail },
+  { path: '/war-room/:projectId', component: ProjectWarRoom },
   { path: '/task/:taskId', component: TaskDetail },
   { path: '/project/:id/settings', component: ProjectSettings },
   { path: ROUTES.MY_TASKS, component: MyTasks },
@@ -133,10 +135,10 @@ export const privateRoutes = [
     titles: ['qa lead']
   },
   { 
-    path: ROUTES.PEOPLE_OPS, 
-    component: PeopleOpsDashboard, 
+    path: ROUTES.HR, 
+    component: HRDashboard, 
     roles: ['HR_MANAGER', 'WORKSPACE_ADMIN', 'VP_ENGINEERING', 'ENGINEERING_MANAGER'],
-    titles: ['people ops', 'hr manager']
+    titles: ['hr', 'hr manager']
   },
   { 
     path: ROUTES.ADMIN_PANEL, 

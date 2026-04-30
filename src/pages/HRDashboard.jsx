@@ -14,18 +14,17 @@ import ActivityItem from '../components/molecules/dashboard/ActivityItem';
 import DrilldownModal from '../components/molecules/dashboard/DrilldownModal';
 
 /**
- * People Operations / Workforce Engineering Dashboard
+ * HR / Workforce Engineering Dashboard
  * Focused on workforce health, capacity optimization, and organizational stability.
  */
-const PeopleOpsDashboard = () => {
+const HRDashboard = () => {
   const { 
     data, 
     isLoading, 
     handleDrilldown, 
     drilldown, 
-    closeDrilldown, 
-    recalculateDashboard 
-  } = useRoleDashboard('people-ops');
+    closeDrilldown
+  } = useRoleDashboard('hr');
 
   if (isLoading) return <CenteredLoading />;
 
@@ -42,23 +41,7 @@ const PeopleOpsDashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      
-      {/* 0. Dashboard Control Header */}
-      <div className="flex justify-between items-center mb-2">
-        <div>
-          <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Workforce_Engineering</h1>
-          <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-black mt-1 block">People Operations Console</span>
-        </div>
-        <button 
-          onClick={() => recalculateDashboard()}
-          className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all group"
-        >
-          <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
-          Sync_Workforce_Telemetry
-        </button>
-      </div>
-
+    <div className="min-h-screen bg-black text-white px-4 lg:px-6 py-2 lg:py-4 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       {/* 1. Workforce Integrity Strip */}
       <div id="people-metrics-strip" className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <MetricStripItem 
@@ -297,4 +280,4 @@ const TrendIndicator = ({ label, now, last, unit, inverse }) => {
   );
 };
 
-export default PeopleOpsDashboard;
+export default HRDashboard;

@@ -22,7 +22,7 @@ class DashboardService {
     }
     
     // Operations roles
-    if (['qa', 'sqa', 'qa_lead', 'people_ops', 'peopleops', 'hr'].includes(r)) {
+    if (['qa', 'sqa', 'qa_lead', 'hr'].includes(r)) {
       return apiClient.get(API_ENDPOINTS.DASHBOARDS.OPERATIONS);
     }
     

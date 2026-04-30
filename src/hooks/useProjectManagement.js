@@ -114,6 +114,12 @@ export const useProjectManagement = (id, user) => {
     onError: () => setGithubConnected(false),
   });
 
+  const directivesQuery = useQuery({
+    queryKey: ['directives', id],
+    queryFn: () => ProjectService.getActiveDirectives(id).then((res) => res.data?.directives || []),
+    enabled: !!id,
+  });
+
   const createTaskMutation = useMutation({
     mutationFn: (task) => {
       const currentSprintId =
@@ -304,8 +310,9 @@ export const useProjectManagement = (id, user) => {
     tasks: tasksQuery.data,
     analytics: analyticsQuery.data,
     sprints: sprintsQuery.data || [],
+    directives: directivesQuery.data || [],
     isLoading:
-      projectQuery.isLoading || tasksQuery.isLoading || sprintsQuery.isLoading,
+      projectQuery.isLoading || tasksQuery.isLoading || sprintsQuery.isLoading || directivesQuery.isLoading,
     error:
       projectQuery.error ||
       tasksQuery.error ||
