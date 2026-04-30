@@ -19,6 +19,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
 import { TICKETS_PROJECT_ID, TASK_STATUS } from '../constants';
+import { USER_ROLES } from '../constants/auth';
 
 // Clean UI Components
 import GithubPanel from '../components/project/GithubPanel';
@@ -242,7 +243,7 @@ const ProjectDetail = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-             {!isTicketView && (
+             {!isTicketView && (user?.role === USER_ROLES.TECH_LEAD || user?.role === USER_ROLES.WORKSPACE_ADMIN) && (
                 <button
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
                   className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${

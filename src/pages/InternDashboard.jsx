@@ -5,7 +5,10 @@ import {
   ArrowRight, Target, Users, Award, ChevronRight, Zap, Terminal,
   Cpu, Layers, Rocket
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
+import taskService from '../api/taskService';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
@@ -16,6 +19,8 @@ import StatusBadge from '../components/molecules/dashboard/StatusBadge';
  * Focused on task execution, learning path coordination, and technical mentorship.
  */
 const InternDashboard = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useRoleDashboard('intern');
 
   if (isLoading) return <CenteredLoading />;
@@ -28,6 +33,53 @@ const InternDashboard = () => {
     feedback = [],
     blockerOptions = [] 
   } = data || {};
+
+  // --- Handlers ---
+
+  const handleStepToggle = async (stepIdx) => {
+    if (!currentTask) return;
+    
+    const newSteps = [...(currentTask.steps || [])];
+    newSteps[stepIdx] = { 
+      ...newSteps[stepIdx], 
+      completed: !newSteps[stepIdx].completed 
+    };
+
+    try {
+      await taskService.updateTaskSteps(currentTask.id, newSteps);
+      queryClient.invalidateQueries(['dashboard', 'intern']);
+    } catch (err) {
+      console.error('Failed to update step:', err);
+    }
+  };
+
+  const handleSignalCompletion = async () => {
+    if (!currentTask) return;
+    
+    try {
+      await taskService.updateTaskStatus(currentTask.id, 'in_review');
+      queryClient.invalidateQueries(['dashboard', 'intern']);
+    } catch (err) {
+      console.error('Failed to signal completion:', err);
+    }
+  };
+
+  const handleBlockerAction = async (label) => {
+    if (!currentTask) return;
+
+    try {
+      await taskService.toggleTaskBlockage(currentTask.id, true, label);
+      queryClient.invalidateQueries(['dashboard', 'intern']);
+    } catch (err) {
+      console.error('Failed to set blocker:', err);
+    }
+  };
+
+  const handleMentorContact = () => {
+    if (currentTask?.mentor?.email) {
+      window.location.href = `mailto:${currentTask.mentor.email}`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
@@ -65,25 +117,34 @@ const InternDashboard = () => {
                {currentTask ? (
                  <div className="flex flex-col gap-6 py-2">
                     <div className="flex items-center gap-4">
-                        <StatusBadge status="active" />
+                        <StatusBadge status={currentTask.status === 'in_progress' ? 'active' : 'idle'} />
                         <div className="h-px bg-white/5 flex-1" />
                         <span className="text-[9px] text-white/20 uppercase font-black tracking-[0.2em] tabular-nums">ID: {currentTask.id || 'TASK-####'}</span>
                     </div>
                     
                     <div className="flex flex-col gap-4">
-                        <h2 className="text-xl font-black text-white uppercase tracking-widest leading-tight">{currentTask.title}</h2>
+                        <h2 
+                          className="text-xl font-black text-white uppercase tracking-widest leading-tight cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => navigate(`/task/${currentTask.id}`)}
+                        >
+                          {currentTask.title}
+                        </h2>
                         <div className="bg-white/5 border border-white/10 p-6 rounded-none">
                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary block mb-3">OBJECTIVE</span>
-                           <p className="text-[10px] font-black text-white/60 uppercase leading-relaxed tracking-widest">{currentTask.objective}</p>
+                           <p className="text-[10px] font-black text-white/60 uppercase leading-relaxed tracking-widest">{currentTask.description || 'No objective defined.'}</p>
                         </div>
                     </div>
                     
                     <div className="flex flex-col gap-2">
                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">STEPS</span>
                         {currentTask.steps?.map((step, idx) => (
-                           <div key={idx} className="flex items-center gap-4 p-3 bg-black border border-white/5 rounded-none group/step transition-colors hover:bg-white/5">
+                           <div 
+                              key={idx} 
+                              className="flex items-center gap-4 p-3 bg-black border border-white/5 rounded-none group/step transition-colors hover:bg-white/5 cursor-pointer"
+                              onClick={() => handleStepToggle(idx)}
+                           >
                               <div className={`w-8 h-8 rounded-none border flex items-center justify-center transition-all ${
-                                step.completed ? 'bg-status-success/10 border-status-success/30 text-status-success' : 'border-white/10 text-white/10'
+                                step.completed ? 'bg-status-success/10 border-status-success/30 text-status-success' : 'border-white/10 text-white/10 group-hover/step:border-primary/40'
                               }`}>
                                  {step.completed ? <CheckCircle2 size={14} /> : <span className="text-[10px] font-black tabular-nums">{idx + 1}</span>}
                               </div>
@@ -98,7 +159,7 @@ const InternDashboard = () => {
                        <span className="text-[9px] font-black text-white/20 flex items-center gap-3 uppercase tracking-widest leading-none">
                           <ExternalLink size={12} className="text-primary/40" /> DOC_REPOSITORY
                        </span>
-                       <a href={currentTask.reference} target="_blank" rel="noreferrer" className="text-[9px] font-black text-primary uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 group-hover:translate-x-1">
+                       <a href={currentTask.githubUrl || '#'} target="_blank" rel="noreferrer" className="text-[9px] font-black text-primary uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 group-hover:translate-x-1">
                           OPEN_LINK <ChevronRight size={10} />
                        </a>
                     </div>
@@ -134,8 +195,12 @@ const InternDashboard = () => {
                      <h3 className="text-lg font-black text-white tracking-widest uppercase leading-none">Initiate Review</h3>
                      <p className="text-[9px] font-black text-white/20 uppercase leading-relaxed max-w-[15rem]">SIGNAL_MODULE_COMPLETION</p>
                   </div>
-                  <button className="w-full py-3 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none hover:bg-primary/90 transition-colors active:scale-95">
-                     SIGNAL_COMPLETION
+                  <button 
+                    className="w-full py-3 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none hover:bg-primary/90 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleSignalCompletion}
+                    disabled={!currentTask || currentTask.status === 'in_review'}
+                  >
+                     {currentTask?.status === 'in_review' ? 'UNDER_REVIEW' : 'SIGNAL_COMPLETION'}
                   </button>
                </div>
             </div>
@@ -155,10 +220,17 @@ const InternDashboard = () => {
                   <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary mb-8 leading-none">MENTOR_LEAD</p>
                   
                   <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-none overflow-hidden w-full">
-                     <button className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors">
+                     <button 
+                        className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors disabled:opacity-20"
+                        onClick={handleMentorContact}
+                        disabled={!currentTask?.mentor?.email}
+                     >
                         <MessageCircle size={14} /> COMM_LINK
                      </button>
-                     <button className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors">
+                     <button 
+                        className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors"
+                        onClick={() => navigate('/chat')}
+                     >
                         <HelpCircle size={14} /> SYNC_REQ
                      </button>
                   </div>
@@ -175,6 +247,8 @@ const InternDashboard = () => {
                         <a 
                           key={idx} 
                           href={res.link} 
+                          target="_blank"
+                          rel="noreferrer"
                           className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none hover:bg-white/10 transition-colors group"
                         >
                            <span className="text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-widest leading-none truncate pr-4">{res.title}</span>
@@ -191,6 +265,7 @@ const InternDashboard = () => {
                     <button 
                       key={idx} 
                       className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none text-[9px] font-black uppercase tracking-[0.2em] text-white/20 hover:bg-status-error/5 hover:border-status-error/40 hover:text-status-error transition-colors group"
+                      onClick={() => handleBlockerAction(opt.label)}
                     >
                        {opt.label}
                        <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />

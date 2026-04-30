@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import DashboardService from '../api/dashboardService';
+import socketService from '../services/socketService';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 /**
  * useRoleDashboard - Unified hook for fetching and managing role-specific dashboards.
@@ -17,6 +20,31 @@ export const useRoleDashboard = (role, options = {}) => {
     ...options
   });
 
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization
+  useEffect(() => {
+    const invalidate = () => {
+      console.debug(`[REAL-TIME] Invalidating dashboard data for: ${role}`);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', role] });
+    };
+
+    // Listen for critical events that impact the EM dashboard
+    socketService.onEvent('task_updated', invalidate);
+    socketService.onEvent('sprint_updated', invalidate);
+    socketService.onEvent('blocker_detected', invalidate);
+    socketService.onEvent('service_updated', invalidate);
+    socketService.onEvent('TEAM_SYNC_REQUIRED', invalidate);
+
+    return () => {
+      socketService.offEvent('task_updated');
+      socketService.offEvent('sprint_updated');
+      socketService.offEvent('blocker_detected');
+      socketService.offEvent('service_updated');
+      socketService.offEvent('TEAM_SYNC_REQUIRED');
+    };
+  }, [role, queryClient]);
+
   // Drilldown state management
   const [drilldown, setDrilldown] = useState({ 
     isOpen: false, 
@@ -27,15 +55,23 @@ export const useRoleDashboard = (role, options = {}) => {
 
   const handleDrilldown = useCallback(async (category, type = 'role') => {
     try {
+      setDrilldown(prev => ({ ...prev, isOpen: true, category, type, data: [] }));
+      
       let drillData = [];
-      // Dynamic drilldown fetching based on role and category
-      // This can be expanded as needed or handled locally in components
-      // For now, we provide the state management
-      setDrilldown(prev => ({ ...prev, isOpen: true, category, type }));
+      if (type === 'role') {
+        const res = await DashboardService.getRoleBreakdown(category);
+        drillData = res.data.data;
+      } else {
+        const res = await DashboardService.getIndividualBreakdown(category);
+        drillData = res.data.data;
+      }
+      
+      setDrilldown(prev => ({ ...prev, data: drillData }));
     } catch (err) {
       console.error('Drilldown failed:', err);
     }
   }, []);
+
 
   const closeDrilldown = useCallback(() => {
     setDrilldown(prev => ({ ...prev, isOpen: false }));

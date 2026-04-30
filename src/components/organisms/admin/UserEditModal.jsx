@@ -50,7 +50,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
               </button>
               <button 
                 onClick={() => {
-                  onDeactivate(user.id, user.status === 'Active' ? 'Deactivated' : 'Active');
+                  onDeactivate({ userId: user.id, status: user.status === 'Active' ? 'Deactivated' : 'Active' });
                   setShowConfirm(false);
                   onClose();
                 }}
@@ -154,7 +154,7 @@ const UserEditModal = ({ isOpen, onClose, user, onSave, onDeactivate }) => {
           </button>
           <button
             onClick={() => {
-              onSave(user.id, role);
+              onSave({ userId: user.id, role });
               onClose();
             }}
             className="flex-[2] bg-primary text-black px-6 py-3 rounded-2xl text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"

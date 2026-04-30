@@ -43,6 +43,11 @@ class TaskService {
       reason 
     });
   }
+
+  // Update task steps.
+  updateTaskSteps(taskId, steps) {
+    return apiClient.patch(`${API_ENDPOINTS.TASKS.DETAIL(taskId)}/steps`, { steps });
+  }
 }
 
 export default new TaskService();

@@ -30,6 +30,27 @@ class DashboardService {
     return apiClient.get(API_ENDPOINTS.DASHBOARDS.TACTICAL(r));
   }
 
+  /**
+   * Fetch functional role breakdown for drilldown
+   */
+  getRoleBreakdown(category) {
+    return apiClient.get(API_ENDPOINTS.CTO.FUNCTION_DRILLDOWN(category));
+  }
+
+  /**
+   * Fetch individual breakdown for a specific role
+   */
+  getIndividualBreakdown(role) {
+    return apiClient.get(API_ENDPOINTS.CTO.INDIVIDUAL_DRILLDOWN(role));
+  }
+
+  /**
+   * Manually trigger dashboard data recalculation
+   */
+  recalculateDashboard(role) {
+    return apiClient.post('/leadership/recalculate', {}, { params: { view: role } });
+  }
+
 }
 
 export default new DashboardService();

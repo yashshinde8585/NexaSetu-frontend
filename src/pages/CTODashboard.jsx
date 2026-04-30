@@ -6,10 +6,15 @@ import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import FunctionalCard from '../components/molecules/dashboard/FunctionalCard';
 import PipelineStep from '../components/molecules/dashboard/PipelineStep';
 import BlockerCategory from '../components/molecules/dashboard/BlockerCategory';
-import ActivityItem from '../components/molecules/dashboard/ActivityItem';
+
 import DrilldownModal from '../components/molecules/dashboard/DrilldownModal';
+import StrategicInsights from '../components/molecules/dashboard/StrategicInsights';
 import CenteredLoading from '../components/atoms/CenteredLoading';
-import { Activity, Zap, AlertTriangle } from 'lucide-react';
+
+import { LayoutGrid, Zap, AlertTriangle } from 'lucide-react';
+
+
+
 
 const CTODashboard = () => {
   const {
@@ -73,7 +78,8 @@ const CTODashboard = () => {
             />
           </div>
 
-          <DashboardSection title="Organizational Overview" icon={<Activity size={14} />}>
+          <DashboardSection title="Organizational Overview" icon={<LayoutGrid size={14} />}>
+
             <div className="overflow-x-auto">
               <table className="w-full text-left border-separate border-spacing-0">
                 <thead>
@@ -107,7 +113,10 @@ const CTODashboard = () => {
 
         {/* Right Column: Tactical Monitoring */}
         <div className="lg:col-span-4 flex flex-col gap-6">
+          <StrategicInsights />
+          
           <DashboardSection title="Delivery Pipeline" icon={<Zap size={14} />}>
+
              <div className="space-y-4 pt-2">
                 {(() => {
                   const total = (pipeline.backlog || 0) + (pipeline.dev || 0) + (pipeline.qa || 0) + (pipeline.release || 0);
@@ -133,22 +142,7 @@ const CTODashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Activity Register" icon={<Activity size={14} />}>
-            <div className="space-y-2 max-h-[340px] overflow-y-auto pr-3 custom-scrollbar">
-              {data.activity?.length > 0 ? (
-                data.activity.map((item, i) => (
-                  <ActivityItem key={i} text={item.text} time={item.time} />
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center p-12 text-center">
-                  <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center mb-4 text-white/20">
-                    <Activity size={12} />
-                  </div>
-                  <p className="text-white/30 text-[9px] uppercase font-bold tracking-widest italic">No recent logs.</p>
-                </div>
-              )}
-            </div>
-          </DashboardSection>
+
         </div>
       </div>
 

@@ -10,12 +10,14 @@ import {
   BarChart3, User as UserIcon, RefreshCcw, Zap, Box,
   Target, Layers, ShieldAlert, Terminal
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import ActivityItem from '../components/molecules/dashboard/ActivityItem';
+import ServiceDetailPanel from '../components/molecules/dashboard/ServiceDetailPanel';
 
 /**
  * Tech Lead (TL) Node Styling
@@ -53,7 +55,10 @@ const nodeTypes = {
  * Strategic overview of system architecture, build stability, and technical debt.
  */
 const TLDashboard = () => {
+  const navigate = useNavigate();
   const { data, isLoading } = useRoleDashboard('tl');
+  const [selectedService, setSelectedService] = React.useState(null);
+  const [isPanelOpen, setIsPanelOpen] = React.useState(false);
 
   const { 
     systemHealth = { servicesHealthy: '0/0', criticalBlockers: 0, highRiskModules: 0, openBugs: 0, buildStability: '0%' }, 
@@ -92,6 +97,11 @@ const TLDashboard = () => {
 
     return { nodes: initialNodes, edges: initialEdges };
   }, [serviceMap]);
+
+  const handleNodeClick = (event, node) => {
+    setSelectedService(node.data);
+    setIsPanelOpen(true);
+  };
 
   if (isLoading) return <CenteredLoading />;
 
@@ -139,13 +149,14 @@ const TLDashboard = () => {
       <DashboardSection title="Core Infrastructure Map" icon={<Database size={14} />}>
         <div className="w-full h-[400px] mt-2 rounded-none border border-white/5 bg-black relative overflow-hidden group">
           {serviceMap?.length > 0 ? (
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              nodeTypes={nodeTypes}
-              fitView
-              className="bg-black"
-            >
+               <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                onNodeClick={handleNodeClick}
+                fitView
+                className="bg-black"
+              >
               <Background color="#111" gap={32} size={1} />
               <Controls className="react-flow__controls-tl" />
                <MiniMap 
@@ -173,8 +184,12 @@ const TLDashboard = () => {
         <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardSection title="Strategic Blockades" icon={<ShieldAlert size={14} />}>
             <div className="flex flex-col gap-2 py-2">
-              {blockers?.map((blocker, idx) => (
-                <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
+               {blockers?.map((blocker, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-4 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/task/${blocker.id}`)}
+                >
                   <div className="flex items-center justify-between gap-4 mb-3">
                     <span className="text-[10px] font-black text-white uppercase tracking-widest group-hover:text-primary transition-colors">{blocker.title}</span>
                     <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-none border leading-none ${
@@ -190,6 +205,9 @@ const TLDashboard = () => {
                   </div>
                 </div>
               ))}
+              {(!blockers || blockers.length === 0) && (
+                <div className="py-8 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">NO_SYSTEM_BLOCKADES</div>
+              )}
             </div>
           </DashboardSection>
 
@@ -224,8 +242,12 @@ const TLDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.02] text-[10px] font-black uppercase tracking-widest">
-                  {bugTracker?.map((bug, idx) => (
-                    <tr key={idx} className="group hover:bg-white/[0.015] transition-colors">
+                   {bugTracker?.map((bug, idx) => (
+                    <tr 
+                      key={idx} 
+                      className="group hover:bg-white/[0.015] transition-colors cursor-pointer"
+                      onClick={() => navigate(`/task/${bug.id}`)}
+                    >
                       <td className="py-3 px-4 text-white group-hover:text-primary transition-colors pr-8">{bug.issue}</td>
                       <td className="py-3 px-4">
                         <span className={`text-[8px] font-black px-2 py-0.5 rounded-none border uppercase tracking-[0.2em] leading-none ${
@@ -242,6 +264,11 @@ const TLDashboard = () => {
                       </td>
                     </tr>
                   ))}
+                  {(!bugTracker || bugTracker.length === 0) && (
+                    <tr>
+                      <td colSpan="4" className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">ZERO_STRUCTURAL_DEFECTS</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -333,6 +360,13 @@ const TLDashboard = () => {
             ))}
          </div>
       </DashboardSection>
+
+      {/* Service Detail Slide-over */}
+      <ServiceDetailPanel 
+        isOpen={isPanelOpen} 
+        onClose={() => setIsPanelOpen(false)} 
+        service={selectedService} 
+      />
     </div>
   );
 };

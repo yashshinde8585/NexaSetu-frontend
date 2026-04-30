@@ -176,8 +176,9 @@ const Sidebar = ({ isOpen, onClose }) => {
 
               const isAdmin = user?.role === 'WORKSPACE_ADMIN';
               if (isAdmin) {
-                // Admins primarily focus on "New Project" in this section
-                return item.name === 'New Project';
+                // Admins primarily focus on "New Project" but must also access "Task Board"
+                if (item.name === 'New Project' || item.name === 'Task Board') return true;
+                return false;
               }
 
               return true;

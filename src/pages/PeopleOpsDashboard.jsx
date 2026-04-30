@@ -11,13 +11,21 @@ import DashboardSection from '../components/molecules/dashboard/DashboardSection
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
 import ActivityItem from '../components/molecules/dashboard/ActivityItem';
+import DrilldownModal from '../components/molecules/dashboard/DrilldownModal';
 
 /**
  * People Operations / Workforce Engineering Dashboard
  * Focused on workforce health, capacity optimization, and organizational stability.
  */
 const PeopleOpsDashboard = () => {
-  const { data, isLoading } = useRoleDashboard('people-ops');
+  const { 
+    data, 
+    isLoading, 
+    handleDrilldown, 
+    drilldown, 
+    closeDrilldown, 
+    recalculateDashboard 
+  } = useRoleDashboard('people-ops');
 
   if (isLoading) return <CenteredLoading />;
 
@@ -36,6 +44,21 @@ const PeopleOpsDashboard = () => {
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
+      {/* 0. Dashboard Control Header */}
+      <div className="flex justify-between items-center mb-2">
+        <div>
+          <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Workforce_Engineering</h1>
+          <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-black mt-1 block">People Operations Console</span>
+        </div>
+        <button 
+          onClick={() => recalculateDashboard()}
+          className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all group"
+        >
+          <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
+          Sync_Workforce_Telemetry
+        </button>
+      </div>
+
       {/* 1. Workforce Integrity Strip */}
       <div id="people-metrics-strip" className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <MetricStripItem 
@@ -89,7 +112,11 @@ const PeopleOpsDashboard = () => {
                        </thead>
                        <tbody className="divide-y divide-white/5 text-[10px] font-black uppercase tracking-widest">
                           {teamCapacity?.map((t, idx) => (
-                            <tr key={idx} className="group hover:bg-white/5 transition-colors cursor-pointer">
+                            <tr 
+                              key={idx} 
+                              className="group hover:bg-white/5 transition-colors cursor-pointer"
+                              onClick={() => handleDrilldown(t.team, 'individual')}
+                            >
                                <td className="py-3 px-3 text-white group-hover:text-primary transition-colors">{t.team}</td>
                                <td className="py-3 px-3 text-white/40">{t.headcount}</td>
                                <td className="py-3 px-3">
@@ -137,12 +164,17 @@ const PeopleOpsDashboard = () => {
                <DashboardSection title="Stability Directives" icon={<RefreshCw size={14} />}>
                   <div className="flex flex-col gap-2">
                       {rebalanceSuggestions?.map((sug, idx) => (
-                        <div key={idx} className="flex gap-3 p-3 border-l-2 border-primary bg-white/5 rounded-none group hover:bg-white/10 transition-colors">
-                           <AlertCircle size={14} className="text-primary shrink-0" />
-                           <div className="flex flex-col gap-1">
-                              <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{sug.suggestion}</span>
-                              <span className="text-[7px] text-primary/60 font-black uppercase tracking-[0.2em]">{sug.priority}_PRIORITY</span>
+                        <div key={idx} className="flex gap-3 p-3 border-l-2 border-primary bg-white/5 rounded-none group hover:bg-white/10 transition-colors justify-between items-center">
+                           <div className="flex gap-3">
+                              <AlertCircle size={14} className="text-primary shrink-0" />
+                              <div className="flex flex-col gap-1">
+                                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{sug.suggestion}</span>
+                                 <span className="text-[7px] text-primary/60 font-black uppercase tracking-[0.2em]">{sug.priority}_PRIORITY</span>
+                              </div>
                            </div>
+                           <button className="px-2 py-1 bg-primary text-black text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                              ACTIVATE
+                           </button>
                         </div>
                       ))}
                   </div>
@@ -210,7 +242,11 @@ const PeopleOpsDashboard = () => {
       <DashboardSection title="Personnel Capacity Analysis" icon={<TrendingUp size={14} />}>
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
              {individualSignals?.map((sig, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
+                <div 
+                  key={idx} 
+                  className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => handleDrilldown(sig.name, 'individual')}
+                >
                    <div className="flex items-center gap-3">
                       <div className={`w-7 h-7 rounded-none border flex items-center justify-center text-[9px] font-black ${
                         sig.load > 100 ? 'border-status-error/40 text-status-error bg-status-error/5' : 'border-primary/40 text-primary bg-primary/5'
@@ -227,6 +263,14 @@ const PeopleOpsDashboard = () => {
              ))}
          </div>
       </DashboardSection>
+
+      {/* Drilldown Modal */}
+      <DrilldownModal 
+        isOpen={drilldown.isOpen} 
+        onClose={closeDrilldown} 
+        title={`Detailed Capacity: ${drilldown.category}`}
+        data={drilldown.data}
+      />
     </div>
   );
 };

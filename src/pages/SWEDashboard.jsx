@@ -5,6 +5,9 @@ import {
   Zap, Activity, User, Plus, ExternalLink, Target,
   FileCode, Layers
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import taskService from '../api/taskService';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
@@ -17,7 +20,27 @@ import ActivityItem from '../components/molecules/dashboard/ActivityItem';
  * Highly tactical interface focused on daily task execution, blockers, and sprint progress.
  */
 const SWEDashboard = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useRoleDashboard('swe');
+
+  const handleUpdateStatus = async (taskId, status) => {
+    try {
+      await taskService.updateTaskStatus(taskId, status);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'swe'] });
+    } catch (err) {
+      console.error('Update status failed:', err);
+    }
+  };
+
+  const handleToggleBlock = async (taskId, blocked) => {
+    try {
+      await taskService.toggleTaskBlockage(taskId, blocked);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'swe'] });
+    } catch (err) {
+      console.error('Toggle block failed:', err);
+    }
+  };
 
   if (isLoading) return <CenteredLoading />;
 
@@ -80,7 +103,7 @@ const SWEDashboard = () => {
                     </thead>
                     <tbody className="divide-y divide-white/[0.02] text-[10px] font-black uppercase tracking-widest">
                        {myTasks?.map((task, idx) => (
-                         <tr key={idx} className="group hover:bg-white/[0.015] transition-colors">
+                         <tr key={idx} className="group hover:bg-white/[0.015] transition-colors cursor-pointer" onClick={() => task.id && navigate(`/task/${task.id}`)}>
                             <td className="py-3 px-4">
                                <div className="flex items-center gap-3">
                                   {task.blocked && <div className="w-1.5 h-1.5 rounded-none bg-status-error animate-pulse shrink-0" />}
@@ -101,7 +124,10 @@ const SWEDashboard = () => {
                                 </span>
                             </td>
                             <td className="py-3 px-4 text-right">
-                               <button className="p-1.5 bg-white/5 border border-white/10 rounded hover:border-primary/40 hover:bg-white/10 transition-colors text-white/40">
+                               <button 
+                                 onClick={(e) => { e.stopPropagation(); task.id && navigate(`/task/${task.id}`); }}
+                                 className="p-1.5 bg-white/5 border border-white/10 rounded hover:border-primary/40 hover:bg-white/10 transition-colors text-white/40"
+                               >
                                   <ExternalLink size={14} />
                                </button>
                             </td>
@@ -158,13 +184,22 @@ const SWEDashboard = () => {
            <DashboardSection title="Direct Blockades" icon={<ShieldAlert size={14} />}>
               <div className="flex flex-col gap-2 py-2">
                  {blockers?.map((b, idx) => (
-                    <div key={idx} className="p-4 bg-status-error/5 border border-status-error/20 rounded group hover:border-status-error/40 transition-colors">
+                    <div 
+                       key={idx} 
+                       className="p-4 bg-status-error/5 border border-status-error/20 rounded group hover:border-status-error/40 transition-colors cursor-pointer"
+                       onClick={() => b.id && navigate(`/task/${b.id}`)}
+                    >
                        <span className="block text-[10px] font-black text-white uppercase tracking-widest mb-2 leading-tight group-hover:text-status-error transition-colors">{b.issue}</span>
                        <div className="flex items-center justify-between pt-2 border-t border-white/5">
                           <span className="text-[8px] text-white/20 font-black uppercase tracking-[0.2em] flex items-center gap-2">
                              <User size={10} /> {b.contact}
                           </span>
-                          <button className="text-[8px] font-black text-status-error uppercase tracking-[0.2em] hover:underline">CLEAR_REQ</button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); b.id && handleToggleBlock(b.id, false); }}
+                            className="text-[8px] font-black text-status-error uppercase tracking-[0.2em] hover:underline"
+                          >
+                            CLEAR_REQ
+                          </button>
                        </div>
                     </div>
                  ))}
@@ -193,7 +228,10 @@ const SWEDashboard = () => {
            </DashboardSection>
 
            <DashboardSection title="Imminent Objective" icon={<ArrowRightCircle size={14} />}>
-              <div className="p-4 bg-white/5 border border-primary/20 rounded group hover:border-primary/60 transition-colors flex flex-col gap-3">
+              <div 
+                 className="p-4 bg-white/5 border border-primary/20 rounded group hover:border-primary/60 transition-colors flex flex-col gap-3 cursor-pointer"
+                 onClick={() => whatsNext?.[0]?.id && navigate(`/task/${whatsNext[0].id}`)}
+              >
                  <div className="flex justify-between items-center leading-none">
                     <span className="text-[8px] font-black uppercase text-primary tracking-[0.2em]">PRIORITY_ALPHA</span>
                     <CheckCircle2 size={12} className="text-primary/40" />
@@ -201,7 +239,14 @@ const SWEDashboard = () => {
                  <span className="text-[11px] font-black text-white uppercase tracking-widest leading-tight group-hover:text-primary transition-colors">
                     {whatsNext?.[0]?.title || 'AWAITING_ASSIGNMENT'}
                  </span>
-                 <button className="mt-2 w-full py-2 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] hover:bg-primary/90 transition-colors active:scale-[0.98] rounded-none">
+                 <button 
+                   disabled={!whatsNext?.[0]}
+                   onClick={(e) => { 
+                      e.stopPropagation(); 
+                      whatsNext?.[0]?.id && handleUpdateStatus(whatsNext[0].id, 'in_progress'); 
+                   }}
+                   className="mt-2 w-full py-2 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] hover:bg-primary/90 transition-colors active:scale-[0.98] rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
                     INITIALIZE_DIRECTIVE
                  </button>
               </div>

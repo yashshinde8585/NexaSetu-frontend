@@ -6,7 +6,8 @@ import { TASK_STATUS } from '../constants';
 // Manages personal and global workspace task retrieval, filtering, and status tracking.
 export const useTasks = (
   initialScope = 'personal',
-  initialFilter = 'active'
+  initialFilter = 'active',
+  userId = null
 ) => {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState(initialFilter);
@@ -93,11 +94,13 @@ export const useTasks = (
 
       const matchesSearch =
         t.title.toLowerCase().includes(search.toLowerCase()) ||
-        t.project?.name.toLowerCase().includes(search.toLowerCase());
+        t.project?.name?.toLowerCase().includes(search.toLowerCase());
 
-      return matchesFilter && matchesSearch;
+      const matchesUser = !userId || t.assignedUser === userId || t.assignedUser?._id === userId;
+
+      return matchesFilter && matchesSearch && matchesUser;
     });
-  }, [tasks, filter, search]);
+  }, [tasks, filter, search, userId]);
 
   return {
     tasks: filteredTasks,

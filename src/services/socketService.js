@@ -7,14 +7,13 @@ class SocketService {
     this.socket = null;
   }
 
-  /**
-   * Initializes the mission frequency for real-time signaling.
-   * Ensures the terminal is ready for bidirectional telemetry.
-   */
   connect() {
     if (this.socket) return;
 
+    const token = localStorage.getItem('token');
+
     this.socket = io(SOCKET_URL, {
+      auth: { token },
       withCredentials: true,
       autoConnect: true,
       reconnection: true,
@@ -22,6 +21,7 @@ class SocketService {
       reconnectionDelay: 1000,
       transports: ['websocket', 'polling']
     });
+
 
     this.socket.on('connect_error', (err) => {
       console.error(`[REAL-TIME SYNC] Connection error: ${err.message}`);
@@ -36,9 +36,6 @@ class SocketService {
     });
   }
 
-  /**
-   * Joins a specific mission (task) room to receive localized tactical signals.
-   */
   joinMission(taskId) {
     if (!taskId) return;
     if (!this.socket) this.connect();
