@@ -26,6 +26,7 @@ import {
   Wand2
 } from 'lucide-react';
 import { BackButton } from '../components/atoms';
+import TacticalCustomSelect from '../components/molecules/TacticalCustomSelect';
 import TaskComments from '../components/organisms/TaskComments';
 import { ResilientPage } from '../components/states';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
@@ -36,13 +37,11 @@ const TaskDetailPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
   const [isEpiExpanded, setIsEpiExpanded] = React.useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = React.useState(false);
   const [blockReason, setBlockReason] = React.useState('');
   const [isEpiLoading, setIsEpiLoading] = React.useState(false);
-  const statusMenuRef = React.useRef(null);
-
+  
   const { data: taskData, isLoading, error } = useQuery({
     queryKey: ['task', taskId],
     queryFn: () => TaskService.getTaskById(taskId).then((res) => res.data?.task),
@@ -92,16 +91,6 @@ const TaskDetailPage = () => {
 
   const [reviewNotes, setReviewNotes] = React.useState('');
 
-  // Close menu on outside click
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
-        setIsStatusMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const [displayRemaining, setDisplayRemaining] = React.useState(taskData?.remainingDuration);
 
@@ -246,51 +235,26 @@ const TaskDetailPage = () => {
               </button>
 
               {/* Status Command Interface */}
-              <div className="relative flex-1 sm:flex-none" ref={statusMenuRef}>
-                <button 
-                  onClick={() => setIsStatusMenuOpen(!isStatusMenuOpen)}
-                  className={`h-9 w-full sm:w-40 flex items-center justify-between gap-3 font-black text-[10px] uppercase tracking-widest px-4 rounded border transition-all active:scale-95 ${
-                    taskData?.status === TASK_STATUS.DONE ? 'bg-status-success text-black border-status-success' :
-                    taskData?.status === TASK_STATUS.IN_PROGRESS ? 'bg-primary text-black border-primary' :
-                    taskData?.status === TASK_STATUS.IN_REVIEW ? 'bg-secondary text-white border-secondary' :
-                    'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    {getStatusTitle(taskData?.status)}
-                  </div>
-                  <ChevronDown size={14} className={`shrink-0 transition-transform duration-300 ${isStatusMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Dropdown Menu */}
-                {isStatusMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-56 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[110] overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-                    <div className="px-4 py-3 border-b border-white/10 bg-white/[0.03]">
-                       <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">UPDATE STATUS</span>
+              <div className="relative flex-1 sm:flex-none">
+                <TacticalCustomSelect
+                  value={taskData?.status}
+                  onChange={(newStatus) => {
+                    if (newStatus !== taskData?.status) {
+                      const column = columns.find(c => c.id === newStatus);
+                      setConfirmModal({ isOpen: true, targetStatus: column });
+                    }
+                  }}
+                  options={columns.map(c => ({
+                    label: c.title,
+                    value: c.id,
+                    color: c.color
+                  }))}
+                  displayValue={
+                    <div className="flex items-center gap-2.5 truncate">
+                      {getStatusTitle(taskData?.status)}
                     </div>
-                    <div className="p-1.5 space-y-1">
-                      {columns.map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => {
-                            if (c.id !== taskData?.status) {
-                              setConfirmModal({ isOpen: true, targetStatus: c });
-                            }
-                            setIsStatusMenuOpen(false);
-                          }}
-                          className={`w-full px-4 py-3 text-left flex items-center justify-between rounded-xl transition-all ${
-                            c.id === taskData?.status 
-                              ? 'bg-white text-black' 
-                              : 'text-white/60 hover:bg-white/5 hover:text-white'
-                          }`}
-                        >
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em]">{c.title}</span>
-                          {c.id === taskData?.status && <div className="w-1.5 h-1.5 rounded-full bg-black shadow-[0_0_8px_rgba(0,0,0,0.5)]" />}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                  }
+                />
               </div>
             </div>
         </div>
@@ -526,7 +490,7 @@ const TaskDetailPage = () => {
                    <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">Cancel</button>
                    <button 
                     onClick={() => blockMutation.mutate({ blocked: true, reason: blockReason })} 
-                    className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
+                    className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
                     disabled={!blockReason.trim() || blockMutation.isPending}
                    >
                      {blockMutation.isPending ? 'SAVING...' : 'Block task'}

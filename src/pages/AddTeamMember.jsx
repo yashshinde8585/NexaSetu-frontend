@@ -26,6 +26,7 @@ import TeamService from '../api/teamService';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES, JOB_TITLES } from '../constants';
 import { BackButton } from '../components/atoms';
+import TacticalCustomSelect from '../components/molecules/TacticalCustomSelect';
 import MetricsService from '../api/metricsService';
 
 
@@ -182,8 +183,7 @@ const AddTeamMember = () => {
 
     return (
       <div className="min-h-[calc(100vh-64px)] bg-black px-3 sm:px-4 lg:px-6 py-4 flex items-center justify-center">
-        <div className="max-w-xl w-full bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center shadow-3xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="max-w-xl w-full bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center relative overflow-hidden">
 
           <div className="w-16 h-16 bg-status-success/10 text-status-success rounded-xl flex items-center justify-center mx-auto mb-6 border border-status-success/20">
             <CheckCircle size={32} strokeWidth={2} />
@@ -323,69 +323,26 @@ const AddTeamMember = () => {
 
                 <div className="space-y-5">
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 ml-1 mb-2 block">
-                      Assign Role
-                    </label>
-                    <div className="relative">
-                        <select
-                          className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all appearance-none cursor-pointer text-[10px] font-black pr-10"
-                          value={invite.jobTitle}
-                          onChange={(e) =>
-                            handleJobTitleChange(idx, e.target.value)
-                          }
-                        >
-                          {filteredJobTitles.map((group) => (
-                            <optgroup
-                              key={group.category}
-                              label={group.category}
-                              className="bg-black text-primary/70 text-[9px] font-black py-2"
-                            >
-                              {group.roles.map((r) => (
-                                <option
-                                  key={r.title}
-                                  value={r.title}
-                                  className="bg-black text-white py-2 font-black text-[10px]"
-                                >
-                                  {r.title}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ))}
-                        </select>
-
-                      <Shield
-                        size={14}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 pointer-events-none"
-                      />
-                    </div>
+                    <TacticalCustomSelect
+                      label="Assign Role"
+                      value={invite.jobTitle}
+                      onChange={(val) => handleJobTitleChange(idx, val)}
+                      icon={<Shield size={14} />}
+                      options={filteredJobTitles.flatMap(group => [
+                        { label: group.category, isGroup: true },
+                        ...group.roles.map(r => ({ label: r.title, value: r.title }))
+                      ])}
+                    />
                   </div>
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 ml-1 mb-2 block">
-                      Assign to Project
-                    </label>
-                    <div className="relative">
-                      <select
-                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all appearance-none cursor-pointer text-[10px] font-black pr-10"
-                        value={invite.projectId}
-                        onChange={(e) =>
-                          updateRow(idx, 'projectId', e.target.value)
-                        }
-                      >
-                        {projects.map((p) => (
-                          <option
-                            key={p._id}
-                            value={p._id}
-                            className="bg-black text-white font-black"
-                          >
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <Rocket
-                        size={14}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 pointer-events-none"
-                      />
-                    </div>
+                    <TacticalCustomSelect
+                      label="Assign to Project"
+                      value={invite.projectId}
+                      onChange={(val) => updateRow(idx, 'projectId', val)}
+                      icon={<Rocket size={14} />}
+                      displayValue={projects.find(p => p._id === invite.projectId)?.name}
+                      options={projects.map(p => ({ label: p.name, value: p._id }))}
+                    />
                   </div>
                 </div>
               </div>
@@ -409,7 +366,7 @@ const AddTeamMember = () => {
                 <button
                   type="button"
                   onClick={() => removeRow(idx)}
-                  className="absolute -top-2 -right-2 bg-status-error text-white p-1.5 rounded transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 shadow-xl shadow-status-error/20"
+                  className="absolute -top-2 -right-2 bg-status-error text-white p-1.5 rounded transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
                 >
                   <Trash2 size={14} />
                 </button>

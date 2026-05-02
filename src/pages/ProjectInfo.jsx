@@ -169,7 +169,7 @@ const ProjectInfo = () => {
 
   if (isLoading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
     </div>
   );
 
@@ -249,7 +249,7 @@ const ProjectInfo = () => {
             />
           ) : (
             <div className="py-16 text-center bg-white/5 border border-dashed border-white/20 rounded-xl animate-in zoom-in-95 duration-500 group">
-              <div className="w-16 h-16 bg-black rounded-xl border border-primary flex items-center justify-center text-primary mx-auto mb-6 transition-all duration-700 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+              <div className="w-16 h-16 bg-black rounded-xl border border-primary flex items-center justify-center text-primary mx-auto mb-6 transition-all duration-700">
                 <Zap size={32} />
               </div>
               <div className="space-y-2 max-w-sm mx-auto mb-8">

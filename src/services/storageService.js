@@ -12,18 +12,7 @@ const ALLOWED_TYPES = [
   'application/zip', 'text/plain', 'application/json'
 ];
 
-/**
- * Service for direct client-to-storage uploads via Supabase.
- */
 class StorageService {
-  /**
-   * Uploads a file to Supabase Storage.
-   * @param {File} file - The file object from the browser.
-   * @param {string} workspaceId - Associated workspace.
-   * @param {string} projectId - Associated project.
-   * @param {string} taskId - Associated task (can be 'temp' for new tasks).
-   * @returns {Promise<{url: string, storagePath: string, name: string, size: number, type: string}>}
-   */
   async uploadAttachment(file, workspaceId, projectId, taskId = 'new') {
     // 1. Validation
     if (file.size > MAX_FILE_SIZE) {

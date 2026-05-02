@@ -57,7 +57,7 @@ const Navbar = ({ onToggleSidebar }) => {
                     [ROUTES.ADMIN_PANEL]: 'Dashboard',
                     [ROUTES.PERSONAL_WORK_CONSOLE]: 'Workbench',
                     [ROUTES.PORTFOLIO || '/portfolio']: 'Portfolio',
-                    [ROUTES.TEAMS]: 'Dashboard',
+                    [ROUTES.TEAMS]: 'Teams',
                     '/team/add': 'Invite',
                     '/project-info': 'Sprints',
                     '/project-setup': 'New Project',

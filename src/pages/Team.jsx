@@ -2,31 +2,34 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Users,
   Mail,
-  Shield,
-  ShieldCheck,
   UserPlus,
   Trash2,
   Clock,
-  CheckCircle,
   Search,
-  Filter,
-  ChevronDown,
   Box,
   Rocket,
-  Zap,
-  Globe,
-  Layout,
-  ChevronRight,
   AlertCircle,
   Loader2
 } from 'lucide-react';
+
+// Context & Services
 import { useAuth } from '../context/AuthContext';
 import TeamService from '../api/teamService';
+import ProjectService from '../api/projectService';
 import { USER_ROLES, ROUTES } from '../constants';
 import { useNavigate } from 'react-router-dom';
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
+import { useDebounce } from '../hooks/useDebounce';
+
+// Atomic Components
 import Skeleton from '../components/atoms/Skeleton';
 import EmptyState from '../components/atoms/EmptyState';
+
+// Modular Components
+import TeamStats from '../components/organisms/Team/TeamStats';
+import SquadGrid from '../components/organisms/Team/SquadGrid';
+import ReservePool from '../components/organisms/Team/ReservePool';
+import TacticalModal from '../components/molecules/TacticalModal';
 
 const TeamSkeleton = () => (
   <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
@@ -56,77 +59,124 @@ const Team = () => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
-  const [team, setTeam] = useState({ members: [], invitations: [] });
+
+  // Data State
+  const [data, setData] = useState({ members: [], invitations: [], total: 0 });
+  const [allProjects, setAllProjects] = useState([]);
+  
+  // UI State
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [memberAssignments, setMemberAssignments] = useState({});
+  const [actionLoading, setActionLoading] = useState({ removingInvitation: null, assigningMember: null });
+  
+  // Modal State
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, targetId: null });
 
-  const fetchTeam = useCallback(async () => {
+  // Debounced search for API calls
+  const debouncedSearch = useDebounce(searchTerm, 300);
+
+  /**
+   * Primary data fetcher with AbortController for memory safety
+   */
+  const fetchData = useCallback(async (signal) => {
     try {
       setLoading(true);
       setError('');
-      const res = await TeamService.getMembers();
-      setTeam(res.data || { members: [], invitations: [] });
-    } catch (err) {
-      setError(err.message || 'We couldn\'t load the team directory. Please check your internet or try again later.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      
+      const [teamRes, projectRes] = await Promise.all([
+        TeamService.getMembers({ page, limit: 100, search: debouncedSearch }),
+        ProjectService.getProjects()
+      ]);
 
-  const handleRemoveInvitation = async (id) => {
-    const confirmDelete = window.confirm('REMAINING_DISPATCH_WILL_BE_TERMINATED. PROCEED?');
-    if (!confirmDelete) return;
+      if (signal.aborted) return;
+
+      setData(teamRes || { members: [], invitations: [], total: 0 });
+      
+      const projectArray = Array.isArray(projectRes?.data?.projects) 
+        ? projectRes.data.projects.map(p => ({ ...p, id: p._id || p.id }))
+        : (projectRes?.projects || projectRes || []).map(p => ({ ...p, id: p._id || p.id }));
+      
+      setAllProjects(projectArray);
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      setError('SYSTEM_LINK_FAILURE: DATA_SYNCHRONIZATION_INTERRUPTED.');
+    } finally {
+      if (!signal.aborted) setLoading(false);
+    }
+  }, [page, debouncedSearch]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    
+    // Roles identified for direct tactical sector routing
+    const IC_ROLES = [USER_ROLES.SENIOR_ENGINEER, USER_ROLES.SOFTWARE_ENGINEER, USER_ROLES.PROJECT_MEMBER, USER_ROLES.INTERN];
+    const isIC = IC_ROLES.includes(user?.role);
+    const primaryProjectId = user?.assignedProjectId?.id || user?.assignedProjectId?._id || user?.assignedProjectId;
+
+    if (isIC && primaryProjectId) {
+      navigate(`/team/project/${primaryProjectId}`, { replace: true });
+    } else {
+      fetchData(abortController.signal);
+    }
+
+    return () => abortController.abort();
+  }, [user, navigate, fetchData]);
+
+  /**
+   * Action Handlers
+   */
+  const handleRemoveInvitation = async () => {
+    const id = modalConfig.targetId;
+    const previousData = { ...data };
 
     try {
-      await TeamService.removeInvitation(id);
-      // Optimistic Update
-      setTeam(prev => ({
+      setActionLoading(prev => ({ ...prev, removingInvitation: id }));
+      setData(prev => ({
         ...prev,
-        invitations: prev.invitations.filter(i => i._id !== id)
+        invitations: prev.invitations.filter(i => i.id !== id)
       }));
+
+      await TeamService.removeInvitation(id);
     } catch (err) {
+      setData(previousData);
+      setError('REVOKE_FAILED: CONNECTION_UNSTABLE_REVERTING_STATE.');
+    } finally {
+      setActionLoading(prev => ({ ...prev, removingInvitation: null }));
     }
   };
 
   const handleAssignProject = async (memberId, projectId) => {
-    if (!projectId) return;
     try {
+      setActionLoading(prev => ({ ...prev, assigningMember: memberId }));
       await TeamService.updateMemberProject(memberId, projectId);
+      
+      setMemberAssignments(prev => {
+        const next = { ...prev };
+        delete next[memberId];
+        return next;
+      });
+
       // Refresh to update groupings
-      fetchTeam();
+      fetchData(new AbortController().signal);
     } catch (err) {
-      setError('FAILED_TO_ASSIGN_SECTOR. PLEASE_RETRY.');
+      setError('ASSIGNMENT_FAILURE: TARGET_SECTOR_UNAVAILABLE.');
+    } finally {
+      setActionLoading(prev => ({ ...prev, assigningMember: null }));
     }
   };
 
-  useEffect(() => {
-    // Roles identified for direct tactical sector routing
-    const IC_ROLES = [
-      USER_ROLES.SENIOR_ENGINEER,
-      USER_ROLES.SOFTWARE_ENGINEER,
-      USER_ROLES.PROJECT_MEMBER,
-      USER_ROLES.INTERN
-    ];
-
-    const isIC = IC_ROLES.includes(user?.role);
-    const primaryProjectId = user?.assignedProjectId?._id || user?.assignedProjectId;
-
-    if (isIC && primaryProjectId) {
-      navigate(`/team/project/${primaryProjectId}`, { replace: true });
-      return;
-    }
-
-    fetchTeam();
-  }, [user, navigate, fetchTeam]);
-
-  // Performance Optimization: Memoized groupings
+  /**
+   * Memoized View Logic
+   */
   const { groupedTeams, unassignedMembers } = useMemo(() => {
-    const members = team.members || [];
-    const userProjectId = user?.assignedProjectId?._id || user?.assignedProjectId;
+    const members = data.members || [];
+    const userProjectId = user?.assignedProjectId?.id || user?.assignedProjectId?._id || user?.assignedProjectId;
 
     const groups = members.reduce((acc, member) => {
-      const projectId = member.assignedProjectId?._id || 'unassigned';
+      const projectId = member.assignedProjectId?.id || 'unassigned';
       const projectName = member.assignedProjectId?.name || 'Reserve Operations';
 
       if (!acc[projectId]) {
@@ -139,39 +189,16 @@ const Team = () => {
     const unassigned = groups['unassigned']?.members || [];
     delete groups['unassigned'];
 
-    // Sort to put user's assigned project first
     const sortedGroups = Object.values(groups).sort((a, b) => {
       if (a.id === userProjectId) return -1;
       if (b.id === userProjectId) return 1;
       return a.name.localeCompare(b.name);
     });
 
-    return {
-      groupedTeams: sortedGroups,
-      unassignedMembers: unassigned
-    };
-  }, [team.members, user?.assignedProjectId]);
+    return { groupedTeams: sortedGroups, unassignedMembers: unassigned };
+  }, [data.members, user?.assignedProjectId]);
 
-  // Combined Search Filter
-  const filteredData = useMemo(() => {
-    const q = searchTerm.toLowerCase();
-    if (!q) return { groups: groupedTeams, unassigned: unassignedMembers };
-
-    const searchFilter = (m) => 
-      m.name.toLowerCase().includes(q) || 
-      m.email.toLowerCase().includes(q) || 
-      m.jobTitle?.toLowerCase().includes(q);
-
-    const filteredUnassigned = unassignedMembers.filter(searchFilter);
-    const filteredGroups = groupedTeams.map(group => ({
-      ...group,
-      members: group.members.filter(searchFilter)
-    })).filter(group => group.members.length > 0 || group.name.toLowerCase().includes(q));
-
-    return { groups: filteredGroups, unassigned: filteredUnassigned };
-  }, [groupedTeams, unassignedMembers, searchTerm]);
-
-  if (loading) return <TeamSkeleton />;
+  if (loading && page === 1) return <TeamSkeleton />;
 
   return (
     <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
@@ -179,11 +206,9 @@ const Team = () => {
       {/* Dynamic Command Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
-            TEAM DIRECTORY
-          </h1>
+          <h1 className="text-[14px] font-black tracking-widest uppercase text-white">TEAM DIRECTORY</h1>
           <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
-            VIEW AND MANAGE ALL TEAM MEMBERS IN YOUR WORKSPACE.
+            ORCHESTRATE WORKSPACE PERSONNEL AND SECTOR ALLOCATION.
           </p>
         </div>
 
@@ -216,157 +241,43 @@ const Team = () => {
             <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">DATA_LINK_FAILURE</h4>
             <p className="text-[9px] text-white/50 font-black uppercase tracking-widest">{error}</p>
           </div>
-          <button onClick={fetchTeam} className="p-2 bg-white/5 border border-white/10 rounded hover:bg-white/10 transition-colors">
+          <button onClick={() => fetchData(new AbortController().signal)} className="p-2 bg-white/5 border border-white/10 rounded hover:bg-white/10 transition-colors text-white">
             <Rocket size={14} />
           </button>
         </div>
       )}
 
-      {/* Strategic Summary Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: 'ACTIVE SECTORS', value: groupedTeams.length, icon: <Layout className="text-secondary" size={14} /> },
-          { label: 'TOTAL PERSONNEL', value: team.members.length, icon: <Users size={14} className="text-primary" /> },
-          { label: 'RESERVE POOL', value: unassignedMembers.length, icon: <Clock size={14} className="text-status-warning" /> },
-          { label: 'PENDING INVITES', value: team.invitations.length, icon: <Mail size={14} className="text-status-info" /> }
-        ].map((stat, i) => (
-          <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
-            <div className="p-2 rounded bg-black border border-white/10">{stat.icon}</div>
-            <div>
-              <p className="text-[8px] font-black uppercase tracking-widest text-white/30">{stat.label}</p>
-              <p className="text-sm font-black text-white tracking-tight">{stat.value}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <TeamStats 
+        activeSectors={groupedTeams.length}
+        totalPersonnel={data.total || data.members.length}
+        reservePool={unassignedMembers.length}
+        pendingInvites={data.invitations.length}
+      />
 
       <div className="space-y-8">
-        {/* Managed Squads Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-4 px-1">
             <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] whitespace-nowrap">ASSIGNED TEAMS</h2>
             <div className="h-[1px] w-full bg-white/10" />
           </div>
-
-          {filteredData.groups.length === 0 && (
-            <EmptyState 
-              title={searchTerm ? 'ZERO_RESULTS' : 'NO_TEAMS_DETECTED'}
-              message={searchTerm 
-                ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.` 
-                : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'}
-            />
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredData.groups.map((group) => (
-              <div
-                key={group.id}
-                onClick={() => navigate(`/team/project/${group.id}`)}
-                className="group relative bg-white/5 border border-white/10 hover:border-primary/40 rounded-xl p-5 transition-all cursor-pointer overflow-hidden"
-              >
-                <div className="relative z-10 space-y-6 flex flex-col h-full">
-                  <div className="flex justify-between items-start">
-                    <div className="w-10 h-10 rounded bg-black border border-white/10 flex items-center justify-center text-primary group-hover:border-primary transition-all">
-                      <Box size={20} />
-                    </div>
-                    <div className="p-1.5 rounded text-white/10 group-hover:text-primary transition-all">
-                      <ChevronRight size={16} />
-                    </div>
-                  </div>
-
-                   <div>
-                    <h3 className="text-sm font-black text-white tracking-tight leading-tight mb-2 group-hover:text-primary transition-colors">
-                      {group.name}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                       <ShieldCheck size={10} className="text-primary/50" />
-                       <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">{group.members.length} OPERATIVES</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-white/5 mt-auto flex items-center justify-between">
-                    <div className="flex -space-x-2">
-                      {group.members.slice(0, 4).map((m, i) => (
-                        <div
-                          key={i}
-                          className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black overflow-hidden"
-                        >
-                          {m.profilePicture ? (
-                            <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
-                          ) : (
-                            m.name.charAt(0)
-                          )}
-                        </div>
-                      ))}
-                      {group.members.length > 4 && (
-                        <div className="w-7 h-7 rounded bg-white/5 border border-white/10 flex items-center justify-center text-[8px] font-black text-white/20 ring-2 ring-black">
-                          +{group.members.length - 4}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-[8px] font-black text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-widest">VIEW SECTOR</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <SquadGrid 
+            groups={groupedTeams} 
+            onNavigate={(id) => navigate(`/team/project/${id}`)} 
+            searchTerm={debouncedSearch} 
+          />
         </section>
 
-        {/* Reserve Pool Section (Unassigned) */}
-        {filteredData.unassigned.length > 0 && (
-          <section className="space-y-4">
-            <div className="flex items-center gap-4 px-1">
-              <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] whitespace-nowrap">RESERVE POOL</h2>
-              <div className="h-[1px] w-full bg-white/10" />
-            </div>
+        <ReservePool 
+          members={unassignedMembers}
+          allProjects={allProjects}
+          memberAssignments={memberAssignments}
+          onProjectChange={(id, val) => setMemberAssignments(prev => ({ ...prev, [id]: val }))}
+          onAssign={handleAssignProject}
+          actionLoading={actionLoading}
+          canManage={hasPermission(PERMISSIONS.INVITE_USERS)}
+        />
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {filteredData.unassigned.map((m) => (
-                  <div key={m._id || m.id} className="p-3 bg-black border border-white/10 rounded-lg flex flex-col gap-3 hover:border-primary/40 transition-all group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[10px] font-black text-white/20 group-hover:text-primary transition-colors overflow-hidden border border-white/10 shrink-0">
-                        {m.profilePicture ? (
-                          <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
-                        ) : (
-                          m.name.charAt(0)
-                        )}
-                      </div>
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <span className="text-[11px] font-black text-white truncate tracking-tight">{m.name}</span>
-                        <span className="text-[8px] text-primary/50 font-black uppercase truncate tracking-[0.1em]">{m.jobTitle || 'OPERATIVE'}</span>
-                      </div>
-                    </div>
-
-                    {hasPermission(PERMISSIONS.INVITE_USERS) && (
-                      <div className="pt-3 border-t border-white/5 flex items-center gap-2">
-                         <select 
-                            className="flex-1 bg-black border border-white/10 text-[8px] font-black uppercase text-white/50 h-7 rounded px-2 focus:border-primary/50 outline-none transition-all"
-                            onChange={(e) => m.selectedProjectId = e.target.value}
-                            defaultValue=""
-                         >
-                            <option value="" disabled>SELECT SECTOR...</option>
-                            {groupedTeams.map(g => (
-                              <option key={g.id} value={g.id}>{g.name}</option>
-                            ))}
-                         </select>
-                         <button 
-                            onClick={() => handleAssignProject(m._id || m.id, m.selectedProjectId)}
-                            className="px-3 h-7 bg-primary text-black text-[8px] font-black uppercase rounded hover:bg-white transition-colors"
-                         >
-                            ASSIGN
-                         </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Pending Invitations Section */}
-        {team.invitations.length > 0 && (
+        {data.invitations.length > 0 && (
           <section className="space-y-4">
             <div className="flex items-center gap-4 px-1">
               <h2 className="text-[10px] font-black text-status-warning/40 uppercase tracking-[0.2em] whitespace-nowrap">PENDING_DISPATCH</h2>
@@ -374,32 +285,23 @@ const Team = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {team.invitations.map((invite) => (
-                <div
-                  key={invite.email || invite._id}
-                  className="p-4 bg-status-warning/[0.02] border border-status-warning/10 rounded-xl flex flex-col gap-4 group hover:bg-status-warning/[0.04] transition-all"
-                >
+              {data.invitations.map((invite) => (
+                <div key={invite.id} className="p-4 bg-status-warning/[0.02] border border-status-warning/10 rounded-xl flex flex-col gap-4 group hover:bg-status-warning/[0.04] transition-all">
                   <div className="flex justify-between items-start">
                     <div className="w-10 h-10 bg-status-warning/10 text-status-warning rounded border border-status-warning/20 flex items-center justify-center">
                       <Mail size={16} />
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <span className="px-2 py-0.5 bg-status-warning/10 border border-status-warning/20 text-[8px] font-black text-status-warning uppercase tracking-widest rounded">
-                        INVITED
-                      </span>
+                      <span className="px-2 py-0.5 bg-status-warning/10 border border-status-warning/20 text-[8px] font-black text-status-warning uppercase tracking-widest rounded">INVITED</span>
                       <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">{invite.role}</span>
                     </div>
                   </div>
-
                   <div className="min-w-0">
-                    <h4 className="text-[11px] font-black text-white truncate mb-1 tracking-tight">
-                      {invite.email}
-                    </h4>
+                    <h4 className="text-[11px] font-black text-white truncate mb-1 tracking-tight">{invite.email}</h4>
                     <div className="text-[8px] font-black text-white/30 truncate flex items-center gap-2 uppercase tracking-widest">
                        <Box size={10} /> <span className="text-white/40">{invite.projectId?.name || 'GLOBAL CORE'}</span>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between pt-4 border-t border-white/5">
                     <div className="flex items-center gap-2">
                        <Clock size={10} className="text-status-warning/30" />
@@ -407,10 +309,11 @@ const Team = () => {
                     </div>
                     <button 
                       aria-label="Remove pending invitation"
-                      onClick={() => handleRemoveInvitation(invite._id)}
-                      className="p-2 text-white/10 hover:text-status-error transition-all"
+                      disabled={actionLoading.removingInvitation === invite.id}
+                      onClick={() => setModalConfig({ isOpen: true, targetId: invite.id })}
+                      className="p-2 text-white/10 hover:text-status-error transition-all disabled:opacity-50"
                     >
-                      <Trash2 size={14} />
+                      {actionLoading.removingInvitation === invite.id ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
                     </button>
                   </div>
                 </div>
@@ -420,7 +323,15 @@ const Team = () => {
         )}
       </div>
 
-
+      <TacticalModal 
+        isOpen={modalConfig.isOpen}
+        onClose={() => setModalConfig({ isOpen: false, targetId: null })}
+        onConfirm={handleRemoveInvitation}
+        title="TERMINATE_DISPATCH"
+        message="ARE YOU CERTAIN YOU WANT TO REVOKE THIS PENDING INVITATION? THIS ACTION IS PERMANENT."
+        confirmText="REVOKE_ACCESS"
+        type="danger"
+      />
     </div>
   );
 };

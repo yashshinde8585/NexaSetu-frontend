@@ -66,10 +66,10 @@ const Sidebar = ({ isOpen, onClose }) => {
     },
     {
       name: 'Billing',
-      path: '#',
+      path: ROUTES.BILLING,
       icon: <CreditCard size={20} />,
       permission: PERMISSIONS.MANAGE_BILLING,
-      disabled: true,
+      disabled: false,
     },
   ].filter((item) => (!item.permission || hasPermission(item.permission)) && !item.hidden);
 
@@ -165,7 +165,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
-                hidden: user?.role !== 'WORKSPACE_ADMIN' || location.pathname !== '/admin/dashboard'
+                hidden: user?.role !== 'WORKSPACE_ADMIN'
               },
             ].filter(item => {
               if (item.hidden) return false;

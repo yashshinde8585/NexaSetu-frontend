@@ -78,11 +78,11 @@ const Home = () => {
 
       <header className="relative min-h-[80vh] md:min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 pb-20">
         <div className="max-w-[1440px] w-full flex flex-col items-center justify-center">
-          <h1 className="text-[14vw] sm:text-[12vw] md:text-[8vw] lg:text-[9vw] font-bold leading-[0.9] md:leading-[0.8] tracking-[-0.05em] uppercase mb-8">
-            Execution<br />Autonomous
+          <h1 className="text-[8vw] sm:text-[7vw] md:text-[5vw] lg:text-[6vw] font-bold leading-[0.95] tracking-[-0.05em] uppercase mb-12 max-w-[14ch] mx-auto">
+            Your code already knows the truth. <span className="text-white/20">NexaSetu makes it visible.</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-white/40 max-w-2xl mx-auto mb-12 font-light tracking-tight leading-relaxed">
-            The Institutional-Grade Autonomous Execution Engine. Decouple engineering from friction with predictive orchestration and automated resource flow.
+          <p className="text-base sm:text-lg md:text-xl text-[#A1A1AA] max-w-2xl mx-auto mb-12 font-light tracking-tight leading-relaxed">
+            Turn GitHub activity into real-time execution intelligence.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto">
             <Link to="/register" className="w-full sm:w-auto px-10 md:px-12 py-5 bg-white text-black text-[10px] font-bold uppercase tracking-[0.4em] hover:invert transition-all flex items-center justify-center gap-4">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { 
   ChevronDown, 
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import VelocityIndicator from '../molecules/VelocityIndicator';
 import ItemBreakdownHeader from '../molecules/ItemBreakdownHeader';
+import TacticalCustomSelect from '../molecules/TacticalCustomSelect';
 
 /**
  * Tactical Sprint Intelligence Module.
@@ -38,43 +39,36 @@ const SprintDetailsCard = ({
   if (!sprint) return null;
 
   return (
-    <div className="bg-white/5 border border-white/20 rounded-xl p-4 sm:p-5 shadow-2xl relative overflow-hidden group">
+    <div className="bg-white/5 border border-white/20 rounded-xl p-4 sm:p-5 relative overflow-hidden group">
       
       {/* Dynamic Background Telemetry */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-l from-primary/5 to-transparent pointer-events-none" />
 
       {/* Header Overview - Tactical Orchestration */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 pb-6 border-b border-white/10 relative z-20">
         <div className="flex-1 min-w-0 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
              {/* Dynamic Cycle Selector */}
-            <div className="relative group/cycle z-50 w-full lg:w-auto">
-               <div className="flex flex-col bg-black border border-white/20 rounded-lg min-w-0 lg:min-w-[280px] transition-all hover:border-primary/50 shadow-xl overflow-hidden">
-                 <div className="flex items-center justify-between px-4 py-2 bg-black border-b border-white/10 cursor-pointer hover:bg-white/5 transition-all">
-                   <div className="flex flex-col gap-0.5">
-                     <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
-                       <Clock size={12} className="text-primary" />
-                       {sprint.name.toUpperCase()}
-                     </span>
-                     <span className="text-[9px] text-white/60 font-black uppercase tracking-widest flex items-center gap-2">
-                         <Activity size={10} className="text-status-success" />
-                         CORE CYCLE STATUS: {sprint.status?.toUpperCase() || 'UNKNOWN'}
-                     </span>
-                   </div>
-                   <ChevronDown className="w-4 h-4 text-white/20 group-hover/cycle:text-primary transition-all duration-500" />
-                 </div>
-                 <div className="absolute top-full left-0 w-full bg-black border border-white/20 opacity-0 invisible group-hover/cycle:opacity-100 group-hover/cycle:visible transition-all duration-300 z-50 shadow-2xl max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
-                    {sprints.map(s => (
-                      <button 
-                        key={s._id} 
-                        onClick={() => onSprintChange(s._id)}
-                        className={`w-full text-left px-4 py-2 border-b border-white/5 last:border-0 transition-all ${selectedSprintId === s._id ? 'bg-primary/20 text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
-                      >
-                        <span className="text-[9px] font-black uppercase tracking-widest">{s.name}</span>
-                      </button>
-                    ))}
+            <div className="relative z-50 w-full lg:w-auto">
+              <TacticalCustomSelect
+                value={sprint._id}
+                onChange={onSprintChange}
+                options={sprints.map(s => ({
+                  label: s.name,
+                  value: s._id
+                }))}
+                displayValue={
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Clock size={12} className="text-primary" />
+                      {sprint.name.toUpperCase()}
+                    </span>
+                    <span className="text-[8px] text-white/40 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                        <Activity size={10} className="text-status-success/60" />
+                        CORE CYCLE STATUS: {sprint.status?.toUpperCase() || 'UNKNOWN'}
+                    </span>
                   </div>
-               </div>
+                }
+              />
             </div>
 
             {/* Tactical Control Suite */}
@@ -91,7 +85,7 @@ const SprintDetailsCard = ({
                   <button
                     onClick={onFinalize}
                     disabled={finalizing}
-                    className="h-9 px-6 bg-white/5 border border-status-success/30 text-status-success hover:bg-status-success hover:text-black rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
+                    className="h-9 px-6 bg-white/5 border border-status-success/30 text-status-success hover:bg-status-success hover:text-black rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50"
                   >
                     {finalizing ? 'PROCESSING...' : 'COMPLETE CYCLE'}
                   </button>
@@ -139,7 +133,7 @@ const SprintDetailsCard = ({
 
       {/* Intelligence Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch relative z-10">
-        <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-xl p-4 shadow-inner relative overflow-hidden flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
           <VelocityIndicator data={metrics.velocitySpark} statsLoading={statsLoading} />
         </div>
 
@@ -190,7 +184,7 @@ const SprintDetailsCard = ({
         <div className="mt-6 pt-6 border-t border-white/10 relative z-10">
           <button 
             onClick={() => setShowWorkload(!showWorkload)}
-            className="flex justify-between items-center w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all select-none shadow-2xl"
+            className="flex justify-between items-center w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all select-none"
           >
             <div className="flex items-center gap-3">
                <div className="flex items-center gap-2">
@@ -231,7 +225,7 @@ const SprintDetailsCard = ({
                   ))}
                 </div>
                ) : (
-                 <div className="py-20 text-center bg-black border border-dashed border-white/30 rounded-2xl flex flex-col items-center gap-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                 <div className="py-20 text-center bg-black border border-dashed border-white/30 rounded-2xl flex flex-col items-center gap-4">
                     <Users size={40} className="text-white/10" />
                     <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Zero Personnel Linked to Active Cycle</span>
                  </div>

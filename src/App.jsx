@@ -14,9 +14,6 @@ const App = () => {
     const { user, loading, loadingMessage } = useAuth();
     const { subscription, isLoading: billingLoading } = useBilling();
 
-    /**
-     * Determines the primary dashboard based on user role and job title.
-     */
     const homeRedirect = useMemo(() => {
         if (!user) return '/';
         
