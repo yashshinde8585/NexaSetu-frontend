@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
-  Users,
   Mail,
   UserPlus,
   Trash2,
@@ -16,14 +15,13 @@ import {
 import { useAuth } from '../context/AuthContext';
 import TeamService from '../api/teamService';
 import ProjectService from '../api/projectService';
-import { USER_ROLES, ROUTES } from '../constants';
+import { USER_ROLES } from '../constants';
 import { useNavigate } from 'react-router-dom';
 import { usePermissions, PERMISSIONS } from '../hooks/usePermissions';
 import { useDebounce } from '../hooks/useDebounce';
 
 // Atomic Components
 import Skeleton from '../components/atoms/Skeleton';
-import EmptyState from '../components/atoms/EmptyState';
 
 // Modular Components
 import TeamStats from '../components/organisms/Team/TeamStats';
@@ -64,11 +62,13 @@ const Team = () => {
   const [data, setData] = useState({ members: [], invitations: [], total: 0 });
   const [allProjects, setAllProjects] = useState([]);
   
+  // Derived State
+  const userProjectId = user?.assignedProjectId?.id || user?.assignedProjectId?._id || user?.assignedProjectId;
+  
   // UI State
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = useState(1);
   const [memberAssignments, setMemberAssignments] = useState({});
   const [actionLoading, setActionLoading] = useState({ removingInvitation: null, assigningMember: null });
   
@@ -87,7 +87,7 @@ const Team = () => {
       setError('');
       
       const [teamRes, projectRes] = await Promise.all([
-        TeamService.getMembers({ page, limit: 100, search: debouncedSearch }),
+        TeamService.getMembers({ page: 1, limit: 100, search: debouncedSearch }),
         ProjectService.getProjects()
       ]);
 
@@ -106,7 +106,7 @@ const Team = () => {
     } finally {
       if (!signal.aborted) setLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -114,10 +114,9 @@ const Team = () => {
     // Roles identified for direct tactical sector routing
     const IC_ROLES = [USER_ROLES.SENIOR_ENGINEER, USER_ROLES.SOFTWARE_ENGINEER, USER_ROLES.PROJECT_MEMBER, USER_ROLES.INTERN];
     const isIC = IC_ROLES.includes(user?.role);
-    const primaryProjectId = user?.assignedProjectId?.id || user?.assignedProjectId?._id || user?.assignedProjectId;
 
-    if (isIC && primaryProjectId) {
-      navigate(`/team/project/${primaryProjectId}`, { replace: true });
+    if (isIC && userProjectId) {
+      navigate(`/team/project/${userProjectId}`, { replace: true });
     } else {
       fetchData(abortController.signal);
     }
@@ -173,7 +172,6 @@ const Team = () => {
    */
   const { groupedTeams, unassignedMembers } = useMemo(() => {
     const members = data.members || [];
-    const userProjectId = user?.assignedProjectId?.id || user?.assignedProjectId?._id || user?.assignedProjectId;
 
     const groups = members.reduce((acc, member) => {
       const projectId = member.assignedProjectId?.id || 'unassigned';
@@ -198,7 +196,7 @@ const Team = () => {
     return { groupedTeams: sortedGroups, unassignedMembers: unassigned };
   }, [data.members, user?.assignedProjectId]);
 
-  if (loading && page === 1) return <TeamSkeleton />;
+  if (loading) return <TeamSkeleton />;
 
   return (
     <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
