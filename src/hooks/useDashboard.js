@@ -8,8 +8,11 @@ import ActionService from '../api/actionService';
 import TaskService from '../api/taskService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
+import { useAuth } from '../context/AuthContext';
+
 // Manages dashboard data retrieval, project creation, and analytics state.
-export const useDashboard = (user, initialSprintId = null) => {
+export const useDashboard = (initialSprintId = null) => {
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
   const [newProjectName, setNewProjectName] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -24,23 +27,23 @@ export const useDashboard = (user, initialSprintId = null) => {
   }, [initialSprintId]);
 
   const statsQuery = useQuery({
-    queryKey: ['dashboard-stats', selectedSprintId],
+    queryKey: ['dashboard-stats', selectedSprintId, user?.workspaceId],
     queryFn: () =>
       DashboardService.getDashboardStats({ sprintId: selectedSprintId }).then(
         (res) => res.data
       ),
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const sprintsQuery = useQuery({
-    queryKey: ['sprints'],
+    queryKey: ['sprints', user?.workspaceId],
     queryFn: () =>
       SprintService.getSprints().then((res) => res.data?.sprints || []),
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const sprints = sprintsQuery.data || [];
 
-  // Defensive: Clear selectedSprintId if it's not in the current workspace's sprints
-  // This prevents 404s when switching workspaces or after a database reset.
   useEffect(() => {
     if (selectedSprintId && sprints.length > 0) {
       const exists = sprints.some(s => s._id === selectedSprintId);
@@ -56,14 +59,14 @@ export const useDashboard = (user, initialSprintId = null) => {
     queryKey: ['sprint-stats', selectedSprintId],
     queryFn: () =>
       SprintService.getSprintStats(selectedSprintId).then((res) => res.data),
-    enabled: !!selectedSprintId,
+    enabled: authReady && !!selectedSprintId,
   });
 
   const actionsQuery = useQuery({
-    queryKey: ['pending-actions'],
+    queryKey: ['pending-actions', user?.workspaceId],
     queryFn: () =>
       ActionService.getPendingActions().then((res) => res.data?.actions || []),
-    enabled: !!user,
+    enabled: authReady && !!user,
   });
 
   const createMutation = useMutation({

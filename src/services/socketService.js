@@ -2,21 +2,28 @@ import { io } from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
-let socket = null;
+export let socket = null;
 
-export const connect = () => {
-  if (socket) return;
+export const connect = (explicitToken = null) => {
+  if (socket?.connected) return;
+  if (socket) socket.disconnect();
 
-  const token = localStorage.getItem('token');
+  const token = explicitToken || localStorage.getItem('token');
+  if (!token) {
+    console.warn('[SOCKET] Connection aborted: No authentication token available.');
+    return;
+  }
 
   socket = io(SOCKET_URL, {
     auth: { token },
     withCredentials: true,
     autoConnect: true,
     reconnection: true,
-    reconnectionAttempts: 10,
-    reconnectionDelay: 1000,
-    transports: ['websocket', 'polling']
+    reconnectionAttempts: 5,
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 10000,
+    timeout: 20000,
+    transports: ['websocket'] // Prioritize websocket for stability
   });
 
   socket.on('connect_error', (err) => {
@@ -85,6 +92,7 @@ export const disconnect = () => {
 };
 
 export default {
+  socket,
   connect,
   joinMission,
   leaveMission,

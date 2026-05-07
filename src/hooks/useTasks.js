@@ -3,12 +3,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import TaskService from '../api/taskService';
 import { TASK_STATUS } from '../constants';
 
+import { useAuth } from '../context/AuthContext';
+
 // Manages personal and global workspace task retrieval, filtering, and status tracking.
 export const useTasks = (
   initialScope = 'personal',
   initialFilter = 'active',
   userId = null
 ) => {
+  const { authReady, user } = useAuth();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState(initialFilter);
   const [scope, setScope] = useState(initialScope);
@@ -21,10 +24,11 @@ export const useTasks = (
     error,
     refetch 
   } = useQuery({
-    queryKey: ['my-tasks', scope],
+    queryKey: ['my-tasks', scope, user?._id],
     queryFn: () => TaskService.getMyTasks(scope).then(res => res.data?.tasks || []),
-    staleTime: 30000, // Keep data fresh for 30s
-    gcTime: 1000 * 60 * 5, // Garbage collect after 5 mins
+    staleTime: 30000, 
+    gcTime: 1000 * 60 * 5, 
+    enabled: authReady && !!user,
   });
 
   // Atomic Status Update with Optimistic UI & Targeted Cache Invalidation

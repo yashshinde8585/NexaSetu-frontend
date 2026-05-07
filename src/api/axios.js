@@ -11,12 +11,25 @@ const api = axios.create({
   timeout: 15000, // Reduced timeout to 15s (Gap 1)
 });
 
+let getToken = () => localStorage.getItem('token');
+
+export const setTokenGetter = (fn) => {
+  getToken = fn;
+};
+
 const pendingRequests = new Map();
 
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
+  async (config) => {
+    // Skip token fetch if explicitly requested (e.g. for registration sync)
+    if (config.headers?.['x-skip-token']) {
+      delete config.headers['x-skip-token'];
+      return config;
+    }
+
+    const token = await getToken();
+    // Ensure token is a valid string and not "null" or "undefined"
+    if (token && typeof token === 'string' && token !== 'null' && token !== 'undefined') {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -80,21 +93,17 @@ api.interceptors.response.use(
       pendingRequests.delete(response.config._requestKey);
     }
 
-    // Gap 3 & 4: Global Success Toast & Metrics Tracking
     const isMutating = ['post', 'put', 'patch', 'delete'].includes(response.config.method?.toLowerCase());
     const url = response.config.url || '';
     
-    if (isMutating && !url.includes('/metrics')) {
+    if (isMutating && !url.includes('/metrics') && !url.includes('/auth/login')) {
       const defaultMsg = getSuccessMessage(response.config.method, url);
       toast.success(response.data?.message || defaultMsg);
 
-      // Gap 4: Trigger metrics after success (non-blocking)
       setTimeout(() => {
-        if (url.includes('/auth/login')) MetricsService.trackEvent('login_success');
         if (url.includes('/auth/register')) MetricsService.trackEvent('signup_success');
         if (url.includes('/projects') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('project_created');
         if (url.includes('/tasks') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('task_created');
-        if (url.includes('/team/invite') || url.includes('/invitations')) MetricsService.trackEvent('invite_sent');
       }, 0);
     }
     
@@ -105,26 +114,25 @@ api.interceptors.response.use(
       pendingRequests.delete(error.config._requestKey);
     }
     
-    if (error.message === 'duplicate_request') {
-      return new Promise(() => {});
-    }
+    if (error.message === 'duplicate_request') return Promise.reject(error);
 
     const originalRequest = error.config;
     const normalizedError = normalizeError(error);
+    const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
-    // Gap 3: Global Error Toast for mutations
-    const isMutating = ['post', 'put', 'patch', 'delete'].includes(originalRequest?.method?.toLowerCase());
-    if (isMutating && !originalRequest?.url?.includes('/metrics')) {
-      // Prioritize backend normalized message, otherwise fallback
-      toast.error(normalizedError.message || 'OPERATION_FAILED');
-    }
+    // 1. Strict 401 Handling (Never Loop)
+    if (normalizedError.status === 401) {
+      const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
+                           originalRequest?.url?.includes('/auth/register') ||
+                           originalRequest?.url?.includes('/auth/me');
 
-    const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
-                         originalRequest?.url?.includes('/auth/register') ||
-                         originalRequest?.url?.includes('/auth/refresh');
+      if (isAuthRequest || originalRequest._retry || useClerk) {
+        console.warn('[API] Auth failure on sensitive endpoint. Forcing logout.');
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+        return Promise.reject(normalizedError);
+      }
 
-    // Gap 2: Token Refresh Flow
-    if (normalizedError.status === 401 && !isAuthRequest && !originalRequest._retry) {
+      // 2. Token Refresh Flow (Native JWT only)
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -140,6 +148,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        console.log('[API] Session expired. Attempting refresh...');
         const res = await api.get('/auth/refresh');
         const { token } = res.data;
         
@@ -147,42 +156,38 @@ api.interceptors.response.use(
           localStorage.setItem('token', token);
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           originalRequest.headers['Authorization'] = `Bearer ${token}`;
+          processQueue(null, token);
+          return api(originalRequest);
         }
-
-        isRefreshing = false;
-        processQueue(null, token);
-        return api(originalRequest);
+        throw new Error('REFRESH_FAILED');
       } catch (refreshError) {
-        isRefreshing = false;
         processQueue(refreshError);
         window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(normalizeError(refreshError));
+      } finally {
+        isRefreshing = false;
       }
     }
 
-    // Gap 1 & 5: Network Retry & Timeout Handling
-    const maxRetries = 2; // Gap 1: Max 2 retries
+    // 3. Network Retry Logic (Only for 5xx / Timeouts)
+    const maxRetries = 1;
     const currentRetry = originalRequest?._retryCount || 0;
-
-    const isNetworkError = !error.response && error.code !== 'ERR_CANCELED' && error.message !== 'duplicate_request';
-    const is5xxError = normalizedError.status >= 500 && normalizedError.status < 600;
+    const isNetworkError = !error.response && error.code !== 'ERR_CANCELED';
+    const is5xxError = normalizedError.status >= 500;
     const isTimeout = error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout');
 
-    if ((isNetworkError || is5xxError || isTimeout) && currentRetry < maxRetries) {
+    if ((isNetworkError || is5xxError || isTimeout) && currentRetry < maxRetries && originalRequest.method?.toLowerCase() === 'get') {
       originalRequest._retryCount = currentRetry + 1;
-      
-      if (isTimeout && currentRetry === 1) {
-        // Gap 5: Timeout Fallback Message (inform user we are retrying)
-        toast.loading('Request taking longer than expected. Retrying...', { duration: 3000 });
-      }
-
       const backoffDelay = Math.pow(2, originalRequest._retryCount) * 1000;
+      console.log(`[API] Retrying request (${currentRetry + 1}/${maxRetries}) in ${backoffDelay}ms...`);
       await new Promise(resolve => setTimeout(resolve, backoffDelay));
       return api(originalRequest);
     }
 
-    if (normalizedError.status === 401 && (isAuthRequest || originalRequest?._retry)) {
-      window.dispatchEvent(new CustomEvent('auth:logout'));
+    // 4. Mutation Error Toasting
+    const isMutating = ['post', 'put', 'patch', 'delete'].includes(originalRequest?.method?.toLowerCase());
+    if (isMutating && !originalRequest?.url?.includes('/metrics')) {
+      toast.error(normalizedError.message || 'Mission protocol failure');
     }
 
     return Promise.reject(normalizedError);

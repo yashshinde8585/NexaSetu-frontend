@@ -39,8 +39,7 @@ const useNotifications = (pollInterval = 10000) => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, pollInterval);
     
-    // Real-time Push Integration
-    socketService.connect();
+    // Real-time Push Integration (Connection managed by AuthProvider)
     
     const handleNewNotification = (notif) => {
       setNotifications(prev => [notif, ...prev]);

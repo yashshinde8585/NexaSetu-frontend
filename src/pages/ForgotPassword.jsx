@@ -1,25 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { useSignIn } from '@clerk/clerk-react';
 import AuthService from '../api/authService';
 import Navbar from '../components/layouts/Navbar';
 
 const ForgotPassword = () => {
+  const { isLoaded, signIn } = useSignIn();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading || (useClerk && !isLoaded)) return;
+    
     setLoading(true);
     setError('');
 
     try {
-      await AuthService.forgotPassword(email);
-      setSuccess(true);
+      if (useClerk) {
+        await signIn.create({
+          strategy: 'reset_password_email_code',
+          identifier: email,
+        });
+        setSuccess(true);
+        // In Clerk, we usually stay on the same page or navigate to a reset page
+        // Let's navigate to /reset-password/clerk to handle the code entry
+        setTimeout(() => navigate('/reset-password/clerk'), 2000);
+      } else {
+        await AuthService.forgotPassword(email);
+        setSuccess(true);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send recovery link.');
+      let message = err.message || 'Failed to send recovery link.';
+      if (err.errors && err.errors[0]) {
+        message = err.errors[0].message;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

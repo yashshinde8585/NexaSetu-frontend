@@ -1,25 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSignIn } from '@clerk/clerk-react';
 import Navbar from '../components/layouts/Navbar';
 import { Mail, Lock, ArrowRight, Activity, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/atoms/Button';
 
 const Login = () => {
   const { login } = useAuth();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isOTP, setIsOTP] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
+  const [code, setCode] = useState('');
   const navigate = useNavigate();
+
+  const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
   const abortControllerRef = useRef(null);
   const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     return () => {
       isMounted.current = false;
-      // Abort active requests to prevent state updates on unmounted component
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -28,35 +35,76 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
+    if (loading || (useClerk && !isLoaded)) return;
 
     setLoading(true);
     setError('');
 
-    // Cancel previous pending requests before starting a new login attempt
-    abortControllerRef.current = new AbortController();
-
     try {
-      if (!formData.email.trim() || !formData.password.trim()) {
-        throw new Error('Please enter both your email and password.');
+      if (!formData.email.trim()) {
+        throw new Error('Please enter your email address.');
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error('Please enter a valid email address.');
-      }
+      if (useClerk) {
+        if (isOTP) {
+          if (!codeSent) {
+            // Start OTP flow
+            const { supportedFirstFactors } = await signIn.create({
+              identifier: formData.email,
+            });
 
-      await login(formData.email, formData.password, { 
-        signal: abortControllerRef.current.signal 
-      });
-      
-      if (isMounted.current) {
-        navigate('/');
+            const emailCodeFactor = supportedFirstFactors.find(
+              (f) => f.strategy === 'email_code'
+            );
+
+            if (emailCodeFactor) {
+              await signIn.prepareFirstFactor({
+                strategy: 'email_code',
+                emailAddressId: emailCodeFactor.emailAddressId,
+              });
+              setCodeSent(true);
+            } else {
+              throw new Error('OTP login is not available for this account.');
+            }
+          } else {
+            // Verify OTP
+            const result = await signIn.attemptFirstFactor({
+              strategy: 'email_code',
+              code,
+            });
+
+            if (result.status === 'complete') {
+              await setActive({ session: result.createdSessionId });
+              navigate('/');
+            } else {
+              throw new Error('Verification failed. Please check the code.');
+            }
+          }
+        } else {
+          // Normal Password Login
+          const result = await signIn.create({
+            identifier: formData.email,
+            password: formData.password,
+          });
+
+          if (result.status === 'complete') {
+            await setActive({ session: result.createdSessionId });
+            navigate('/');
+          } else {
+            setError('Further verification required.');
+          }
+        }
+      } else {
+        await login(formData.email, formData.password);
+        if (isMounted.current) navigate('/');
       }
     } catch (err) {
-      if (err.name === 'AbortError') return;
+      let message = err.message || 'Verification failed.';
+      if (err.errors && err.errors[0]) {
+        message = err.errors[0].message;
+      }
       if (isMounted.current) {
-        setError(err.message || 'Verification failed. Please check your credentials.');
+        setError(message);
       }
     } finally {
       if (isMounted.current) {
@@ -104,7 +152,8 @@ const Login = () => {
                       <input
                         id="email"
                         type="email"
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                        disabled={codeSent}
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black disabled:opacity-50"
                         placeholder="name@company.com" 
                         required
                         maxLength={255}
@@ -113,39 +162,57 @@ const Login = () => {
                       />
                     </div>
 
-                    {/* Password */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <label htmlFor="password" className="text-[9px] font-black text-white/40 block">
-                          Password
-                        </label>
-                        <Link
-                          to="/forgot-password"
-                          className="text-[9px] text-white/40 hover:text-white transition-colors font-black"
-                        >
-                          Forgot?
-                        </Link>
+                    {isOTP ? (
+                      codeSent && (
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-white/40 block">
+                            Verification Code
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                            placeholder="000000"
+                            required
+                            maxLength={6}
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                          />
+                        </div>
+                      )
+                    ) : (
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                          <label htmlFor="password" className="text-[9px] font-black text-white/40 block">
+                            Password
+                          </label>
+                          <Link
+                            to="/forgot-password"
+                            className="text-[9px] text-white/40 hover:text-white transition-colors font-black"
+                          >
+                            Forgot?
+                          </Link>
+                        </div>
+                        <div className="relative group/input">
+                          <input
+                            id="password"
+                            type={showPassword ? 'text' : 'password'}
+                            className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black pr-10"
+                            placeholder="••••••••"
+                            required
+                            maxLength={128}
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                          >
+                            {showPassword ? <EyeOff size={12} /> : <Eye size={12} />}
+                          </button>
+                        </div>
                       </div>
-                      <div className="relative group/input">
-                        <input
-                          id="password"
-                          type={showPassword ? 'text' : 'password'}
-                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black pr-10"
-                          placeholder="••••••••"
-                          required
-                          maxLength={128}
-                          value={formData.password}
-                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                        >
-                          {showPassword ? <EyeOff size={12} /> : <Eye size={12} />}
-                        </button>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   {error && (
@@ -154,25 +221,37 @@ const Login = () => {
                     </div>
                   )}
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full h-9 bg-white text-black text-[9px] font-black transition-all rounded flex items-center justify-center gap-2 ${
-                      loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/90 active:scale-[0.98]'
-                    }`}
-                  >
-                    {loading ? (
-                      <>
-                        <Activity className="animate-pulse" size={12} />
-                        <span>Verifying...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Sign In</span>
-                        <ArrowRight size={12} />
-                      </>
+                  <div className="space-y-3">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className={`w-full h-9 bg-white text-black text-[9px] font-black transition-all rounded flex items-center justify-center gap-2 ${
+                        loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/90 active:scale-[0.98]'
+                      }`}
+                    >
+                      {loading ? (
+                        <>
+                          <Activity className="animate-pulse" size={12} />
+                          <span>{isOTP && !codeSent ? 'Sending Code...' : 'Verifying...'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{isOTP ? (codeSent ? 'Verify Code' : 'Send Login Code') : 'Sign In'}</span>
+                          <ArrowRight size={12} />
+                        </>
+                      )}
+                    </button>
+
+                    {useClerk && !codeSent && (
+                      <button
+                        type="button"
+                        onClick={() => setIsOTP(!isOTP)}
+                        className="w-full text-center text-[9px] font-black text-white/40 hover:text-white transition-colors"
+                      >
+                        {isOTP ? 'Use Password instead' : 'Login with email code'}
+                      </button>
                     )}
-                  </button>
+                  </div>
                 </form>
 
                 <div className="mt-6 lg:hidden text-center pt-4 border-t border-white/10">

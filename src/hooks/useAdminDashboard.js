@@ -19,47 +19,37 @@ export const useAdminDashboard = () => {
     error,
     refetch 
   } = useQuery({
-    queryKey: ['admin-dashboard', filters],
+    queryKey: ['admin-dashboard', filters, user?.workspaceId],
     queryFn: () => AdminService.getAdminDashboard(filters),
-    refetchInterval: 120000, // 2-minute polling fallback
+    refetchInterval: 120000,
     staleTime: 60000,
+    enabled: !!user?.workspaceId,
   });
-
+ 
   // 2. Real-time Synchronization
   useEffect(() => {
-    if (!user?.workspaceId) return;
-
+    if (!user?.workspaceId || !socketService.socket) return;
+ 
     // Join workspace signaling room
-    socketService.connect();
+    const workspaceId = user.workspaceId.toString();
+    socketService.socket.emit('join_workspace', workspaceId);
     
-    const onConnect = () => {
-       socketService.socket.emit('join_workspace', user.workspaceId.toString());
-    };
-
-    socketService.onEvent('connect', onConnect);
-    
-    // If already connected
-    if (socketService.socket?.connected) {
-      socketService.socket.emit('join_workspace', user.workspaceId.toString());
-    }
-
     // Listen for tactical updates
     const handleUserUpdate = (payload) => {
       console.log('[REAL-TIME] User record updated:', payload);
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     };
-
+ 
     const handleTeamUpdate = (payload) => {
       console.log('[REAL-TIME] Squad structure updated:', payload);
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     };
-
+ 
     socketService.onEvent('USER_UPDATED', handleUserUpdate);
     socketService.onEvent('TEAM_UPDATED', handleTeamUpdate);
-
+ 
     return () => {
-      socketService.socket?.emit('leave_workspace', user.workspaceId.toString());
-      socketService.offEvent('connect');
+      socketService.socket?.emit('leave_workspace', workspaceId);
       socketService.offEvent('USER_UPDATED');
       socketService.offEvent('TEAM_UPDATED');
     };

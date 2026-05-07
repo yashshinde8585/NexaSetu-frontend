@@ -9,8 +9,11 @@ import GithubService from '../api/githubService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 import MetricsService from '../api/metricsService';
 
+import { useAuth } from '../context/AuthContext';
+
 // Manages state, mutations, and derived data for individual project environments.
-export const useProjectManagement = (id, user) => {
+export const useProjectManagement = (id) => {
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
 
   // Real-time Synchronizer: Manages project room lifecycle and event-driven cache invalidation
@@ -71,7 +74,7 @@ export const useProjectManagement = (id, user) => {
     queryKey: ['project', id],
     queryFn: () =>
       ProjectService.getProject(id).then((res) => res.data?.project),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const tasksQuery = useQuery({
@@ -80,7 +83,7 @@ export const useProjectManagement = (id, user) => {
       TaskService.getTasksByProject(id, selectedSprintId).then(
         (res) => res.data?.tasks
       ),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const analyticsQuery = useQuery({
@@ -89,7 +92,7 @@ export const useProjectManagement = (id, user) => {
       ProjectService.getProjectAnalytics(id, selectedSprintId).then(
         (res) => res.data?.analytics
       ),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const sprintsQuery = useQuery({
@@ -103,13 +106,13 @@ export const useProjectManagement = (id, user) => {
         return !pid || pid === id;
       });
     },
-    enabled: !!id,
+    enabled: authReady && !!id,
   });
 
   const reposQuery = useQuery({
     queryKey: ['github-repos'],
     queryFn: () => GithubService.getRepositories().then((res) => res.data?.repositories || []),
-    enabled: githubConnected,
+    enabled: authReady && githubConnected,
     retry: false,
     onError: () => setGithubConnected(false),
   });
@@ -117,7 +120,7 @@ export const useProjectManagement = (id, user) => {
   const directivesQuery = useQuery({
     queryKey: ['directives', id],
     queryFn: () => ProjectService.getActiveDirectives(id).then((res) => res.data?.directives || []),
-    enabled: !!id,
+    enabled: authReady && !!id,
   });
 
   const createTaskMutation = useMutation({

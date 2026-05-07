@@ -1,35 +1,63 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Lock, ArrowRight, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Lock, ArrowRight, Loader2, CheckCircle2, Eye, EyeOff, Hash } from 'lucide-react';
+import { useSignIn } from '@clerk/clerk-react';
 import AuthService from '../api/authService';
 import Navbar from '../components/layouts/Navbar';
 
 const ResetPassword = () => {
   const { token } = useParams();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [code, setCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true' || token === 'clerk';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError('PASSWORDS_DO_NOT_MATCH');
+      setError('Passwords do not match');
       return;
     }
+
+    if (loading || (useClerk && !isLoaded)) return;
 
     setLoading(true);
     setError('');
 
     try {
-      await AuthService.resetPassword(token, password);
-      setSuccess(true);
-      setTimeout(() => navigate('/login'), 3000);
+      if (useClerk) {
+        const result = await signIn.attemptFirstFactor({
+          strategy: 'reset_password_email_code',
+          code,
+          password,
+        });
+
+        if (result.status === 'complete') {
+          await setActive({ session: result.createdSessionId });
+          setSuccess(true);
+          setTimeout(() => navigate('/'), 2000);
+        } else {
+          console.error(result);
+          setError('Reset failed. Please check the code.');
+        }
+      } else {
+        await AuthService.resetPassword(token, password);
+        setSuccess(true);
+        setTimeout(() => navigate('/login'), 3000);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'FAILED_TO_RESET_PASSWORD');
+      let message = err.message || 'Failed to reset password.';
+      if (err.errors && err.errors[0]) {
+        message = err.errors[0].message;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -67,6 +95,26 @@ const ResetPassword = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
+                {useClerk && (
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-white/40 block">
+                      Verification Code
+                    </label>
+                    <div className="relative group">
+                      <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={14} />
+                      <input
+                        type="text"
+                        required
+                        maxLength={6}
+                        className="w-full h-11 bg-white/5 border border-white/10 focus:border-white text-white rounded pl-10 pr-4 outline-none transition-all placeholder:text-white/20 text-[11px] font-medium tracking-tight"
+                        placeholder="000000"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className="text-[9px] font-black text-white/40 block">
                     New Password

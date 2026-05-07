@@ -19,24 +19,40 @@ const ReactQueryDevtools = import.meta.env.DEV
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,           // 5 minutes – avoid redundant fetches
-      gcTime: 10 * 60 * 1000,             // 10 minutes – keep unused cache alive
-      retry: 1,
-      refetchOnWindowFocus: false,         // Don't re-fetch when tab regains focus
+      staleTime: 10 * 60 * 1000,           // 10 minutes – reduce redundant mission data fetches
+      gcTime: 30 * 60 * 1000,             // 30 minutes – keep strategic data in cache longer
+      retry: (failureCount, error) => {
+        // NEVER retry on auth failures to prevent loops/storms
+        if (error?.status === 401 || error?.status === 403) return false;
+        return failureCount < 1; // Max 1 retry for other errors (network/5xx)
+      },
+      refetchOnWindowFocus: false,         // Prevent focus spam during task execution
+      refetchOnMount: true,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },
   },
 });
 
+import { ClerkProvider } from '@clerk/clerk-react';
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key");
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <MagicProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </MagicProvider>
-      </AuthProvider>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <AuthProvider>
+          <MagicProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </MagicProvider>
+        </AuthProvider>
+      </ClerkProvider>
       {/* DevTools: only rendered in development */}
       {ReactQueryDevtools && (
         <Suspense fallback={null}>

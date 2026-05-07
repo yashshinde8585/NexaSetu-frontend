@@ -1,9 +1,8 @@
-import { useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import DashboardService from '../api/dashboardService';
 import socketService from '../services/socketService';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * useRoleDashboard - Unified hook for fetching and managing role-specific dashboards.
@@ -11,12 +10,15 @@ import { useEffect } from 'react';
  * @param {object} options - Query configuration.
  */
 export const useRoleDashboard = (role, options = {}) => {
+  const { authReady } = useAuth();
+
   // Fetch dashboard data
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['dashboard', role],
     queryFn: () => DashboardService.getRoleDashboard(role).then(res => res.data),
     refetchInterval: 60000, // Default 1 minute
     staleTime: 30000,
+    enabled: authReady && !!role,
     ...options
   });
 

@@ -1,19 +1,22 @@
 import React from 'react';
 import { ShieldAlert, CheckCircle, ChevronRight } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import apiClient from '../../../api/apiClient';
+import { useAuth } from '../../../context/AuthContext';
 
 const DirectiveBanner = () => {
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: directives = [] } = useQuery({
-    queryKey: ['directives'],
-    queryFn: () => axios.get('/api/v1/directives').then(res => res.data.data.directives),
-    refetchInterval: 30000,
+  const { data: directives = [], isLoading } = useQuery({
+    queryKey: ['directives', user?.workspaceId],
+    queryFn: () => apiClient.get('/v1/directives').then(res => res.directives),
+    refetchInterval: 60000,
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const acknowledgeMutation = useMutation({
-    mutationFn: (id) => axios.post(`/api/v1/directives/${id}/acknowledge`),
+    mutationFn: (id) => apiClient.post(`/v1/directives/${id}/acknowledge`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['directives'] });
     },
