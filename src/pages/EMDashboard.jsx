@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Package, Clock, Shield, Users, Flame, Target, Activity, Zap, 
+  Package, Clock, Shield, Users, Flame, Target, Zap, 
   AlertTriangle, ArrowRight, TrendingUp, BarChart3, ShieldAlert,
   Layers, CheckCircle2, ChevronRight, ExternalLink
 } from 'lucide-react';
@@ -10,13 +10,16 @@ import DashboardSection from '../components/molecules/dashboard/DashboardSection
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import StatusBadge from '../components/molecules/dashboard/StatusBadge';
 import PipelineStep from '../components/molecules/dashboard/PipelineStep';
-import ActivityItem from '../components/molecules/dashboard/ActivityItem';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { ROUTES } from '../constants';
+import DashboardService from '../api/dashboardService';
+import { useQueryClient } from '@tanstack/react-query';
 
 const EMDashboard = () => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useRoleDashboard('em');
+  const queryClient = useQueryClient();
+  const [isSyncing, setIsSyncing] = React.useState(false);
 
   if (isLoading || !data) return <CenteredLoading />;
 
@@ -32,14 +35,20 @@ const EMDashboard = () => {
     blockers = [], 
     teamWorkload = [], 
     burndown = { planned: 0, completed: 0, daysLeft: 0, remaining: 0 }, 
-    activity = [], 
     distribution = { backend: 0, frontend: 0, qa: 0, other: 0 } 
   } = data || {};
 
-  const handleSync = () => {
-    // Logic for project sync - could be an API call
-    console.log('SYNC_SEQUENCE_INITIATED');
-    alert('SYSTEM: Synchronizing sprint operational parameters...');
+  const handleSync = async () => {
+    try {
+      setIsSyncing(true);
+      console.log('SYNC_SEQUENCE_INITIATED');
+      await DashboardService.recalculateDashboard('em');
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'em'] });
+    } catch (err) {
+      console.error('SYNC_FAILED', err);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   return (
@@ -151,20 +160,27 @@ const EMDashboard = () => {
           <DashboardSection title="Team Workload" icon={<Users size={14} />}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
               {teamWorkload.map((member, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 p-4 rounded flex flex-col gap-4 group hover:bg-white/10 transition-colors border-l-2 border-l-white/20">
+                <div 
+                  key={i} 
+                  onClick={() => navigate(`${ROUTES.MY_TASKS}?userId=${member.id}`)}
+                  className={`bg-white/5 border p-4 rounded flex flex-col gap-4 group hover:bg-white/10 transition-all cursor-pointer border-l-2 ${(member.loadV2 ?? member.load) > 90 ? 'border-status-error border-l-status-error animate-pulse' : 'border-white/10 border-l-white/20'}`}
+                >
                   <div className="flex justify-between items-center leading-none">
-                    <span className="text-[10px] text-white font-black uppercase tracking-widest group-hover:text-primary transition-colors">{member.member}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] text-white font-black uppercase tracking-widest group-hover:text-primary transition-colors">{member.member}</span>
+                      {(member.loadV2 ?? member.load) > 90 && <span className="text-[7px] text-status-error font-black uppercase tracking-tighter">CRITICAL_OVERLOAD</span>}
+                    </div>
                     <div className={`w-1.5 h-1.5 rounded-sm ${member.status === 'red' ? 'bg-status-error' : member.status === 'yellow' ? 'bg-status-warning' : 'bg-status-success'}`} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-end text-[8px] uppercase font-black tracking-[0.2em]">
                       <span className="text-white/40">OPERATIONAL_LOAD</span>
-                      <span className={member.load > 100 ? 'text-status-error' : 'text-white/60'}>{member.load}%</span>
+                      <span className={(member.loadV2 ?? member.load) > 90 ? 'text-status-error' : 'text-white/60'}>{member.loadV2 ?? member.load}%</span>
                     </div>
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
                       <div 
-                        className={`h-full ${member.load > 100 ? 'bg-status-error' : member.load > 85 ? 'bg-status-warning' : 'bg-primary'} transition-all duration-1000`} 
-                        style={{ width: `${Math.min(member.load, 100)}%` }}
+                        className={`h-full ${(member.loadV2 ?? member.load) > 90 ? 'bg-status-error' : (member.loadV2 ?? member.load) > 70 ? 'bg-status-warning' : 'bg-primary'} transition-all duration-1000`} 
+                        style={{ width: `${Math.min((member.loadV2 ?? member.load), 100)}%` }}
                       />
                     </div>
                   </div>
@@ -234,13 +250,6 @@ const EMDashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Recent Activity" icon={<Activity size={14} />}>
-            <div className="space-y-px max-h-[350px] overflow-y-auto pr-3 custom-scrollbar">
-              {activity.map((item, i) => (
-                <ActivityItem key={i} text={item.text} time={item.time} mini />
-              ))}
-            </div>
-          </DashboardSection>
         </div>
       </div>
 
@@ -260,9 +269,10 @@ const EMDashboard = () => {
 
             <button 
               onClick={handleSync}
-              className="flex items-center gap-3 bg-white text-black font-black uppercase text-[9px] px-6 py-2 rounded hover:bg-primary transition-colors tracking-widest group"
+              disabled={isSyncing}
+              className={`flex items-center gap-3 bg-white text-black font-black uppercase text-[9px] px-6 py-2 rounded hover:bg-primary transition-colors tracking-widest group ${isSyncing ? 'opacity-50 cursor-wait' : ''}`}
             >
-               SYNC <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+               {isSyncing ? 'SYNCING...' : 'SYNC'} <ArrowRight size={14} className={`${isSyncing ? '' : 'group-hover:translate-x-1'} transition-transform`} />
             </button>
           </div>
         </div>

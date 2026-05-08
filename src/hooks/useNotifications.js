@@ -1,11 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NotificationService from '../api/notificationService';
+import socketService from '../services/socketService';
 
-/**
- * Shared async error wrapper — runs fn(), returns true on success or false on
- * failure. Eliminates the identical try/catch/console.error/return pattern that
- * was duplicated across markAsRead, markAllAsRead, and clearAll.
- */
 const attempt = async (fn, label) => {
   try {
     return await fn();
@@ -15,54 +12,51 @@ const attempt = async (fn, label) => {
   }
 };
 
-// Custom hook to manage user notifications with polling and management logic.
-const useNotifications = (pollInterval = 10000) => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(0);
+// Custom hook to manage user notifications with coordinated polling and management logic.
+const useNotifications = (pollInterval = 60000) => {
+  const queryClient = useQueryClient();
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const res = await NotificationService.getMyNotifications();
-      const list = res.data?.notifications || [];
-      setNotifications(list);
-      setUnreadCount(list.filter((n) => !n.isRead).length);
-    } catch (err) {
-      console.error('Failed to fetch notifications:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { data: notifications = [], isLoading: loading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => NotificationService.getMyNotifications().then(res => res.data?.notifications || []),
+    refetchInterval: pollInterval,
+    staleTime: 30000,
+  });
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, pollInterval);
-    return () => clearInterval(interval);
-  }, [fetchNotifications, pollInterval]);
+    // Real-time Push Integration
+    const handleNewNotification = (notif) => {
+      queryClient.setQueryData(['notifications'], (old = []) => [notif, ...old]);
+    };
+
+    socketService.onEvent('NOTIFICATION_RECEIVED', handleNewNotification);
+    return () => socketService.offEvent('NOTIFICATION_RECEIVED');
+  }, [queryClient]);
 
   const markAsRead = (id) =>
     attempt(async () => {
       await NotificationService.markAsRead(id);
-      setNotifications((prev) =>
+      queryClient.setQueryData(['notifications'], (prev = []) =>
         prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
       );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
       return true;
     }, 'Failed to mark notification as read:');
 
   const markAllAsRead = () =>
     attempt(async () => {
       await NotificationService.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
+      queryClient.setQueryData(['notifications'], (prev = []) =>
+        prev.map((n) => ({ ...n, isRead: true }))
+      );
       return true;
     }, 'Failed to mark all as read:');
 
   const clearAll = () =>
     attempt(async () => {
       await NotificationService.clearAll();
-      setNotifications([]);
-      setUnreadCount(0);
+      queryClient.setQueryData(['notifications'], []);
       return true;
     }, 'Failed to clear notifications:');
 
@@ -73,7 +67,7 @@ const useNotifications = (pollInterval = 10000) => {
     markAsRead,
     markAllAsRead,
     clearAll,
-    refresh: fetchNotifications,
+    refresh: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
   };
 };
 

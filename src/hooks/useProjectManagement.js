@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import socketService from '../services/socketService';
 import ProjectService from '../api/projectService';
 import TaskService from '../api/taskService';
 import SprintService from '../api/sprintService';
@@ -8,9 +9,42 @@ import GithubService from '../api/githubService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 import MetricsService from '../api/metricsService';
 
+import { useAuth } from '../context/AuthContext';
+
 // Manages state, mutations, and derived data for individual project environments.
-export const useProjectManagement = (id, user) => {
+export const useProjectManagement = (id) => {
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
+
+  // Real-time Synchronizer: Manages project room lifecycle and event-driven cache invalidation
+  useEffect(() => {
+    if (!id || id === 'null') return;
+
+    // Join the tactical project frequency
+    socketService.joinProject(id);
+
+    // Synchronize local cache with remote changes
+    const handleTaskUpdate = (payload) => {
+      console.debug('[SOCKET] Task update received, invalidating queries');
+      queryClient.invalidateQueries({ queryKey: ['tasks', id] });
+      queryClient.invalidateQueries({ queryKey: ['analytics', id] });
+    };
+
+    const handleAgentActivity = (activity) => {
+      console.debug('[SOCKET] Agent activity detected:', activity.type);
+      // Optional: Update activity log or show pulse animation
+    };
+
+    socketService.onEvent('task_updated', handleTaskUpdate);
+    socketService.onEvent('AGENT_ACTIVITY', handleAgentActivity);
+
+    // Teardown: Prevent zombie subscriptions and memory leaks
+    return () => {
+      socketService.leaveProject(id);
+      socketService.offEvent('task_updated');
+      socketService.offEvent('AGENT_ACTIVITY');
+    };
+  }, [id, queryClient]);
 
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showAiInput, setShowAiInput] = useState(false);
@@ -40,7 +74,7 @@ export const useProjectManagement = (id, user) => {
     queryKey: ['project', id],
     queryFn: () =>
       ProjectService.getProject(id).then((res) => res.data?.project),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const tasksQuery = useQuery({
@@ -49,7 +83,7 @@ export const useProjectManagement = (id, user) => {
       TaskService.getTasksByProject(id, selectedSprintId).then(
         (res) => res.data?.tasks
       ),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const analyticsQuery = useQuery({
@@ -58,29 +92,27 @@ export const useProjectManagement = (id, user) => {
       ProjectService.getProjectAnalytics(id, selectedSprintId).then(
         (res) => res.data?.analytics
       ),
-    enabled: !!id && id !== 'null',
+    enabled: authReady && !!id && id !== 'null',
   });
 
   const sprintsQuery = useQuery({
-    queryKey: ['sprints', id],
-    queryFn: async () => {
-      const res = await SprintService.getSprints();
-      const allSprints = res.data?.sprints || [];
-      // Include sprints for this project OR global sprints
-      return allSprints.filter(s => {
-        const pid = s.project?._id || s.project;
-        return !pid || pid === id;
-      });
-    },
-    enabled: !!id,
+    queryKey: ['sprints', user?.workspaceId],
+    queryFn: () => SprintService.getSprints().then((res) => res.data?.sprints || []),
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const reposQuery = useQuery({
     queryKey: ['github-repos'],
     queryFn: () => GithubService.getRepositories().then((res) => res.data?.repositories || []),
-    enabled: githubConnected,
+    enabled: authReady && githubConnected,
     retry: false,
     onError: () => setGithubConnected(false),
+  });
+
+  const directivesQuery = useQuery({
+    queryKey: ['directives', id],
+    queryFn: () => ProjectService.getActiveDirectives(id).then((res) => res.data?.directives || []),
+    enabled: authReady && !!id,
   });
 
   const createTaskMutation = useMutation({
@@ -102,6 +134,31 @@ export const useProjectManagement = (id, user) => {
 
       return TaskService.createTask(payload);
     },
+    onMutate: async (newTaskData) => {
+      // Optimized Path: Provide instant feedback for task creation
+      const queryKey = ['tasks', id, selectedSprintId];
+      await queryClient.cancelQueries({ queryKey });
+      
+      const previousTasks = queryClient.getQueryData(queryKey);
+      
+      const optimisticTask = {
+        ...newTaskData,
+        _id: `temp-${Date.now()}`,
+        status: newTaskData.status || TASK_STATUS.TODO,
+        createdAt: new Date().toISOString(),
+        assignedUser: user, // Optimistically assume assigned to self or data provided
+        isOptimistic: true
+      };
+
+      queryClient.setQueryData(queryKey, (old) => [optimisticTask, ...(old || [])]);
+
+      return { previousTasks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks', id, selectedSprintId], context.previousTasks);
+      }
+    },
     onSuccess: (res) => {
       const createdTask = res.data?.task || res.task;
       MetricsService.trackTaskCreated(createdTask?._id, createdTask?.title);
@@ -120,15 +177,13 @@ export const useProjectManagement = (id, user) => {
         startDate: '',
         attachments: [],
       });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks', id, selectedSprintId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['analytics', id, selectedSprintId],
-      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', id, selectedSprintId] });
+      queryClient.invalidateQueries({ queryKey: ['analytics', id, selectedSprintId] });
       queryClient.invalidateQueries({ queryKey: ['sprint-stats'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-    },
+    }
   });
 
   const statusMutation = useMutation({
@@ -272,9 +327,9 @@ export const useProjectManagement = (id, user) => {
     project: projectQuery.data,
     tasks: tasksQuery.data,
     analytics: analyticsQuery.data,
-    sprints: sprintsQuery.data || [],
+    directives: directivesQuery.data || [],
     isLoading:
-      projectQuery.isLoading || tasksQuery.isLoading || sprintsQuery.isLoading,
+      projectQuery.isLoading || tasksQuery.isLoading || sprintsQuery.isLoading || directivesQuery.isLoading,
     error:
       projectQuery.error ||
       tasksQuery.error ||
@@ -297,6 +352,13 @@ export const useProjectManagement = (id, user) => {
     createTaskMutation,
     updateProjectMutation,
     groupedTasks,
+    sprints: useMemo(() => {
+      const allSprints = sprintsQuery.data || [];
+      return allSprints.filter(s => {
+        const pid = s.project?._id || s.project;
+        return !pid || pid === id;
+      });
+    }, [sprintsQuery.data, id]),
 
     ai: {
       input: aiInput,

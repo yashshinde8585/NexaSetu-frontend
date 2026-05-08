@@ -143,8 +143,7 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
                 <InfoRow label="FULL_NAME" value={user.name} icon={<User size={12} />} />
                 <InfoRow label="EMAIL_ADDRESS" value={user.email} icon={<Mail size={12} />} />
-                <InfoRow label="ACCOUNT_ROLE" value={user.role.replace('_', ' ')} icon={<Shield size={12} />} />
-                <InfoRow label="ACCESS_LEVEL" value="L4_ENGINEERING" icon={<BadgeCheck size={12} />} />
+                <InfoRow label="ACCOUNT_ROLE" value={user.jobTitle || user.role.replace('_', ' ')} icon={<Shield size={12} />} />
                 <InfoRow label="JOINED_WORKSPACE" value={new Date(user.createdAt).toLocaleDateString()} icon={<Calendar size={12} />} />
                 <InfoRow label="CURRENT_STATUS" value="ACTIVE" icon={<Clock size={12} />} status="active" />
               </div>

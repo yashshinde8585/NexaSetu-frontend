@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Users, Shield, Settings as SettingsIcon, Activity, Bell, Lock, Globe,
   Link as LinkIcon, CheckCircle, AlertCircle, MoreVertical, Plus, RefreshCw,
   Clock, GitBranch, MessageSquare, UserPlus, UserMinus, Zap, Layout,
-  ChevronLeft, Search, Trash2, X, RefreshCcw
+  ChevronLeft, Search, Trash2, X, RefreshCcw, BarChart3, TrendingUp, AlertTriangle
 } from 'lucide-react';
 import { useAdminDashboard } from '../hooks/useAdminDashboard';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +12,6 @@ import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
 import ActivityItem from '../components/molecules/dashboard/ActivityItem';
-import InviteUserModal from '../components/organisms/admin/InviteUserModal';
 import WorkspaceSettingsModal from '../components/organisms/admin/WorkspaceSettingsModal';
 import UserEditModal from '../components/organisms/admin/UserEditModal';
 import CreateTeamModal from '../components/organisms/admin/CreateTeamModal';
@@ -35,7 +34,6 @@ const AdminDashboard = () => {
     data,
     isLoading,
     error,
-    inviteUser,
     updateUserRole,
     deactivateUser,
     updateSettings,
@@ -47,7 +45,6 @@ const AdminDashboard = () => {
   } = useAdminDashboard();
   
   // Modal States
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [activeSetting, setActiveSetting] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
@@ -129,9 +126,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      
+
       {/* 1. System Metrics Strip */}
-      <div id="admin-metrics-strip" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div id="admin-metrics-strip" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
         <MetricStripItem 
             icon={<Users size={14} />} 
             label="Total Users" 
@@ -140,25 +137,53 @@ const AdminDashboard = () => {
             accent="bg-primary"
         />
         <MetricStripItem 
+            icon={<BarChart3 size={14} />} 
+            label="Health Score" 
+            value={`${overview?.healthScore || 0}%`} 
+            color="text-status-success" 
+            accent="bg-status-success"
+        />
+        <MetricStripItem 
+            icon={<TrendingUp size={14} />} 
+            label="Progress" 
+            value={`${overview?.progress || 0}%`} 
+            color="text-secondary" 
+            accent="bg-secondary"
+        />
+        <MetricStripItem 
+            icon={<AlertTriangle size={14} />} 
+            label="Risk Level" 
+            value={overview?.riskLevel || 'LOW'} 
+            color={overview?.riskLevel === 'HIGH' ? 'text-status-error' : 'text-status-warning'} 
+            accent={overview?.riskLevel === 'HIGH' ? 'bg-status-error' : 'bg-status-warning'}
+        />
+        <MetricStripItem 
+            icon={<Zap size={14} />} 
+            label="Capacity" 
+            value={overview?.capacity || '0%'} 
+            color="text-primary" 
+            accent="bg-primary"
+        />
+        <MetricStripItem 
             icon={<Shield size={14} />} 
             label="Active Roles" 
             value={overview?.activeRoles || 0} 
-            color="text-status-success" 
-            accent="bg-status-success"
+            color="text-white/60" 
+            accent="bg-white/20"
         />
         <MetricStripItem 
             icon={<LinkIcon size={14} />} 
             label="Integrations" 
             value={overview?.integrations || 0} 
-            color="text-status-warning" 
-            accent="bg-status-warning"
+            color="text-status-info" 
+            accent="bg-status-info"
         />
         <MetricStripItem 
             icon={<Activity size={14} />} 
             label="System Status" 
             value={overview?.status || 'ONLINE'} 
-            color="text-status-info" 
-            accent="bg-status-info"
+            color="text-status-success" 
+            accent="bg-status-success"
         />
       </div>
 
@@ -181,12 +206,7 @@ const AdminDashboard = () => {
                   className="w-full h-9 bg-black border border-white/10 rounded-none px-4 pl-10 text-[10px] text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/10 font-black uppercase tracking-widest"
                 />
               </div>
-              <button 
-                onClick={() => setIsInviteModalOpen(true)}
-                className="h-9 px-6 bg-primary text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-none transition-all flex items-center justify-center gap-2 active:scale-95"
-              >
-                <UserPlus size={14} /> INVITE_OPERATIVE
-              </button>
+
             </div>
 
             <div className="overflow-x-auto">
@@ -394,12 +414,6 @@ const AdminDashboard = () => {
       </div>
 
       {/* Modals */}
-      <InviteUserModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onInvite={inviteUser}
-      />
-
       <WorkspaceSettingsModal
         isOpen={!!activeSetting}
         onClose={() => setActiveSetting(null)}

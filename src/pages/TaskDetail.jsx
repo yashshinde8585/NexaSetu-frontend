@@ -26,6 +26,7 @@ import {
   Wand2
 } from 'lucide-react';
 import { BackButton } from '../components/atoms';
+import TacticalCustomSelect from '../components/molecules/TacticalCustomSelect';
 import TaskComments from '../components/organisms/TaskComments';
 import { ResilientPage } from '../components/states';
 import TaskEPIExplanation from '../components/tasks/TaskEPIExplanation';
@@ -36,13 +37,11 @@ const TaskDetailPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
   const [isEpiExpanded, setIsEpiExpanded] = React.useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = React.useState(false);
   const [blockReason, setBlockReason] = React.useState('');
   const [isEpiLoading, setIsEpiLoading] = React.useState(false);
-  const statusMenuRef = React.useRef(null);
-
+  
   const { data: taskData, isLoading, error } = useQuery({
     queryKey: ['task', taskId],
     queryFn: () => TaskService.getTaskById(taskId).then((res) => res.data?.task),
@@ -82,16 +81,16 @@ const TaskDetailPage = () => {
     }
   });
 
-  // Close menu on outside click
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
-        setIsStatusMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const reviewMutation = useMutation({
+    mutationFn: ({ result, notes }) => TaskService.submitTaskReview(taskId, result, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['task', taskId]);
+      setReviewNotes('');
+    }
+  });
+
+  const [reviewNotes, setReviewNotes] = React.useState('');
+
 
   const [displayRemaining, setDisplayRemaining] = React.useState(taskData?.remainingDuration);
 
@@ -162,53 +161,61 @@ const TaskDetailPage = () => {
       error={error}
       onRetry={() => queryClient.invalidateQueries({ queryKey: ['task', taskId] })}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-screen md:h-[calc(100vh-80px)] flex flex-col gap-3 py-3 md:overflow-hidden animate-in fade-in duration-500">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shrink-0 pb-4 border-b border-white/10">
-        <div className="flex items-center gap-4 w-full md:w-auto">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-auto lg:min-h-0 lg:h-[calc(100vh-60px)] flex flex-col gap-2 py-2 lg:overflow-hidden animate-in fade-in duration-500">
+      {/* Ultra-Compact Header */}
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 shrink-0 pb-1 border-b border-white/10">
+        <div className="flex items-center gap-3 w-full md:w-auto">
           <BackButton className="shrink-0" />
           <div className="flex flex-col min-w-0">
-            <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              <span className="text-[9px] font-black text-primary px-1.5 py-0.5 bg-black rounded uppercase tracking-wider border border-primary shrink-0 shadow-[0_0_10px_rgba(59,130,246,0.2)]">{taskData?.projectKey || 'NEXA'}-{taskData?.taskNumber || '0'}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black text-primary px-2 py-0.5 bg-black rounded uppercase tracking-wider border border-primary/40 shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+                {taskData?.projectKey || 'NEXA'}-{taskData?.taskNumber || '0'}
+              </span>
               
-              <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest border px-2 py-0.5 rounded shrink-0 ${
-                taskData?.type === 'bug' ? 'border-status-error text-status-error bg-status-error/10' :
-                taskData?.type === 'epic' ? 'border-secondary text-secondary bg-secondary/10' :
-                taskData?.type === 'story' ? 'border-status-success text-status-success bg-status-success/10' :
-                taskData?.type === 'spike' ? 'border-primary text-primary bg-primary/10' :
-                taskData?.type === 'tech_debt' ? 'border-status-warning text-status-warning bg-status-warning/10' :
-                'border-white/20 text-white/40 bg-white/5'
+              <span className={`text-[9px] font-black uppercase tracking-widest border px-2 py-0.5 rounded shrink-0 ${
+                taskData?.type === 'bug' ? 'border-status-error/30 text-status-error bg-status-error/5' :
+                taskData?.type === 'epic' ? 'border-secondary/30 text-secondary bg-secondary/5' :
+                taskData?.type === 'story' ? 'border-status-success/30 text-status-success bg-status-success/5' :
+                taskData?.type === 'spike' ? 'border-primary/30 text-primary bg-primary/5' :
+                taskData?.type === 'tech_debt' ? 'border-status-warning/30 text-status-warning bg-status-warning/5' :
+                'border-white/10 text-white/40 bg-white/5'
               }`}>
                 {taskData?.type || 'TASK'}
               </span>
 
               {taskData?.blocked && (
-                <span className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-black text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest animate-pulse shrink-0">
+                <span className="flex items-center gap-1.5 text-[9px] font-black text-rose-500 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/30 uppercase tracking-widest animate-pulse shrink-0">
                   <ShieldAlert size={10} /> BLOCKED
                 </span>
               )}
               {taskData?.source === 'github' && (
-                <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0"><Code size={12}/> GITHUB SYNCED</span>
+                <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-bold text-secondary uppercase tracking-[0.2em] border border-secondary/20 px-2 py-0.5 rounded bg-secondary/5 shrink-0">
+                  <Code size={12}/> REPO SYNC
+                </span>
               )}
             </div>
-            <h1 className="text-lg md:text-xl font-black text-white tracking-tighter truncate max-w-full mt-1">{taskData?.title}</h1>
+            <h1 className="text-base font-black text-white tracking-tighter truncate max-w-full mt-0.5">
+              {taskData?.title}
+            </h1>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 md:gap-8 w-full md:w-auto">
-            <div className="text-left md:text-right flex-1 md:flex-none">
-              <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.4em] mb-1 block">Priority</span>
-              <span className={`text-[10px] font-bold flex items-center gap-1.5 justify-start md:justify-end uppercase tracking-widest ${
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            {/* Priority Status */}
+            <div className="hidden sm:flex flex-col items-end gap-0.5 px-3 border-r border-white/10">
+              <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">PRIORITY</span>
+              <span className={`text-[10px] font-black flex items-center gap-1.5 uppercase tracking-widest ${
                 taskData?.priority === 'low' ? 'text-status-success' :
                 taskData?.priority === 'high' ? 'text-status-warning' :
                 taskData?.priority === 'urgent' ? 'text-status-error' :
                 'text-primary'
               }`}>
-                <AlertCircle size={10}/> {taskData?.priority || 'Medium'}
+                {taskData?.priority || 'Medium'}
               </span>
             </div>
             
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Tactical Blocking Action */}
               <button 
                 onClick={() => {
                   if (taskData?.blocked) {
@@ -217,89 +224,74 @@ const TaskDetailPage = () => {
                     setIsBlockModalOpen(true);
                   }
                 }}
-                className={`flex-1 sm:flex-none px-5 py-2.5 md:py-1.5 rounded-xl border text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`h-9 px-4 rounded border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
                   taskData?.blocked 
-                  ? 'bg-black border-emerald-500 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:bg-emerald-500/5' 
-                  : 'bg-black border-rose-500 text-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.2)] hover:bg-rose-500/5'
+                  ? 'bg-status-success text-black border-status-success' 
+                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30'
                 }`}
                 disabled={blockMutation.isPending}
               >
-                {blockMutation.isPending ? 'SAVING...' : taskData?.blocked ? 'Unblock' : 'Block'}
+                {blockMutation.isPending ? 'SYNC...' : taskData?.blocked ? 'RESOLVE' : 'BLOCK'}
               </button>
 
-              <div className="relative flex-1 sm:flex-none" ref={statusMenuRef}>
-                <button 
-                  onClick={() => setIsStatusMenuOpen(!isStatusMenuOpen)}
-                  className={`w-full flex items-center justify-between gap-3 font-black text-[9px] md:text-[10px] uppercase tracking-widest py-2.5 md:py-1.5 px-4 rounded-xl border transition-all ${getStatusColor(taskData?.status)} ${columns.find(c => c.id === taskData?.status)?.bg} ${columns.find(c => c.id === taskData?.status)?.border} shadow-lg hover:border-white/40 active:scale-95`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor] animate-pulse" />
-                    {getStatusTitle(taskData?.status)}
-                  </div>
-                  <ChevronDown size={14} className={`transition-transform duration-300 ${isStatusMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Dropdown Menu */}
-                {isStatusMenuOpen && (
-                  <div className="absolute top-full right-0 mt-3 w-56 bg-black border border-white/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-[110] animate-in slide-in-from-top-2 duration-300">
-                    <div className="px-4 py-3 border-b border-white/20 bg-white/[0.02]">
-                       <span className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">Update status</span>
+              {/* Status Command Interface */}
+              <div className="relative flex-1 sm:flex-none">
+                <TacticalCustomSelect
+                  value={taskData?.status}
+                  onChange={(newStatus) => {
+                    if (newStatus !== taskData?.status) {
+                      const column = columns.find(c => c.id === newStatus);
+                      setConfirmModal({ isOpen: true, targetStatus: column });
+                    }
+                  }}
+                  options={columns.map(c => ({
+                    label: c.title,
+                    value: c.id,
+                    color: c.color
+                  }))}
+                  displayValue={
+                    <div className="flex items-center gap-2.5 truncate">
+                      {getStatusTitle(taskData?.status)}
                     </div>
-                    {columns.map((c) => (
-                      <button
-                        key={c.id}
-                        onClick={() => {
-                          if (c.id !== taskData?.status) {
-                            setConfirmModal({ isOpen: true, targetStatus: c });
-                          }
-                          setIsStatusMenuOpen(false);
-                        }}
-                        className={`w-full px-5 py-4 text-left flex items-center justify-between group hover:bg-white/[0.05] transition-all ${c.id === taskData?.status ? 'bg-white/[0.02] cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full bg-current ${c.color} ${c.id === taskData?.status ? 'shadow-[0_0_8px_currentColor]' : 'opacity-40 group-hover:opacity-100'}`} />
-                          <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${c.id === taskData?.status ? c.color : 'text-white/60 group-hover:text-white'}`}>
-                            {c.title}
-                          </span>
-                        </div>
-                        {c.id === taskData?.status && <div className="w-1 h-1 rounded-full bg-primary shadow-[0_0_5px_rgba(59,130,246,0.8)]" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                  }
+                />
               </div>
             </div>
         </div>
       </header>
 
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 md:overflow-hidden min-h-0 pb-6 md:pb-0">
-        <div className="lg:col-span-8 flex flex-col gap-4 overflow-hidden min-h-0">
-          {/* Task Description */}
-          <section className="flex-1 flex flex-col bg-white/5 border border-white/20 rounded-2xl overflow-hidden shadow-2xl min-h-[250px] md:min-h-0">
-             <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between shrink-0">
-                <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">
-                   TASK BRIEF
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:overflow-hidden min-h-0">
+        <div className="lg:col-span-8 flex flex-col gap-4 min-h-0">
+          {/* Task Briefing Area */}
+          <section className="flex flex-col bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl min-h-[400px] lg:min-h-0 lg:flex-1">
+             <div className="px-5 py-2 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.02]">
+                <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em]">
+                   TASK BRIEFING
                 </h3>
                 
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={() => !isEpiLoading && setIsEpiExpanded(!isEpiExpanded)}
                     disabled={isEpiLoading}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${isEpiExpanded ? 'bg-primary/20 border-primary text-primary shadow-[0_0_20px_rgba(59,130,246,0.2)]' : 'bg-black border-white/30 text-white/50 hover:bg-white/5 hover:text-white'} disabled:opacity-50 disabled:cursor-wait`}
+                    className={`flex items-center gap-2 px-2 py-1 rounded-lg border transition-all text-[8px] font-black uppercase tracking-widest active:scale-95 ${
+                      isEpiExpanded 
+                        ? 'bg-primary text-black border-primary' 
+                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'
+                    } disabled:opacity-50`}
                   >
                     {isEpiLoading ? (
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2 size={10} className="animate-spin" />
                     ) : (
-                      <BrainCircuit size={14} className={isEpiExpanded ? 'animate-pulse' : ''} />
+                      <BrainCircuit size={10} />
                     )}
-                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">AI insights</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest sm:hidden">Insights</span>
-                    {!isEpiLoading && <ChevronDown size={12} className={`transition-transform duration-300 ${isEpiExpanded ? 'rotate-180' : ''}`} />}
+                    AI INSIGHTS
                   </button>
                 </div>
              </div>
-             <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar leading-relaxed">
-                <p className="text-[12px] md:text-[13px] text-white/80 font-black whitespace-pre-wrap selection:bg-primary selection:text-white tracking-tight">{taskData?.description || "No description provided."}</p>
+             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar-thin">
+                <div className="text-[13px] text-white/80 font-bold whitespace-pre-wrap leading-relaxed tracking-tight selection:bg-primary/30">
+                  {taskData?.description || "AWAITING MISSION DATA..."}
+                </div>
                 
                 {/* Attachments Display */}
                 {taskData?.attachments?.length > 0 && (
@@ -334,98 +326,115 @@ const TaskDetailPage = () => {
                   </div>
                 )}
 
-                <TaskEPIExplanation 
-                   taskId={taskId} 
-                   isExpanded={isEpiExpanded}
-                   isOverdue={taskData?.dueDate && new Date() > new Date(taskData?.dueDate) && taskData?.status !== TASK_STATUS.DONE} 
-                   onLoadingChange={setIsEpiLoading}
-                />
-             </div>
+              <TaskEPIExplanation 
+                 taskId={taskId} 
+                 isExpanded={isEpiExpanded}
+                 isOverdue={taskData?.dueDate && new Date() > new Date(taskData?.dueDate) && taskData?.status !== TASK_STATUS.DONE} 
+                 onLoadingChange={setIsEpiLoading}
+              />
+           </div>
           </section>
 
-          {/* Task Metrics */}
-          <section className="bg-white/5 border border-white/20 p-4 rounded-xl grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-4 shrink-0 shadow-xl overflow-hidden px-6">
-              <div className="flex items-center gap-2 shrink-0">
-                  <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-primary flex items-center justify-center text-[8px] font-black text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)] uppercase">
+          {/* Review Section */}
+          {taskData?.status === TASK_STATUS.IN_REVIEW && (
+            <section className="bg-gradient-to-br from-secondary/10 to-transparent border border-secondary/30 rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-500">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-secondary/20 p-2 rounded-lg border border-secondary/40">
+                  <ShieldAlert className="text-secondary" size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white tracking-tight uppercase">Task Review Required</h3>
+                  <p className="text-[10px] text-white/50 font-black uppercase tracking-widest leading-loose">Verify quality and artifacts before completion</p>
+                </div>
+              </div>
+
+              <textarea 
+                value={reviewNotes}
+                onChange={(e) => setReviewNotes(e.target.value)}
+                placeholder="Provide feedback for the team..."
+                className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white text-xs font-black tracking-widest uppercase mb-6 focus:outline-none focus:border-secondary/50 min-h-[120px] resize-none placeholder:text-white/20"
+              />
+
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => reviewMutation.mutate({ result: 'approved', notes: reviewNotes })}
+                  disabled={reviewMutation.isPending || !reviewNotes.trim()}
+                  className="flex-1 bg-status-success text-black py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  Approve & Close
+                </button>
+                <button 
+                  onClick={() => reviewMutation.mutate({ result: 'rejected', notes: reviewNotes })}
+                  disabled={reviewMutation.isPending || !reviewNotes.trim()}
+                  className="flex-1 bg-status-error text-white py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  Reject (Needs Rework)
+                </button>
+              </div>
+            </section>
+          )}
+
+          {/* Tactical Logistics Hub */}
+          <section className="bg-white/5 border border-white/10 p-2 rounded-xl flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 shrink-0 shadow-xl px-4">
+              <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-black border border-primary/40 flex items-center justify-center text-[10px] font-black text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)]">
                      {taskData?.assignedUser?.name?.[0] || '?'}
-                 </div>
+                  </div>
                 <div className="min-w-0">
-                    <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">ASSIGNEE</span>
-                    <p className="text-[10px] md:text-[11px] font-black text-white truncate tracking-tight uppercase leading-none">{taskData?.assignedUser?.name?.split(' ')[0] || 'Unassigned'}</p>
+                    <span className="block text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">OPERATOR</span>
+                    <p className="text-[10px] font-black text-white truncate tracking-tight uppercase">{taskData?.assignedUser?.name?.split(' ')[0] || 'UNASSIGNED'}</p>
                 </div>
              </div>
 
-             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+             <div className="hidden lg:block w-px h-6 bg-white/5 shrink-0" />
 
-             <div className="flex items-center gap-2 shrink-0">
-                <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-white/20 flex items-center justify-center text-white/50 group-hover:border-primary transition-all">
-                    <User size={10} />
-                </div>
-                <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">CREATED BY</span>
-                   <p className="text-[10px] md:text-[11px] font-black text-white/60 tracking-tight uppercase truncate leading-none">{taskData?.createdBy?.name?.split(' ')[0] || 'System'}</p>
-                </div>
-             </div>
-
-             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
-
-             <div className="flex items-center gap-2 shrink-0">
-                <div className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border border-secondary flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(139,92,246,0.1)]">
+             <div className="flex items-center gap-2.5 shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-black border border-white/10 flex items-center justify-center text-white/30">
                     <Calendar size={10} />
                 </div>
                 <div className="min-w-0">
-                   <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">SPRINT</span>
-                   <p className="text-[10px] md:text-[11px] font-black text-secondary tracking-tight uppercase truncate leading-none">{taskData?.sprintInfo?.name || 'Backlog'}</p>
+                   <span className="block text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">SPRINT</span>
+                   <p className="text-[10px] font-black text-secondary tracking-tight uppercase truncate">{taskData?.sprintInfo?.name || 'BACKLOG'}</p>
                 </div>
              </div>
 
-             <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+             <div className="hidden lg:block w-px h-6 bg-white/5 shrink-0" />
 
-               {/* Task Duration Metric */}
-              <div className="flex items-center gap-2 shrink-0">
-                  <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border flex items-center justify-center transition-all ${taskData?.status === TASK_STATUS.IN_PROGRESS ? 'border-status-success shadow-[0_0_10px_rgba(16,185,129,0.1)] animate-pulse' : 'border-status-success/30'}`}>
+               {/* Time Budgeting */}
+              <div className="flex items-center gap-3 shrink-0">
+                  <div className={`w-7 h-7 rounded-lg bg-black border flex items-center justify-center transition-all ${taskData?.status === TASK_STATUS.IN_PROGRESS ? 'border-status-success shadow-[0_0_10px_rgba(16,185,129,0.1)] animate-pulse' : 'border-white/10'}`}>
                       <Clock size={10} className="text-status-success" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">EST. TIME</span>
-                     <p className="text-lg font-black text-white tracking-tighter uppercase leading-none">
+                     <span className="block text-[8px] font-black text-white/30 uppercase tracking-[0.3em]">ALLOCATION</span>
+                     <p className="text-base font-black text-white tracking-tighter uppercase leading-none">
                        {(() => {
                          const mins = taskData?.estimatedDuration || 0;
-                         if (mins >= 1440) {
-                           const d = mins / 1440;
-                           return Number.isInteger(d) ? `${d} DAYS` : `${d.toFixed(1)} DAYS`;
-                         }
-                         if (mins >= 60) {
-                           const h = mins / 60;
-                           return Number.isInteger(h) ? `${h} HOURS` : `${h.toFixed(1)} HOURS`;
-                         }
-                         return `${Math.round(mins)} MINS`;
+                         if (mins >= 1440) return `${(mins / 1440).toFixed(1)}D`;
+                         if (mins >= 60) return `${(mins / 60).toFixed(1)}H`;
+                         return `${Math.round(mins)}M`;
                        })()}
                      </p>
                   </div>
               </div>
 
-              <div className="hidden md:block w-px h-10 bg-white/10 shrink-0" />
+              <div className="hidden lg:block w-px h-8 bg-white/5 shrink-0" />
 
-               {/* Mission Deadline Metric */}
+               {/* Deadline Tracking */}
               <div className="flex items-center gap-3 shrink-0 group">
-                  <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg bg-black border flex items-center justify-center transition-all shadow-[0_0_10px_rgba(59,130,246,0.1)] ${taskData?.dueDate && new Date(taskData?.dueDate) < new Date() && taskData?.status !== TASK_STATUS.DONE ? 'border-status-error animate-pulse' : 'border-primary/40'}`}>
+                  <div className={`w-7 h-7 rounded-lg bg-black border flex items-center justify-center transition-all ${taskData?.dueDate && new Date(taskData?.dueDate) < new Date() && taskData?.status !== TASK_STATUS.DONE ? 'border-status-error animate-pulse' : 'border-primary/30'}`}>
                       <Calendar size={10} className="text-primary" />
                   </div>
                   <div className="flex flex-col">
-                     <div className="flex items-center gap-2 mb-1">
-                        <span className="block text-[8px] font-black text-white/50 uppercase tracking-[0.4em]">DUE DATE</span>
-                     </div>
+                     <span className="block text-[8px] font-black text-white/30 uppercase tracking-[0.3em]">DEADLINE</span>
                      <div className="relative">
                         <p 
-                           className={`text-lg font-black tracking-tighter uppercase leading-none transition-all ${taskData?.dueDate && new Date(taskData?.dueDate) < new Date() && taskData?.status !== TASK_STATUS.DONE ? 'text-status-error' : (taskData?.dueDate ? 'text-white' : 'text-primary hover:text-primary-light cursor-pointer underline decoration-dotted')}`}
+                           className={`text-base font-black tracking-tighter uppercase leading-none transition-all ${taskData?.dueDate && new Date(taskData?.dueDate) < new Date() && taskData?.status !== TASK_STATUS.DONE ? 'text-status-error' : (taskData?.dueDate ? 'text-white' : 'text-primary hover:text-primary-light cursor-pointer underline decoration-dotted decoration-primary/30')}`}
                            onClick={() => !taskData?.dueDate && handleAutoDueDate()}
                         >
                            {taskData?.dueDate 
                              ? new Date(taskData?.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() 
-                             : taskData?.estimatedDuration 
-                               ? `~ ${getAutoDueDate()?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`
-                               : 'NOT SET'}
+                             : 'ESTABLISHING...'}
                         </p>
                      </div>
                   </div>
@@ -433,9 +442,9 @@ const TaskDetailPage = () => {
           </section>
         </div>
 
-        {/* Activity Feed */}
-        <aside className="lg:col-span-4 flex flex-col gap-4 md:overflow-hidden min-h-[300px] md:min-h-0">
-          <section className="flex-1 flex flex-col min-h-0 bg-white/5 border border-white/20 rounded-2xl overflow-hidden shadow-xl">
+        {/* Tactical Interaction Panel */}
+        <aside className="lg:col-span-4 flex flex-col gap-2 min-h-[400px] lg:min-h-0 lg:overflow-hidden">
+          <section className="flex flex-col min-h-0 bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-xl flex-1">
              <TaskComments taskId={taskId} />
           </section>
         </aside>
@@ -481,7 +490,7 @@ const TaskDetailPage = () => {
                    <button onClick={() => setIsBlockModalOpen(false)} className="py-4 bg-black text-white/60 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border border-white/30 hover:bg-white/5 hover:text-white transition-all active:scale-95">Cancel</button>
                    <button 
                     onClick={() => blockMutation.mutate({ blocked: true, reason: blockReason })} 
-                    className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
+                    className="py-4 bg-status-error text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
                     disabled={!blockReason.trim() || blockMutation.isPending}
                    >
                      {blockMutation.isPending ? 'SAVING...' : 'Block task'}

@@ -18,7 +18,7 @@ export const ROUTES = {
   QUALITY_CONTROL: '/quality-control',
   QUALITY_STRATEGY: '/quality-strategy',
   QUALITY_COMMAND: '/quality-command',
-  PEOPLE_OPS: '/people-ops',
+  HR: '/hr',
   ADMIN_PANEL: '/admin/dashboard',
   LOGIN: '/login',
   REGISTER: '/register',

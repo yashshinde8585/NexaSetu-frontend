@@ -183,7 +183,7 @@ const ProjectOverviewList = ({
                 </div>
 
                 {/* Strategic Status */}
-                <div className="col-span-2 flex items-center justify-end">
+                <div className="col-span-2 flex items-center justify-end gap-3">
                   <span
                     className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm flex items-center gap-2 ${
                       project.riskLevel === 'Low'
@@ -196,6 +196,18 @@ const ProjectOverviewList = ({
                     {project.riskLevel === 'High' && <ShieldAlert size={10} />}
                     {project.riskLevel.toUpperCase()}
                   </span>
+
+                  {/* Navigation Trigger */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/project/${project._id}`);
+                    }}
+                    className="p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-primary hover:text-black transition-all group/nav"
+                    title="ENTER_PROJECT"
+                  >
+                    <ExternalLink size={12} className="group-hover/nav:scale-110 transition-transform" />
+                  </button>
                 </div>
               </div>
             ))}

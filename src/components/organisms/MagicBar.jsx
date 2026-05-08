@@ -8,13 +8,8 @@ import ErrorBoundary from '../ErrorBoundary';
 // A tactical command interface that processes natural language directives.
 const MagicBar = () => {
   const { user } = useAuth();
-  const {
-    setGlobalResult,
-    pendingCommand,
-    setPendingCommand,
-    activeProjects,
-    dashboardContext,
-  } = useMagic();
+  const { setGlobalResult, setPendingCommand } = useMagicActions();
+  const { pendingCommand, activeProjects, dashboardContext } = useMagicState();
   const [query, setQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isListening, setIsListening] = useState(false);

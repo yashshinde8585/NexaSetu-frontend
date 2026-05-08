@@ -11,12 +11,6 @@ const Pricing = () => {
   const { user } = useAuth();
   const { subscription, isLoading } = useBilling();
 
-  useEffect(() => {
-    if (!isLoading && subscription && (user?.role === 'WORKSPACE_ADMIN' || user?.role === 'WORKSPACE_MANAGER')) {
-      navigate(ROUTES.DASHBOARD);
-    }
-  }, [subscription, isLoading, user, navigate]);
-
   return (
     <div className="min-h-screen bg-black pt-16 pb-20 px-4 overflow-hidden">
       {/* Subtle Background Glow */}
