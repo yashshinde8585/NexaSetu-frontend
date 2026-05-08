@@ -78,14 +78,13 @@ const ProjectSetup = () => {
     <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
       <div className="w-full space-y-6 max-w-7xl mx-auto">
         
-        {/* Simplified Header */}
-        <header className="border-b border-white/10 pb-6">
-          <div className="space-y-2">
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
-                CREATE NEW PROJECT
+        {/* Tactical Orchestration Header */}
+        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
+          <div className="space-y-1">
+            <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
+              CREATE NEW PROJECT
             </h1>
-            <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] flex items-center gap-3">
-              <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0" />
+            <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
               CONFIGURE YOUR WORKSPACE AND START COLLABORATING.
             </p>
           </div>

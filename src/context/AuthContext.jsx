@@ -68,10 +68,18 @@ export const AuthProvider = ({ children }) => {
         const hasClerkSession = useClerkAuthFlag && isSignedIn;
         const hasLocalToken = !!localStorage.getItem('token');
         
-        if (!hasClerkSession && !hasLocalToken) {
+        // Decide if we should even attempt synchronization based on the active auth provider
+        const canSync = useClerkAuthFlag ? hasClerkSession : hasLocalToken;
+
+        if (!canSync) {
           if (isMounted) {
             setAuthState('unauthenticated');
             setUser(null);
+            // Cleanup stale tokens if Clerk is the master auth but no session exists
+            if (useClerkAuthFlag && hasLocalToken) {
+              console.log('[AUTH] Purging stale local session...');
+              localStorage.removeItem('token');
+            }
           }
           return;
         }

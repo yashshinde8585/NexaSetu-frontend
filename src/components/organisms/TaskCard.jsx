@@ -13,106 +13,82 @@ const TaskCard = ({
   return (
     <div
       onClick={onNavigate}
-      className="group glass-dark border border-white/5 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden cursor-pointer"
+      className="group bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 rounded-xl p-4 flex flex-col gap-3 relative overflow-hidden cursor-pointer transition-all duration-300"
     >
-      {/* Status Glow */}
-      <div
-        className={`absolute top-0 right-0 w-32 h-32 blur-[80px] -mr-16 -mt-16 opacity-30 ${
-          task.status === TASK_STATUS.IN_PROGRESS
-            ? 'bg-secondary'
-            : task.status === TASK_STATUS.IN_REVIEW
-              ? 'bg-primary'
-              : 'bg-status-warning'
-        }`}
-      />
-
-      <div className="space-y-2 relative z-10">
-        <div className="flex justify-between items-start mb-1">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <MapPin size={10} className="text-primary" />
-              <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none">
+      <div className="space-y-1.5 relative z-10">
+        <div className="flex justify-between items-start">
+          <div className="space-y-0.5 flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[8px] text-primary font-black uppercase tracking-[0.2em] truncate max-w-[120px]">
                 {task.project?.name || 'General'}
               </span>
-              <span className="mx-2 text-white/5">•</span>
-              <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${
-                task.priority === 'low' ? 'text-status-success' :
-                task.priority === 'high' ? 'text-status-warning' :
-                task.priority === 'urgent' ? 'text-status-error' :
-                'text-primary'
+              <span className="text-white/10">•</span>
+              <span className={`text-[8px] font-black uppercase tracking-[0.2em] ${
+                task.priority === 'low' ? 'text-status-success/60' :
+                task.priority === 'high' ? 'text-status-warning/60' :
+                task.priority === 'urgent' ? 'text-status-error/60' :
+                'text-primary/60'
               }`}>
                 {task.priority || 'Medium'}
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-[13px] font-bold text-white/90 tracking-tight leading-snug group-hover:text-white transition-colors truncate">
               {task.title}
             </h3>
           </div>
           <div
-            className={`px-2 py-1 rounded-lg border text-[8px] font-black uppercase tracking-tighter ${
+            className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-widest border ${
               task.status === TASK_STATUS.DONE
                 ? 'bg-status-success/10 border-status-success/20 text-status-success'
                 : task.status === TASK_STATUS.IN_PROGRESS
                   ? 'bg-secondary/10 border-secondary/20 text-secondary'
                   : task.status === TASK_STATUS.IN_REVIEW
                     ? 'bg-primary/10 border-primary/20 text-primary'
-                    : 'bg-background-light/20 border-white/5 text-text-muted'
+                    : 'bg-white/5 border-white/10 text-white/40'
             }`}
           >
-            {task.status === TASK_STATUS.DONE
-              ? 'Completed'
-              : task.status.replace('_', ' ')}
+            {task.status === TASK_STATUS.DONE ? 'COMPLETED' : task.status.replace('_', ' ')}
           </div>
         </div>
-        {/* <p className="text-sm text-text-muted leading-relaxed line-clamp-3 font-medium">
-          {task.description}
-        </p> */}
 
         {showAssignedUser && (
-          <div className="flex items-center gap-2 mt-2">
-            <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary border border-primary/20">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-[7px] font-black text-white/60 border border-white/10">
               {task.assignedUser?.name?.charAt(0) || '?'}
             </div>
-            <span className="text-[10px] font-bold text-text-muted/60 uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest truncate">
               {task.assignedUser?.name || 'Unassigned'}
             </span>
           </div>
         )}
       </div>
 
-      <div className="pt-4 border-t border-white/5 space-y-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <div
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
-              task.delayStatus === 'delayed'
-                ? 'bg-status-error/10 border-status-error/20 text-status-error'
-                : 'bg-white/5 border-white/10 text-text-muted'
-            }`}
-          >
-            <Clock size={14} />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                {task.dueDate
-                  ? new Date(task.dueDate).toLocaleDateString()
-                  : 'No Due Date'}
-              </span>
-              {task.estimatedDuration > 0 && (
-                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.15em]">
-                  Est: {task.estimatedDuration >= 60 
-                    ? `${Math.floor(task.estimatedDuration / 60)}h${task.estimatedDuration % 60 > 0 ? ` ${task.estimatedDuration % 60}m` : ''}` 
-                    : `${task.estimatedDuration}m`}
-                </span>
-              )}
-            </div>
+      <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-1.5 ${task.delayStatus === 'delayed' ? 'text-status-error' : 'text-white/20'}`}>
+            <Clock size={10} />
+            <span className="text-[9px] font-black uppercase tracking-widest">
+              {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'NO DATE'}
+            </span>
           </div>
-
-          {task.attachments?.length > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-white/5 border-white/10 text-primary-light/60">
-              <Paperclip size={14} />
-              <span className="text-[10px] font-black">{task.attachments.length}</span>
+          
+          {task.estimatedDuration > 0 && (
+            <div className="flex items-center gap-1 text-white/10">
+              <span className="text-[8px] font-black uppercase">
+                {task.estimatedDuration >= 60 
+                  ? `${Math.floor(task.estimatedDuration / 60)}H` 
+                  : `${task.estimatedDuration}M`}
+              </span>
             </div>
           )}
         </div>
+
+        {task.attachments?.length > 0 && (
+          <div className="flex items-center gap-1 text-white/20">
+            <Paperclip size={10} />
+            <span className="text-[8px] font-black">{task.attachments.length}</span>
+          </div>
+        )}
       </div>
     </div>
   );
