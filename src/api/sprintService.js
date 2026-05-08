@@ -1,38 +1,42 @@
 import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
-export const getSprints = (projectId) => {
+export const getSprints = (projectId, config = {}) => {
   return apiClient.get(API_ENDPOINTS.SPRINTS.BASE, {
-    params: projectId ? { project: projectId } : {}
+    ...config,
+    params: {
+      ...(config.params || {}),
+      ...(projectId ? { project: projectId } : {})
+    }
   });
 };
 
-export const createSprint = (data) => {
-  return apiClient.post(API_ENDPOINTS.SPRINTS.BASE, data);
+export const createSprint = (data, config = {}) => {
+  return apiClient.post(API_ENDPOINTS.SPRINTS.BASE, data, config);
 };
 
-export const syncHealth = (id) => {
-  return apiClient.post(`/sprints/${id}/sync`);
+export const syncHealth = (id, config = {}) => {
+  return apiClient.post(`/sprints/${id}/sync`, null, config);
 };
 
-export const getSprintStats = (id) => {
-  return apiClient.get(API_ENDPOINTS.SPRINTS.STATS(id));
+export const getSprintStats = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.STATS(id), config);
 };
 
-export const finalizeSprint = (id) => {
-  return apiClient.get(API_ENDPOINTS.SPRINTS.FINALIZE(id));
+export const finalizeSprint = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.FINALIZE(id), config);
 };
 
-export const getSprintReport = (id) => {
-  return apiClient.get(API_ENDPOINTS.SPRINTS.REPORT(id));
+export const getSprintReport = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.REPORT(id), config);
 };
 
-export const updateSprint = (id, data) => {
-  return apiClient.patch(API_ENDPOINTS.SPRINTS.DETAIL(id), data);
+export const updateSprint = (id, data, config = {}) => {
+  return apiClient.patch(API_ENDPOINTS.SPRINTS.DETAIL(id), data, config);
 };
 
-export const deleteSprint = (id) => {
-  return apiClient.delete(API_ENDPOINTS.SPRINTS.DETAIL(id));
+export const deleteSprint = (id, config = {}) => {
+  return apiClient.delete(API_ENDPOINTS.SPRINTS.DETAIL(id), config);
 };
 
 export default {

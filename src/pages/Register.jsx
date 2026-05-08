@@ -19,7 +19,7 @@ import {
 import MetricsService from '../api/metricsService';
 
 const Register = () => {
-  const { register: authRegister } = useAuth();
+  const { register: authRegister } = useAuthActions();
   const { isLoaded, signUp, setActive } = useSignUp();
   const [searchParams] = useSearchParams();
   const plan = searchParams.get('plan') || 'free';

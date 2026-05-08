@@ -11,13 +11,15 @@ import AuthService from '../api/authService';
 import { setTokenGetter } from '../api/axios';
 import socketService from '../services/socketService';
 
-const AuthContext = createContext();
+const AuthStateContext = createContext();
+const AuthActionsContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authState, setAuthState] = useState('initializing'); // 'initializing' | 'syncing' | 'authenticated' | 'unauthenticated' | 'failed'
   const [loadingMessage, setLoadingMessage] = useState('Initializing security protocols...');
   const [isWakingUp, setIsWakingUp] = useState(false);
+  const syncInProgressRef = React.useRef(false);
 
   const { isLoaded: isClerkLoaded, user: clerkUser, isSignedIn } = useUser();
   const { signOut } = useClerk();
@@ -56,95 +58,101 @@ export const AuthProvider = ({ children }) => {
     const syncUser = async () => {
       // 1. Wait for Clerk to load if enabled
       if (useClerkAuthFlag && !isClerkLoaded) return;
-
-      // 2. Resolve initial auth status
-      const hasClerkSession = useClerkAuthFlag && isSignedIn;
-      const hasLocalToken = !!localStorage.getItem('token');
       
-      if (!hasClerkSession && !hasLocalToken) {
-        if (isMounted) {
-          setAuthState('unauthenticated');
-          setUser(null);
-        }
-        return;
-      }
+      // Prevent redundant syncs
+      if (syncInProgressRef.current) return;
+      syncInProgressRef.current = true;
 
-      // 3. Begin synchronization
-      console.log('[AUTH] Identity synchronization initiated...');
-      setAuthState('syncing');
-      setLoadingMessage('Synchronizing workspace identity...');
-
-      const controller = new AbortController();
-      const wakingUpTimeout = setTimeout(() => {
-        if (isMounted) {
-          setIsWakingUp(true);
-          setLoadingMessage('Waking up the strategic engine... (First load may take ~30s)');
-        }
-      }, 4000);
-
-      const hardTimeout = setTimeout(() => controller.abort(), 45000); 
-
-      let attempts = 0;
-      const maxRetries = 1; // Only 1 retry for network/5xx, NEVER for 401
-
-      const fetchProfile = async () => {
-        try {
-          const token = useClerkAuthFlag ? await getToken() : localStorage.getItem('token');
-          if (!token) throw new Error('No token available');
-
-          if (useClerkAuthFlag) {
-            localStorage.setItem('token', token);
-          }
-
-          const res = await AuthService.getCurrentUser({ signal: controller.signal });
-          const userData = res?.data?.user || res?.user;
-          
-          if (!userData) throw new Error('MALFORMED_IDENTITY_PAYLOAD');
-
+      try {
+        // 2. Resolve initial auth status
+        const hasClerkSession = useClerkAuthFlag && isSignedIn;
+        const hasLocalToken = !!localStorage.getItem('token');
+        
+        if (!hasClerkSession && !hasLocalToken) {
           if (isMounted) {
-            setUser(userData);
-            setAuthState('authenticated');
-            console.log('[AUTH] Session stabilized.');
+            setAuthState('unauthenticated');
+            setUser(null);
           }
-          return true;
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            console.warn('[AUTH] Sync timed out.');
-            if (isMounted) setAuthState('failed');
-            return false;
-          }
+          return;
+        }
 
-          // Handle 401 specifically: Clear state and stop
-          if (err.status === 401) {
-            console.warn('[AUTH] Invalid session detected during sync.');
+        // 3. Begin synchronization
+        console.log('[AUTH] Identity synchronization initiated...');
+        setAuthState('syncing');
+        setLoadingMessage('Synchronizing workspace identity...');
+
+        const controller = new AbortController();
+        const wakingUpTimeout = setTimeout(() => {
+          if (isMounted) {
+            setIsWakingUp(true);
+            setLoadingMessage('Waking up the strategic engine... (First load may take ~30s)');
+          }
+        }, 4000);
+
+        const hardTimeout = setTimeout(() => controller.abort(), 45000); 
+
+        let attempts = 0;
+        const maxRetries = 1;
+
+        const fetchProfile = async () => {
+          try {
+            const token = useClerkAuthFlag ? await getToken() : localStorage.getItem('token');
+            if (!token) throw new Error('No token available');
+
+            if (useClerkAuthFlag) {
+              localStorage.setItem('token', token);
+            }
+
+            const res = await AuthService.getCurrentUser({ signal: controller.signal });
+            const userData = res?.data?.user || res?.user;
+            
+            if (!userData) throw new Error('MALFORMED_IDENTITY_PAYLOAD');
+
             if (isMounted) {
-              setUser(null);
-              setAuthState('unauthenticated');
+              setUser(userData);
+              setAuthState('authenticated');
+              console.log('[AUTH] Session stabilized.');
+            }
+            return true;
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              console.warn('[AUTH] Sync timed out.');
+              if (isMounted) setAuthState('failed');
+              return false;
+            }
+
+            if (err.status === 401) {
+              console.warn('[AUTH] Invalid session detected during sync.');
+              if (isMounted) {
+                setUser(null);
+                setAuthState('unauthenticated');
+              }
+              return false;
+            }
+
+            if (attempts < maxRetries && isMounted) {
+              attempts++;
+              console.log(`[AUTH] Sync attempt ${attempts} failed, retrying in 2s...`);
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              return await fetchProfile();
+            }
+
+            if (isMounted) {
+              console.error('[AUTH] Synchronization failure:', err);
+              setAuthState('failed');
+              setLoadingMessage('Neural link failure. Please refresh.');
             }
             return false;
           }
+        };
 
-          // Retry logic only for non-401 errors
-          if (attempts < maxRetries && isMounted) {
-            attempts++;
-            console.log(`[AUTH] Sync attempt ${attempts} failed, retrying in 2s...`);
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            return await fetchProfile();
-          }
-
-          if (isMounted) {
-            console.error('[AUTH] Synchronization failure:', err);
-            setAuthState('failed');
-            setLoadingMessage('Neural link failure. Please refresh.');
-          }
-          return false;
-        }
-      };
-
-      await fetchProfile();
-      
-      clearTimeout(wakingUpTimeout);
-      clearTimeout(hardTimeout);
+        await fetchProfile();
+        
+        clearTimeout(wakingUpTimeout);
+        clearTimeout(hardTimeout);
+      } finally {
+        syncInProgressRef.current = false;
+      }
     };
 
     syncUser();
@@ -220,7 +228,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const value = useMemo(
+  const stateValue = useMemo(
     () => ({
       user,
       authState,
@@ -228,20 +236,39 @@ export const AuthProvider = ({ children }) => {
       authReady: authState === 'authenticated' || authState === 'unauthenticated',
       loadingMessage,
       isWakingUp,
+      isAuthenticated: authState === 'authenticated',
+    }),
+    [user, authState, loadingMessage, isWakingUp]
+  );
+
+  const actionsValue = useMemo(
+    () => ({
       login,
       register,
       activateInvite,
       logout,
-      isAuthenticated: authState === 'authenticated',
     }),
-    [user, authState, loadingMessage, isWakingUp, login, register, activateInvite, logout]
+    [login, register, activateInvite, logout]
   );
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+    <AuthStateContext.Provider value={stateValue}>
+      <AuthActionsContext.Provider value={actionsValue}>
+        {children}
+      </AuthActionsContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const state = useContext(AuthStateContext);
+  const actions = useContext(AuthActionsContext);
+  if (!state || !actions) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return { ...state, ...actions };
+};
+
+// Targeted hooks for optimized consumption
+export const useAuthState = () => useContext(AuthStateContext);
+export const useAuthActions = () => useContext(AuthActionsContext);

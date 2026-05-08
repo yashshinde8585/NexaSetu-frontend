@@ -10,7 +10,7 @@ const DirectiveBanner = () => {
 
   const { data: directives = [], isLoading } = useQuery({
     queryKey: ['directives', user?.workspaceId],
-    queryFn: () => apiClient.get('/v1/directives').then(res => res.directives),
+    queryFn: () => apiClient.get('/v1/directives').then(res => res.data?.directives || []),
     refetchInterval: 60000,
     enabled: authReady && !!user?.workspaceId,
   });

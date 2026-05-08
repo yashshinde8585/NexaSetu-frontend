@@ -1,19 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthActions } from '../context/AuthContext';
 import { useSignIn } from '@clerk/clerk-react';
 import Navbar from '../components/layouts/Navbar';
 import { Mail, Lock, ArrowRight, Activity, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/atoms/Button';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login } = useAuthActions();
   const { isLoaded, signIn, setActive } = useSignIn();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isOTP, setIsOTP] = useState(false);
+  const [isSecondFactor, setIsSecondFactor] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [code, setCode] = useState('');
   const navigate = useNavigate();
@@ -46,7 +47,20 @@ const Login = () => {
       }
 
       if (useClerk) {
-        if (isOTP) {
+        if (isSecondFactor) {
+          // Handle Second Factor (MFA/Verification)
+          const result = await signIn.attemptSecondFactor({
+            strategy: 'email_code',
+            code,
+          });
+
+          if (result.status === 'complete') {
+            await setActive({ session: result.createdSessionId });
+            navigate('/');
+          } else {
+            throw new Error('Second factor verification failed.');
+          }
+        } else if (isOTP) {
           if (!codeSent) {
             // Start OTP flow
             const { supportedFirstFactors } = await signIn.create({
@@ -90,8 +104,14 @@ const Login = () => {
           if (result.status === 'complete') {
             await setActive({ session: result.createdSessionId });
             navigate('/');
+          } else if (result.status === 'needs_second_factor') {
+            // Trigger Second Factor
+            await signIn.prepareSecondFactor({ strategy: 'email_code' });
+            setIsSecondFactor(true);
+            setCodeSent(true);
+            setError('Verification code sent to your email.');
           } else {
-            setError('Further verification required.');
+            setError(`Further verification required: ${result.status}`);
           }
         }
       } else {
@@ -162,24 +182,23 @@ const Login = () => {
                       />
                     </div>
 
-                    {isOTP ? (
-                      codeSent && (
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-white/40 block">
-                            Verification Code
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
-                            placeholder="000000"
-                            required
-                            maxLength={6}
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                          />
-                        </div>
-                      )
-                    ) : (
+                    {codeSent ? (
+                      <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <label className="text-[9px] font-black text-white/40 block">
+                          {isSecondFactor ? 'Security Code' : 'Verification Code'}
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                          placeholder="000000"
+                          required
+                          autoFocus
+                          maxLength={6}
+                          value={code}
+                          onChange={(e) => setCode(e.target.value)}
+                        />
+                      </div>
+                    ) : !isOTP ? (
                       <div className="space-y-1">
                         <div className="flex justify-between items-center">
                           <label htmlFor="password" className="text-[9px] font-black text-white/40 block">
@@ -212,7 +231,7 @@ const Login = () => {
                           </button>
                         </div>
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   {error && (
