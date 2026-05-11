@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthActions } from '../context/AuthContext';
 import { ROUTES } from '../constants';
 import { useSignUp } from '@clerk/clerk-react';
 import Navbar from '../components/layouts/Navbar';
