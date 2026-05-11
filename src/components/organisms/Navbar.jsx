@@ -4,15 +4,27 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationTray from './NotificationTray';
-import { Menu, Layers, Rocket, Shield, Sparkles, Zap } from 'lucide-react';
+import { Menu, Layers, Rocket, Shield, Sparkles, Zap, RefreshCw } from 'lucide-react';
 import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
 import { ROUTES } from '../../constants/routes';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import ProjectService from '../../api/projectService';
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
+  const queryClient = useQueryClient();
   const location = useLocation();
+  const path = location.pathname;
+  const isTeamProjectPage = path.startsWith('/team/project/');
+  const projectId = isTeamProjectPage ? path.split('/team/project/')[1] : null;
+
+  const { data: project } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => ProjectService.getProject(projectId).then(res => res.data?.project),
+    enabled: !!projectId && projectId !== 'unassigned'
+  });
 
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 h-14 bg-black border-b border-white/10">
@@ -27,26 +39,25 @@ const Navbar = ({ onToggleSidebar }) => {
               <Menu size={24} aria-hidden="true" />
             </button>
             <div className="text-[10px] font-black text-white flex items-center h-full">
-              <span className="text-white uppercase tracking-[0.2em] pointer-events-none">
+              <span className="text-white uppercase tracking-[0.2em]">
                 {(() => {
-                  const path = location.pathname;
                   const breadcrumbMap = {
                     [ROUTES.DASHBOARD]: 'Home',
                     [ROUTES.COMMAND_CENTER]: 'Executive',
                     [ROUTES.EXECUTION_COMMANDER]: 'Operations',
-                    [ROUTES.TEAM_COMMAND_CENTER]: 'Team',
+                    [ROUTES.TEAM_COMMAND_CENTER]: 'Dashboard',
                     [ROUTES.SYSTEM_HEALTH_CONTROL]: 'Status',
                     [ROUTES.QUALITY_COMMAND]: 'Quality',
-                    [ROUTES.PEOPLE_OPS]: 'People',
+                    [ROUTES.HR]: 'Dashboard',
                     [ROUTES.QUALITY_STRATEGY]: 'Strategy',
                     [ROUTES.QUALITY_CONTROL]: 'Audit',
                     [ROUTES.EXECUTION_CONTROL]: 'Dashboard',
                     [ROUTES.GUIDED_WORK_ASSISTANT]: 'Tasks',
                     [ROUTES.LEARNING_WORKSPACE]: 'Hub',
-                    [ROUTES.ADMIN_PANEL]: 'Admin',
+                    [ROUTES.ADMIN_PANEL]: 'Dashboard',
                     [ROUTES.PERSONAL_WORK_CONSOLE]: 'Workbench',
                     [ROUTES.PORTFOLIO || '/portfolio']: 'Portfolio',
-                    [ROUTES.TEAMS]: 'People',
+                    [ROUTES.TEAMS]: 'Teams',
                     '/team/add': 'Invite',
                     '/project-info': 'Sprints',
                     '/project-setup': 'New Project',
@@ -59,7 +70,20 @@ const Navbar = ({ onToggleSidebar }) => {
                   };
 
                   if (breadcrumbMap[path]) return breadcrumbMap[path];
-                  if (path.startsWith('/team/project/')) return 'Team';
+                  
+                  if (isTeamProjectPage) {
+                    const projectName = project?.name || (projectId === 'unassigned' ? 'Unassigned' : '');
+                    if (!projectName) return 'Team';
+                    
+                    return (
+                      <span className="flex items-center gap-2">
+                        <Link to={ROUTES.TEAMS} className="hover:text-primary transition-colors">Team</Link>
+                        <span className="text-white/20">/</span>
+                        <span className="text-white">{projectName}</span>
+                      </span>
+                    );
+                  }
+
                   if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
                   if (path.startsWith('/project/')) return 'Task Board';
                   if (path.startsWith('/task/')) return 'Task Detail';
@@ -75,6 +99,15 @@ const Navbar = ({ onToggleSidebar }) => {
           </div>
 
           <div className="flex items-center gap-4 shrink-0 h-9">
+            {path === ROUTES.HR && (
+              <button 
+                onClick={() => queryClient.invalidateQueries({ queryKey: ['dashboard'] })}
+                className="hidden lg:flex items-center gap-2 px-3 h-8 bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all group rounded"
+              >
+                <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
+                Sync_Workforce_Telemetry
+              </button>
+            )}
             <NotificationTray />
             <ProfileDropdown />
           </div>

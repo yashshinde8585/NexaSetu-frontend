@@ -173,10 +173,6 @@ export const PreferencesSection = () => (
   <DeckWrapper title="PLATFORM_PREFERENCES">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-1">
-          <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">PLATFORM_THEME</label>
-          <TacticalSelect icon={<Monitor size={14} />} options={['MODERN DARK', 'CLASSIC AMBER', 'HIGH CONTRAST']} value="MODERN DARK" className="h-9 text-[10px]" />
-      </div>
-      <div className="space-y-1">
           <label className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">TIMEZONE</label>
           <TacticalSelect icon={<Globe size={14} />} options={['ASIA/KOLKATA (IST)', 'UTC (GMT)', 'US/NEW YORK (EST)']} value="ASIA/KOLKATA (IST)" className="h-9 text-[10px]" />
        </div>

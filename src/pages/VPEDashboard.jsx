@@ -24,70 +24,70 @@ const VPEDashboard = () => {
   } = useRoleDashboard('vpe');
 
   if (isLoading || !data) return <CenteredLoading />;
-  
+
   if (error) return (
     <div className="p-12 text-status-error bg-black min-h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
       {error?.message || 'CRITICAL_ERROR: SYSTEM_DATA_UNAVAILABLE'}
     </div>
   );
 
-  const { 
-    executionStats = { projectsDelayed: 0, avgSprintDelay: '0d', activeBlockers: 0, teamsOverloaded: 0, velocityTrend: { direction: 'stable', value: '0%' } }, 
-    teamGrid = [], 
-    sprintExecution = { progress: 0, risk: 'UNKNOWN', completed: 0, inProgress: 0, blocked: 0 }, 
-    blockers = {}, 
-    timeline = [], 
-    activity = [] 
+  const {
+    executionStats = { projectsDelayed: 0, avgSprintDelay: '0d', activeBlockers: 0, teamsOverloaded: 0, velocityTrend: { direction: 'stable', value: '0%' } },
+    teamGrid = [],
+    sprintExecution = { progress: 0, risk: 'UNKNOWN', completed: 0, inProgress: 0, blocked: 0 },
+    blockers = {},
+    timeline = [],
+    activity = []
   } = data || {};
 
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      
+
       {/* 1. Global Performance metrics */}
       <div id="vpe-execution-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <MetricStripItem 
-            icon={<AlertTriangle size={14} />} 
-            label="Delayed Projects" 
-            value={executionStats.projectsDelayed} 
-            color="text-status-error" 
-            accent="bg-status-error"
+        <MetricStripItem
+          icon={<AlertTriangle size={14} />}
+          label="Delayed Projects"
+          value={executionStats.projectsDelayed}
+          color="text-status-error"
+          accent="bg-status-error"
         />
-        <MetricStripItem 
-            icon={<Clock size={14} />} 
-            label="Average Delay" 
-            value={executionStats.avgSprintDelay} 
-            color="text-status-warning" 
-            accent="bg-status-warning"
+        <MetricStripItem
+          icon={<Clock size={14} />}
+          label="Average Delay"
+          value={executionStats.avgSprintDelay}
+          color="text-status-warning"
+          accent="bg-status-warning"
         />
-        <MetricStripItem 
-            icon={<Shield size={14} />} 
-            label="Active Blockers" 
-            value={executionStats.activeBlockers} 
-            color="text-primary" 
-            accent="bg-primary"
+        <MetricStripItem
+          icon={<Shield size={14} />}
+          label="Active Blockers"
+          value={executionStats.activeBlockers}
+          color="text-primary"
+          accent="bg-primary"
         />
-        <MetricStripItem 
-            icon={<Users size={14} />} 
-            label="Teams Overloaded" 
-            value={executionStats.teamsOverloaded} 
-            color="text-status-warning" 
-            accent="bg-status-warning"
+        <MetricStripItem
+          icon={<Users size={14} />}
+          label="Teams Overloaded"
+          value={executionStats.teamsOverloaded}
+          color="text-status-warning"
+          accent="bg-status-warning"
         />
-        <MetricStripItem 
-            icon={executionStats.velocityTrend.direction === 'down' ? <TrendingDown size={14} /> : <TrendingUp size={14} />} 
-            label="Velocity Trend" 
-            value={executionStats.velocityTrend.value} 
-            color={executionStats.velocityTrend.direction === 'down' ? 'text-status-error' : 'text-status-success'} 
-            accent="bg-primary"
+        <MetricStripItem
+          icon={executionStats.velocityTrend.direction === 'down' ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+          label="Velocity Trend"
+          value={executionStats.velocityTrend.value}
+          color={executionStats.velocityTrend.direction === 'down' ? 'text-status-error' : 'text-status-success'}
+          accent="bg-primary"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* 2. Main Column: Execution Metrics */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          
-            <DashboardSection title="Team Performance Matrix" icon={<Terminal size={14} />}>
+
+          <DashboardSection title="Team Performance Matrix" icon={<Terminal size={14} />}>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -101,7 +101,7 @@ const VPEDashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-white/[0.02] text-[10px] font-black uppercase tracking-widest">
                   {teamGrid.map((row, i) => (
-                    <tr key={i} 
+                    <tr key={i}
                       onClick={() => handleDrilldown(row.team)}
                       className="group hover:bg-white/5 transition-colors cursor-pointer">
                       <td className="py-3 px-3">
@@ -111,19 +111,19 @@ const VPEDashboard = () => {
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                         <div className="flex flex-col items-center gap-1.5">
-                            <span className="text-[8px] text-white/40">{row.progress}</span>
-                            <div className="w-20 h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
-                              <div 
-                                 className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'} transition-all duration-700`} 
-                                 style={{ width: row.progress }}
-                              />
-                            </div>
-                         </div>
+                        <div className="flex flex-col items-center gap-1.5">
+                          <span className="text-[8px] text-white/40">{row.progress}</span>
+                          <div className="w-20 h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
+                            <div
+                              className={`h-full ${parseInt(row.progress) > 70 ? 'bg-status-success' : parseInt(row.progress) > 40 ? 'bg-status-warning' : 'bg-status-error'} transition-all duration-700`}
+                              style={{ width: row.progress }}
+                            />
+                          </div>
+                        </div>
                       </td>
                       <td className="py-3 px-3">
                         <div className="flex justify-center">
-                           <VelocityIndicator direction={row.velocity} />
+                          <VelocityIndicator direction={row.velocity} />
                         </div>
                       </td>
                       <td className="py-3 px-3 text-center">
@@ -151,7 +151,7 @@ const VPEDashboard = () => {
                   </div>
                   <div>
                     <span className={`px-2 py-1 border rounded-none text-[8px] font-black uppercase tracking-[0.2em] ${sprintExecution?.risk === 'HIGH' ? 'bg-status-error/5 text-status-error border-status-error/30' : 'bg-status-success/5 text-status-success border-status-success/30'}`}>
-                        RISK: {sprintExecution?.risk || 'NONE'}
+                      RISK: {sprintExecution?.risk || 'NONE'}
                     </span>
                   </div>
                 </div>
@@ -175,20 +175,20 @@ const VPEDashboard = () => {
                     <Zap size={10} fill="currentColor" /> OPTIMIZATION_SUGGESTION
                   </h4>
                   <p className="text-[9px] text-white/60 uppercase font-black tracking-[0.2em] leading-relaxed">
-                    RE-ALLOCATE RESOURCES TO {teamGrid.sort((a,b) => parseInt(a.load)-parseInt(b.load))[0]?.team || 'AVAILABLE'}_UNIT TO REDUCE OVERLOAD.
+                    RE-ALLOCATE RESOURCES TO {teamGrid.sort((a, b) => parseInt(a.load) - parseInt(b.load))[0]?.team || 'AVAILABLE'}_UNIT TO REDUCE OVERLOAD.
                   </p>
                 </div>
-                
+
                 <div className="flex flex-col gap-4">
-                   {teamGrid.slice(0, 3).map((team, idx) => (
+                  {teamGrid.slice(0, 3).map((team, idx) => (
                     <div key={idx} className="flex flex-col gap-1.5">
                       <div className="flex justify-between items-end text-[8px] font-black uppercase tracking-[0.2em]">
                         <span className="text-white/40">{team.team}</span>
                         <span className={parseInt(team.load) > 100 ? 'text-status-error' : 'text-white/60'}>{team.load}</span>
                       </div>
                       <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
-                        <div 
-                          className={`h-full transition-all duration-1000 ${parseInt(team.load) > 100 ? 'bg-status-error' : parseInt(team.load) > 85 ? 'bg-status-warning' : 'bg-primary/40'}`} 
+                        <div
+                          className={`h-full transition-all duration-1000 ${parseInt(team.load) > 100 ? 'bg-status-error' : parseInt(team.load) > 85 ? 'bg-status-warning' : 'bg-primary/40'}`}
                           style={{ width: `${Math.min(parseInt(team.load), 100)}%` }}
                         />
                       </div>
@@ -203,7 +203,7 @@ const VPEDashboard = () => {
         {/* 3. Sidebar Column: Intelligence Registries */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <SystemIntegrityStatus />
-          
+
           <DashboardSection title="Top Blockers" icon={<ShieldAlert size={14} />}>
             <div className="flex flex-col gap-px bg-white/10 border border-white/10 rounded-none overflow-hidden">
               {Object.keys(blockers).map((teamName, idx) => (
@@ -232,20 +232,20 @@ const VPEDashboard = () => {
 
           <DashboardSection title="Timeline Risks" icon={<Clock size={14} />}>
             <div className="flex flex-col gap-2">
-                {timeline.map((item, idx) => (
-                 <div key={idx} className="flex justify-between items-center p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest">{item.project}</span>
-                      <span className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em]">SCHEDULE_DRIFT</span>
-                    </div>
-                    <div className={`text-[8px] font-black uppercase px-2 py-1 rounded-none border tracking-[0.2em] ${item.status === 'green' ? 'bg-status-success/5 text-status-success border-status-success/30' : item.status === 'yellow' ? 'bg-status-warning/5 text-status-warning border-status-warning/30' : 'bg-status-error/5 text-status-error border-status-error/30'}`}>
-                      {item.drift}
-                    </div>
-                 </div>
-               ))}
+              {timeline.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-widest">{item.project}</span>
+                    <span className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em]">SCHEDULE_DRIFT</span>
+                  </div>
+                  <div className={`text-[8px] font-black uppercase px-2 py-1 rounded-none border tracking-[0.2em] ${item.status === 'green' ? 'bg-status-success/5 text-status-success border-status-success/30' : item.status === 'yellow' ? 'bg-status-warning/5 text-status-warning border-status-warning/30' : 'bg-status-error/5 text-status-error border-status-error/30'}`}>
+                    {item.drift}
+                  </div>
+                </div>
+              ))}
             </div>
           </DashboardSection>
-          
+
           <DashboardSection title="Recent Activity" icon={<Activity size={14} />}>
             <div className="space-y-px max-h-[350px] overflow-y-auto pr-3 custom-scrollbar">
               {activity?.map((item, i) => (
@@ -256,16 +256,16 @@ const VPEDashboard = () => {
         </div>
       </div>
 
-       {/* Drilldown Modal */}
-       {drilldown.isOpen && (
-         <DrilldownModal 
+      {/* Drilldown Modal */}
+      {drilldown.isOpen && (
+        <DrilldownModal
           isOpen={drilldown.isOpen}
           onClose={closeDrilldown}
           title={`${drilldown.category} Overview`}
           subtitle="Detailed team workload and operational status."
           data={drilldown.data}
-         />
-       )}
+        />
+      )}
     </div>
   );
 };
@@ -316,10 +316,10 @@ const StatusIndicator = ({ color }) => {
   };
   return (
     <div className="flex items-center justify-end gap-2">
-       <span className={`text-[7px] font-black uppercase tracking-[0.2em] ${colors[color] || 'text-white/40'}`}>
-         {labels[color] || 'HEALTHY'}
-       </span>
-       <div className={`w-1.5 h-1.5 rounded-none ${dots[color] || 'bg-white/20'}`} />
+      <span className={`text-[7px] font-black uppercase tracking-[0.2em] ${colors[color] || 'text-white/40'}`}>
+        {labels[color] || 'HEALTHY'}
+      </span>
+      <div className={`w-1.5 h-1.5 rounded-none ${dots[color] || 'bg-white/20'}`} />
     </div>
   );
 };

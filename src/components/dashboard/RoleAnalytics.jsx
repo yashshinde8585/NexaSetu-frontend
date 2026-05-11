@@ -1,21 +1,13 @@
 import React from 'react';
 import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
-  XAxis,
-  YAxis,
   Tooltip,
-  CartesianGrid,
-  AreaChart,
-  Area,
 } from 'recharts';
-import { Layout, UserCheck, TrendingUp, Zap, Bot, Users } from 'lucide-react';
+import { Layout, Zap, Bot } from 'lucide-react';
+import CapacityChart from './CapacityChart';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -77,65 +69,7 @@ const RoleAnalytics = ({
     ];
   }, [aiImpact]);
 
-  // 2. Sub-components for better organization
-  // A reusable chart component for visualizing task distribution across team members.
-  const CapacityChart = ({
-    data,
-    title,
-    description,
-    iconColor = 'text-secondary',
-  }) => (
-    <div className="bg-background-light/10 border border-white/5 p-4 sm:p-6 md:p-8 rounded-2xl">
-      <h3 className="text-sm font-black uppercase tracking-widest text-text-muted/60 mb-6 flex items-center gap-2">
-        <Users size={14} className={iconColor} /> {title}
-      </h3>
-      <div className="h-[300px] w-full min-h-[300px]">
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-          minWidth={0}
-          minHeight={0}
-        >
-          <BarChart data={data}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="rgba(255,255,255,0.05)"
-            />
-            <XAxis
-              dataKey="name"
-              stroke="rgba(255,255,255,0.3)"
-              fontSize={10}
-              axisLine={false}
-              tickLine={false}
-            />
-            <Tooltip
-              cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-              contentStyle={{
-                backgroundColor: '#0f172a',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '12px',
-              }}
-            />
-            <Bar dataKey="tasks" radius={[4, 4, 0, 0]}>
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.name === user?.name ? '#10b981' : '#8b5cf6'}
-                  fillOpacity={entry.name === user?.name ? 1 : 0.8}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <p className="text-[9px] text-text-muted/50 mt-4 text-center italic">
-        {description}
-      </p>
-    </div>
-  );
-
-  // 3. Role-Based Rendering Logic
+  // 2. Role-Based Rendering Logic
   if (isAdmin) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-8">
@@ -201,6 +135,7 @@ const RoleAnalytics = ({
         {/* Global Workload (REAL DATA) */}
         <CapacityChart
           data={workload}
+          user={user}
           title={
             isFiltered
               ? isSprintFiltered
@@ -278,6 +213,7 @@ const RoleAnalytics = ({
         {/* Added Capacity Index for Leads */}
         <CapacityChart
           data={workload}
+          user={user}
           title="Team Capacity Matrix"
           description="Visualizes your team's current mission load and individual bandwidth."
           iconColor="text-primary"
@@ -310,6 +246,7 @@ const RoleAnalytics = ({
       {/* Added Capacity Index for Developers */}
       <CapacityChart
         data={workload}
+        user={user}
         title="Peer Load Index"
         description="Shows how your current mission load compares with project peers."
         iconColor="text-status-warning"

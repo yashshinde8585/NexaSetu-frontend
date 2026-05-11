@@ -15,7 +15,8 @@ const MyTasks = () => {
 
   // Set the initial filter and scope based on the URL parameters.
   const queryFilter = searchParams.get('filter') || 'active';
-  const queryScope = searchParams.get('scope') || 'personal';
+  const queryUserId = searchParams.get('userId');
+  const queryScope = queryUserId ? 'workspace' : (searchParams.get('scope') || 'personal');
 
   // Manage task data and logic using a custom hook.
   const {
@@ -28,7 +29,7 @@ const MyTasks = () => {
     search,
     setSearch,
     handleStatusChange,
-  } = useTasks(queryScope, queryFilter);
+  } = useTasks(queryScope, queryFilter, queryUserId);
 
   // Update the URL parameters whenever the filter or scope changes.
   useEffect(() => {

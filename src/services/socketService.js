@@ -2,67 +2,106 @@ import { io } from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
-class SocketService {
-  constructor() {
-    this.socket = null;
+export let socket = null;
+
+export const connect = (explicitToken = null) => {
+  if (socket?.connected) return;
+  if (socket) socket.disconnect();
+
+  const token = explicitToken || localStorage.getItem('token');
+  if (!token) {
+    console.warn('[SOCKET] Connection aborted: No authentication token available.');
+    return;
   }
 
-  /**
-   * Initializes the mission frequency for real-time signaling.
-   * Ensures the terminal is ready for bidirectional telemetry.
-   */
-  connect() {
-    if (this.socket) return;
+  socket = io(SOCKET_URL, {
+    auth: { token },
+    withCredentials: true,
+    autoConnect: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 10000,
+    timeout: 20000,
+    transports: ['websocket'] // Prioritize websocket for stability
+  });
 
-    this.socket = io(SOCKET_URL, {
-      withCredentials: true,
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-    });
+  socket.on('connect_error', (err) => {
+    console.error(`[REAL-TIME SYNC] Connection error: ${err.message}`);
+  });
 
-    this.socket.on('connect', () => {
-      console.log(`[REAL-TIME SYNC] Strategist terminal connected: ${this.socket.id}`);
-    });
+  socket.on('connect', () => {
+    console.log(`[REAL-TIME SYNC] Strategist terminal connected: ${socket.id}`);
+  });
 
-    this.socket.on('disconnect', () => {
-      console.log(`[REAL-TIME SYNC] Strategist terminal disconnected`);
-    });
+  socket.on('disconnect', () => {
+    console.log(`[REAL-TIME SYNC] Strategist terminal disconnected`);
+  });
+};
+
+export const joinMission = (taskId) => {
+  if (!taskId) return;
+  if (!socket) connect();
+  socket.emit('join_task', taskId.toString());
+  console.debug(`[SOCKET] Joined mission room: ${taskId}`);
+};
+
+export const leaveMission = (taskId) => {
+  if (!taskId || !socket) return;
+  socket.emit('leave_task', taskId.toString());
+  console.debug(`[SOCKET] Left mission room: ${taskId}`);
+};
+
+export const joinProject = (projectId) => {
+  if (!projectId) return;
+  if (!socket) connect();
+  socket.emit('join_project', projectId.toString());
+  console.debug(`[SOCKET] Joined project room: ${projectId}`);
+};
+
+export const leaveProject = (projectId) => {
+  if (!projectId || !socket) return;
+  socket.emit('leave_project', projectId.toString());
+  console.debug(`[SOCKET] Left project room: ${projectId}`);
+};
+
+export const onEvent = (event, callback) => {
+  if (!socket) connect();
+  socket.on(event, callback);
+};
+
+export const offEvent = (event) => {
+  if (socket) {
+    socket.off(event);
   }
+};
 
-  /**
-   * Joins a specific mission (task) room to receive localized tactical signals.
-   */
-  joinMission(taskId) {
-    if (!this.socket) this.connect();
-    this.socket.emit('join_task', taskId);
+export const onSignal = (callback) => {
+  onEvent('new_signal', callback);
+};
+
+export const offSignal = () => {
+  offEvent('new_signal');
+};
+
+export const disconnect = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
   }
+};
 
-  /**
-   * Listens for new incoming signals (comments) on the current mission frequency.
-   */
-  onSignal(callback) {
-    if (!this.socket) this.connect();
-    this.socket.on('new_signal', callback);
-  }
+export default {
+  socket,
+  connect,
+  joinMission,
+  leaveMission,
+  joinProject,
+  leaveProject,
+  onEvent,
+  offEvent,
+  onSignal,
+  offSignal,
+  disconnect,
+};
 
-  /**
-   * Cleans up signal listeners to prevent telemetry interference.
-   */
-  offSignal() {
-    if (this.socket) {
-      this.socket.off('new_signal');
-    }
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-    }
-  }
-}
-
-const socketService = new SocketService();
-export default socketService;

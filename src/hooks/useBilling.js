@@ -3,23 +3,26 @@ import BillingService from '../api/billingService';
 import { useAuth } from '../context/AuthContext';
 
 export const useBilling = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
 
   const subscriptionQuery = useQuery({
     queryKey: ['subscription', user?.workspaceId],
     queryFn: () => BillingService.getSubscription().then(res => res.data),
-    enabled: !authLoading && !!user?.workspaceId,
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const plansQuery = useQuery({
     queryKey: ['plans'],
     queryFn: () => BillingService.getPlans().then(res => res.data?.plans || []),
-    enabled: !authLoading,
+    enabled: authReady,
   });
 
   const selectPlanMutation = useMutation({
-    mutationFn: ({ plan }) => BillingService.selectPlan(plan, user.workspaceId),
+    mutationFn: ({ plan }) => {
+      if (!user?.workspaceId) throw new Error('User session not ready. Please wait and try again.');
+      return BillingService.selectPlan(plan, user.workspaceId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
@@ -37,7 +40,7 @@ export const useBilling = () => {
     subscription: subscriptionQuery.data?.subscription,
     limits: subscriptionQuery.data?.limits,
     planName: subscriptionQuery.data?.planName,
-    isLoading: subscriptionQuery.isLoading || plansQuery.isLoading,
+    isLoading: !authReady || subscriptionQuery.isLoading || plansQuery.isLoading,
     plans: plansQuery.data || [],
     selectPlan: selectPlanMutation.mutateAsync,
     isSelecting: selectPlanMutation.isLoading,

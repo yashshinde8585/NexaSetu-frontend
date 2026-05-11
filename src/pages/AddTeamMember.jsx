@@ -26,6 +26,7 @@ import TeamService from '../api/teamService';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES, JOB_TITLES } from '../constants';
 import { BackButton } from '../components/atoms';
+import TacticalCustomSelect from '../components/molecules/TacticalCustomSelect';
 import MetricsService from '../api/metricsService';
 
 
@@ -65,7 +66,7 @@ const AddTeamMember = () => {
     ? dynJobTitles.map((group) => ({
         ...group,
         roles: group.roles.filter((r) =>
-          ['Senior Engineer', 'Software Engineer', 'Junior Engineer', 'Intern', 'QA Engineer / Software Tester'].includes(r.title)
+          ['Senior Engineer', 'Software Engineer', 'Junior Engineer', 'Intern', 'QA Engineer'].includes(r.title)
         ),
       })).filter((group) => group.roles.length > 0)
     : dynJobTitles;
@@ -182,18 +183,17 @@ const AddTeamMember = () => {
 
     return (
       <div className="min-h-[calc(100vh-64px)] bg-black px-3 sm:px-4 lg:px-6 py-4 flex items-center justify-center">
-        <div className="max-w-xl w-full bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center shadow-3xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="max-w-xl w-full bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center relative overflow-hidden">
 
           <div className="w-16 h-16 bg-status-success/10 text-status-success rounded-xl flex items-center justify-center mx-auto mb-6 border border-status-success/20">
             <CheckCircle size={32} strokeWidth={2} />
           </div>
 
-          <h2 className="text-xl font-black text-white mb-2 tracking-tight uppercase">
-            INVITATIONS_SENT
+          <h2 className="text-xl font-black text-white mb-2">
+            Invitations sent
           </h2>
-          <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em] mb-8">
-            PERSONNEL DISPATCHED TO WORKSPACE UPLINK.
+          <p className="text-white/20 text-[9px] font-black mb-8">
+            Personnel dispatched to workspace uplink.
           </p>
 
           <div className="space-y-3 mb-10 text-left max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
@@ -207,10 +207,10 @@ const AddTeamMember = () => {
 
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                      <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-0.5 truncate">
-                        {res.name || 'NEW_OPERATIVE'}
+                      <div className="text-[9px] font-black text-white/30 mb-0.5 truncate">
+                        {res.name || 'New operative'}
                       </div>
-                      <div className="text-[10px] font-black text-white truncate tracking-widest uppercase">
+                      <div className="text-[10px] font-black text-white truncate">
                         {res.email}
                       </div>
                     </div>
@@ -220,16 +220,16 @@ const AddTeamMember = () => {
                         const emailText = `Hi ${res.name || 'there'},\n\nYou’ve been invited to join the NexaSetu workspace.\n\n**Login Details:**\n\n* Email: ${res.email}\n* Temporary Password: ${res.email}\n\n**Access your dashboard:**\n${window.location.origin}/login\n\nFor security reasons, please log in and change your password immediately.\n\nBest regards,\nNexaSetu Team`;
                         copyToClipboard(emailText, `invite-${i}`);
                       }}
-                      className={`h-9 px-4 rounded text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border shrink-0 ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary text-black border-primary'}`}
+                      className={`h-9 px-4 rounded text-[9px] font-black transition-all active:scale-95 border shrink-0 ${copiedField === `invite-${i}` ? 'bg-status-success/10 border-status-success/20 text-status-success' : 'bg-primary text-black border-primary'}`}
                     >
-                      {copiedField === `invite-${i}` ? 'COPIED' : 'COPY_INVITE'}
+                      {copiedField === `invite-${i}` ? 'Copied' : 'Copy invite'}
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-10 text-white/10 text-[9px] font-black uppercase tracking-widest border border-dashed border-white/10 rounded-xl">
-                NULL_DATA: NO_INVITATIONS_SENT
+              <div className="text-center py-10 text-white/10 text-[9px] font-black border border-dashed border-white/10 rounded-xl">
+                No invitations sent
               </div>
             )}
           </div>
@@ -242,9 +242,9 @@ const AddTeamMember = () => {
                 setInvites([{ name: '', email: '', role: USER_ROLES.PROJECT_MEMBER, jobTitle: 'Software Engineer', projectId: '' }]);
                 setResults(null);
               }}
-              className="flex-1 h-10 bg-primary text-black font-black uppercase tracking-[0.2em] text-[9px] rounded transition-all flex items-center justify-center gap-2"
+              className="flex-1 h-10 bg-primary text-black font-black text-[9px] rounded transition-all flex items-center justify-center gap-2"
             >
-              <Plus size={14} /> DISPATCH MORE
+              <Plus size={14} /> Dispatch more
             </button>
           </div>
         </div>
@@ -254,6 +254,18 @@ const AddTeamMember = () => {
 
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-5xl mx-auto">
+      {/* Strategic Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
+        <div className="space-y-1">
+          <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
+            INVITE TEAM MEMBERS
+          </h1>
+          <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
+            Expand your workspace by inviting new personnel and assigning tactical roles.
+          </p>
+        </div>
+      </div>
+
       <form onSubmit={handleSendAll} className="space-y-4">
         <div className="space-y-4">
           {invites.map((invite, idx) => (
@@ -268,14 +280,14 @@ const AddTeamMember = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 <div className="space-y-5">
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 mb-2 block">
-                      FULL NAME
+                    <label className="text-[9px] font-black text-white/20 ml-1 mb-2 block">
+                      Full Name
                     </label>
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all placeholder:text-white/10 text-[10px] font-black tracking-widest uppercase"
-                        placeholder="E.G. ALEX JOHNSON" 
+                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all placeholder:text-white/10 text-[10px] font-black"
+                        placeholder="e.g. Alex Johnson" 
                         required
                         value={invite.name}
                         onChange={(e) => updateRow(idx, 'name', e.target.value)}
@@ -287,14 +299,14 @@ const AddTeamMember = () => {
                     </div>
                   </div>
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 mb-2 block">
-                      EMAIL ADDRESS
+                    <label className="text-[9px] font-black text-white/20 ml-1 mb-2 block">
+                      Email Address
                     </label>
                     <div className="relative">
                       <input
                         type="email"
-                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all placeholder:text-white/10 text-[10px] font-black tracking-widest uppercase"
-                        placeholder="ALEX@COMPANY.COM" 
+                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all placeholder:text-white/10 text-[10px] font-black"
+                        placeholder="alex@company.com" 
                         required
                         value={invite.email}
                         onChange={(e) =>
@@ -311,69 +323,26 @@ const AddTeamMember = () => {
 
                 <div className="space-y-5">
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 mb-2 block">
-                      ASSIGN ROLE
-                    </label>
-                    <div className="relative">
-                        <select
-                          className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all appearance-none cursor-pointer text-[10px] font-black tracking-widest uppercase pr-10"
-                          value={invite.jobTitle}
-                          onChange={(e) =>
-                            handleJobTitleChange(idx, e.target.value)
-                          }
-                        >
-                          {filteredJobTitles.map((group) => (
-                            <optgroup
-                              key={group.category}
-                              label={group.category}
-                              className="bg-black text-primary/70 text-[9px] uppercase font-black tracking-widest py-2"
-                            >
-                              {group.roles.map((r) => (
-                                <option
-                                  key={r.title}
-                                  value={r.title}
-                                  className="bg-black text-white py-2 font-black uppercase tracking-widest text-[10px]"
-                                >
-                                  {r.title}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ))}
-                        </select>
-
-                      <Shield
-                        size={14}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 pointer-events-none"
-                      />
-                    </div>
+                    <TacticalCustomSelect
+                      label="Assign Role"
+                      value={invite.jobTitle}
+                      onChange={(val) => handleJobTitleChange(idx, val)}
+                      icon={<Shield size={14} />}
+                      options={filteredJobTitles.flatMap(group => [
+                        { label: group.category, isGroup: true },
+                        ...group.roles.map(r => ({ label: r.title, value: r.title }))
+                      ])}
+                    />
                   </div>
                   <div className="relative">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 mb-2 block">
-                      ASSIGN TO PROJECT
-                    </label>
-                    <div className="relative">
-                      <select
-                        className="w-full h-9 bg-black border border-white/10 focus:border-primary focus:bg-white/5 text-white rounded px-4 outline-none transition-all appearance-none cursor-pointer text-[10px] font-black tracking-widest uppercase pr-10"
-                        value={invite.projectId}
-                        onChange={(e) =>
-                          updateRow(idx, 'projectId', e.target.value)
-                        }
-                      >
-                        {projects.map((p) => (
-                          <option
-                            key={p._id}
-                            value={p._id}
-                            className="bg-black text-white font-black uppercase tracking-widest"
-                          >
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <Rocket
-                        size={14}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 pointer-events-none"
-                      />
-                    </div>
+                    <TacticalCustomSelect
+                      label="Assign to Project"
+                      value={invite.projectId}
+                      onChange={(val) => updateRow(idx, 'projectId', val)}
+                      icon={<Rocket size={14} />}
+                      displayValue={projects.find(p => p._id === invite.projectId)?.name}
+                      options={projects.map(p => ({ label: p.name, value: p._id }))}
+                    />
                   </div>
                 </div>
               </div>
@@ -384,10 +353,10 @@ const AddTeamMember = () => {
                   <UserPlus size={20} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <div className="text-[11px] font-black text-white uppercase tracking-widest leading-none mb-1 truncate">
-                    {invite.name || 'NEW_OPERATIVE'}
+                  <div className="text-[11px] font-black text-white leading-none mb-1 truncate">
+                    {invite.name || 'New operative'}
                   </div>
-                  <div className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-none truncate">
+                  <div className="text-[9px] font-black text-primary leading-none truncate">
                     {invite.jobTitle}
                   </div>
                 </div>
@@ -397,7 +366,7 @@ const AddTeamMember = () => {
                 <button
                   type="button"
                   onClick={() => removeRow(idx)}
-                  className="absolute -top-2 -right-2 bg-status-error text-white p-1.5 rounded transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 shadow-xl shadow-status-error/20"
+                  className="absolute -top-2 -right-2 bg-status-error text-white p-1.5 rounded transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -412,29 +381,29 @@ const AddTeamMember = () => {
              <button
                type="button"
                onClick={addRow}
-               className="flex-1 h-10 bg-white/5 hover:bg-white/10 text-white/40 font-black uppercase tracking-[0.2em] text-[9px] rounded border border-white/10 transition-all flex items-center justify-center gap-2"
+               className="flex-1 h-10 bg-white/5 hover:bg-white/10 text-white/40 font-black text-[9px] rounded border border-white/10 transition-all flex items-center justify-center gap-2"
              >
-               <Plus size={14} /> ADD_UNIT
+               <Plus size={14} /> Add unit
              </button>
              <button
                type="submit"
                disabled={status === 'loading'}
-               className="flex-[2] h-10 bg-primary text-black font-black uppercase tracking-[0.2em] text-[10px] rounded transition-all flex items-center justify-center gap-2"
+               className="flex-[2] h-10 bg-primary text-black font-black text-[10px] rounded transition-all flex items-center justify-center gap-2"
              >
                {status === 'loading' ? (
                  <>
-                   <Loader2 className="animate-spin text-black" size={16} /> DISPATCHING...
+                   <Loader2 className="animate-spin text-black" size={16} /> Dispatching...
                  </>
                ) : (
                  <>
-                   <Send size={16} /> SEND_INVITATIONS
+                   <Send size={16} /> Send invitations
                  </>
                )}
              </button>
           </div>
 
           {error && (
-            <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-2 rounded text-[8px] font-black uppercase tracking-widest flex items-center gap-2">
+            <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-2 rounded text-[8px] font-black flex items-center gap-2">
               <AlertCircle size={14} /> {error}
             </div>
           )}

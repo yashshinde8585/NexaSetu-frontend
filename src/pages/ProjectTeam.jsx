@@ -1,93 +1,107 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users, Box, Search, Mail, Clock, ShieldCheck, ChevronLeft } from 'lucide-react';
+import { Users, Box, Search, Mail, Clock, ShieldCheck, Rocket, AlertCircle, Loader2, ChevronLeft } from 'lucide-react';
 import TeamService from '../api/teamService';
 import { USER_ROLES } from '../constants';
-
+import { useAuth } from '../context/AuthContext';
+import { useDebounce } from '../hooks/useDebounce';
 
 const ProjectTeam = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Data State
   const [data, setData] = useState({ projectName: '', members: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // UI State
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+
+  /**
+   * Fetch squad members with memory safety
+   */
+  const fetchProjectSquad = useCallback(async (signal) => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // We fetch all members for now, but filter based on project context
+      // At true scale, we'd use a dedicated /team/project/:id API endpoint with pagination
+      const res = await TeamService.getMembers({ limit: 1000 });
+      
+      if (signal.aborted) return;
+
+      const allMembers = res?.members || [];
+
+      let projectName = 'Global Operations';
+      let filtered = [];
+
+      if (projectId === 'unassigned') {
+        projectName = 'Unassigned Members';
+        filtered = allMembers.filter((m) => !m.assignedProjectId);
+      } else {
+        filtered = allMembers.filter(
+          (m) => (m.assignedProjectId?.id || m.assignedProjectId?._id) === projectId
+        );
+        if (filtered.length > 0) {
+          projectName = filtered[0].assignedProjectId.name;
+        } else {
+          // If no members found, we might still want to fetch project name from ProjectService
+          projectName = 'Project Sector';
+        }
+      }
+
+      setData({ projectName, members: filtered });
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      setError('SQUAD_LINKAGE_FAILURE: DATA_STREAM_DISRUPTED.');
+    } finally {
+      if (!signal.aborted) setLoading(false);
+    }
+  }, [projectId]);
 
   useEffect(() => {
-    const fetchProjectSquad = async () => {
-      try {
-        setLoading(true);
-        const res = await TeamService.getMembers();
-        const allMembers = res?.data?.members || [];
-
-        let projectName = 'Global Operations';
-        let filtered = [];
-
-        if (projectId === 'unassigned') {
-          projectName = 'Unassigned Members';
-          filtered = allMembers.filter((m) => !m.assignedProjectId);
-        } else {
-          filtered = allMembers.filter(
-            (m) => m.assignedProjectId?._id === projectId
-          );
-          if (filtered.length > 0) {
-            projectName = filtered[0].assignedProjectId.name;
-          }
-        }
-
-        setData({ projectName, members: filtered });
-      } catch (err) {
-        console.error('Squad linkage failed:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProjectSquad();
-  }, [projectId]);
+    const abortController = new AbortController();
+    fetchProjectSquad(abortController.signal);
+    return () => abortController.abort();
+  }, [fetchProjectSquad]);
 
   const ROLE_PRIORITY = {
     CTO: 1,
     'VP Engineering': 2,
     'Engineering Manager': 3,
-    'HR Manager / People Ops': 4,
+    'HR': 4,
     'Tech Lead': 5,
     'QA Lead': 5,
     'Senior Engineer': 6,
     'Senior QA Engineer': 6,
     'Software Engineer': 7,
     'Junior Engineer': 8,
-    'QA Engineer / Software Tester': 8,
+    'QA Engineer': 8,
     Intern: 9,
   };
 
   const getRoleVisuals = (title) => {
-    switch (title) {
-      case 'CTO':
-      case 'VP Engineering':
-      case 'Engineering Manager':
-      case 'HR Manager / People Ops':
-        return { color: 'text-status-success', shadow: 'rgba(34, 197, 94, 0.4)' };
-      case 'Tech Lead':
-      case 'QA Lead':
-        return { color: 'text-primary', shadow: 'rgba(59, 130, 246, 0.4)' };
-      case 'Senior Engineer':
-      case 'Senior QA Engineer':
-        return { color: 'text-purple-400', shadow: 'rgba(168, 85, 247, 0.4)' };
-      default:
-        return { color: 'text-white/60', shadow: 'transparent' };
-    }
+    const t = title?.toLowerCase() || '';
+    if (t.includes('cto') || t.includes('vp') || t.includes('manager')) return { color: 'text-status-success' };
+    if (t.includes('lead')) return { color: 'text-primary' };
+    if (t.includes('senior')) return { color: 'text-purple-400' };
+    return { color: 'text-white/40' };
   };
 
-  const filteredMembers = data.members
-    .filter(
-      (m) =>
-        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const priorityA = ROLE_PRIORITY[a.jobTitle] || 99;
-      const priorityB = ROLE_PRIORITY[b.jobTitle] || 99;
-      return priorityA - priorityB;
-    });
+  const filteredMembers = useMemo(() => {
+    const q = debouncedSearch.toLowerCase();
+    return data.members
+      .filter((m) => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q))
+      .sort((a, b) => {
+        const priorityA = ROLE_PRIORITY[a.jobTitle] || 99;
+        const priorityB = ROLE_PRIORITY[b.jobTitle] || 99;
+        return priorityA - priorityB;
+      });
+  }, [data.members, debouncedSearch]);
 
   return (
     <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
@@ -95,25 +109,17 @@ const ProjectTeam = () => {
         
         {/* Navigation & Context Header */}
         <div className="space-y-6">
-          <button
-            onClick={() => navigate('/team')}
-            className="group flex items-center gap-2 text-white/30 hover:text-white transition-all text-[9px] font-black uppercase tracking-[0.2em]"
+          <button 
+            onClick={() => navigate('/teams')}
+            className="flex items-center gap-2 text-[9px] font-black text-white/20 hover:text-primary transition-all uppercase tracking-[0.2em]"
           >
-            <div className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center group-hover:border-primary">
-              <ChevronLeft size={14} />
-            </div>
-            BACK TO DIRECTORY
+            <ChevronLeft size={12} /> BACK TO DIRECTORY
           </button>
 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-6">
             <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded border flex items-center justify-center ${projectId === 'unassigned' ? 'bg-white/5 border-white/10 text-white/20' : 'bg-primary/10 text-primary border-primary/20'}`}>
-                {projectId === 'unassigned' ? <Users size={20} /> : <Box size={20} />}
-              </div>
               <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none truncate max-w-[240px] sm:max-w-md">
-                  {data.projectName}
-                </h1>
+                <h1 className="text-xl font-black tracking-tighter text-white uppercase">{data.projectName}</h1>
                 <div className="flex items-center gap-3 text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">
                    <span className="flex items-center gap-2">
                       <Users size={10} className="text-primary" />
@@ -141,19 +147,29 @@ const ProjectTeam = () => {
           </div>
         </div>
 
+        {error && (
+          <div className="bg-status-error/5 border border-status-error/30 p-4 rounded-xl flex items-start gap-4">
+            <AlertCircle className="text-status-error shrink-0 mt-0.5" size={16} />
+            <div className="flex-1">
+              <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">LINK_FAILURE</h4>
+              <p className="text-[9px] text-white/50 font-black uppercase tracking-widest">{error}</p>
+            </div>
+            <button onClick={() => fetchProjectSquad(new AbortController().signal)} className="p-2 bg-white/5 border border-white/10 rounded hover:bg-white/10 transition-colors">
+              <Rocket size={14} />
+            </button>
+          </div>
+        )}
+
         {/* Tactical Personnel Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
           {loading ? (
             [...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-[160px] bg-white/5 border border-white/10 rounded-xl animate-pulse"
-              />
+              <div key={i} className="h-[160px] bg-white/5 border border-white/10 rounded-xl animate-pulse" />
             ))
           ) : (
             filteredMembers.map((member) => (
               <div
-                key={member.email}
+                key={member.id}
                 className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-primary/40 transition-all group flex flex-col h-full relative overflow-hidden"
               >
                 <div className="flex items-start gap-4 mb-6">
@@ -183,7 +199,7 @@ const ProjectTeam = () => {
                 <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                   <div className="flex items-center gap-2 text-white/20 text-[9px] font-black uppercase tracking-[0.1em]">
                     <Clock size={10} />
-                    <span>JOINED {new Date(member.createdAt).toLocaleDateString()}</span>
+                    <span>JOINED {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}</span>
                   </div>
                   <ShieldCheck
                     size={16}
@@ -191,28 +207,23 @@ const ProjectTeam = () => {
                   />
                 </div>
 
-                {/* Hover Detail */}
                 <div className="absolute top-4 right-4 text-[8px] font-black text-white/20 uppercase tracking-[0.4em] opacity-0 group-hover:opacity-100 transition-opacity">
-                  MEMBER ID: {member._id?.slice(-8).toUpperCase()}
+                  MEMBER ID: {member.id?.slice(-8).toUpperCase()}
                 </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Empty State Manifest */}
         {!loading && filteredMembers.length === 0 && (
           <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl">
             <Users size={40} className="mx-auto text-white/10 mb-6" />
-            <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">
-              ZERO PERSONNEL DETECTED
-            </h3>
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">ZERO PERSONNEL DETECTED</h3>
             <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em] max-w-sm mx-auto">
               NO MEMBERS MATCH THE CURRENT SEARCH PARAMETERS FOR THIS SECTOR.
             </p>
           </div>
         )}
-
       </div>
     </div>
   );

@@ -108,7 +108,7 @@ export const ROLE_CARDS = [
   {
     icon: <Heart className="text-status-warning" size={24} />,
     role: 'Talent Analytics',
-    highlight: 'People Ops',
+    highlight: 'HR',
     description: 'Understand engagement and team health through data-driven people insights.',
     dir: 'right',
     delay: 300,

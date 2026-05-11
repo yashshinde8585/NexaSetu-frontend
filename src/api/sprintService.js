@@ -1,48 +1,52 @@
 import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
-// Provides methods for managing the lifecycle of sprints.
-class SprintService {
-  getSprints(projectId) {
-    return apiClient.get(API_ENDPOINTS.SPRINTS.BASE, {
-      params: projectId ? { project: projectId } : {}
-    });
-  }
+export const getSprints = (projectId, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.BASE, {
+    ...config,
+    params: {
+      ...(config.params || {}),
+      ...(projectId ? { project: projectId } : {})
+    }
+  });
+};
 
-  // Create a new sprint with the provided configuration.
-  createSprint(data) {
-    return apiClient.post(API_ENDPOINTS.SPRINTS.BASE, data);
-  }
+export const createSprint = (data, config = {}) => {
+  return apiClient.post(API_ENDPOINTS.SPRINTS.BASE, data, config);
+};
 
-  // Sync health metrics for a sprint.
-  syncHealth(id) {
-    return apiClient.post(`/sprints/${id}/sync`);
-  }
+export const syncHealth = (id, config = {}) => {
+  return apiClient.post(`/sprints/${id}/sync`, null, config);
+};
 
-  // Get analytics and statistics for a specific sprint.
-  getSprintStats(id) {
-    return apiClient.get(API_ENDPOINTS.SPRINTS.STATS(id));
-  }
+export const getSprintStats = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.STATS(id), config);
+};
 
-  // Complete and finalize an active sprint by its ID.
-  finalizeSprint(id) {
-    return apiClient.get(API_ENDPOINTS.SPRINTS.FINALIZE(id));
-  }
+export const finalizeSprint = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.FINALIZE(id), config);
+};
 
-  // Get a detailed summary report for a specific sprint.
-  getSprintReport(id) {
-    return apiClient.get(API_ENDPOINTS.SPRINTS.REPORT(id));
-  }
+export const getSprintReport = (id, config = {}) => {
+  return apiClient.get(API_ENDPOINTS.SPRINTS.REPORT(id), config);
+};
 
-  // Update the details or status of an existing sprint.
-  updateSprint(id, data) {
-    return apiClient.patch(API_ENDPOINTS.SPRINTS.DETAIL(id), data);
-  }
+export const updateSprint = (id, data, config = {}) => {
+  return apiClient.patch(API_ENDPOINTS.SPRINTS.DETAIL(id), data, config);
+};
 
-  // Permanently remove a sprint from the project.
-  deleteSprint(id) {
-    return apiClient.delete(API_ENDPOINTS.SPRINTS.DETAIL(id));
-  }
-}
+export const deleteSprint = (id, config = {}) => {
+  return apiClient.delete(API_ENDPOINTS.SPRINTS.DETAIL(id), config);
+};
 
-export default new SprintService();
+export default {
+  getSprints,
+  createSprint,
+  syncHealth,
+  getSprintStats,
+  finalizeSprint,
+  getSprintReport,
+  updateSprint,
+  deleteSprint,
+};
+

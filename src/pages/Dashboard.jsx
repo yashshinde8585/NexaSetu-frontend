@@ -12,13 +12,15 @@ import { useMagic } from '../context/MagicContext';
 
 // Components
 import StatCards from '../components/dashboard/StatCards';
-import SprintList from '../components/dashboard/SprintList';
-import RoleAnalytics from '../components/dashboard/RoleAnalytics';
-import ApprovalPanel from '../components/portfolio/ApprovalPanel';
-import ProjectOverviewList from '../components/dashboard/ProjectOverviewList';
-import ProjectHealthSummary from '../components/dashboard/ProjectHealthSummary';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import { ResilientPage } from '../components/states';
+import DirectiveBanner from '../components/molecules/dashboard/DirectiveBanner';
+
+const SprintList = React.lazy(() => import('../components/dashboard/SprintList'));
+const RoleAnalytics = React.lazy(() => import('../components/dashboard/RoleAnalytics'));
+const ApprovalPanel = React.lazy(() => import('../components/portfolio/ApprovalPanel'));
+const ProjectOverviewList = React.lazy(() => import('../components/dashboard/ProjectOverviewList'));
+const ProjectHealthSummary = React.lazy(() => import('../components/dashboard/ProjectHealthSummary'));
 
 import { resolveDashboard } from './dashboard/DashboardRegistry';
 
@@ -173,6 +175,15 @@ const Dashboard = () => {
   // Strategic Role Redirection (Master Dashboard Registry)
   const TacticalDashboard = resolveDashboard(user);
 
+  const filteredWorkload = React.useMemo(() => {
+    if (!selectedProjectId) return workload;
+    const members = projects.find((p) => p._id === selectedProjectId)?.members || [];
+    const memberNames = members.map((m) =>
+      typeof m === 'string' ? m : m.name || m._id
+    );
+    return workload.filter((w) => memberNames.includes(w.name));
+  }, [selectedProjectId, projects, workload]);
+
   return (
     <ResilientPage 
       error={error}
@@ -193,62 +204,63 @@ const Dashboard = () => {
       <div className="space-y-12">
         <StatCards stats={stats} isLoading={isLoading} />
         
-        <ProjectHealthSummary sprintId={selectedSprintId} />
+        <React.Suspense fallback={<div className="h-40 bg-white/[0.02] border border-white/5 rounded-[2rem] animate-pulse" />}>
+          <ProjectHealthSummary sprintId={selectedSprintId} />
+        </React.Suspense>
 
         <div className="relative z-30">
-          {isAdmin ? (
-            <ProjectOverviewList
-              projects={projects}
-              isLoading={isLoading}
-              onProjectSelect={setSelectedProjectId}
-              selectedProjectId={selectedProjectId}
-            />
-          ) : (
-            <SprintList
-              sprints={sprints}
-              user={user}
-              isLoading={isLoading}
-              onSprintSelect={setSelectedSprintId}
-              selectedSprintId={selectedSprintId}
-            />
-          )}
+          <React.Suspense fallback={<div className="h-64 bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />}>
+            {isAdmin ? (
+              <ProjectOverviewList
+                projects={projects}
+                isLoading={isLoading}
+                onProjectSelect={setSelectedProjectId}
+                selectedProjectId={selectedProjectId}
+              />
+            ) : (
+              <SprintList
+                sprints={sprints}
+                user={user}
+                isLoading={isLoading}
+                onSprintSelect={setSelectedSprintId}
+                selectedSprintId={selectedSprintId}
+              />
+            )}
+          </React.Suspense>
         </div>
 
         <div className="relative z-20">
-          <RoleAnalytics
-            user={user}
-            projects={
-              selectedProjectId
-                ? projects.filter((p) => p._id === selectedProjectId)
-                : projects
-            }
-            workload={(() => {
-              if (!selectedProjectId) return workload;
-              const members =
-                projects.find((p) => p._id === selectedProjectId)?.members ||
-                [];
-              const memberNames = members.map((m) =>
-                typeof m === 'string' ? m : m.name || m._id
-              );
-              return workload.filter((w) => memberNames.includes(w.name));
-            })()}
-            aiImpact={aiImpact}
-            selectedSprintId={selectedSprintId}
-            sprints={sprints}
-            isLoading={isLoading}
-          />
+          <React.Suspense fallback={<div className="h-80 bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />}>
+            <RoleAnalytics
+              user={user}
+              projects={
+                selectedProjectId
+                  ? projects.filter((p) => p._id === selectedProjectId)
+                  : projects
+              }
+              workload={filteredWorkload}
+              aiImpact={aiImpact}
+              selectedSprintId={selectedSprintId}
+              sprints={sprints}
+              isLoading={isLoading}
+            />
+          </React.Suspense>
         </div>
+
 
         {/* AI Approvals */}
         <div className="pt-10 transition-all duration-1000">
-          <ApprovalPanel
-            actions={pendingActions}
-            handleApprove={approveAction}
-            handleReject={rejectAction}
-            isLoading={isLoading}
-          />
+          <React.Suspense fallback={<div className="h-40 bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />}>
+            <ApprovalPanel
+              actions={pendingActions}
+              handleApprove={approveAction}
+              handleReject={rejectAction}
+              isLoading={isLoading}
+            />
+          </React.Suspense>
           </div>
         </div>
+
       </div>
     )}
     </ResilientPage>

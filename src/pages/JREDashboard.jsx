@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { 
   CheckCircle2, Clock, ShieldAlert, ArrowRight, MessageSquare, 
   HelpCircle, Check, ChevronRight, Zap, Star, MessageCircle, 
   ShieldCheck, Sparkles, Target, Award
 } from 'lucide-react';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
+import taskService from '../api/taskService';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
 import MetricStripItem from '../components/molecules/dashboard/MetricStripItem';
@@ -16,6 +19,8 @@ import ActivityItem from '../components/molecules/dashboard/ActivityItem';
  * Focused on task execution, learning path coordination, and technical mentorship.
  */
 const JREDashboard = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useRoleDashboard('jre');
 
   if (isLoading) return <CenteredLoading />;
@@ -28,6 +33,34 @@ const JREDashboard = () => {
     nextSteps = { main: 'AWAITING_INPUT', minor: 'STANDBY' },
     activity = []
   } = data || {};
+
+  const handleStatusUpdate = async (taskId, currentStatus) => {
+    try {
+      const nextMap = {
+        'todo': 'in_progress',
+        'in_progress': 'in_review',
+        'in_review': 'done',
+        'done': 'todo'
+      };
+      const nextStatus = nextMap[currentStatus] || 'in_progress';
+      await taskService.updateTaskStatus(taskId, nextStatus, 0); // versioning stubbed for simplicity as per requirement
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'jre'] });
+    } catch (err) {
+      console.error('Status update failed:', err);
+    }
+  };
+
+  const handleStepToggle = async (taskId, stepIndex, currentSteps) => {
+    try {
+      const updatedSteps = currentSteps.map((s, idx) => 
+        idx === stepIndex ? { ...s, completed: !s.completed } : s
+      );
+      await taskService.updateTaskSteps(taskId, updatedSteps);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'jre'] });
+    } catch (err) {
+      console.error('Step toggle failed:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
@@ -68,16 +101,25 @@ const JREDashboard = () => {
                        <div className="flex flex-col md:flex-row gap-6">
                           <div className="flex-1">
                              <div className="flex items-center gap-4 mb-4">
-                                <StatusBadge status={task.status === 'ACTIVE' ? 'active' : 'pending'} />
+                                <StatusBadge status={task.status} />
                                 <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">DEADLINE: {task.due}</span>
                              </div>
                              
-                             <h3 className="text-lg font-black text-white mb-2 uppercase tracking-widest group-hover:text-primary transition-colors">{task.title}</h3>
+                             <h3 
+                                className="text-lg font-black text-white mb-2 uppercase tracking-widest group-hover:text-primary transition-colors cursor-pointer"
+                                onClick={() => navigate(`/task/${task.id}`)}
+                             >
+                                {task.title}
+                             </h3>
                              <p className="text-[9px] font-black text-white/40 uppercase leading-relaxed tracking-widest mb-6 max-w-xl">{task.description || 'FOLLOW_STANDARD_PROTOCOLS'}</p>
                              
                              <div className="flex flex-col gap-2">
                                 {task.steps?.map((step, sIdx) => (
-                                  <div key={sIdx} className="flex items-center gap-3 p-3 bg-black border border-white/5 rounded-none hover:border-white/20 transition-colors group/step cursor-pointer">
+                                  <div 
+                                    key={sIdx} 
+                                    className="flex items-center gap-3 p-3 bg-black border border-white/5 rounded-none hover:border-white/20 transition-colors group/step cursor-pointer"
+                                    onClick={() => handleStepToggle(task.id, sIdx, task.steps)}
+                                  >
                                      <div className={`w-5 h-5 rounded-none flex items-center justify-center transition-all ${
                                        step.completed ? 'bg-status-success/20 text-status-success border border-status-success/30' : 'bg-white/5 text-white/20 border border-white/5'
                                      }`}>
@@ -92,7 +134,10 @@ const JREDashboard = () => {
                           <div className="md:w-48 flex flex-col gap-4 md:border-l border-white/10 md:pl-6">
                              <div className="flex flex-col gap-2">
                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">TASK_CONTROLS</span>
-                                <button className="w-full py-2 bg-white/5 border border-white/10 rounded-none text-white/60 text-[9px] font-black uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-colors">
+                                <button 
+                                  className="w-full py-2 bg-white/5 border border-white/10 rounded-none text-white/60 text-[9px] font-black uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-colors"
+                                  onClick={() => handleStatusUpdate(task.id, task.status)}
+                                >
                                    UPDATE_STATUS
                                 </button>
                              </div>
@@ -104,7 +149,10 @@ const JREDashboard = () => {
                                </div>
                              )}
                              
-                             <button className="flex items-center justify-center gap-2 text-[9px] font-black text-white/20 hover:text-white transition-colors uppercase tracking-[0.2em] mt-auto group/btn">
+                             <button 
+                                className="flex items-center justify-center gap-2 text-[9px] font-black text-white/20 hover:text-white transition-colors uppercase tracking-[0.2em] mt-auto group/btn"
+                                onClick={() => navigate(`/task/${task.id}`)}
+                             >
                                 SPEC <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                              </button>
                           </div>
@@ -138,7 +186,7 @@ const JREDashboard = () => {
                        <ActivityItem 
                           key={idx} 
                           text={a.text} 
-                          time="RECENT" 
+                          time={a.time || "RECENT"} 
                           type={a.type === 'approval' ? 'success' : a.type === 'review' ? 'info' : 'warning'}
                           mini
                        />

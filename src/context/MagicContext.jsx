@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
-const MagicContext = createContext();
+const MagicStateContext = createContext();
+const MagicActionsContext = createContext();
 
 // Sustains global state for the AI-driven command system and strategic results.
 export const MagicProvider = ({ children }) => {
@@ -10,58 +11,57 @@ export const MagicProvider = ({ children }) => {
   const [activeProjects, setActiveProjects] = useState([]);
   const [dashboardContext, setDashboardContext] = useState(null);
 
-  const setGlobalResult = React.useCallback((result) => {
+  const setGlobalResult = useCallback((result) => {
     setMagicResult(result);
     setShowResults(!!result);
   }, []);
 
-  const closeGlobalResults = React.useCallback(() => {
+  const closeGlobalResults = useCallback(() => {
     setMagicResult(null);
     setShowResults(false);
   }, []);
 
-  const triggerCommand = React.useCallback((command) => {
+  const triggerCommand = useCallback((command) => {
     setPendingCommand(command);
   }, []);
 
-  const setProjects = React.useCallback((projects) => {
+  const setProjects = useCallback((projects) => {
     setActiveProjects(projects || []);
   }, []);
 
-  const contextValue = React.useMemo(
-    () => ({
-      magicResult,
-      showResults,
-      setGlobalResult,
-      closeGlobalResults,
-      triggerCommand,
-      pendingCommand,
-      setPendingCommand,
-      activeProjects,
-      setProjects,
-      dashboardContext,
-      setDashboardContext,
-    }),
-    [
-      magicResult,
-      showResults,
-      setGlobalResult,
-      closeGlobalResults,
-      triggerCommand,
-      pendingCommand,
-      activeProjects,
-      setProjects,
-      dashboardContext,
-      setDashboardContext,
-    ]
-  );
+  const stateValue = useMemo(() => ({
+    magicResult,
+    showResults,
+    pendingCommand,
+    activeProjects,
+    dashboardContext
+  }), [magicResult, showResults, pendingCommand, activeProjects, dashboardContext]);
+
+  const actionsValue = useMemo(() => ({
+    setGlobalResult,
+    closeGlobalResults,
+    triggerCommand,
+    setPendingCommand,
+    setProjects,
+    setDashboardContext
+  }), [setGlobalResult, closeGlobalResults, triggerCommand, setPendingCommand, setProjects, setDashboardContext]);
 
   return (
-    <MagicContext.Provider value={contextValue}>
-      {children}
-    </MagicContext.Provider>
+    <MagicStateContext.Provider value={stateValue}>
+      <MagicActionsContext.Provider value={actionsValue}>
+        {children}
+      </MagicActionsContext.Provider>
+    </MagicStateContext.Provider>
   );
 };
 
-// Provides access to active AI magic interactions and workspace execution contexts.
-export const useMagic = () => useContext(MagicContext);
+// Unified hook for backward compatibility
+export const useMagic = () => {
+  const state = useContext(MagicStateContext);
+  const actions = useContext(MagicActionsContext);
+  return { ...state, ...actions };
+};
+
+// Specialized hooks for optimization
+export const useMagicState = () => useContext(MagicStateContext);
+export const useMagicActions = () => useContext(MagicActionsContext);

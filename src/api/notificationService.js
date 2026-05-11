@@ -1,22 +1,25 @@
 import apiClient from './apiClient';
 
-// Handles interactions with the notification subsystem.
-class NotificationService {
-  getMyNotifications() {
-    return apiClient.get('/notifications/my-notifications');
-  }
+export const getMyNotifications = (config = {}) => {
+  return apiClient.get('/notifications/my-notifications', config);
+};
 
-  markAsRead(id) {
-    return apiClient.patch(`/notifications/mark-read/${id}`);
-  }
+export const markAsRead = (id, config = {}) => {
+  return apiClient.patch(`/notifications/mark-read/${id}`, null, config);
+};
 
-  markAllAsRead() {
-    return apiClient.patch('/notifications/mark-all-read');
-  }
+export const markAllAsRead = (config = {}) => {
+  return apiClient.patch('/notifications/mark-all-read', null, config);
+};
 
-  clearAll() {
-    return apiClient.delete('/notifications/clear-all');
-  }
-}
+export const clearAll = (config = {}) => {
+  return apiClient.delete('/notifications/clear-all', config);
+};
 
-export default new NotificationService();
+export default {
+  getMyNotifications,
+  markAsRead,
+  markAllAsRead,
+  clearAll,
+};
+

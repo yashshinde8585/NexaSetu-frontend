@@ -1,26 +1,26 @@
 import apiClient from './apiClient';
 import { API_ENDPOINTS } from '../constants';
 
-class MetricsService {
-  /**
-   * Dispatches a telemetry event to the strategic engine for analysis.
-   */
-  trackEvent(eventType, payload = {}) {
-    return apiClient.post(API_ENDPOINTS.METRICS.EVENT, { eventType, payload });
-  }
+export const trackEvent = (eventType, payload = {}) => {
+  return apiClient.post(API_ENDPOINTS.METRICS.EVENT, { eventType, payload });
+};
 
-  // Common shorthand trackers
-  trackSignup(workspaceName, plan) {
-    return this.trackEvent('signup', { workspaceName, plan });
-  }
+export const trackSignup = (workspaceName, plan) => {
+  return trackEvent('signup', { workspaceName, plan });
+};
 
-  trackProjectCreated(projectId, name) {
-    return this.trackEvent('project_created', { projectId, name });
-  }
+export const trackProjectCreated = (projectId, name) => {
+  return trackEvent('project_created', { projectId, name });
+};
 
-  trackTaskCreated(taskId, title) {
-    return this.trackEvent('task_created', { taskId, title });
-  }
-}
+export const trackTaskCreated = (taskId, title) => {
+  return trackEvent('task_created', { taskId, title });
+};
 
-export default new MetricsService();
+export default {
+  trackEvent,
+  trackSignup,
+  trackProjectCreated,
+  trackTaskCreated,
+};
+

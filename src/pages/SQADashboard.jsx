@@ -5,6 +5,7 @@ import {
   ChevronRight, Fingerprint, PieChart, Network,
   AlertCircle, ShieldCheck
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import CenteredLoading from '../components/atoms/CenteredLoading';
 import DashboardSection from '../components/molecules/dashboard/DashboardSection';
@@ -17,6 +18,7 @@ import ActivityItem from '../components/molecules/dashboard/ActivityItem';
  * Focused on deep failure analysis, regression patterns, and release risk intelligence.
  */
 const SQADashboard = () => {
+  const navigate = useNavigate();
   const { data, isLoading } = useRoleDashboard('sqa');
 
   if (isLoading) return <CenteredLoading />;
@@ -81,7 +83,11 @@ const SQADashboard = () => {
             <DashboardSection title="Structural Failure Analysis" icon={<Microscope size={14} />}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
                     {failureAnalysis?.map((item, idx) => (
-                      <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-4 group hover:bg-white/10 transition-colors">
+                      <div 
+                        key={idx} 
+                        className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-4 group hover:bg-white/10 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/quality-control?module=${item.module}`)}
+                      >
                           <div className="flex justify-between items-start">
                              <div className="flex flex-col gap-1">
                                 <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em]">{item.module}_SECTOR</span>
@@ -96,10 +102,13 @@ const SQADashboard = () => {
                              {item.trend}_CYCLICAL
                           </div>
                           <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden">
-                             <div className="h-full bg-status-error" style={{ width: `${(item.failures / 10) * 100}%` }} />
+                             <div className="h-full bg-status-error" style={{ width: `${Math.min(100, (item.failures / 5) * 100)}%` }} />
                           </div>
                       </div>
                     ))}
+                    {(!failureAnalysis || failureAnalysis.length === 0) && (
+                       <div className="col-span-3 py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-[0.3em] italic">ZERO_STRUCTURAL_FAILURES</div>
+                    )}
                 </div>
             </DashboardSection>
         </div>
@@ -110,7 +119,11 @@ const SQADashboard = () => {
             <DashboardSection title="Validation Blockades" icon={<Network size={14} />}>
                <div className="flex flex-col gap-2 py-2">
                    {advancedBlockers?.map((block, idx) => (
-                      <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-none flex justify-between items-center group hover:bg-white/10 transition-colors">
+                      <div 
+                        key={idx} 
+                        className="p-3 bg-white/5 border border-white/10 rounded-none flex justify-between items-center group hover:bg-white/10 transition-colors cursor-pointer"
+                        onClick={() => navigate('/my-tasks?scope=blocked')}
+                      >
                          <div className="flex flex-col gap-1">
                             <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{block.issue}</span>
                             <span className="text-[8px] font-black uppercase text-status-warning tracking-[0.2em]">{block.impactScope}_IMPACT</span>
@@ -118,6 +131,9 @@ const SQADashboard = () => {
                          <ChevronRight size={12} className="text-white/10 group-hover:text-status-warning transition-colors" />
                       </div>
                    ))}
+                   {(!advancedBlockers || advancedBlockers.length === 0) && (
+                      <div className="py-8 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">NO_CRITICAL_BLOCKADES</div>
+                   )}
                </div>
             </DashboardSection>
 
@@ -131,12 +147,15 @@ const SQADashboard = () => {
                          </div>
                          <div className="flex flex-col gap-2">
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">SYSTEM_IMPACT: {test.impact}</span>
-                            <div className="h-0.5 bg-white/5 rounded-none overflow-hidden">
-                               <div className="h-full bg-status-warning/40" style={{ width: test.frequency.includes('25%') ? '25%' : '10%' }} />
+                            <div className="h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
+                               <div className="h-full bg-status-warning/40 transition-all duration-1000" style={{ width: test.frequency.includes('25%') ? '25%' : '10%' }} />
                             </div>
                          </div>
                      </div>
                    ))}
+                   {(!flakyTests || flakyTests.length === 0) && (
+                      <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">STABLE_ENVIRONMENT</div>
+                   )}
                </div>
             </DashboardSection>
          </div>
@@ -154,7 +173,11 @@ const SQADashboard = () => {
                      </thead>
                      <tbody className="divide-y divide-white/[0.02]">
                         {bugIntelligence?.map((bug, idx) => (
-                          <tr key={idx} className="group hover:bg-white/5 transition-colors">
+                          <tr 
+                            key={idx} 
+                            className="group hover:bg-white/5 transition-colors cursor-pointer"
+                            onClick={() => navigate(`/quality-control?module=${bug.module}&priority=${bug.severity}`)}
+                          >
                              <td className="py-3 px-3">
                                 <div className="flex flex-col gap-1">
                                    <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">{bug.module}</span>
@@ -169,6 +192,11 @@ const SQADashboard = () => {
                              </td>
                           </tr>
                         ))}
+                        {(!bugIntelligence || bugIntelligence.length === 0) && (
+                          <tr>
+                            <td colSpan="3" className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">NO_SUBSYSTEM_DATA</td>
+                          </tr>
+                        )}
                      </tbody>
                   </table>
                </div>

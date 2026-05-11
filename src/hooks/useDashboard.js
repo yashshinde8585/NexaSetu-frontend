@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProjectService from '../api/projectService';
 import DashboardService from '../api/dashboardService';
@@ -8,8 +8,11 @@ import ActionService from '../api/actionService';
 import TaskService from '../api/taskService';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
+import { useAuth } from '../context/AuthContext';
+
 // Manages dashboard data retrieval, project creation, and analytics state.
-export const useDashboard = (user, initialSprintId = null) => {
+export const useDashboard = (initialSprintId = null) => {
+  const { user, authReady } = useAuth();
   const queryClient = useQueryClient();
   const [newProjectName, setNewProjectName] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -17,38 +20,53 @@ export const useDashboard = (user, initialSprintId = null) => {
   const [selectedSprintId, setSelectedSprintId] = useState(initialSprintId);
 
   // Sync internal state with external prop if provided
-  useMemo(() => {
+  useEffect(() => {
     if (initialSprintId && initialSprintId !== selectedSprintId) {
       setSelectedSprintId(initialSprintId);
     }
   }, [initialSprintId]);
 
   const statsQuery = useQuery({
-    queryKey: ['dashboard-stats', selectedSprintId],
+    queryKey: ['dashboard-stats', selectedSprintId, user?.workspaceId],
     queryFn: () =>
       DashboardService.getDashboardStats({ sprintId: selectedSprintId }).then(
         (res) => res.data
       ),
+    enabled: authReady && !!user?.workspaceId,
   });
 
   const sprintsQuery = useQuery({
-    queryKey: ['sprints'],
+    queryKey: ['sprints', user?.workspaceId],
     queryFn: () =>
       SprintService.getSprints().then((res) => res.data?.sprints || []),
+    enabled: authReady && !!user?.workspaceId,
   });
+
+  const sprints = sprintsQuery.data || [];
+
+  useEffect(() => {
+    if (selectedSprintId && sprints.length > 0) {
+      const exists = sprints.some(s => s._id === selectedSprintId);
+      if (!exists) {
+        setSelectedSprintId(null);
+      }
+    } else if (selectedSprintId && sprints.length === 0 && !sprintsQuery.isLoading) {
+      setSelectedSprintId(null);
+    }
+  }, [sprints, selectedSprintId, sprintsQuery.isLoading]);
 
   const sprintStatsQuery = useQuery({
     queryKey: ['sprint-stats', selectedSprintId],
     queryFn: () =>
       SprintService.getSprintStats(selectedSprintId).then((res) => res.data),
-    enabled: !!selectedSprintId,
+    enabled: authReady && !!selectedSprintId,
   });
 
   const actionsQuery = useQuery({
-    queryKey: ['pending-actions'],
+    queryKey: ['pending-actions', user?.workspaceId],
     queryFn: () =>
       ActionService.getPendingActions().then((res) => res.data?.actions || []),
-    enabled: !!user,
+    enabled: authReady && !!user,
   });
 
   const createMutation = useMutation({
@@ -73,9 +91,9 @@ export const useDashboard = (user, initialSprintId = null) => {
     onMutate: async (actionId) => {
       await queryClient.cancelQueries({ queryKey: ['pending-actions'] });
       const previousActions = queryClient.getQueryData(['pending-actions']);
-      
+
       // Optimistically remove the action from the list
-      queryClient.setQueryData(['pending-actions'], (old) => 
+      queryClient.setQueryData(['pending-actions'], (old) =>
         old ? old.filter(a => a._id !== actionId) : []
       );
 
@@ -102,8 +120,8 @@ export const useDashboard = (user, initialSprintId = null) => {
     onMutate: async (actionId) => {
       await queryClient.cancelQueries({ queryKey: ['pending-actions'] });
       const previousActions = queryClient.getQueryData(['pending-actions']);
-      
-      queryClient.setQueryData(['pending-actions'], (old) => 
+
+      queryClient.setQueryData(['pending-actions'], (old) =>
         old ? old.filter(a => a._id !== actionId) : []
       );
 
@@ -146,7 +164,17 @@ export const useDashboard = (user, initialSprintId = null) => {
     // If a simple string is passed, wrap it in an object for backward compatibility
     const projectData = typeof data === 'string' ? { name: data } : data;
     const name = projectData.name?.trim();
-    if (name) return createMutation.mutateAsync({ ...projectData, name, sprintId: selectedSprintId });
+
+    // Verify sprint existence before passing it
+    const activeSprintId = (selectedSprintId && sprints.some(s => s._id === selectedSprintId))
+      ? selectedSprintId
+      : null;
+
+    if (name) return createMutation.mutateAsync({
+      ...projectData,
+      name,
+      sprintId: activeSprintId
+    });
   };
 
   const visibleProjects = useMemo(() => {

@@ -45,6 +45,7 @@ const TaskComments = ({ taskId }) => {
 
     return () => {
       socketService.offSignal();
+      socketService.leaveMission(taskId);
     };
   }, [taskId, queryClient]);
 

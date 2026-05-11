@@ -6,6 +6,8 @@ import MagicResults from '../organisms/MagicResults';
 import ServerWakeupBanner from '../organisms/ServerWakeupBanner';
 import ErrorBoundary from '../ErrorBoundary';
 import { useAuth } from '../../context/AuthContext';
+import DirectiveBanner from '../molecules/dashboard/DirectiveBanner';
+import RiskSentinel from '../molecules/dashboard/RiskSentinel';
 
 /**
  * Main Content Layout
@@ -80,6 +82,8 @@ const MainLayout = ({ children }) => {
                 
                 <div className="flex-1 flex flex-col relative">
                     <MagicResults />
+                    <DirectiveBanner />
+                    <RiskSentinel />
                     <main className="flex-1 overflow-x-hidden">
                         <ErrorBoundary>
                             {children}

@@ -8,7 +8,7 @@ const TLDashboard = lazy(() => import('../TLDashboard'));
 const QADashboard = lazy(() => import('../QADashboard'));
 const SQADashboard = lazy(() => import('../SQADashboard'));
 const QALeadDashboard = lazy(() => import('../QALeadDashboard'));
-const PeopleOpsDashboard = lazy(() => import('../PeopleOpsDashboard'));
+const HRDashboard = lazy(() => import('../HRDashboard'));
 const SEDashboard = lazy(() => import('../SEDashboard'));
 const SWEDashboard = lazy(() => import('../SWEDashboard'));
 const JREDashboard = lazy(() => import('../JREDashboard'));
@@ -44,9 +44,9 @@ export const DASHBOARD_REGISTRY = [
     component: QALeadDashboard
   },
   {
-    id: 'people_ops',
-    match: (role, title) => role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager'),
-    component: PeopleOpsDashboard
+    id: 'hr',
+    match: (role, title) => role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager'),
+    component: HRDashboard
   },
   {
     id: 'sqa',

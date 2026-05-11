@@ -11,17 +11,16 @@ import { useBilling } from './hooks/useBilling';
 import { ROUTES } from './constants';
 
 const App = () => {
-    const { user, loading, loadingMessage } = useAuth();
+    const { user, loading, authReady, loadingMessage } = useAuth();
+    
+    // Protected hooks MUST follow the enabled pattern to avoid 401 storms
     const { subscription, isLoading: billingLoading } = useBilling();
 
-    /**
-     * Determines the primary dashboard based on user role and job title.
-     */
     const homeRedirect = useMemo(() => {
         if (!user) return '/';
         
-        // If no active subscription and user is an admin, force pricing page
-        if (!billingLoading && !subscription && (user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER')) {
+        const isAdmin = user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER';
+        if (!billingLoading && !subscription && isAdmin) {
             return ROUTES.PRICING;
         }
 
@@ -34,7 +33,7 @@ const App = () => {
             { cond: role === 'ENGINEERING_MANAGER' || title.includes('engineering manager'), route: ROUTES.TEAM_COMMAND_CENTER },
             { cond: role === 'TECH_LEAD' || title.includes('tech lead'), route: ROUTES.SYSTEM_HEALTH_CONTROL },
             { cond: title.includes('qa lead'), route: ROUTES.QUALITY_COMMAND },
-            { cond: role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager'), route: ROUTES.PEOPLE_OPS },
+            { cond: role === 'HR_MANAGER' || title.includes('hr'), route: ROUTES.HR } ,
             { cond: title.includes('senior qa engineer'), route: ROUTES.QUALITY_STRATEGY },
             { cond: role === 'QA_ENGINEER' || title.includes('qa engineer'), route: ROUTES.QUALITY_CONTROL },
             { cond: role === 'SENIOR_ENGINEER' || title.includes('senior engineer'), route: ROUTES.EXECUTION_CONTROL },
@@ -47,18 +46,30 @@ const App = () => {
         return match ? match.route : ROUTES.PERSONAL_WORK_CONSOLE;
     }, [user, subscription, billingLoading]);
 
-    if (loading) {
+    // BOOT LIFECYCLE GATING
+    if (!authReady || (user && billingLoading)) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8">
-                <div className="relative mb-8">
-                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
-                    <Loader2 className="animate-spin text-primary relative z-10" size={64} strokeWidth={1} />
+            <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-8 overflow-hidden">
+                <div className="relative mb-12">
+                    <div className="absolute inset-0 bg-primary/10 blur-[100px] animate-pulse rounded-full"></div>
+                    <div className="absolute inset-0 bg-primary/5 blur-[40px] rounded-full"></div>
+                    <Loader2 className="animate-spin text-primary relative z-10 opacity-80" size={56} strokeWidth={1} />
                 </div>
-                <div className="text-center max-w-xs animate-pulse">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">System Status</p>
-                    <p className="text-white/60 text-xs font-medium tracking-tight leading-relaxed">
+                <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/80">Neural Link</p>
+                        <h2 className="text-white font-bold tracking-tighter text-lg">NEXASETU CORE</h2>
+                    </div>
+                    <p className="text-white/40 text-[11px] font-medium tracking-tight max-w-[240px] leading-relaxed">
                         {loadingMessage}
                     </p>
+                </div>
+                
+                {/* Visual accents */}
+                <div className="fixed bottom-12 left-1/2 -translate-x-1/2 flex gap-1">
+                    {[1,2,3].map(i => (
+                        <div key={i} className="w-1 h-1 rounded-full bg-primary/20" />
+                    ))}
                 </div>
             </div>
         );
@@ -74,7 +85,7 @@ const App = () => {
             }>
                 <Routes>
                     {/* Public Routes */}
-                    {publicRoutes.map(({ path, element, exact }) => (
+                    {publicRoutes.map(({ path, component: Component, exact }) => (
                         <Route 
                             key={path} 
                             path={path} 
@@ -82,14 +93,14 @@ const App = () => {
                                 (path === '/' || path === ROUTES.LOGIN || path === ROUTES.REGISTER) && user ? (
                                     <Navigate to={homeRedirect} replace />
                                 ) : (
-                                    element
+                                    <Component />
                                 )
                             } 
                         />
                     ))}
 
                     {/* Protected Routes */}
-                    {privateRoutes.map(({ path, element, permission, roles, titles, fallback }) => (
+                    {privateRoutes.map(({ path, component: Component, permission, roles, titles, fallback }) => (
                         <Route 
                             key={path} 
                             path={path} 
@@ -100,7 +111,7 @@ const App = () => {
                                     titles={titles} 
                                     fallback={fallback}
                                 >
-                                    {element}
+                                    <Component />
                                 </ProtectedRoute>
                             } 
                         />
