@@ -237,15 +237,15 @@ const Register = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
       <Navbar hideLinks={true} />
-      <div className="flex-1 flex items-center justify-center p-4 relative font-sans">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 md:py-8 pt-24 md:pt-8 relative font-sans">
         <div className="w-full max-w-4xl relative">
           <div className="bg-black border border-white/10 rounded overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
-              <div className="lg:col-span-5 p-6 flex flex-col items-start text-left border-b lg:border-b-0 lg:border-r border-white/10 lg:sticky lg:top-0">
-                <h2 className="text-[14px] font-black text-white mb-2">
+              <div className="lg:col-span-5 p-5 sm:p-8 flex flex-col items-start text-left border-b lg:border-b-0 lg:border-r border-white/10 lg:sticky lg:top-0 bg-white/[0.02] lg:bg-transparent">
+                <h2 className="text-[14px] font-black text-white mb-1">
                   Create workspace
                 </h2>
-                <p className="text-white/40 text-[9px] font-black leading-relaxed max-w-[280px] mb-6 lg:mb-auto">
+                <p className="text-white/40 text-[9px] font-black leading-relaxed max-w-[280px] mb-4 lg:mb-auto">
                   Set up environment and collaborate.
                 </p>
 
@@ -262,10 +262,10 @@ const Register = () => {
                 </div>
               </div>
 
-              <div className="lg:col-span-7 p-6">
+              <div className="lg:col-span-7 p-5 sm:p-8">
                 {!verifying ? (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <form onSubmit={handleSubmit} className="space-y-3.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                       {/* Workspace Name */}
                       <div className="md:col-span-2 space-y-1">
                         <label className="text-[9px] font-black text-white/40 block">

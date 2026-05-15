@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 const StatCards = ({ stats, isLoading = false }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="p-5 sm:p-6 rounded-2xl border border-white/5 bg-white/[0.02] h-[110px] animate-pulse">
+          <div key={i} className="p-4 sm:p-5 rounded-2xl border border-white/5 bg-white/[0.02] h-[100px] animate-pulse">
             <div className="flex justify-between items-center mb-4">
               <div className="h-2 bg-white/10 rounded w-20" />
               <div className="h-5 w-5 bg-white/10 rounded" />
@@ -22,14 +22,14 @@ const StatCards = ({ stats, isLoading = false }) => {
   return (
     <div
       id="kpi-cards"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6"
     >
       {stats.map((stat, i) => {
         const CardContent = (
           <div
-            className={`p-5 sm:p-6 rounded-2xl border ${stat.color} shadow-lg transition-all h-full group glass hover:border-white/20 ${stat.to ? 'cursor-pointer hover:scale-[1.05] active:scale-[0.98]' : 'cursor-default'}`}
+            className={`p-4 sm:p-5 rounded-2xl border ${stat.color} shadow-lg transition-all h-full group glass hover:border-white/20 ${stat.to ? 'cursor-pointer hover:scale-[1.02] active:scale-[0.98]' : 'cursor-default'}`}
           >
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-1.5">
               <span className="text-[10px] font-black uppercase tracking-[0.15em] opacity-60 group-hover:opacity-100 transition-opacity">
                 {stat.label}
               </span>

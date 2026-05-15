@@ -65,7 +65,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
       ></div>
       <div className="relative w-full max-w-md bg-background-dark/90 backdrop-blur-2xl border-l border-white/10 h-full flex flex-col shadow-2xl animate-[slideInFromRightFull_300ms_ease_forwards]">
         {/* Header */}
-        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+        <div className="p-4 sm:p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
               <Activity size={18} />
@@ -88,7 +88,7 @@ const ActionCenter = ({ isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar]:h-[4px] [&::-webkit-scrollbar-thumb]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/15">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar]:h-[4px] [&::-webkit-scrollbar-thumb]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/15">
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -105,9 +105,9 @@ const ActionCenter = ({ isOpen, onClose }) => {
             actions.map((action) => (
               <div
                 key={action._id}
-                className="bg-white/5 border border-white/10 rounded-2xl p-4 group hover:bg-white/10 transition-all hover:border-primary/30"
+                className="bg-white/5 border border-white/10 rounded-xl p-3.5 group hover:bg-white/10 transition-all hover:border-primary/30"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2.5">
                   <span className="text-[10px] font-black uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
                     {action.type.replace(/_/g, ' ')}
                   </span>
@@ -115,22 +115,22 @@ const ActionCenter = ({ isOpen, onClose }) => {
                     By: {action.agent || 'Nexa'}
                   </span>
                 </div>
-                <p className="text-sm text-white/90 font-medium mb-4 leading-relaxed">
+                <p className="text-sm text-white/90 font-medium mb-3 leading-relaxed">
                   {action.reason}
                 </p>
 
-                <div className="flex gap-2 mt-4 pt-4 border-t border-white/5">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-white/5">
                   <button
                     onClick={() => handleApprove(action._id)}
                     disabled={processingId === action._id}
-                    className="flex-1 flex items-center justify-center gap-2 bg-status-success/10 hover:bg-status-success/20 text-status-success border border-status-success/20 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 bg-status-success/10 hover:bg-status-success/20 text-status-success border border-status-success/20 py-1.5 rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
                   >
                     <CheckCircle size={14} /> APPROVE
                   </button>
                   <button
                     onClick={() => handleReject(action._id)}
                     disabled={processingId === action._id}
-                    className="flex-1 flex items-center justify-center gap-2 bg-status-danger/10 hover:bg-status-danger/20 text-status-danger border border-status-danger/20 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 bg-status-danger/10 hover:bg-status-danger/20 text-status-danger border border-status-danger/20 py-1.5 rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
                   >
                     <XCircle size={14} /> REJECT
                   </button>
