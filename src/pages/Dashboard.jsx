@@ -194,14 +194,14 @@ const Dashboard = () => {
           <TacticalDashboard />
         </React.Suspense>
       ) : (
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 pb-12 space-y-12">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10 space-y-8">
           {createMutation.error && (
             <div className="bg-status-error/10 border border-status-error/20 text-status-error px-4 py-3 rounded-xl text-xs">
               {createMutation.error.message}
             </div>
           )}
 
-      <div className="space-y-12">
+      <div className="space-y-8">
         <StatCards stats={stats} isLoading={isLoading} />
         
         <React.Suspense fallback={<div className="h-40 bg-white/[0.02] border border-white/5 rounded-[2rem] animate-pulse" />}>
@@ -249,7 +249,7 @@ const Dashboard = () => {
 
 
         {/* AI Approvals */}
-        <div className="pt-10 transition-all duration-1000">
+        <div className="pt-6 transition-all duration-1000">
           <React.Suspense fallback={<div className="h-40 bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />}>
             <ApprovalPanel
               actions={pendingActions}

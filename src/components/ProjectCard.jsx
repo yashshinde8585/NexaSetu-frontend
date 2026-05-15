@@ -64,7 +64,7 @@ const ProjectCard = ({ project }) => {
       as={Link}
       to={`/project/${_id}`}
       variant="default"
-      padding="md"
+      padding="sm"
       className="group"
     >
       {/* Background Glow based on health */}
@@ -73,7 +73,7 @@ const ProjectCard = ({ project }) => {
       ></div>
 
       <div
-        className={`flex justify-between items-start ${project.variant === 'strategic' ? 'mb-8' : 'mb-6'}`}
+        className={`flex justify-between items-start ${project.variant === 'strategic' ? 'mb-6' : 'mb-4'}`}
       >
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
@@ -98,7 +98,7 @@ const ProjectCard = ({ project }) => {
 
         {/* Health Score Badge */}
         <div
-          className={`flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${healthUI.border} ${healthUI.bg} backdrop-blur-md`}
+          className={`flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border ${healthUI.border} ${healthUI.bg} backdrop-blur-md`}
         >
           <span className={`text-lg sm:text-xl font-black ${healthUI.color}`}>
             {healthScore}
@@ -110,7 +110,7 @@ const ProjectCard = ({ project }) => {
       </div>
 
       {project.variant !== 'strategic' && (
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/5">
             <p className="text-[9px] sm:text-[10px] text-text-muted uppercase font-bold mb-1">
               Total Tasks
@@ -130,10 +130,10 @@ const ProjectCard = ({ project }) => {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Progress Bar Container */}
         <div>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase">
               Execution Progress
             </span>
@@ -141,7 +141,7 @@ const ProjectCard = ({ project }) => {
               {percentage}%
             </span>
           </div>
-          <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden border border-white/5 p-[2px]">
+          <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/5 p-[1px]">
             <div
               className={`h-full rounded-full transition-all duration-1000 ease-out relative ${progressColorClass}`}
               style={{ width: `${percentage}%` }}
