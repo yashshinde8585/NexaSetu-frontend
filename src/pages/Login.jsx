@@ -141,20 +141,20 @@ const Login = () => {
           <div className="bg-black border border-white/10 rounded overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="lg:col-span-5 p-5 sm:p-8 flex flex-col items-start text-left border-b lg:border-b-0 lg:border-r border-white/10 bg-white/[0.02] lg:bg-transparent">
-                <h2 className="text-[14px] font-black text-white mb-1">
+                <h2 className="text-[18px] font-black text-white mb-1">
                   Welcome back
                 </h2>
-                <p className="text-white/40 text-[9px] font-black leading-relaxed max-w-[280px] mb-4 lg:mb-auto">
+                <p className="text-white/40 text-[11px] font-black leading-relaxed max-w-[280px] mb-4 lg:mb-auto">
                   Sign in to manage workspace.
                 </p>
 
                 <div className="mt-8 pt-4 border-t border-white/10 hidden lg:block w-full">
-                  <p className="text-white/40 text-[9px] font-black mb-2">
+                  <p className="text-white/40 text-[11px] font-black mb-2">
                     No account?
                   </p>
                   <Link
                     to="/register"
-                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4 transition-all"
+                    className="text-white text-[11px] font-black hover:underline decoration-white/30 underline-offset-4 transition-all"
                   >
                     Create workspace
                   </Link>
@@ -166,14 +166,14 @@ const Login = () => {
                   <div className="space-y-4">
                     {/* Email */}
                     <div className="space-y-1">
-                      <label htmlFor="email" className="text-[9px] font-black text-white/40 block">
+                      <label htmlFor="email" className="text-[11px] font-black text-white/40 block">
                         Email Address
                       </label>
                       <input
                         id="email"
                         type="email"
                         disabled={codeSent}
-                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black disabled:opacity-50"
+                        className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[12px] font-black disabled:opacity-50"
                         placeholder="name@company.com" 
                         required
                         maxLength={255}
@@ -184,12 +184,12 @@ const Login = () => {
 
                     {codeSent ? (
                       <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <label className="text-[9px] font-black text-white/40 block">
+                        <label className="text-[11px] font-black text-white/40 block">
                           {isSecondFactor ? 'Security Code' : 'Verification Code'}
                         </label>
                         <input
                           type="text"
-                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black"
+                          className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[12px] font-black"
                           placeholder="000000"
                           required
                           autoFocus
@@ -201,12 +201,12 @@ const Login = () => {
                     ) : !isOTP ? (
                       <div className="space-y-1">
                         <div className="flex justify-between items-center">
-                          <label htmlFor="password" className="text-[9px] font-black text-white/40 block">
+                          <label htmlFor="password" className="text-[11px] font-black text-white/40 block">
                             Password
                           </label>
                           <Link
                             to="/forgot-password"
-                            className="text-[9px] text-white/40 hover:text-white transition-colors font-black"
+                            className="text-[10px] text-white/40 hover:text-white transition-colors font-black"
                           >
                             Forgot?
                           </Link>
@@ -215,7 +215,7 @@ const Login = () => {
                           <input
                             id="password"
                             type={showPassword ? 'text' : 'password'}
-                            className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[10px] font-black pr-10"
+                            className="w-full h-9 bg-white/5 border border-white/10 focus:border-white text-white rounded px-3 outline-none transition-all placeholder:text-white/20 text-[12px] font-black pr-10"
                             placeholder="••••••••"
                             required
                             maxLength={128}
@@ -235,7 +235,7 @@ const Login = () => {
                   </div>
 
                   {error && (
-                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[9px] font-black py-2 px-3 text-center rounded">
+                    <div className="border border-red-500/30 bg-red-500/10 text-red-500 text-[11px] font-black py-2 px-3 text-center rounded">
                       {error}
                     </div>
                   )}
@@ -244,7 +244,7 @@ const Login = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className={`w-full h-9 bg-white text-black text-[9px] font-black transition-all rounded flex items-center justify-center gap-2 ${
+                      className={`w-full h-11 bg-white text-black text-[11px] font-black transition-all rounded flex items-center justify-center gap-2 ${
                         loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/90 active:scale-[0.98]'
                       }`}
                     >
@@ -265,7 +265,7 @@ const Login = () => {
                       <button
                         type="button"
                         onClick={() => setIsOTP(!isOTP)}
-                        className="w-full text-center text-[9px] font-black text-white/40 hover:text-white transition-colors"
+                        className="w-full text-center text-[11px] font-black text-white/40 hover:text-white transition-colors"
                       >
                         {isOTP ? 'Use Password instead' : 'Login with email code'}
                       </button>
@@ -274,12 +274,12 @@ const Login = () => {
                 </form>
 
                 <div className="mt-6 lg:hidden text-center pt-4 border-t border-white/10">
-                  <p className="text-white/40 text-[9px] font-black mb-1">
+                  <p className="text-white/40 text-[11px] font-black mb-1">
                     No account?
                   </p>
                   <Link
                     to="/register"
-                    className="text-white text-[9px] font-black hover:underline decoration-white/30 underline-offset-4"
+                    className="text-white text-[11px] font-black hover:underline decoration-white/30 underline-offset-4"
                   >
                     Create workspace
                   </Link>
