@@ -11,7 +11,7 @@ const api = axios.create({
   timeout: 15000, // Reduced timeout to 15s (Gap 1)
 });
 
-let getToken = () => localStorage.getItem('token');
+let getToken = async () => localStorage.getItem('token');
 
 export const setTokenGetter = (fn) => {
   getToken = fn;
@@ -21,16 +21,19 @@ const pendingRequests = new Map();
 
 api.interceptors.request.use(
   async (config) => {
-    // Skip token fetch if explicitly requested (e.g. for registration sync)
+    // Skip token fetch if explicitly requested
     if (config.headers?.['x-skip-token']) {
       delete config.headers['x-skip-token'];
       return config;
     }
 
-    const token = await getToken();
-    // Ensure token is a valid string and not "null" or "undefined"
-    if (token && typeof token === 'string' && token !== 'null' && token !== 'undefined') {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const token = await getToken();
+      if (token && typeof token === 'string' && token !== 'null' && token !== 'undefined') {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (err) {
+      console.error('[API] Failed to retrieve authentication token:', err);
     }
 
     const mutatingMethods = ['post', 'put', 'patch', 'delete'];
@@ -120,13 +123,20 @@ api.interceptors.response.use(
     const normalizedError = normalizeError(error);
     const useClerk = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
-    // 1. Strict 401 Handling (Never Loop)
+    // 1. Strict 401 Handling
     if (normalizedError.status === 401) {
       const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
                            originalRequest?.url?.includes('/auth/register') ||
                            originalRequest?.url?.includes('/auth/me');
 
-      if (isAuthRequest || originalRequest._retry || useClerk) {
+      // If using Clerk, 401 means backend session is invalid/stale relative to Clerk token
+      if (useClerk) {
+        console.warn('[API] Clerk-backed session unauthorized by backend. Dispatching logout.');
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+        return Promise.reject(normalizedError);
+      }
+
+      if (isAuthRequest || originalRequest._retry) {
         console.warn('[API] Auth failure on sensitive endpoint. Forcing logout.');
         window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(normalizedError);
