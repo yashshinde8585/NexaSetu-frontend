@@ -16,17 +16,16 @@ const ReactQueryDevtools = import.meta.env.DEV
     )
   : null;
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 10 * 60 * 1000,           // 10 minutes – reduce redundant mission data fetches
-      gcTime: 30 * 60 * 1000,             // 30 minutes – keep strategic data in cache longer
+      staleTime: 10 * 60 * 1000,           
+      gcTime: 30 * 60 * 1000,             
       retry: (failureCount, error) => {
-        // NEVER retry on auth failures to prevent loops/storms
         if (error?.status === 401 || error?.status === 403) return false;
-        return failureCount < 1; // Max 1 retry for other errors (network/5xx)
+        return failureCount < 1; 
       },
-      refetchOnWindowFocus: false,         // Prevent focus spam during task execution
+      refetchOnWindowFocus: false,
       refetchOnMount: true,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },

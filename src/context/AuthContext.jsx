@@ -10,168 +10,122 @@ import { useUser, useSignIn, useSignUp, useClerk, useAuth as useClerkAuth } from
 import AuthService from '../api/authService';
 import { setTokenGetter } from '../api/axios';
 import socketService from '../services/socketService';
+import { queryClient } from '../main';
+import { useQuery } from '@tanstack/react-query';
+import { API_ENDPOINTS } from '../constants';
+import apiClient from '../api/apiClient';
 
 const AuthStateContext = createContext();
 const AuthActionsContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [authState, setAuthState] = useState('initializing'); // 'initializing' | 'syncing' | 'authenticated' | 'unauthenticated' | 'failed'
-  const [loadingMessage, setLoadingMessage] = useState('Initializing security protocols...');
-  const [isWakingUp, setIsWakingUp] = useState(false);
-  const syncInProgressRef = React.useRef(false);
-
   const { isLoaded: isClerkLoaded, user: clerkUser, isSignedIn } = useUser();
   const { signOut } = useClerk();
   const { getToken } = useClerkAuth();
   
   const useClerkAuthFlag = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
-  // Register token getter with API layer once
+  // State for manual auth fallback (Native JWT)
+  const [localUser, setLocalUser] = useState(null);
+  const [localAuthState, setLocalAuthState] = useState('initializing');
+
+  // Internal counter to force image refreshes when we know an update happened
+  const [avatarRefreshCounter, setAvatarRefreshCounter] = useState(0);
+
+  // Backend profile query - only runs when Clerk is signed in
+  const { 
+    data: backendUser, 
+    isLoading: profileLoading,
+    isError: profileError,
+    refetch: refetchProfile
+  } = useQuery({
+    queryKey: ['auth', 'profile'],
+    queryFn: async () => {
+      const res = await AuthService.getCurrentUser();
+      return res?.data?.user || res?.user;
+    },
+    enabled: useClerkAuthFlag ? (isClerkLoaded && isSignedIn) : false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // 401 is handled by interceptor
+  });
+
+  // Register token getter with API layer
   useEffect(() => {
     if (useClerkAuthFlag) {
       setTokenGetter(getToken);
     }
   }, [useClerkAuthFlag, getToken]);
 
+  // Derived state
+  const authState = useMemo(() => {
+    if (useClerkAuthFlag) {
+      if (!isClerkLoaded) return 'initializing';
+      if (!isSignedIn) return 'unauthenticated';
+      if (profileLoading) return 'syncing';
+      if (profileError) return 'failed';
+      return 'authenticated';
+    }
+    return localAuthState;
+  }, [useClerkAuthFlag, isClerkLoaded, isSignedIn, profileLoading, profileError, localAuthState]);
+
+  const user = useMemo(() => {
+    if (useClerkAuthFlag) {
+      if (!isSignedIn) return null;
+      // Merge Clerk user with backend user data (role, etc.)
+      const merged = backendUser ? { ...clerkUser, ...backendUser } : clerkUser;
+      
+      // Force image refresh if profilePicture exists
+      if (merged?.profilePicture) {
+        // Use a combination of backend timestamp and our local refresh counter
+        const timestamp = backendUser?.updatedAt ? new Date(backendUser.updatedAt).getTime() : '';
+        const version = `${timestamp}_${avatarRefreshCounter}`;
+        const separator = merged.profilePicture.includes('?') ? '&' : '?';
+        merged.profilePicture = `${merged.profilePicture}${separator}v=${version}`;
+      }
+      
+      return merged;
+    }
+    return localUser;
+  }, [useClerkAuthFlag, clerkUser, backendUser, localUser, isSignedIn, avatarRefreshCounter]);
+
   const logout = useCallback(async () => {
     console.log('[AUTH] Initiating global logout...');
-    setAuthState('unauthenticated');
     try {
       if (useClerkAuthFlag) {
         await signOut();
       } else {
         await AuthService.logout();
+        setLocalAuthState('unauthenticated');
+        setLocalUser(null);
       }
     } catch (err) {
       console.error('[AUTH] Logout error:', err);
     } finally {
       localStorage.removeItem('token');
-      setUser(null);
+      // Clear all query caches on logout to prevent data leakage/stale states
+      queryClient.clear();
+      window.dispatchEvent(new CustomEvent('auth:logout_complete'));
     }
   }, [useClerkAuthFlag, signOut]);
 
-  // Sync logic: Fetch local user profile when authenticated
+  // Handle global logout events (from API interceptor)
   useEffect(() => {
-    let isMounted = true;
-    
-    const syncUser = async () => {
-      // 1. Wait for Clerk to load if enabled
-      if (useClerkAuthFlag && !isClerkLoaded) return;
-      
-      // Prevent redundant syncs
-      if (syncInProgressRef.current) return;
-      syncInProgressRef.current = true;
-
-      try {
-        // 2. Resolve initial auth status
-        const hasClerkSession = useClerkAuthFlag && isSignedIn;
-        const hasLocalToken = !!localStorage.getItem('token');
-        
-        if (!hasClerkSession && !hasLocalToken) {
-          if (isMounted) {
-            setAuthState('unauthenticated');
-            setUser(null);
-          }
-          return;
-        }
-
-        // 3. Begin synchronization
-        console.log('[AUTH] Identity synchronization initiated...');
-        setAuthState('syncing');
-        setLoadingMessage('Synchronizing workspace identity...');
-
-        const controller = new AbortController();
-        const wakingUpTimeout = setTimeout(() => {
-          if (isMounted) {
-            setIsWakingUp(true);
-            setLoadingMessage('Waking up the strategic engine... (First load may take ~30s)');
-          }
-        }, 4000);
-
-        const hardTimeout = setTimeout(() => controller.abort(), 45000); 
-
-        let attempts = 0;
-        const maxRetries = 1;
-
-        const fetchProfile = async () => {
-          try {
-            const token = useClerkAuthFlag ? await getToken() : localStorage.getItem('token');
-            if (!token) throw new Error('No token available');
-
-            if (useClerkAuthFlag) {
-              localStorage.setItem('token', token);
-            }
-
-            const res = await AuthService.getCurrentUser({ signal: controller.signal });
-            const userData = res?.data?.user || res?.user;
-            
-            if (!userData) throw new Error('MALFORMED_IDENTITY_PAYLOAD');
-
-            if (isMounted) {
-              setUser(userData);
-              setAuthState('authenticated');
-              console.log('[AUTH] Session stabilized.');
-            }
-            return true;
-          } catch (err) {
-            if (err.name === 'AbortError') {
-              console.warn('[AUTH] Sync timed out.');
-              if (isMounted) setAuthState('failed');
-              return false;
-            }
-
-            if (err.status === 401) {
-              console.warn('[AUTH] Invalid session detected during sync.');
-              if (isMounted) {
-                setUser(null);
-                setAuthState('unauthenticated');
-              }
-              return false;
-            }
-
-            if (attempts < maxRetries && isMounted) {
-              attempts++;
-              console.log(`[AUTH] Sync attempt ${attempts} failed, retrying in 2s...`);
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              return await fetchProfile();
-            }
-
-            if (isMounted) {
-              console.error('[AUTH] Synchronization failure:', err);
-              setAuthState('failed');
-              setLoadingMessage('Neural link failure. Please refresh.');
-            }
-            return false;
-          }
-        };
-
-        await fetchProfile();
-        
-        clearTimeout(wakingUpTimeout);
-        clearTimeout(hardTimeout);
-      } finally {
-        syncInProgressRef.current = false;
-      }
-    };
-
-    syncUser();
-
-    const handleGlobalLogout = () => {
-      if (isMounted) {
-        logout();
-        socketService.disconnect();
-      }
+    const handleGlobalLogout = () => logout();
+    const handleLogoutComplete = () => {
+      queryClient.clear();
+      socketService.disconnect();
     };
 
     window.addEventListener('auth:logout', handleGlobalLogout);
+    window.addEventListener('auth:logout_complete', handleLogoutComplete);
+    
     return () => {
-      isMounted = false;
       window.removeEventListener('auth:logout', handleGlobalLogout);
+      window.removeEventListener('auth:logout_complete', handleLogoutComplete);
     };
-  }, [useClerkAuthFlag, isClerkLoaded, isSignedIn, getToken, logout]);
+  }, [logout]);
 
-  // Socket.io lifecycle management
+  // Socket management - purely reactive
   useEffect(() => {
     if (authState === 'authenticated') {
       const initSocket = async () => {
@@ -179,7 +133,7 @@ export const AuthProvider = ({ children }) => {
         if (token) socketService.connect(token);
       };
       initSocket();
-    } else if (authState === 'unauthenticated' || authState === 'failed') {
+    } else {
       socketService.disconnect();
     }
   }, [authState, useClerkAuthFlag, getToken]);
@@ -189,11 +143,11 @@ export const AuthProvider = ({ children }) => {
       const res = await AuthService.login(email, password, config);
       if (res.token) localStorage.setItem('token', res.token);
       const userData = res?.data?.user || res?.user || null;
-      setUser(userData);
-      if (userData) setAuthState('authenticated');
+      setLocalUser(userData);
+      if (userData) setLocalAuthState('authenticated');
       return res;
     } catch (err) {
-      setAuthState('unauthenticated');
+      setLocalAuthState('unauthenticated');
       throw err;
     }
   }, []);
@@ -205,8 +159,8 @@ export const AuthProvider = ({ children }) => {
         const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
         const userData = res?.data?.user || res?.user || null;
-        setUser(userData);
-        if (userData) setAuthState('authenticated');
+        setLocalUser(userData);
+        if (userData) setLocalAuthState('authenticated');
         return res;
       } catch (err) {
         throw err;
@@ -220,8 +174,21 @@ export const AuthProvider = ({ children }) => {
       const res = await AuthService.activateInvite(token, name, password);
       if (res.token) localStorage.setItem('token', res.token);
       const userData = res?.data?.user || res?.user || null;
-      setUser(userData);
-      if (userData) setAuthState('authenticated');
+      setLocalUser(userData);
+      if (userData) setLocalAuthState('authenticated');
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  }, []);
+
+  const updateAvatar = useCallback(async (formData) => {
+    try {
+      const res = await AuthService.updateAvatar(formData);
+      // Increment local counter to force immediate image reload
+      setAvatarRefreshCounter(prev => prev + 1);
+      // Invalidate and refetch to ensure all components see the new data
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
       return res;
     } catch (err) {
       throw err;
@@ -231,14 +198,17 @@ export const AuthProvider = ({ children }) => {
   const stateValue = useMemo(
     () => ({
       user,
+      clerkUser: useClerkAuthFlag ? clerkUser : null,
       authState,
       loading: authState === 'initializing' || authState === 'syncing',
-      authReady: authState === 'authenticated' || authState === 'unauthenticated',
-      loadingMessage,
-      isWakingUp,
-      isAuthenticated: authState === 'authenticated',
+      authReady: authState !== 'initializing' && authState !== 'syncing',
+      loadingMessage: authState === 'initializing' 
+        ? 'Initializing security protocols...' 
+        : 'Synchronizing workspace identity...',
+      isAuthenticated: authState === 'authenticated' || authState === 'syncing',
+      isClerk: useClerkAuthFlag,
     }),
-    [user, authState, loadingMessage, isWakingUp]
+    [user, clerkUser, authState, useClerkAuthFlag]
   );
 
   const actionsValue = useMemo(
@@ -246,9 +216,10 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       activateInvite,
+      updateAvatar,
       logout,
     }),
-    [login, register, activateInvite, logout]
+    [login, register, activateInvite, updateAvatar, logout]
   );
 
   return (
