@@ -29,7 +29,7 @@ const ProjectInfo = () => {
     linkProjectToSprint: handleLinkProject,
     getFinalSummary,
     downloadSprintReport,
-  } = useDashboard(user, selectedSprintId);
+  } = useDashboard(selectedSprintId);
 
   const [finalSummary, setFinalSummary] = useState(null);
   const [finalizing, setFinalizing] = useState(false);
