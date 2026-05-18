@@ -9,10 +9,6 @@ import { useAuth } from '../../context/AuthContext';
 import DirectiveBanner from '../molecules/dashboard/DirectiveBanner';
 import RiskSentinel from '../molecules/dashboard/RiskSentinel';
 
-/**
- * Main Content Layout
- * Standardizes the application shell across all authenticated views.
- */
 const MainLayout = ({ children }) => {
     const { user } = useAuth();
     const location = useLocation();
@@ -50,7 +46,7 @@ const MainLayout = ({ children }) => {
             {showSidebar && <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />}
             
             <div className={`transition-all duration-300 min-h-screen flex flex-col ${showSidebar ? 'md:ml-64' : ''}`}>
-                <ServerWakeupBanner />
+                {/* <ServerWakeupBanner /> */}
                 
                 {serverDown && (
                     <div className="bg-red-500/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] py-2 text-center sticky top-0 z-50 animate-[fadeIn_500ms_ease_forwards,slideInFromTop_500ms_ease_forwards]">
