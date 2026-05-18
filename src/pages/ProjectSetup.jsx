@@ -19,7 +19,7 @@ const SetupSkeleton = () => (
 const ProjectSetup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { handleCreateProject, isLoading } = useDashboard(user);
+  const { handleCreateProject, isLoading } = useDashboard();
   
   const [mission, setMission] = useState({
     name: '',

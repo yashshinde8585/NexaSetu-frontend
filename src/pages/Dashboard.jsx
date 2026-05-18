@@ -43,7 +43,7 @@ const Dashboard = () => {
     pendingActions,
     approveAction,
     rejectAction,
-  } = useDashboard(user);
+  } = useDashboard();
 
   const [selectedProjectId, setSelectedProjectId] = React.useState(null);
 
