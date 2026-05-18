@@ -197,10 +197,10 @@ const ProjectInfo = () => {
           <div className="space-y-4 flex-1 w-full">
             <div className="flex items-center gap-3">
               <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase leading-none">
-                  SPRINT <span className="text-primary">INTELLIGENCE</span> CORE
+                <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
+                  SPRINT INTELLIGENCE CORE
                 </h1>
-                <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
                   MISSION CONTROL FOR ORGANIZATIONAL DEVELOPMENT CYCLES
                 </p>
               </div>
