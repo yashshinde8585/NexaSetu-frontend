@@ -314,7 +314,7 @@ const AdminDashboard = () => {
 
         <div className="flex flex-wrap items-center gap-1.5 lg:gap-2 text-[9px] font-black uppercase tracking-widest">
           {/* Workspace Filter */}
-          <div className="relative">
+          {/* <div className="relative">
             <div
               onClick={() => setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen)}
               className="bg-white/5 border border-white/10 px-2 py-1.5 flex items-center gap-1.5 cursor-pointer hover:bg-white/10 transition-all select-none"
@@ -350,10 +350,10 @@ const AdminDashboard = () => {
                 </div>
               </>
             )}
-          </div>
+          </div> */}
 
           {/* Environment Filter */}
-          <div className="relative">
+          {/* <div className="relative">
             <div
               onClick={() => setIsEnvDropdownOpen(!isEnvDropdownOpen)}
               className="bg-white/5 border border-white/10 px-2 py-1.5 flex items-center gap-1.5 cursor-pointer hover:bg-white/10 transition-all select-none"
@@ -377,11 +377,10 @@ const AdminDashboard = () => {
                         setEnvFilter(env);
                         setIsEnvDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${
-                        envFilter === env
+                      className={`w-full text-left px-3 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${envFilter === env
                           ? 'bg-white/10 text-white'
                           : 'text-white/60 hover:bg-white/5 hover:text-white'
-                      }`}
+                        }`}
                     >
                       {env}
                     </button>
@@ -389,16 +388,16 @@ const AdminDashboard = () => {
                 </div>
               </>
             )}
-          </div>
+          </div> */}
 
           {/* Filters Toggle Button */}
-          <button
+          {/* <button
             onClick={() => toast.success('Filters cleared.')}
             className="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 px-3 py-1.5 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
           >
             <SlidersHorizontal size={10} />
             <span>Filters</span>
-          </button>
+          </button> */}
         </div>
       </div>
 
