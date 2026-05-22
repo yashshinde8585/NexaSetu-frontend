@@ -261,9 +261,9 @@ export const useDashboard = (initialSprintId = null) => {
       });
     },
     createSprint: createSprintMutation.mutate,
-    createSprintLoading: createSprintMutation.isLoading,
+    createSprintLoading: createSprintMutation.isPending,
     createTicket: createTaskMutation.mutate,
-    createTicketLoading: createTaskMutation.isLoading,
+    createTicketLoading: createTaskMutation.isPending,
     getFinalSummary: async (id) => {
       const res = await SprintService.finalizeSprint(id);
       return res.data;

@@ -15,7 +15,7 @@ const AdminBilling = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D0D0D]">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
     </div>
   );
@@ -62,7 +62,7 @@ const AdminBilling = () => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen text-white animate-in fade-in duration-700">
+    <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-background text-text min-h-screen animate-in fade-in duration-700">
       {/* Provisioning Overlay */}
       {isProvisioning && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-8">

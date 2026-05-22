@@ -4,7 +4,15 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationTray from './NotificationTray';
-import { Menu, Layers, Rocket, Shield, Sparkles, Zap, RefreshCw } from 'lucide-react';
+import {
+  Menu,
+  Layers,
+  Rocket,
+  Shield,
+  Sparkles,
+  Zap,
+  RefreshCw,
+} from 'lucide-react';
 import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
 import { ROUTES } from '../../constants/routes';
@@ -22,24 +30,38 @@ const Navbar = ({ onToggleSidebar }) => {
 
   const { data: project } = useQuery({
     queryKey: ['project', projectId],
-    queryFn: () => ProjectService.getProject(projectId).then(res => res.data?.project),
-    enabled: !!projectId && projectId !== 'unassigned'
+    queryFn: () =>
+      ProjectService.getProject(projectId).then((res) => res.data?.project),
+    enabled: !!projectId && projectId !== 'unassigned',
   });
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 h-14 bg-black border-b border-white/10">
+    <nav
+      className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 h-14 bg-black border-b border-white/10"
+      style={{
+        backgroundColor: 'var(--color-background-dark)',
+        borderColor: 'var(--color-border-subtle)',
+      }}
+    >
       {user ? (
         <>
           <div className="flex items-center gap-4 shrink-0 px-2 h-9">
             <button
               onClick={onToggleSidebar}
               className="p-2 -ml-2 text-white/60 hover:text-white md:hidden transition-colors"
+              style={{ color: 'var(--color-text-subtle)' }}
               aria-label="Toggle Sidebar"
             >
               <Menu size={24} aria-hidden="true" />
             </button>
-            <div className="text-[10px] font-black text-white flex items-center h-full">
-              <span className="text-white uppercase tracking-[0.2em]">
+            <div
+              className="text-[10px] font-black text-white flex items-center h-full"
+              style={{ color: 'var(--color-text)' }}
+            >
+              <span
+                className="text-white uppercase tracking-[0.2em]"
+                style={{ color: 'var(--color-text)' }}
+              >
                 {(() => {
                   const breadcrumbMap = {
                     [ROUTES.DASHBOARD]: 'Home',
@@ -70,21 +92,29 @@ const Navbar = ({ onToggleSidebar }) => {
                   };
 
                   if (breadcrumbMap[path]) return breadcrumbMap[path];
-                  
+
                   if (isTeamProjectPage) {
-                    const projectName = project?.name || (projectId === 'unassigned' ? 'Unassigned' : '');
+                    const projectName =
+                      project?.name ||
+                      (projectId === 'unassigned' ? 'Unassigned' : '');
                     if (!projectName) return 'Team';
-                    
+
                     return (
                       <span className="flex items-center gap-2">
-                        <Link to={ROUTES.TEAMS} className="hover:text-primary transition-colors">Team</Link>
+                        <Link
+                          to={ROUTES.TEAMS}
+                          className="hover:text-primary transition-colors"
+                        >
+                          Team
+                        </Link>
                         <span className="text-white/20">/</span>
                         <span className="text-white">{projectName}</span>
                       </span>
                     );
                   }
 
-                  if (path.match(/^\/project\/[^/]+\/settings$/)) return 'Project Settings';
+                  if (path.match(/^\/project\/[^/]+\/settings$/))
+                    return 'Project Settings';
                   if (path.startsWith('/project/')) return 'Task Board';
                   if (path.startsWith('/task/')) return 'Task Detail';
                   return '';
@@ -100,11 +130,16 @@ const Navbar = ({ onToggleSidebar }) => {
 
           <div className="flex items-center gap-4 shrink-0 h-9">
             {path === ROUTES.HR && (
-              <button 
-                onClick={() => queryClient.invalidateQueries({ queryKey: ['dashboard'] })}
+              <button
+                onClick={() =>
+                  queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+                }
                 className="hidden lg:flex items-center gap-2 px-3 h-8 bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all group rounded"
               >
-                <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
+                <RefreshCw
+                  size={12}
+                  className="group-hover:rotate-180 transition-transform duration-500"
+                />
                 Sync_Workforce_Telemetry
               </button>
             )}

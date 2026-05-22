@@ -56,7 +56,7 @@ const MainLayout = ({ children }) => {
 
                 {sessionExpired && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-500">
-                        <div className="bg-[#0A0A0A] border border-white/10 p-8 max-w-md w-full shadow-2xl">
+                        <div className="bg-background text-text border border-white/10 p-8 max-w-md w-full shadow-2xl">
                             <h2 className="text-[12px] font-black text-white uppercase tracking-[0.4em] mb-4">Security Session Expired</h2>
                             <p className="text-[10px] text-white/40 uppercase tracking-widest leading-loose mb-8">
                                 {sessionExpired}

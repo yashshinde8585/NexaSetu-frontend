@@ -29,38 +29,74 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     {
-      name: title.includes('cto') ? 'Executive Dashboard' : 
-            title.includes('vp engineering') ? 'Ops Dashboard' : 
-            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? 'Team Overview' :
-            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'Systems Health' :
-            (title.includes('qa lead')) ? 'Quality Overview' :
-            (user?.role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager')) ? 'Dashboard' :
-            (title.includes('senior qa engineer')) ? 'Test Strategy' :
-            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Test Dashboard' :
-            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Development Dashboard' :
-            (title.includes('junior engineer')) ? 'My Tasks' :
-            (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Hub' :
-            user?.role === 'WORKSPACE_ADMIN' ? 'Dashboard' :
-            'My Dashboard',
-      path: title.includes('cto') ? '/cto-dashboard' :
-            title.includes('vp engineering') ? '/execution-commander' : 
-            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
-            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? '/system-health-control' :
-            (title.includes('qa lead')) ? '/quality-command' :
-            (user?.role === 'HR_MANAGER' || title.includes('hr') || title.includes('hr manager')) ? '/hr' :
-            (title.includes('senior qa engineer')) ? '/quality-strategy' :
-            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? '/quality-control' :
-            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? '/execution-control' :
-            (title.includes('junior engineer')) ? '/guided-assistant' :
-            (user?.role === 'INTERN' || title.includes('intern')) ? '/learning-workspace' :
-            user?.role === 'WORKSPACE_ADMIN' ? ROUTES.ADMIN_PANEL :
-            '/work-console',
+      name: title.includes('cto')
+        ? 'Executive Dashboard'
+        : title.includes('vp engineering')
+          ? 'Ops Dashboard'
+          : user?.role === 'ENGINEERING_MANAGER' ||
+              title.includes('engineering manager')
+            ? 'Team Overview'
+            : user?.role === 'TECH_LEAD' || title.includes('tech lead')
+              ? 'Systems Health'
+              : title.includes('qa lead')
+                ? 'Quality Overview'
+                : user?.role === 'HR_MANAGER' ||
+                    title.includes('hr') ||
+                    title.includes('hr manager')
+                  ? 'Dashboard'
+                  : title.includes('senior qa engineer')
+                    ? 'Test Strategy'
+                    : user?.role === 'QA_ENGINEER' ||
+                        title.includes('qa engineer')
+                      ? 'Test Dashboard'
+                      : user?.role === 'SENIOR_ENGINEER' ||
+                          title.includes('senior engineer')
+                        ? 'Development Dashboard'
+                        : title.includes('junior engineer')
+                          ? 'My Tasks'
+                          : user?.role === 'INTERN' || title.includes('intern')
+                            ? 'Learning Hub'
+                            : user?.role === 'WORKSPACE_ADMIN'
+                              ? 'Dashboard'
+                              : 'My Dashboard',
+      path: title.includes('cto')
+        ? '/cto-dashboard'
+        : title.includes('vp engineering')
+          ? '/execution-commander'
+          : user?.role === 'ENGINEERING_MANAGER' ||
+              title.includes('engineering manager')
+            ? '/team-command-center'
+            : user?.role === 'TECH_LEAD' || title.includes('tech lead')
+              ? '/system-health-control'
+              : title.includes('qa lead')
+                ? '/quality-command'
+                : user?.role === 'HR_MANAGER' ||
+                    title.includes('hr') ||
+                    title.includes('hr manager')
+                  ? '/hr'
+                  : title.includes('senior qa engineer')
+                    ? '/quality-strategy'
+                    : user?.role === 'QA_ENGINEER' ||
+                        title.includes('qa engineer')
+                      ? '/quality-control'
+                      : user?.role === 'SENIOR_ENGINEER' ||
+                          title.includes('senior engineer')
+                        ? '/execution-control'
+                        : title.includes('junior engineer')
+                          ? '/guided-assistant'
+                          : user?.role === 'INTERN' || title.includes('intern')
+                            ? '/learning-workspace'
+                            : user?.role === 'WORKSPACE_ADMIN'
+                              ? ROUTES.ADMIN_PANEL
+                              : '/work-console',
       icon: <Shield size={20} />,
       permission: null, // Allow visibility based on user detection
     },
     {
       name: 'Team',
-      path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
+      path: user?.assignedProjectId
+        ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}`
+        : '/teams',
       icon: <Users size={20} />,
       permission: null,
     },
@@ -71,7 +107,10 @@ const Sidebar = ({ isOpen, onClose }) => {
       permission: PERMISSIONS.MANAGE_BILLING,
       disabled: false,
     },
-  ].filter((item) => (!item.permission || hasPermission(item.permission)) && !item.hidden);
+  ].filter(
+    (item) =>
+      (!item.permission || hasPermission(item.permission)) && !item.hidden
+  );
 
   const canInvite = hasPermission(PERMISSIONS.INVITE_USERS);
 
@@ -87,20 +126,30 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <aside
         className={`w-64 bg-black border-r border-white/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-3xl md:shadow-none`}
+        style={{
+          backgroundColor: 'var(--color-background-dark)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
       >
         <div className="p-6 shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-6 h-6 bg-primary flex items-center justify-center text-black transition-transform">
               <Zap size={14} fill="currentColor" />
             </div>
-            <span className="text-[12px] font-black tracking-[0.2em] text-white uppercase">
+            <span
+              className="text-[12px] font-black tracking-[0.2em] text-white uppercase"
+              style={{ color: 'var(--color-text)' }}
+            >
               NEXA_SETU
             </span>
           </Link>
         </div>
 
         <nav className="flex-1 mt-2 px-0 space-y-1 overflow-y-auto custom-scrollbar">
-          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4">
+          <div
+            className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4"
+            style={{ color: 'var(--color-text-subtle)' }}
+          >
             Workspace
           </div>
           {navItems.map((item) => (
@@ -144,7 +193,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           ))}
 
           <div className="pt-6">
-            <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4">
+            <div
+              className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               Management
             </div>
             {[
@@ -165,58 +217,61 @@ const Sidebar = ({ isOpen, onClose }) => {
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
-                hidden: user?.role !== 'WORKSPACE_ADMIN'
+                hidden: user?.role !== 'WORKSPACE_ADMIN',
               },
-            ].filter(item => {
-              if (item.hidden) return false;
-              if (item.permission && !hasPermission(item.permission)) return false;
+            ]
+              .filter((item) => {
+                if (item.hidden) return false;
+                if (item.permission && !hasPermission(item.permission))
+                  return false;
 
-              // Ensure "Sprints" is visible to everyone
-              if (item.name === 'Sprints') return true;
+                // Ensure "Sprints" is visible to everyone
+                if (item.name === 'Sprints') return true;
 
-              const isAdmin = user?.role === 'WORKSPACE_ADMIN';
-              if (isAdmin) {
-                // Admins primarily focus on "New Project" but must also access "Task Board"
-                if (item.name === 'New Project' || item.name === 'Task Board') return true;
-                return false;
-              }
-
-              return true;
-            })
-            .map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                onClick={item.disabled ? (e) => e.preventDefault() : onClose}
-                className={({ isActive }) =>
-                  `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
-                    item.disabled
-                      ? 'opacity-40 cursor-not-allowed'
-                      : isActive
-                        ? 'text-white bg-white/5'
-                        : 'text-white/40 hover:text-white hover:bg-white/5'
-                  }`
+                const isAdmin = user?.role === 'WORKSPACE_ADMIN';
+                if (isAdmin) {
+                  // Admins primarily focus on "New Project" but must also access "Task Board"
+                  if (item.name === 'New Project' || item.name === 'Task Board')
+                    return true;
+                  return false;
                 }
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary" />
-                    )}
-                    <span
-                      className={`transition-all ${
-                        isActive
-                          ? 'text-secondary'
-                          : 'text-white/20 group-hover:text-white/50'
-                      }`}
-                    >
-                      {item.icon}
-                    </span>
-                    {item.name}
-                  </>
-                )}
-              </NavLink>
-            ))}
+
+                return true;
+              })
+              .map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={item.disabled ? (e) => e.preventDefault() : onClose}
+                  className={({ isActive }) =>
+                    `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
+                      item.disabled
+                        ? 'opacity-40 cursor-not-allowed'
+                        : isActive
+                          ? 'text-white bg-white/5'
+                          : 'text-white/40 hover:text-white hover:bg-white/5'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary" />
+                      )}
+                      <span
+                        className={`transition-all ${
+                          isActive
+                            ? 'text-secondary'
+                            : 'text-white/20 group-hover:text-white/50'
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      {item.name}
+                    </>
+                  )}
+                </NavLink>
+              ))}
           </div>
 
           {/* Invite Member - Orchestrator Level Only */}

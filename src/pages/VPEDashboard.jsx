@@ -26,7 +26,7 @@ const VPEDashboard = () => {
   if (isLoading || !data) return <CenteredLoading />;
 
   if (error) return (
-    <div className="p-12 text-status-error bg-black min-h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
+    <div className="p-12 text-status-error bg-background text-text min-h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
       {error?.message || 'CRITICAL_ERROR: SYSTEM_DATA_UNAVAILABLE'}
     </div>
   );
@@ -41,7 +41,7 @@ const VPEDashboard = () => {
   } = data || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
+    <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
 
       {/* 1. Global Performance metrics */}
       <div id="vpe-execution-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-4">
