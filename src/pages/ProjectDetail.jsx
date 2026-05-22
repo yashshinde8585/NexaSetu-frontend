@@ -11,11 +11,10 @@ import {
   ChevronDown, 
   Users, 
   Calendar,
-  Settings,
-  MoreVertical,
   ChevronLeft, 
   ChevronRight,
-  Zap
+  Zap,
+  ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProjectManagement } from '../hooks/useProjectManagement';
@@ -115,8 +114,14 @@ const ProjectDetail = () => {
           t.taskNumber?.toString().includes(term);
         if (!matches) return false;
       }
-      if (assigneeFilter !== 'all' && t.assignedUser?._id !== assigneeFilter) return false;
-      if (dateStart && new Date(t.createdAt) < dateStart) return false;
+      if (assigneeFilter !== 'all') {
+        const assignedUserId = typeof t.assignedUser === 'object' ? t.assignedUser?._id : t.assignedUser;
+        if (assignedUserId !== assigneeFilter) return false;
+      }
+      if (dateStart) {
+        const createdDate = new Date(t.createdAt);
+        if (isNaN(createdDate.getTime()) || createdDate < dateStart) return false;
+      }
       return true;
     };
 
@@ -190,7 +195,7 @@ const ProjectDetail = () => {
       error={error}
       onRetry={() => queryClient.invalidateQueries({ queryKey: ['project', id] })}
     >
-      <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+      <div className="min-h-screen bg-background text-text px-3 sm:px-4 lg:px-6 py-4">
         <div className="w-full space-y-6 max-w-7xl mx-auto">
 
         {/* --- DIRECTIVE ENFORCEMENT HUD --- */}

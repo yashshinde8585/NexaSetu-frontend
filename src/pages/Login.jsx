@@ -134,7 +134,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
+    <div className="min-h-screen flex flex-col bg-background text-text">
       <Navbar hideLinks={true} />
       <div className="flex-1 flex items-center justify-center px-4 py-12 md:py-8 pt-24 md:pt-8 relative font-sans">
         <div className="w-full max-w-4xl relative">

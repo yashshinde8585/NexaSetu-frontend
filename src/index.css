@@ -1,31 +1,127 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-primary: #60A5FA;
-  --color-primary-dark: #2563EB;
-  --color-primary-light: #93C5FD;
-  --color-brand: #7C76FF;
+:root {
+  --color-primary: #60a5fa;
+  --color-primary-dark: #2563eb;
+  --color-primary-light: #93c5fd;
+  --color-brand: #7c76ff;
 
-  --color-secondary: #A78BFA;
-  --color-secondary-light: #C4B5FD;
+  --color-secondary: #a78bfa;
+  --color-secondary-light: #c4b5fd;
 
   --color-background: #050505;
   --color-background-dark: #030303;
-  --color-background-light: #0A0A0A;
+  --color-background-light: #0a0a0a;
   --color-background-elevated: #141414;
 
   --color-text: #ffffff;
-  --color-text-muted: #E2E8F0;
+  --color-text-muted: #e2e8f0;
 
-  --color-status-success: #4ADE80;
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-border-subtler: rgba(255, 255, 255, 0.05);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-text-subtler: rgba(255, 255, 255, 0.2);
+}
+
+.theme-obsidian {
+  --color-background: #050505;
+  --color-background-dark: #030303;
+  --color-background-light: #0a0a0a;
+  --color-background-elevated: #141414;
+  --color-text: #ffffff;
+  --color-text-muted: #e2e8f0;
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-border-subtler: rgba(255, 255, 255, 0.05);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-text-subtler: rgba(255, 255, 255, 0.2);
+}
+
+.theme-amber {
+  --color-background: #121212;
+  --color-background-dark: #0a0a0a;
+  --color-background-light: #1a1a1a;
+  --color-background-elevated: #242424;
+  --color-text: #ffffff;
+  --color-text-muted: #fbbf24;
+  --color-secondary: #ef4444;
+  --color-secondary-light: #f87171;
+  --color-border-subtle: rgba(245, 158, 11, 0.15);
+  --color-border-subtler: rgba(245, 158, 11, 0.08);
+  --color-text-subtle: rgba(255, 255, 255, 0.5);
+  --color-text-subtler: rgba(255, 255, 255, 0.3);
+}
+
+.theme-ghost {
+  --color-background: #f8fafc;
+  --color-background-dark: #e2e8f0;
+  --color-background-light: #ffffff;
+  --color-background-elevated: #f1f5f9;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --color-secondary: #0369a1;
+  --color-secondary-light: #0284c7;
+  --color-border-subtle: rgba(15, 23, 42, 0.12);
+  --color-border-subtler: rgba(15, 23, 42, 0.06);
+  --color-text-subtle: rgba(15, 23, 42, 0.6);
+  --color-text-subtler: rgba(15, 23, 42, 0.4);
+}
+
+.accent-blue {
+  --color-primary: #60a5fa;
+  --color-primary-dark: #2563eb;
+  --color-primary-light: #93c5fd;
+}
+
+.accent-emerald {
+  --color-primary: #10b981;
+  --color-primary-dark: #059669;
+  --color-primary-light: #34d399;
+}
+
+.accent-amber {
+  --color-primary: #f59e0b;
+  --color-primary-dark: #d97706;
+  --color-primary-light: #fcd34d;
+}
+
+.accent-purple {
+  --color-primary: #a855f7;
+  --color-primary-dark: #7e22ce;
+  --color-primary-light: #c084fc;
+}
+
+.accent-rose {
+  --color-primary: #f43f5e;
+  --color-primary-dark: #be123c;
+  --color-primary-light: #fb7185;
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-primary-light: var(--color-primary-light);
+  --color-brand: var(--color-brand);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-light: var(--color-secondary-light);
+
+  --color-background: var(--color-background);
+  --color-background-dark: var(--color-background-dark);
+  --color-background-light: var(--color-background-light);
+  --color-background-elevated: var(--color-background-elevated);
+
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+
+  --color-status-success: #4ade80;
   --status-success-rgb: 74, 222, 128;
-  --color-status-warning: #FBBF24;
+  --color-status-warning: #fbbf24;
   --status-warning-rgb: 251, 191, 36;
-  --color-status-error: #F87171;
+  --color-status-error: #f87171;
   --status-error-rgb: 248, 113, 113;
-  --color-status-info: #7DD3FC;
+  --color-status-info: #7dd3fc;
   --status-info-rgb: 125, 211, 252;
-  --primary-rgb: 96, 165, 250;
+  --primary-rgb: var(--color-primary);
 
   /* Breakpoints */
   --breakpoint-xs: 320px;
@@ -38,11 +134,13 @@
 
   /* Animations */
   --animate-marquee: marquee 20s linear infinite;
-  --animate-typing: typing 3s steps(30, end) infinite, blink 0.75s step-end infinite;
+  --animate-typing:
+    typing 3s steps(30, end) infinite, blink 0.75s step-end infinite;
   --animate-scan: scan 3s linear infinite;
   --animate-data-flow: data-flow 2s linear infinite;
   --animate-binary: binary-shift 10s linear infinite;
-  --animate-pulse-ring: pulse-ring 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+  --animate-pulse-ring: pulse-ring 1.25s
+    cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
   --animate-shimmer: shimmer 2s infinite linear;
   --animate-stat-pop: statPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pulse-node: pulse-node 3s ease-in-out infinite;
@@ -54,132 +152,265 @@
   --animate-fade-in: fadeIn 0.2s ease forwards;
   --animate-slide-in-top: slideInFromTop 0.2s ease forwards;
   --animate-slide-in-bottom: slideInFromBottom 0.2s ease forwards;
-  --animate-banner-slide-in: nexaBannerSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-banner-slide-in: nexaBannerSlideIn 0.35s
+    cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-dot-pulse: nexaPulse 1.1s ease-in-out infinite;
 
   @keyframes nexaBannerSlideIn {
-    from { opacity: 0; transform: translateY(-100%); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes nexaPulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.3; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 
   @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideInFromTop {
-    from { transform: translateY(-1rem); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(-1rem);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   @keyframes slideInFromBottom {
-    from { transform: translateY(2rem); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+    from {
+      transform: translateY(2rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   @keyframes slideInFromRight {
-    from { transform: translateX(2.5rem); opacity: 0; }
-    to   { transform: translateX(0);       opacity: 1; }
+    from {
+      transform: translateX(2.5rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   @keyframes slideInFromRightFull {
-    from { transform: translateX(100%); }
-    to   { transform: translateX(0); }
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
   }
 
   @keyframes zoomIn95 {
-    from { transform: scale(0.95); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 
   @keyframes shimmer {
-    from { transform: translateX(-100%); }
-    to   { transform: translateX(100%); }
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
   }
 
   @keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
   }
 
   @keyframes blink {
-    50% { opacity: 0 }
+    50% {
+      opacity: 0;
+    }
   }
 
   @keyframes scan {
-    0% { transform: translateY(-100%); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateY(100%); opacity: 0; }
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
   }
 
   @keyframes pulse-ring {
-    0% { transform: scale(0.33); opacity: 1; }
-    80%, 100% { opacity: 0; }
+    0% {
+      transform: scale(0.33);
+      opacity: 1;
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
   }
 
   @keyframes data-flow {
-    0% { transform: translateX(-100%); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateX(100%); opacity: 0; }
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
   }
 
   @keyframes binary-shift {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
   }
 
   @keyframes shimmer {
-    100% { transform: translateX(100%); }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   @keyframes statPop {
-    0%   { transform: scale(0.8); opacity: 0; }
-    60%  { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   @keyframes pulse-node {
-    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px currentColor; }
-    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 20px currentColor; }
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.8;
+      box-shadow: 0 0 10px currentColor;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+      box-shadow: 0 0 20px currentColor;
+    }
   }
 
   @keyframes rotate-core {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes pulse-core {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; }
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
   }
 
   @keyframes signal-flow {
-    0% { stroke-dashoffset: 100%; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { stroke-dashoffset: 0%; opacity: 0; }
+    0% {
+      stroke-dashoffset: 100%;
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: 0%;
+      opacity: 0;
+    }
   }
 
   @keyframes float-card {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    33% { transform: translateY(-10px) translateX(5px); }
-    66% { transform: translateY(5px) translateX(-5px); }
+    0%,
+    100% {
+      transform: translateY(0) translateX(0);
+    }
+    33% {
+      transform: translateY(-10px) translateX(5px);
+    }
+    66% {
+      transform: translateY(5px) translateX(-5px);
+    }
   }
 }
 
 @layer base {
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     background-color: var(--color-background);
     color: var(--color-text);
     min-height: 100vh;
@@ -188,8 +419,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     letter-spacing: -0.02em;
   }
 }
@@ -212,7 +452,7 @@
   }
 
   .nexa-grid {
-    background-image: 
+    background-image:
       linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -222,9 +462,16 @@
   .nexa-prose {
     @apply text-base font-bold text-white/80 leading-relaxed max-w-none;
   }
-  .nexa-prose strong { @apply text-white font-semibold; }
-  .nexa-prose p { @apply mb-5; }
-  .nexa-prose h1, .nexa-prose h2, .nexa-prose h3, .nexa-prose h4 {
+  .nexa-prose strong {
+    @apply text-white font-semibold;
+  }
+  .nexa-prose p {
+    @apply mb-5;
+  }
+  .nexa-prose h1,
+  .nexa-prose h2,
+  .nexa-prose h3,
+  .nexa-prose h4 {
     @apply text-white font-bold mt-6 mb-3;
   }
 
@@ -319,11 +566,395 @@
 
   /* Accessibility: Respect OS-level reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
   }
+}
+
+/* High Contrast Light (Ghost Mode) Class Mapping */
+.theme-ghost .bg-black {
+  background-color: var(--color-background) !important;
+}
+.theme-ghost .bg-\[\#050505\],
+.theme-ghost .bg-\[\#0A0A0A\],
+.theme-ghost .bg-\[\#0d0d0d\],
+.theme-ghost .bg-\[\#121212\] {
+  background-color: var(--color-background-light) !important;
+}
+.theme-ghost .bg-white\/\[0\.02\] {
+  background-color: rgba(15, 23, 42, 0.03) !important;
+}
+.theme-ghost .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+.theme-ghost .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.07) !important;
+}
+.theme-ghost .bg-white\/15 {
+  background-color: rgba(15, 23, 42, 0.1) !important;
+}
+.theme-ghost .border-white\/5 {
+  border-color: var(--color-border-subtler) !important;
+}
+.theme-ghost .border-white\/10 {
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost .border-white\/15 {
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+.theme-ghost .border-white\/\[0\.02\] {
+  border-color: var(--color-border-subtler) !important;
+}
+.theme-ghost .text-white {
+  color: var(--color-text) !important;
+}
+.theme-ghost .text-white\/90 {
+  color: var(--color-text) !important;
+}
+.theme-ghost .text-white\/80 {
+  color: var(--color-text-muted) !important;
+}
+.theme-ghost .text-white\/60,
+.theme-ghost .text-white\/50 {
+  color: var(--color-text-muted) !important;
+}
+.theme-ghost .text-white\/40,
+.theme-ghost .text-white\/30 {
+  color: var(--color-text-subtle) !important;
+}
+.theme-ghost .text-white\/20 {
+  color: var(--color-text-subtler) !important;
+}
+.theme-ghost .hover\:bg-white\/\[0\.02\]:hover {
+  background-color: rgba(15, 23, 42, 0.03) !important;
+}
+.theme-ghost .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+.theme-ghost .hover\:bg-white\/10:hover {
+  background-color: rgba(15, 23, 42, 0.08) !important;
+}
+.theme-ghost .hover\:bg-white:hover {
+  background-color: var(--color-text) !important;
+  color: var(--color-background) !important;
+}
+.theme-ghost .hover\:text-white:hover {
+  color: var(--color-text) !important;
+}
+.theme-ghost .hover\:text-black:hover {
+  color: var(--color-background) !important;
+}
+.theme-ghost .hover\:border-white\/10:hover {
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost .hover\:border-white\/20:hover {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+/* Shell components (Navbar, Sidebar, ProfileDropdown) - Ghost Mode */
+.theme-ghost nav.sticky.bg-black {
+  background-color: var(--color-background-light) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost aside.bg-black {
+  background-color: var(--color-background-light) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost div.bg-black {
+  background-color: var(--color-background) !important;
+}
+
+/* Recharts Overrides for Theme-Ghost */
+.theme-ghost .recharts-cartesian-grid line {
+  stroke: var(--color-border-subtler) !important;
+  stroke-opacity: 0.8 !important;
+}
+.theme-ghost .recharts-text {
+  fill: var(--color-text-subtle) !important;
+}
+.theme-ghost .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--color-background-light) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+.theme-ghost .recharts-tooltip-wrapper .recharts-tooltip-item {
+  color: var(--color-text) !important;
+}
+.theme-ghost .nexa-grid {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px) !important;
+}
+
+/* DatePicker Theme-Ghost Overrides */
+.theme-ghost .nexa-datepicker {
+  background-color: var(--color-background-light) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08) !important;
+}
+.theme-ghost .nexa-datepicker .react-datepicker__header {
+  background-color: var(--color-background-light) !important;
+  border-bottom: 1px solid var(--color-border-subtler) !important;
+}
+.theme-ghost .nexa-datepicker .react-datepicker__current-month,
+.theme-ghost .nexa-datepicker .react-datepicker__day-name {
+  color: var(--color-text) !important;
+}
+.theme-ghost .nexa-datepicker .react-datepicker__day {
+  color: var(--color-text-muted) !important;
+}
+
+/* Command Amber Theme Class Mapping */
+.theme-amber .bg-black {
+  background-color: var(--color-background) !important;
+}
+.theme-amber .bg-\[\#050505\],
+.theme-amber .bg-\[\#0A0A0A\],
+.theme-amber .bg-\[\#0d0d0d\] {
+  background-color: var(--color-background-light) !important;
+}
+.theme-amber .bg-white\/\[0\.02\] {
+  background-color: var(--color-background-elevated) !important;
+}
+.theme-amber .bg-white\/5 {
+  background-color: var(--color-background-elevated) !important;
+}
+.theme-amber .bg-white\/10 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+.theme-amber .bg-white\/15 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+.theme-amber .border-white\/5 {
+  border-color: var(--color-border-subtler) !important;
+}
+.theme-amber .border-white\/10 {
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-amber .border-white\/15 {
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-amber .border-white\/20 {
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+.theme-amber .border-white\/\[0\.02\] {
+  border-color: var(--color-border-subtler) !important;
+}
+/* Shell components (Navbar, Sidebar) - Amber Mode */
+.theme-amber nav.sticky.bg-black {
+  background-color: var(--color-background-dark) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-amber aside.bg-black {
+  background-color: var(--color-background-dark) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-amber div.bg-black {
+  background-color: var(--color-background) !important;
+}
+
+/* Recharts Overrides for Theme-Amber */
+.theme-amber .recharts-cartesian-grid line {
+  stroke: var(--color-border-subtler) !important;
+  stroke-opacity: 0.8 !important;
+}
+.theme-amber .recharts-text {
+  fill: var(--color-text-subtle) !important;
+}
+.theme-amber .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--color-background-light) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+.theme-amber .recharts-tooltip-wrapper .recharts-tooltip-item {
+  color: var(--color-text) !important;
+}
+.theme-amber .nexa-grid {
+  background-image:
+    linear-gradient(to right, rgba(245, 158, 11, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 158, 11, 0.02) 1px, transparent 1px) !important;
+}
+
+/* DatePicker Theme-Amber Overrides */
+.theme-amber .nexa-datepicker {
+  background-color: var(--color-background-light) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+.theme-amber .nexa-datepicker .react-datepicker__header {
+  background-color: var(--color-background-light) !important;
+  border-bottom: 1px solid var(--color-border-subtler) !important;
+}
+.theme-amber .nexa-datepicker .react-datepicker__current-month,
+.theme-amber .nexa-datepicker .react-datepicker__day-name {
+  color: var(--color-text) !important;
+}
+.theme-amber .nexa-datepicker .react-datepicker__day {
+  color: var(--color-text-muted) !important;
+}
+.theme-amber .nexa-datepicker .react-datepicker__day--selected {
+  background-color: #f59e0b !important;
+  color: #000000 !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.5) !important;
+}
+.theme-amber .nexa-datepicker .react-datepicker__day:hover {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #f59e0b !important;
+}
+
+/* =========================================================
+   GLOBAL DEEP OVERRIDES — covers all components without
+   per-file edits. These ensure cards, modals, inputs, panels
+   all respond to Ghost & Amber themes system-wide.
+   ========================================================= */
+
+/* Ghost: any element with bg-black — modals, cards, inputs */
+.theme-ghost .bg-black,
+.theme-ghost [class*='bg-black'] {
+  background-color: var(--color-background-light) !important;
+}
+/* Ghost: fixed/overlay backdrops */
+.theme-ghost .bg-black\/60 {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+}
+.theme-ghost .bg-black\/80 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+/* Ghost: select / option elements */
+.theme-ghost select,
+.theme-ghost option {
+  background-color: var(--color-background-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+/* Ghost: inputs and textareas */
+.theme-ghost
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not(
+    [type='file']
+  ),
+.theme-ghost textarea {
+  background-color: var(--color-background-elevated) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-ghost input::placeholder,
+.theme-ghost textarea::placeholder {
+  color: var(--color-text-subtle) !important;
+}
+/* Ghost: border-white/25, /30 variants */
+.theme-ghost .border-white\/25 {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+.theme-ghost .border-white\/30 {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+.theme-ghost .border-white\/40 {
+  border-color: rgba(15, 23, 42, 0.28) !important;
+}
+/* Ghost: text-white classes in menus/modals */
+.theme-ghost h1,
+.theme-ghost h2,
+.theme-ghost h3,
+.theme-ghost h4,
+.theme-ghost h5,
+.theme-ghost h6 {
+  color: var(--color-text);
+}
+/* Ghost: dashed borders */
+.theme-ghost .border-dashed {
+  border-color: var(--color-border-subtle) !important;
+}
+/* Ghost: divide lines */
+.theme-ghost .divide-white\/5 > * + * {
+  border-color: var(--color-border-subtler) !important;
+}
+.theme-ghost .divide-white\/10 > * + * {
+  border-color: var(--color-border-subtle) !important;
+}
+
+/* Amber: any element with bg-black — cards, modals, inputs */
+.theme-amber .bg-black,
+.theme-amber [class*='bg-black'] {
+  background-color: var(--color-background-elevated) !important;
+}
+/* Amber: fixed/overlay backdrops */
+.theme-amber .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+.theme-amber .bg-black\/80 {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+/* Amber: select / option elements */
+.theme-amber select,
+.theme-amber option {
+  background-color: var(--color-background-elevated) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+/* Amber: inputs and textareas */
+.theme-amber
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not(
+    [type='file']
+  ),
+.theme-amber textarea {
+  background-color: var(--color-background-elevated) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+.theme-amber input::placeholder,
+.theme-amber textarea::placeholder {
+  color: var(--color-text-subtle) !important;
+}
+/* Amber: border-white/25, /30 variants */
+.theme-amber .border-white\/25 {
+  border-color: rgba(245, 158, 11, 0.22) !important;
+}
+.theme-amber .border-white\/30 {
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+.theme-amber .border-white\/40 {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+/* Amber: dashed borders */
+.theme-amber .border-dashed {
+  border-color: var(--color-border-subtle) !important;
+}
+/* Amber: divide lines */
+.theme-amber .divide-white\/5 > * + * {
+  border-color: var(--color-border-subtler) !important;
+}
+.theme-amber .divide-white\/10 > * + * {
+  border-color: var(--color-border-subtle) !important;
+}
+/* Amber: text overrides */
+.theme-amber .text-white\/20 {
+  color: rgba(251, 191, 36, 0.3) !important;
+}
+.theme-amber .text-white\/30 {
+  color: rgba(251, 191, 36, 0.45) !important;
+}
+.theme-amber .text-white\/40 {
+  color: rgba(251, 191, 36, 0.55) !important;
+}
+.theme-amber .text-white\/50 {
+  color: rgba(251, 191, 36, 0.65) !important;
+}
+.theme-amber .text-white\/60 {
+  color: rgba(251, 191, 36, 0.75) !important;
+}
+.theme-amber .text-white\/80 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.theme-amber .text-white {
+  color: #ffffff !important;
 }

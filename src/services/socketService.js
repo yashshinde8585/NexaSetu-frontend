@@ -92,7 +92,9 @@ export const disconnect = () => {
 };
 
 export default {
-  socket,
+  get socket() {
+    return socket;
+  },
   connect,
   joinMission,
   leaveMission,

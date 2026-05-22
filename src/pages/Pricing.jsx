@@ -12,7 +12,7 @@ const Pricing = () => {
   const { subscription, isLoading } = useBilling();
 
   return (
-    <div className="min-h-screen bg-black pt-16 pb-20 px-4 overflow-hidden">
+    <div className="min-h-screen bg-background text-text pt-16 pb-20 px-4 overflow-hidden">
       {/* Subtle Background Glow */}
       <div className="absolute top-0 right-0 w-[40%] h-[400px] bg-primary/5 blur-[100px] -z-10"></div>
       <div className="absolute bottom-0 left-0 w-[40%] h-[400px] bg-primary/5 blur-[100px] -z-10"></div>

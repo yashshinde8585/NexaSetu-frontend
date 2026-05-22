@@ -62,7 +62,7 @@ const ProjectSettings = () => {
   if (isLoading) return <CenteredLoading />;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 sm:p-8 lg:p-12">
+    <div className="min-h-screen bg-background text-text p-4 sm:p-8 lg:p-12">
       <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
         
         {/* Navigation & Status Header */}

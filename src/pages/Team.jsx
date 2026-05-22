@@ -30,7 +30,7 @@ import ReservePool from '../components/organisms/Team/ReservePool';
 import TacticalModal from '../components/molecules/TacticalModal';
 
 const TeamSkeleton = () => (
-  <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
+  <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-background min-h-screen">
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
       <div className="space-y-2">
         <Skeleton className="h-8 w-64" />
@@ -199,7 +199,7 @@ const Team = () => {
   if (loading) return <TeamSkeleton />;
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-black min-h-screen">
+    <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-background text-text min-h-screen">
       
       {/* Dynamic Command Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">

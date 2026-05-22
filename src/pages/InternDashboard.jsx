@@ -82,7 +82,7 @@ const InternDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
+    <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       
       {/* 1. Global Performance metrics */}
       <div id="intern-metrics-strip" className="grid grid-cols-1 md:grid-cols-3 gap-4">
