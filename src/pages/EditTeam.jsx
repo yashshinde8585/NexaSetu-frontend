@@ -13,7 +13,7 @@ const EditTeam = () => {
   if (isLoading) return <CenteredLoading />;
 
   const { users = [], teams = [] } = data || {};
-  const currentTeam = teams.find(t => t.id === id);
+  const currentTeam = teams.find(t => (t.id || t._id) === id);
 
   const handleUpdate = async (teamData) => {
     try {
@@ -23,6 +23,13 @@ const EditTeam = () => {
       console.error('Failed to update squad:', err);
     }
   };
+
+  const initialMembers = React.useMemo(() => {
+    if (!currentTeam || !Array.isArray(currentTeam.members)) return [];
+    return currentTeam.members
+      .map(m => (typeof m === 'object' && m !== null ? (m.id || m._id) : m))
+      .filter(Boolean);
+  }, [currentTeam]);
 
   return (
     <TeamBuilderForm 
@@ -34,10 +41,10 @@ const EditTeam = () => {
       initialData={{
         name: currentTeam?.name,
         description: currentTeam?.description,
-        lead: currentTeam?.leadId,
-        members: [] // Fallback or fetch specific members if summary is insufficient
+        lead: currentTeam?.leadId || (typeof currentTeam?.lead === 'object' ? currentTeam.lead?.id || currentTeam.lead?._id : currentTeam?.lead) || '',
+        members: initialMembers
       }}
-      themeColor="secondary"
+      themeColor="theme-secondary"
     />
   );
 };

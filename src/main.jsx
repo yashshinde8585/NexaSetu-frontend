@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { MagicProvider } from './context/MagicContext';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -45,11 +46,13 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
         <AuthProvider>
-          <MagicProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </MagicProvider>
+          <ThemeProvider>
+            <MagicProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </MagicProvider>
+          </ThemeProvider>
         </AuthProvider>
       </ClerkProvider>
       {/* DevTools: only rendered in development */}

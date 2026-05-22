@@ -48,7 +48,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
+    <div className="min-h-screen flex flex-col bg-background text-text">
       <Navbar hideLinks={true} />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-black border border-white/10 rounded p-8">

@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, Globe, Clock, Bell, Settings as SettingsIcon, Check } from 'lucide-react';
 
 const WorkspaceSettingsModal = ({ isOpen, onClose, onSave, setting, currentValue }) => {
   const [value, setValue] = useState(currentValue);
+
+  useEffect(() => {
+    if (isOpen) {
+      setValue(currentValue);
+    }
+  }, [isOpen, currentValue]);
 
   if (!isOpen) return null;
 

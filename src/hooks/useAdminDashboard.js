@@ -28,11 +28,10 @@ export const useAdminDashboard = () => {
  
   // 2. Real-time Synchronization
   useEffect(() => {
-    if (!user?.workspaceId || !socketService.socket) return;
+    if (!user?.workspaceId) return;
  
     // Join workspace signaling room
-    const workspaceId = user.workspaceId.toString();
-    socketService.socket.emit('join_workspace', workspaceId);
+    const workspaceId = String(user.workspaceId);
     
     // Listen for tactical updates
     const handleUserUpdate = (payload) => {
@@ -48,8 +47,14 @@ export const useAdminDashboard = () => {
     socketService.onEvent('USER_UPDATED', handleUserUpdate);
     socketService.onEvent('TEAM_UPDATED', handleTeamUpdate);
  
+    if (socketService.socket) {
+      socketService.socket.emit('join_workspace', workspaceId);
+    }
+ 
     return () => {
-      socketService.socket?.emit('leave_workspace', workspaceId);
+      if (socketService.socket) {
+        socketService.socket.emit('leave_workspace', workspaceId);
+      }
       socketService.offEvent('USER_UPDATED');
       socketService.offEvent('TEAM_UPDATED');
     };
@@ -59,49 +64,56 @@ export const useAdminDashboard = () => {
   const updateRoleMutation = useMutation({
     mutationFn: ({ userId, role }) => AdminService.updateUserRole(userId, role),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const deactivateMutation = useMutation({
     mutationFn: ({ userId, status }) => AdminService.deactivateUser(userId, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const updateSettingsMutation = useMutation({
     mutationFn: (settings) => AdminService.updateSettings(settings),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const createTeamMutation = useMutation({
     mutationFn: (teamData) => AdminService.createTeam(teamData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+    }
+  });
+
+  const updateTeamMutation = useMutation({
+    mutationFn: ({ teamId, teamData }) => AdminService.updateTeam(teamId, teamData),
+    onSuccess: () => {
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const deleteTeamMutation = useMutation({
     mutationFn: (teamId) => AdminService.deleteTeam(teamId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const updateRolePermissionsMutation = useMutation({
     mutationFn: ({ role, permissions }) => AdminService.updateRolePermissions(role, permissions),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
   const createRoleMutation = useMutation({
     mutationFn: ({ roleName, permissions }) => AdminService.createRole(roleName, permissions),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+      return queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
     }
   });
 
@@ -109,13 +121,22 @@ export const useAdminDashboard = () => {
     data: data?.data,
     isLoading,
     error,
-    updateUserRole: (payload) => updateRoleMutation.mutate(payload),
-    deactivateUser: (payload) => deactivateMutation.mutate(payload),
-    updateSettings: (settings) => updateSettingsMutation.mutate(settings),
-    createTeam: (teamData) => createTeamMutation.mutate(teamData),
-    deleteTeam: (teamId) => deleteTeamMutation.mutate(teamId),
-    updateRolePermissions: (payload) => updateRolePermissionsMutation.mutate(payload),
-    createRole: (payload) => createRoleMutation.mutate(payload),
+    updateUserRole: (payload) => updateRoleMutation.mutateAsync(payload),
+    deactivateUser: (payload) => deactivateMutation.mutateAsync(payload),
+    updateSettings: (settings) => updateSettingsMutation.mutateAsync(settings),
+    createTeam: (teamData) => createTeamMutation.mutateAsync(teamData),
+    updateTeam: (teamId, teamData) => updateTeamMutation.mutateAsync({ teamId, teamData }),
+    deleteTeam: (teamId) => deleteTeamMutation.mutateAsync(teamId),
+    updateRolePermissions: (payload) => updateRolePermissionsMutation.mutateAsync(payload),
+    createRole: (payload) => createRoleMutation.mutateAsync(payload),
+    updateRoleMutation,
+    deactivateMutation,
+    updateSettingsMutation,
+    createTeamMutation,
+    updateTeamMutation,
+    deleteTeamMutation,
+    updateRolePermissionsMutation,
+    createRoleMutation,
     refetch,
     filters,
     setFilters

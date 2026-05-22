@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import MetricsService from '../api/metricsService';
 
 const SetupSkeleton = () => (
-  <div className="min-h-screen bg-black flex items-center justify-center">
+  <div className="min-h-screen bg-background flex items-center justify-center">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
   </div>
 );
@@ -75,7 +75,7 @@ const ProjectSetup = () => {
   if (isLoading) return <SetupSkeleton />;
 
   return (
-    <div className="min-h-screen bg-black text-white px-3 sm:px-4 lg:px-6 py-4">
+    <div className="min-h-screen bg-background text-text px-3 sm:px-4 lg:px-6 py-4">
       <div className="w-full space-y-6 max-w-7xl mx-auto">
         
         {/* Simplified Header */}

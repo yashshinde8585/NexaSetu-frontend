@@ -57,7 +57,7 @@ const ProjectWarRoom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-6 space-y-6 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-background text-text p-4 lg:p-6 space-y-6 animate-in fade-in duration-700">
       {/* Header Context */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">

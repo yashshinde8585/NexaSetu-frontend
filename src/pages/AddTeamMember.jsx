@@ -182,7 +182,7 @@ const AddTeamMember = () => {
     };
 
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-black px-3 sm:px-4 lg:px-6 py-4 flex items-center justify-center">
+      <div className="min-h-[calc(100vh-64px)] bg-background text-text px-3 sm:px-4 lg:px-6 py-4 flex items-center justify-center">
         <div className="max-w-xl w-full bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center relative overflow-hidden">
 
           <div className="w-16 h-16 bg-status-success/10 text-status-success rounded-xl flex items-center justify-center mx-auto mb-6 border border-status-success/20">

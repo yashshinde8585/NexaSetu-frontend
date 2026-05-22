@@ -28,7 +28,7 @@ const CTODashboard = () => {
 
   if (isLoading || !data) return <CenteredLoading />;
   if (error) return (
-    <div className="p-8 text-status-error bg-[#0A0A0A] h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
+    <div className="p-8 text-status-error bg-background h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
       {error?.message || 'Unable to load dashboard. Please try again.'}
     </div>
   );
@@ -36,7 +36,7 @@ const CTODashboard = () => {
   const { global, functionalBreakdown, functionalTable, blockers, pipeline } = data;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 lg:p-6 font-sans selection:bg-primary selection:text-white max-w-screen-2xl mx-auto">
+    <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary selection:text-text max-w-screen-2xl mx-auto">
       {/* 1. Global Performance metrics */}
       <div id="cto-performance-strip" className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <MetricStripItem label="Projects At risk" value={global.projectsAtRisk} color="text-status-error" accent="bg-status-error" />

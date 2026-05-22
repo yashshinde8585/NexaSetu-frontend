@@ -43,8 +43,8 @@ export const useBilling = () => {
     isLoading: !authReady || subscriptionQuery.isLoading || plansQuery.isLoading,
     plans: plansQuery.data || [],
     selectPlan: selectPlanMutation.mutateAsync,
-    isSelecting: selectPlanMutation.isLoading,
+    isSelecting: selectPlanMutation.isPending,
     cancelSubscription: cancelMutation.mutateAsync,
-    isCanceling: cancelMutation.isLoading,
+    isCanceling: cancelMutation.isPending,
   };
 };

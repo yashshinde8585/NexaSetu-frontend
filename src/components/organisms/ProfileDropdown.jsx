@@ -65,9 +65,18 @@ const ProfileDropdown = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-64 bg-black border border-white/15 rounded-none overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div
+          className="absolute right-0 mt-1 w-64 bg-black border border-white/15 rounded-none overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-200"
+          style={{
+            backgroundColor: 'var(--color-background-dark)',
+            borderColor: 'var(--color-border-subtle)',
+          }}
+        >
           {/* Header */}
-          <div className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3">
+          <div
+            className="p-4 bg-white/5 border-b border-white/10 flex items-center gap-3"
+            style={{ borderColor: 'var(--color-border-subtle)' }}
+          >
             <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
               {user.profilePicture ? (
                 <img
@@ -84,10 +93,16 @@ const ProfileDropdown = () => {
               )}
             </div>
             <div className="flex flex-col overflow-hidden gap-1">
-              <h3 className="text-[11px] font-black text-white uppercase truncate leading-none tracking-widest">
+              <h3
+                className="text-[11px] font-black text-white uppercase truncate leading-none tracking-widest"
+                style={{ color: 'var(--color-text)' }}
+              >
                 {user.name}
               </h3>
-              <p className="text-[8px] text-white/30 font-black uppercase tracking-[0.2em] truncate leading-none">
+              <p
+                className="text-[8px] text-white/30 font-black uppercase tracking-[0.2em] truncate leading-none"
+                style={{ color: 'var(--color-text-subtler)' }}
+              >
                 {user.email}
               </p>
             </div>
@@ -137,7 +152,9 @@ const ProfileDropdown = () => {
               <span className="p-1 rounded-none border border-status-error/20 bg-status-error/5 group-hover:border-status-error/40 transition-colors">
                 <LogOut size={14} />
               </span>
-              <span className="text-[10px] font-black uppercase tracking-widest">Log_Out</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                Log_Out
+              </span>
             </button>
           </div>
         </div>
@@ -156,17 +173,19 @@ const DropdownItem = ({ icon, label, trailing, onClick }) => (
       <span className="p-1 rounded-none bg-white/5 group-hover:bg-white/10 transition-colors">
         {React.cloneElement(icon, { size: 14 })}
       </span>
-      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+      <span className="text-[10px] font-black uppercase tracking-widest">
+        {label}
+      </span>
     </div>
     {trailing && React.cloneElement(trailing, { size: 12 })}
   </button>
 );
 
-ProfileDropdown.propTypes = {
-  icon: PropTypes.node,
-  label: PropTypes.string,
+DropdownItem.propTypes = {
+  icon: PropTypes.node.isRequired,
+  label: PropTypes.string.isRequired,
   trailing: PropTypes.node,
-  onClick: PropTypes.func,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default ProfileDropdown;
