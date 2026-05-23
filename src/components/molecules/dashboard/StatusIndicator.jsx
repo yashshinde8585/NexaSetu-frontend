@@ -1,32 +1,27 @@
 import React from 'react';
 
-/**
- * StatusIndicator - Minimal, accessible status indicator.
- */
+// Status dot indicator component.
 const StatusIndicator = ({ color, label }) => {
   const colors = {
     red: 'bg-status-error',
     yellow: 'bg-status-warning',
     green: 'bg-status-success',
-    default: 'bg-white/20'
+    default: 'bg-white/20',
   };
 
   const statusColor = colors[color] || colors.default;
 
   return (
     <div className="flex items-center gap-2">
-      <div 
+      <div
         className={`w-1.5 h-1.5 rounded-none ${statusColor}`}
         aria-hidden="true"
       />
       {(label || color) && (
-        <span className="sr-only">
-          Status: {label || color}
-        </span>
+        <span className="sr-only">Status: {label || color}</span>
       )}
     </div>
   );
 };
 
 export default StatusIndicator;
-

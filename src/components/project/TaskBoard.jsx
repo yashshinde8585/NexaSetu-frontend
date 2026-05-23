@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 
-/**
- * Tactical Kanban Board.
- * Implements a high-density, status-driven workspace for task orchestration.
- */
+// Kanban task board component.
 const TaskBoard = ({
   groupedTasks,
   user,
@@ -13,7 +10,7 @@ const TaskBoard = ({
   onTaskClick,
   cardLayout,
   currentPage = 1,
-  pageSize = 10
+  pageSize = 10,
 }) => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
@@ -24,7 +21,10 @@ const TaskBoard = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x-2 divide-white/15 items-stretch">
           {columns.map((column) => {
             const allColumnTasks = groupedTasks[column.id] || [];
-            const paginatedColumnTasks = allColumnTasks.slice(startIndex, endIndex);
+            const paginatedColumnTasks = allColumnTasks.slice(
+              startIndex,
+              endIndex
+            );
 
             return (
               <div
@@ -35,8 +35,12 @@ const TaskBoard = ({
                 <div className="p-6 border-b-2 border-white/20 flex items-center justify-between bg-background-elevated sticky top-0 z-20">
                   <div className="flex items-center gap-4">
                     <div className="relative">
-                      <div className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} shadow-[0_0_20px_rgba(255,255,255,0.15)]`} />
-                      <div className={`absolute inset-0 w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} animate-ping opacity-30`} />
+                      <div
+                        className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} shadow-[0_0_20px_rgba(255,255,255,0.15)]`}
+                      />
+                      <div
+                        className={`absolute inset-0 w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} animate-ping opacity-30`}
+                      />
                     </div>
                     <div className="flex flex-col">
                       <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white leading-none">
@@ -68,7 +72,9 @@ const TaskBoard = ({
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center grayscale opacity-30 py-32 select-none pointer-events-none">
                       <div className="w-20 h-1 bg-white/40 mb-4" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">Sector Clear</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">
+                        Sector Clear
+                      </span>
                     </div>
                   )}
                 </div>

@@ -6,8 +6,14 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { useUser, useSignIn, useSignUp, useClerk, useAuth as useClerkAuth } from '@clerk/clerk-react';
-import AuthService from '../api/authService';
+import {
+  useUser,
+  useSignIn,
+  useSignUp,
+  useClerk,
+  useAuth as useClerkAuth,
+} from '@clerk/clerk-react';
+import AuthService from '../api/authApi';
 import { setTokenGetter } from '../api/axios';
 import socketService from '../services/socketService';
 import { queryClient } from '../main';
@@ -22,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   const { isLoaded: isClerkLoaded, user: clerkUser, isSignedIn } = useUser();
   const { signOut } = useClerk();
   const { getToken } = useClerkAuth();
-  
+
   const useClerkAuthFlag = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
 
   // State for manual auth fallback (Native JWT)
@@ -33,18 +39,18 @@ export const AuthProvider = ({ children }) => {
   const [avatarRefreshCounter, setAvatarRefreshCounter] = useState(0);
 
   // Backend profile query - only runs when Clerk is signed in
-  const { 
-    data: backendUser, 
+  const {
+    data: backendUser,
     isLoading: profileLoading,
     isError: profileError,
-    refetch: refetchProfile
+    refetch: refetchProfile,
   } = useQuery({
     queryKey: ['auth', 'profile'],
     queryFn: async () => {
       const res = await AuthService.getCurrentUser();
       return res?.data?.user || res?.user;
     },
-    enabled: useClerkAuthFlag ? (isClerkLoaded && isSignedIn) : false,
+    enabled: useClerkAuthFlag ? isClerkLoaded && isSignedIn : false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false, // 401 is handled by interceptor
   });
@@ -56,6 +62,38 @@ export const AuthProvider = ({ children }) => {
     }
   }, [useClerkAuthFlag, getToken]);
 
+  // Initialize local auth state from localStorage token on mount (Native JWT fallback)
+  useEffect(() => {
+    if (!useClerkAuthFlag) {
+      const initializeLocalAuth = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            console.log(
+              '[AUTH] Restoring local session from stored credentials...'
+            );
+            const res = await AuthService.getCurrentUser();
+            const userData = res?.data?.user || res?.user || null;
+            if (userData) {
+              setLocalUser(userData);
+              setLocalAuthState('authenticated');
+              console.log('[AUTH] Local session successfully restored.');
+            } else {
+              setLocalAuthState('unauthenticated');
+            }
+          } catch (err) {
+            console.error('[AUTH] Failed to restore local session:', err);
+            localStorage.removeItem('token');
+            setLocalAuthState('unauthenticated');
+          }
+        } else {
+          setLocalAuthState('unauthenticated');
+        }
+      };
+      initializeLocalAuth();
+    }
+  }, [useClerkAuthFlag]);
+
   // Derived state
   const authState = useMemo(() => {
     if (useClerkAuthFlag) {
@@ -66,27 +104,43 @@ export const AuthProvider = ({ children }) => {
       return 'authenticated';
     }
     return localAuthState;
-  }, [useClerkAuthFlag, isClerkLoaded, isSignedIn, profileLoading, profileError, localAuthState]);
+  }, [
+    useClerkAuthFlag,
+    isClerkLoaded,
+    isSignedIn,
+    profileLoading,
+    profileError,
+    localAuthState,
+  ]);
 
   const user = useMemo(() => {
     if (useClerkAuthFlag) {
       if (!isSignedIn) return null;
       // Merge Clerk user with backend user data (role, etc.)
       const merged = backendUser ? { ...clerkUser, ...backendUser } : clerkUser;
-      
+
       // Force image refresh if profilePicture exists
       if (merged?.profilePicture) {
         // Use a combination of backend timestamp and our local refresh counter
-        const timestamp = backendUser?.updatedAt ? new Date(backendUser.updatedAt).getTime() : '';
+        const timestamp = backendUser?.updatedAt
+          ? new Date(backendUser.updatedAt).getTime()
+          : '';
         const version = `${timestamp}_${avatarRefreshCounter}`;
         const separator = merged.profilePicture.includes('?') ? '&' : '?';
         merged.profilePicture = `${merged.profilePicture}${separator}v=${version}`;
       }
-      
+
       return merged;
     }
     return localUser;
-  }, [useClerkAuthFlag, clerkUser, backendUser, localUser, isSignedIn, avatarRefreshCounter]);
+  }, [
+    useClerkAuthFlag,
+    clerkUser,
+    backendUser,
+    localUser,
+    isSignedIn,
+    avatarRefreshCounter,
+  ]);
 
   const logout = useCallback(async () => {
     console.log('[AUTH] Initiating global logout...');
@@ -118,7 +172,7 @@ export const AuthProvider = ({ children }) => {
 
     window.addEventListener('auth:logout', handleGlobalLogout);
     window.addEventListener('auth:logout_complete', handleLogoutComplete);
-    
+
     return () => {
       window.removeEventListener('auth:logout', handleGlobalLogout);
       window.removeEventListener('auth:logout_complete', handleLogoutComplete);
@@ -129,7 +183,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (authState === 'authenticated') {
       const initSocket = async () => {
-        const token = useClerkAuthFlag ? await getToken() : localStorage.getItem('token');
+        const token = useClerkAuthFlag
+          ? await getToken()
+          : localStorage.getItem('token');
         if (token) socketService.connect(token);
       };
       initSocket();
@@ -153,9 +209,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const register = useCallback(
-    async (name, email, password, role, assignedProjectId, workspaceName, plan, admin, config = {}) => {
+    async (
+      name,
+      email,
+      password,
+      role,
+      assignedProjectId,
+      workspaceName,
+      plan,
+      admin,
+      config = {}
+    ) => {
       try {
-        const payload = { name, email, password, role, assignedProjectId, workspaceName, plan, admin };
+        const payload = {
+          name,
+          email,
+          password,
+          role,
+          assignedProjectId,
+          workspaceName,
+          plan,
+          admin,
+        };
         const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
         const userData = res?.data?.user || res?.user || null;
@@ -186,7 +261,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await AuthService.updateAvatar(formData);
       // Increment local counter to force immediate image reload
-      setAvatarRefreshCounter(prev => prev + 1);
+      setAvatarRefreshCounter((prev) => prev + 1);
       // Invalidate and refetch to ensure all components see the new data
       await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
       return res;
@@ -202,9 +277,10 @@ export const AuthProvider = ({ children }) => {
       authState,
       loading: authState === 'initializing' || authState === 'syncing',
       authReady: authState !== 'initializing' && authState !== 'syncing',
-      loadingMessage: authState === 'initializing' 
-        ? 'Initializing security protocols...' 
-        : 'Synchronizing workspace identity...',
+      loadingMessage:
+        authState === 'initializing'
+          ? 'Initializing security protocols...'
+          : 'Synchronizing workspace identity...',
       isAuthenticated: authState === 'authenticated' || authState === 'syncing',
       isClerk: useClerkAuthFlag,
     }),

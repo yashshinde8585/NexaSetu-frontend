@@ -1,8 +1,6 @@
 import React from 'react';
 
-/**
- * Individual log entry for the activity register.
- */
+// Individual activity item component.
 const ActivityItem = ({ text, time }) => (
   <div className="flex justify-between items-center gap-4 py-2 border-b border-white/[0.03] last:border-b-0 group">
     <div className="flex items-center gap-2">
@@ -18,4 +16,3 @@ const ActivityItem = ({ text, time }) => (
 );
 
 export default ActivityItem;
-

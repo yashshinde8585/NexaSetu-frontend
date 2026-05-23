@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import NotificationService from '../api/notificationService';
+import NotificationService from '../api/notificationApi';
 import socketService from '../services/socketService';
 
 const attempt = async (fn, label) => {
@@ -18,9 +18,13 @@ const useNotifications = (pollInterval = 60000) => {
 
   const { data: notifications = [], isLoading: loading } = useQuery({
     queryKey: ['notifications'],
-    queryFn: () => NotificationService.getMyNotifications().then(res => res.data?.notifications || []),
+    queryFn: () =>
+      NotificationService.getMyNotifications().then(
+        (res) => res.data?.notifications || []
+      ),
     refetchInterval: pollInterval,
-    staleTime: 30000,
+    staleTime: 30000, // 30 s \u2014 socket push handles instant delivery
+    gcTime: 5 * 60 * 1000, // 5 min cache between polls
   });
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -28,7 +32,10 @@ const useNotifications = (pollInterval = 60000) => {
   useEffect(() => {
     // Real-time Push Integration
     const handleNewNotification = (notif) => {
-      queryClient.setQueryData(['notifications'], (old = []) => [notif, ...old]);
+      queryClient.setQueryData(['notifications'], (old = []) => [
+        notif,
+        ...old,
+      ]);
     };
 
     socketService.onEvent('NOTIFICATION_RECEIVED', handleNewNotification);
@@ -67,7 +74,8 @@ const useNotifications = (pollInterval = 60000) => {
     markAsRead,
     markAllAsRead,
     clearAll,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    refresh: () =>
+      queryClient.invalidateQueries({ queryKey: ['notifications'] }),
   };
 };
 

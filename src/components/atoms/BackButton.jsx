@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-/**
- * Standardized Project 0 Back Navigation Button.
- * Enforces a consistent, high-density brutalist UI for returning to previous states.
- */
+// Back navigation button.
 const BackButton = ({ onClick, className = '' }) => {
   const navigate = useNavigate();
 

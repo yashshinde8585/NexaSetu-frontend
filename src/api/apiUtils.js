@@ -12,7 +12,7 @@ export const normalizeError = (error) => {
       status: 0,
       data: null,
       isDisconnected: true,
-      uiState: 'server-error'
+      uiState: 'server-error',
     };
   }
 
@@ -31,7 +31,6 @@ export const normalizeError = (error) => {
     data: data,
     isDisconnected: false,
     validationErrors: data.errors || null,
-    uiState: uiState
+    uiState: uiState,
   };
 };
-

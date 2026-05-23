@@ -1,13 +1,18 @@
 import React from 'react';
-import { AccessDenied, NotFound, AuthRequired, ServerError } from './SystemStates';
+import {
+  AccessDenied,
+  NotFound,
+  AuthRequired,
+  ServerError,
+} from './SystemStates';
 import CenteredLoading from '../atoms/CenteredLoading';
 
-const ResilientPage = ({ 
-  isLoading, 
-  error, 
-  children, 
+const ResilientPage = ({
+  isLoading,
+  error,
+  children,
   loadingMessage,
-  onRetry 
+  onRetry,
 }) => {
   if (isLoading) {
     return <CenteredLoading message={loadingMessage} />;
@@ -29,15 +34,19 @@ const ResilientPage = ({
         // Generic error fallback that is NOT the "System Integrity Compromised" screen
         return (
           <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
-             <div className="w-1.5 h-12 bg-status-error mb-6 rounded-full" />
-             <h2 className="text-lg font-black text-white uppercase tracking-tight mb-2">Sync Failure</h2>
-             <p className="text-white/40 text-xs max-w-xs mb-8">{error.message || 'The data uplink is currently unstable.'}</p>
-             <button 
-               onClick={onRetry || (() => window.location.reload())}
-               className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:text-primary-light transition-colors"
-             >
-               Force Re-Sync
-             </button>
+            <div className="w-1.5 h-12 bg-status-error mb-6 rounded-full" />
+            <h2 className="text-lg font-black text-white uppercase tracking-tight mb-2">
+              Sync Failure
+            </h2>
+            <p className="text-white/40 text-xs max-w-xs mb-8">
+              {error.message || 'The data uplink is currently unstable.'}
+            </p>
+            <button
+              onClick={onRetry || (() => window.location.reload())}
+              className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:text-primary-light transition-colors"
+            >
+              Force Re-Sync
+            </button>
           </div>
         );
     }

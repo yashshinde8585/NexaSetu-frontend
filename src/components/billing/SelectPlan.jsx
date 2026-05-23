@@ -7,7 +7,8 @@ import { Check, ArrowRight, Loader2 } from 'lucide-react';
 
 const SelectPlan = () => {
   const navigate = useNavigate();
-  const { plans, subscription, selectPlan, isSelecting, isLoading } = useBilling();
+  const { plans, subscription, selectPlan, isSelecting, isLoading } =
+    useBilling();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProvisioning, setIsProvisioning] = useState(false);
@@ -44,7 +45,7 @@ const SelectPlan = () => {
       const selectPromise = selectPlan({ plan: selectedPlan.id });
 
       // Wait for the full 15 seconds to satisfy the UX requirement
-      await new Promise(resolve => setTimeout(resolve, duration));
+      await new Promise((resolve) => setTimeout(resolve, duration));
       console.log('Simulated delay complete, awaiting API resolution...');
       await selectPromise;
 
@@ -76,24 +77,34 @@ const SelectPlan = () => {
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse"></div>
               <div className="relative w-24 h-24 border-2 border-white/5 rounded-full flex items-center justify-center overflow-hidden">
-                 <Loader2 size={40} className="text-primary animate-spin" strokeWidth={1} />
+                <Loader2
+                  size={40}
+                  className="text-primary animate-spin"
+                  strokeWidth={1}
+                />
               </div>
             </div>
-            
+
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-white uppercase tracking-widest">Provisioning Workspace</h3>
+              <h3 className="text-xl font-black text-white uppercase tracking-widest">
+                Provisioning Workspace
+              </h3>
               <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.3em]">
-                {progress < 30 && "Initializing strategic kernels..."}
-                {progress >= 30 && progress < 60 && "Deploying multi-tenant isolation layers..."}
-                {progress >= 60 && progress < 90 && "Calibrating AI orchestration nodes..."}
-                {progress >= 90 && "Finalizing security handshake..."}
+                {progress < 30 && 'Initializing strategic kernels...'}
+                {progress >= 30 &&
+                  progress < 60 &&
+                  'Deploying multi-tenant isolation layers...'}
+                {progress >= 60 &&
+                  progress < 90 &&
+                  'Calibrating AI orchestration nodes...'}
+                {progress >= 90 && 'Finalizing security handshake...'}
               </p>
             </div>
 
             <div className="space-y-2">
               <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary transition-all duration-300 ease-linear shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]" 
+                <div
+                  className="h-full bg-primary transition-all duration-300 ease-linear shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]"
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
@@ -113,12 +124,15 @@ const SelectPlan = () => {
             <div className="w-20 h-20 bg-status-success/10 rounded-3xl flex items-center justify-center border border-status-success/20 mx-auto mb-8 animate-bounce">
               <Check className="text-status-success" size={40} />
             </div>
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-4">Account Activated</h2>
+            <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-4">
+              Account Activated
+            </h2>
             <p className="text-xs text-white/40 font-medium leading-relaxed mb-10">
-              Your <span className="text-white">{selectedPlan?.name}</span> workspace is now live. 
-              All strategic features and increased capacity limits have been successfully unlocked.
+              Your <span className="text-white">{selectedPlan?.name}</span>{' '}
+              workspace is now live. All strategic features and increased
+              capacity limits have been successfully unlocked.
             </p>
-            <button 
+            <button
               onClick={handleSuccessClose}
               className="w-full py-4 bg-status-success text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all shadow-[0_0_30px_rgba(var(--status-success-rgb),0.4)]"
             >
@@ -129,11 +143,11 @@ const SelectPlan = () => {
       )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {plans.map((plan) => (
-          <div 
+          <div
             key={plan.id}
             className={`relative rounded-xl p-6 border transition-all duration-300 flex flex-col ${
-              subscription?.plan === plan.id 
-                ? 'bg-primary/[0.03] border-primary/50 ring-1 ring-primary/20' 
+              subscription?.plan === plan.id
+                ? 'bg-primary/[0.03] border-primary/50 ring-1 ring-primary/20'
                 : 'bg-white/[0.01] border-white/10 hover:border-white/30'
             }`}
           >
@@ -145,23 +159,39 @@ const SelectPlan = () => {
 
             <div className="space-y-4 flex-1">
               <div className="space-y-1">
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">{plan.name}</h3>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest">
+                  {plan.name}
+                </h3>
                 <p className="text-[10px] text-white/40 font-medium leading-tight line-clamp-2">
                   {plan.description}
                 </p>
               </div>
 
               <div className="flex items-baseline gap-1 py-2 border-y border-white/5">
-                <span className="text-2xl font-black text-white">₹{plan.price}</span>
-                <span className="text-white/20 text-[9px] font-black uppercase tracking-wider">/ mo</span>
+                <span className="text-2xl font-black text-white">
+                  ₹{plan.price}
+                </span>
+                <span className="text-white/20 text-[9px] font-black uppercase tracking-wider">
+                  / mo
+                </span>
               </div>
 
               <div className="space-y-2.5 pt-2">
                 {Object.entries(plan.features).map(([key, value]) => (
                   <div key={key} className="flex items-start gap-2">
-                    <Check className={subscription?.plan === plan.id ? 'text-primary mt-0.5' : 'text-white/30 mt-0.5'} size={10} />
+                    <Check
+                      className={
+                        subscription?.plan === plan.id
+                          ? 'text-primary mt-0.5'
+                          : 'text-white/30 mt-0.5'
+                      }
+                      size={10}
+                    />
                     <span className="text-[11px] text-white/70 font-semibold leading-none">
-                      <span className="text-white">{value === Infinity ? 'Unlimited' : value}</span> {key === 'aiUsage' ? 'AI Credits' : key}
+                      <span className="text-white">
+                        {value === Infinity ? 'Unlimited' : value}
+                      </span>{' '}
+                      {key === 'aiUsage' ? 'AI Credits' : key}
                     </span>
                   </div>
                 ))}
@@ -183,7 +213,7 @@ const SelectPlan = () => {
         ))}
       </div>
 
-      <DummyCheckoutModal 
+      <DummyCheckoutModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirm}

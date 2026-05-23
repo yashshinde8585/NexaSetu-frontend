@@ -31,8 +31,8 @@ export default function ServerWakeupBanner() {
         isAwake
           ? 'bg-[rgba(0,200,100,0.15)]'
           : isFailed
-          ? 'bg-[rgba(220,40,40,0.18)]'
-          : 'bg-[#0a0a0a]/88'
+            ? 'bg-[rgba(220,40,40,0.18)]'
+            : 'bg-[#0a0a0a]/88'
       }`}
     >
       <div className="flex items-center gap-2.5 text-center">
@@ -43,14 +43,18 @@ export default function ServerWakeupBanner() {
             isAwake
               ? 'bg-[#00e87a] shadow-[0_0_8px_#00e87a]'
               : isFailed
-              ? 'bg-[#ff4444] shadow-[0_0_8px_#ff4444]'
-              : 'bg-[#f5a623] shadow-[0_0_8px_#f5a623]'
+                ? 'bg-[#ff4444] shadow-[0_0_8px_#ff4444]'
+                : 'bg-[#f5a623] shadow-[0_0_8px_#f5a623]'
           }`}
         />
 
         <span
           className={
-            isAwake ? 'text-[#00e87a]' : isFailed ? 'text-[#ff6b6b]' : 'text-[#c8c8c8]'
+            isAwake
+              ? 'text-[#00e87a]'
+              : isFailed
+                ? 'text-[#ff6b6b]'
+                : 'text-[#c8c8c8]'
           }
         >
           {isWaking && (

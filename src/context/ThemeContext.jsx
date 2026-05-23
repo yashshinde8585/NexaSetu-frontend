@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 
 const ThemeContext = createContext();
 
@@ -13,9 +20,9 @@ export const ThemeProvider = ({ children }) => {
 
   const applyTheme = useCallback((themeId, accentId) => {
     const root = document.documentElement;
-    
+
     // Remove existing theme classes
-    root.classList.forEach(cls => {
+    root.classList.forEach((cls) => {
       if (cls.startsWith('theme-') || cls.startsWith('accent-')) {
         root.classList.remove(cls);
       }
@@ -45,18 +52,19 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('nexasetu_accent', accentId);
   }, []);
 
-  const value = useMemo(() => ({
-    theme: selectedTheme,
-    accent: accentColor,
-    setTheme: setSelectedTheme,
-    setAccent: setAccentColor,
-    saveTheme
-  }), [selectedTheme, accentColor, saveTheme]);
+  const value = useMemo(
+    () => ({
+      theme: selectedTheme,
+      accent: accentColor,
+      setTheme: setSelectedTheme,
+      setAccent: setAccentColor,
+      saveTheme,
+    }),
+    [selectedTheme, accentColor, saveTheme]
+  );
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MagicService from '../../api/magicService';
+import MagicService from '../../api/magicApi';
 import { useAuth } from '../../context/AuthContext';
 import { useMagic } from '../../context/MagicContext';
 import magicData from '../../data/magicCommands.json';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from '../atoms/ErrorBoundary';
 
 // A tactical command interface that processes natural language directives.
 const MagicBar = () => {

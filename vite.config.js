@@ -11,20 +11,25 @@ const __dirname = path.dirname(__filename);
 // Ordered most-specific → least-specific to prevent false-positive matches.
 const vendorGroups = {
   // Core
-  'vendor-react':      (id) => id.includes('node_modules/react/') || id.includes('node_modules/react-dom/'),
-  'vendor-router':     (id) => id.includes('node_modules/react-router'),
+  'vendor-react': (id) =>
+    id.includes('node_modules/react/') ||
+    id.includes('node_modules/react-dom/'),
+  'vendor-router': (id) => id.includes('node_modules/react-router'),
   // Data layer
-  'vendor-query':      (id) => id.includes('node_modules/@tanstack'),
-  'vendor-socket':     (id) =>
+  'vendor-query': (id) => id.includes('node_modules/@tanstack'),
+  'vendor-socket': (id) =>
     id.includes('node_modules/socket.io-client') ||
     id.includes('node_modules/engine.io-client') ||
     id.includes('node_modules/@socket.io'),
   // Heavy UI / visualization (already lazy via page-level code split)
-  'vendor-charts':     (id) => id.includes('node_modules/recharts') || id.includes('node_modules/d3'),
-  'vendor-flow':       (id) => id.includes('node_modules/reactflow') || id.includes('node_modules/@reactflow'),
+  'vendor-charts': (id) =>
+    id.includes('node_modules/recharts') || id.includes('node_modules/d3'),
+  'vendor-flow': (id) =>
+    id.includes('node_modules/reactflow') ||
+    id.includes('node_modules/@reactflow'),
   // Deferred-load UI helpers (now loaded lazily via React.lazy)
   'vendor-datepicker': (id) => id.includes('node_modules/react-datepicker'),
-  'vendor-markdown':   (id) =>
+  'vendor-markdown': (id) =>
     id.includes('node_modules/react-markdown') ||
     id.includes('node_modules/remark') ||
     id.includes('node_modules/rehype') ||
@@ -34,8 +39,9 @@ const vendorGroups = {
     id.includes('node_modules/hast') ||
     id.includes('node_modules/vfile'),
   // Utilities
-  'vendor-icons':      (id) => id.includes('node_modules/lucide-react'),
-  'vendor-utils':      (id) => id.includes('node_modules/axios') || id.includes('node_modules/date-fns'),
+  'vendor-icons': (id) => id.includes('node_modules/lucide-react'),
+  'vendor-utils': (id) =>
+    id.includes('node_modules/axios') || id.includes('node_modules/date-fns'),
 };
 
 // https://vite.dev/config/

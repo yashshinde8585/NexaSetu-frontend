@@ -1,6 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GitBranch as Github, X as Twitter, Globe as Linkedin, Mail, Shield } from 'lucide-react';
+import {
+  GitBranch as Github,
+  X as Twitter,
+  Globe as Linkedin,
+  Mail,
+  Shield,
+} from 'lucide-react';
 import { ROUTES } from '../../constants';
 
 const LandingFooter = () => {
@@ -20,10 +26,13 @@ const LandingFooter = () => {
                   <div className="bg-white rounded-sm" />
                 </div>
               </div>
-              <span className="text-xl font-black tracking-tighter text-white">NexaSetu</span>
+              <span className="text-xl font-black tracking-tighter text-white">
+                NexaSetu
+              </span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed mb-6">
-              The high-performance orchestrator for modern engineering organizations. Built for clarity, speed, and technical precision.
+              The high-performance orchestrator for modern engineering
+              organizations. Built for clarity, speed, and technical precision.
             </p>
             <div className="flex gap-4">
               <SocialLink icon={<Twitter size={18} />} href="#" />
@@ -33,7 +42,9 @@ const LandingFooter = () => {
           </div>
 
           <div>
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">Product</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">
+              Product
+            </h4>
             <ul className="space-y-4">
               <FooterLink to="#features">System</FooterLink>
               <FooterLink to="#pricing">Pricing</FooterLink>
@@ -41,14 +52,18 @@ const LandingFooter = () => {
           </div>
 
           <div>
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">Resources</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">
+              Resources
+            </h4>
             <ul className="space-y-4">
               <FooterLink to="/docs">Documentation</FooterLink>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">Company</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-6">
+              Company
+            </h4>
             <ul className="space-y-4">
               <FooterLink to="/contact">Get help</FooterLink>
               <FooterLink to="/legal">Terms</FooterLink>
@@ -69,15 +84,18 @@ const LandingFooter = () => {
 
 const FooterLink = ({ to, children }) => (
   <li>
-    <Link to={to} className="text-sm text-white/40 hover:text-white transition-colors">
+    <Link
+      to={to}
+      className="text-sm text-white/40 hover:text-white transition-colors"
+    >
       {children}
     </Link>
   </li>
 );
 
 const SocialLink = ({ icon, href }) => (
-  <a 
-    href={href} 
+  <a
+    href={href}
     className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
   >
     {icon}

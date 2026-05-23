@@ -10,7 +10,8 @@ const DirectiveBanner = () => {
 
   const { data: directives = [], isLoading } = useQuery({
     queryKey: ['directives', user?.workspaceId],
-    queryFn: () => apiClient.get('/v1/directives').then(res => res.data?.directives || []),
+    queryFn: () =>
+      apiClient.get('/v1/directives').then((res) => res.data?.directives || []),
     refetchInterval: 60000,
     enabled: authReady && !!user?.workspaceId,
   });
@@ -22,7 +23,7 @@ const DirectiveBanner = () => {
     },
   });
 
-  const activeDirective = directives.find(d => d.status === 'issued');
+  const activeDirective = directives.find((d) => d.status === 'issued');
 
   if (!activeDirective) return null;
 
@@ -35,34 +36,46 @@ const DirectiveBanner = () => {
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Strategic Directive</span>
-              <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${
-                activeDirective.priority > 7 ? 'bg-status-error text-white' : 'bg-primary text-white'
-              }`}>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                Strategic Directive
+              </span>
+              <span
+                className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${
+                  activeDirective.priority > 7
+                    ? 'bg-status-error text-white'
+                    : 'bg-primary text-white'
+                }`}
+              >
                 P{activeDirective.priority}
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight">{activeDirective.title}</h3>
-            <p className="text-sm text-white/60 max-w-2xl">{activeDirective.description}</p>
+            <h3 className="text-xl font-bold text-white tracking-tight">
+              {activeDirective.title}
+            </h3>
+            <p className="text-sm text-white/60 max-w-2xl">
+              {activeDirective.description}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-           <button 
-             onClick={() => acknowledgeMutation.mutate(activeDirective._id)}
-             disabled={acknowledgeMutation.isPending}
-             className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all duration-300"
-           >
-             {acknowledgeMutation.isPending ? 'Processing...' : (
-               <>
-                 <CheckCircle size={16} />
-                 Acknowledge Mission
-               </>
-             )}
-           </button>
-           <button className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white hover:border-white/20 transition-all">
-             <ChevronRight size={18} />
-           </button>
+          <button
+            onClick={() => acknowledgeMutation.mutate(activeDirective._id)}
+            disabled={acknowledgeMutation.isPending}
+            className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all duration-300"
+          >
+            {acknowledgeMutation.isPending ? (
+              'Processing...'
+            ) : (
+              <>
+                <CheckCircle size={16} />
+                Acknowledge Mission
+              </>
+            )}
+          </button>
+          <button className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white hover:border-white/20 transition-all">
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
 

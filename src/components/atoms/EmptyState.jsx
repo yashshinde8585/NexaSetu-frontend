@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box } from 'lucide-react';
 
-const EmptyState = ({ 
-  icon: Icon = Box, 
-  title = 'NO_DATA_FOUND', 
+const EmptyState = ({
+  icon: Icon = Box,
+  title = 'NO_DATA_FOUND',
   message = 'SYSTEM DETECTED AN EMPTY SECTOR. PLEASE INITIALIZE CONTENT.',
-  action = null
+  action = null,
 }) => {
   return (
     <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl">
@@ -20,11 +20,7 @@ const EmptyState = ({
       <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xs mx-auto leading-relaxed mb-6">
         {message}
       </p>
-      {action && (
-        <div className="flex justify-center">
-          {action}
-        </div>
-      )}
+      {action && <div className="flex justify-center">{action}</div>}
     </div>
   );
 };

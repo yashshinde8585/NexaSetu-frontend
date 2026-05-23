@@ -17,7 +17,7 @@ import MagicBar from './MagicBar';
 import { usePermissions, PERMISSIONS } from '../../hooks/usePermissions';
 import { ROUTES } from '../../constants/routes';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import ProjectService from '../../api/projectService';
+import ProjectService from '../../api/projectApi';
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user } = useAuth();

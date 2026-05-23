@@ -1,7 +1,15 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, Minus, Plus, Paperclip, X, FileIcon, Loader2 } from 'lucide-react';
+import {
+  Clock,
+  Minus,
+  Plus,
+  Paperclip,
+  X,
+  FileIcon,
+  Loader2,
+} from 'lucide-react';
 import StorageService from '../../services/storageService';
 import { useAuth } from '../../context/AuthContext';
 
@@ -18,14 +26,19 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
     setUploading(true);
     try {
-      const uploadPromises = files.map(file => 
-        StorageService.uploadAttachment(file, user.workspaceId, newTask.project || 'global', 'new')
+      const uploadPromises = files.map((file) =>
+        StorageService.uploadAttachment(
+          file,
+          user.workspaceId,
+          newTask.project || 'global',
+          'new'
+        )
       );
-      
+
       const results = await Promise.all(uploadPromises);
-      setNewTask(prev => ({
+      setNewTask((prev) => ({
         ...prev,
-        attachments: [...(prev.attachments || []), ...results]
+        attachments: [...(prev.attachments || []), ...results],
       }));
     } catch (err) {
       alert('Failed to upload one or more files. Please try again.');
@@ -38,9 +51,9 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
   const removeAttachment = async (index) => {
     const attachment = newTask.attachments[index];
     try {
-      setNewTask(prev => ({
+      setNewTask((prev) => ({
         ...prev,
-        attachments: prev.attachments.filter((_, i) => i !== index)
+        attachments: prev.attachments.filter((_, i) => i !== index),
       }));
     } catch (err) {
       console.error('Failed to remove attachment:', err);
@@ -51,7 +64,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
     <div className="bg-black p-5 sm:p-6 rounded-none mb-8 border border-white/10 animate-in fade-in zoom-in-95 duration-200 shadow-2xl relative overflow-hidden">
       {/* Tactical Header Overlay */}
       <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-      
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -71,7 +84,9 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-black text-xs uppercase tracking-tight placeholder:text-white/10"
                 placeholder="E.G. CORE_SYSTEM_UPDATE"
                 value={newTask.title}
-                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, title: e.target.value })
+                }
                 required
                 autoFocus
               />
@@ -85,17 +100,25 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 <select
                   className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
                   value={newTask.sprint || ''}
-                  onChange={(e) => setNewTask({ ...newTask, sprint: e.target.value })}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, sprint: e.target.value })
+                  }
                 >
-                  <option value="" className="bg-black">No sprint selected</option>
+                  <option value="" className="bg-black">
+                    No sprint selected
+                  </option>
                   {(sprints || []).map((sprint) => (
-                    <option key={sprint._id} value={sprint._id} className="bg-black">
+                    <option
+                      key={sprint._id}
+                      value={sprint._id}
+                      className="bg-black"
+                    >
                       {sprint.name}
                     </option>
                   ))}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
-                   <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
+                  <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
                 </div>
               </div>
             </div>
@@ -127,14 +150,28 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                   <select
                     className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
                     value={newTask.type || TASK_TYPE.TASK}
-                    onChange={(e) => setNewTask({ ...newTask, type: e.target.value })}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, type: e.target.value })
+                    }
                   >
-                    <option value={TASK_TYPE.EPIC} className="bg-black">Epic</option>
-                    <option value={TASK_TYPE.STORY} className="bg-black">Story</option>
-                    <option value={TASK_TYPE.TASK} className="bg-black">Task</option>
-                    <option value={TASK_TYPE.BUG} className="bg-black">Bug</option>
-                    <option value={TASK_TYPE.SPIKE} className="bg-black">Spike</option>
-                    <option value={TASK_TYPE.TECH_DEBT} className="bg-black">Tech Debt</option>
+                    <option value={TASK_TYPE.EPIC} className="bg-black">
+                      Epic
+                    </option>
+                    <option value={TASK_TYPE.STORY} className="bg-black">
+                      Story
+                    </option>
+                    <option value={TASK_TYPE.TASK} className="bg-black">
+                      Task
+                    </option>
+                    <option value={TASK_TYPE.BUG} className="bg-black">
+                      Bug
+                    </option>
+                    <option value={TASK_TYPE.SPIKE} className="bg-black">
+                      Spike
+                    </option>
+                    <option value={TASK_TYPE.TECH_DEBT} className="bg-black">
+                      Tech Debt
+                    </option>
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
                     <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
@@ -149,17 +186,40 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 <div className="relative">
                   <select
                     className={`w-full bg-white/[0.03] border border-white/10 px-4 py-3 rounded-none focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none ${
-                      newTask.priority === 'urgent' ? 'text-status-error' :
-                      newTask.priority === 'high' ? 'text-status-warning' :
-                      newTask.priority === 'low' ? 'text-status-success' : 'text-primary'
+                      newTask.priority === 'urgent'
+                        ? 'text-status-error'
+                        : newTask.priority === 'high'
+                          ? 'text-status-warning'
+                          : newTask.priority === 'low'
+                            ? 'text-status-success'
+                            : 'text-primary'
                     }`}
                     value={newTask.priority || 'medium'}
-                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, priority: e.target.value })
+                    }
                   >
-                    <option value="low" className="bg-black text-status-success">Low</option>
-                    <option value="medium" className="bg-black text-primary">Medium</option>
-                    <option value="high" className="bg-black text-status-warning">High</option>
-                    <option value="urgent" className="bg-black text-status-error">Urgent</option>
+                    <option
+                      value="low"
+                      className="bg-black text-status-success"
+                    >
+                      Low
+                    </option>
+                    <option value="medium" className="bg-black text-primary">
+                      Medium
+                    </option>
+                    <option
+                      value="high"
+                      className="bg-black text-status-warning"
+                    >
+                      High
+                    </option>
+                    <option
+                      value="urgent"
+                      className="bg-black text-status-error"
+                    >
+                      Urgent
+                    </option>
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
                     <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
@@ -177,9 +237,17 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                       let mins = newTask.estimatedDuration || 0;
                       if (newTask.durationUnit === 'hours') mins *= 60;
                       if (newTask.durationUnit === 'days') mins *= 1440;
-                      const start = newTask.startDate ? new Date(newTask.startDate) : new Date();
-                      const deadline = new Date(start.getTime() + mins * 60 * 1000);
-                      return deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                      const start = newTask.startDate
+                        ? new Date(newTask.startDate)
+                        : new Date();
+                      const deadline = new Date(
+                        start.getTime() + mins * 60 * 1000
+                      );
+                      return deadline.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      });
                     })()}
                   </span>
                   <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -191,32 +259,50 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
             <div className="bg-white/[0.02] border border-white/10 p-4 space-y-4">
               <div className="flex items-center gap-2">
-                 <Clock size={12} className="text-primary" />
-                 <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">
-                   Estimated Duration
-                 </label>
+                <Clock size={12} className="text-primary" />
+                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">
+                  Estimated Duration
+                </label>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center bg-black border border-white/20 p-0.5">
                   <button
                     type="button"
-                    onClick={() => setNewTask({ ...newTask, estimatedDuration: Math.max(0, (newTask.estimatedDuration || 0) - 5) })}
+                    onClick={() =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: Math.max(
+                          0,
+                          (newTask.estimatedDuration || 0) - 5
+                        ),
+                      })
+                    }
                     className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all"
                   >
                     <Minus size={12} />
                   </button>
-                  
+
                   <input
                     type="number"
                     className="bg-transparent text-[11px] font-black text-white text-center w-12 focus:outline-none uppercase"
                     value={newTask.estimatedDuration || 30}
-                    onChange={(e) => setNewTask({ ...newTask, estimatedDuration: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: parseInt(e.target.value) || 0,
+                      })
+                    }
                   />
 
                   <button
                     type="button"
-                    onClick={() => setNewTask({ ...newTask, estimatedDuration: (newTask.estimatedDuration || 0) + 5 })}
+                    onClick={() =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: (newTask.estimatedDuration || 0) + 5,
+                      })
+                    }
                     className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all"
                   >
                     <Plus size={12} />
@@ -224,15 +310,17 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 </div>
 
                 <div className="flex gap-px bg-white/10 border border-white/10">
-                  {['minutes', 'hours', 'days'].map(unit => (
+                  {['minutes', 'hours', 'days'].map((unit) => (
                     <button
                       key={unit}
                       type="button"
-                      onClick={() => setNewTask({ ...newTask, durationUnit: unit })}
+                      onClick={() =>
+                        setNewTask({ ...newTask, durationUnit: unit })
+                      }
                       className={`px-3 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${
-                        (newTask.durationUnit || 'minutes') === unit 
-                        ? 'bg-primary text-black' 
-                        : 'bg-black text-white/30 hover:text-white hover:bg-white/5'
+                        (newTask.durationUnit || 'minutes') === unit
+                          ? 'bg-primary text-black'
+                          : 'bg-black text-white/30 hover:text-white hover:bg-white/5'
                       }`}
                     >
                       {unit === 'minutes' ? 'MINS' : unit.toUpperCase()}
@@ -247,13 +335,32 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                     key={v}
                     type="button"
                     onClick={() => {
-                      if (v === 15) setNewTask({ ...newTask, estimatedDuration: 15, durationUnit: 'minutes' });
-                      if (v === 60) setNewTask({ ...newTask, estimatedDuration: 1, durationUnit: 'hours' });
-                      if (v === 480) setNewTask({ ...newTask, estimatedDuration: 1, durationUnit: 'days' });
+                      if (v === 15)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 15,
+                          durationUnit: 'minutes',
+                        });
+                      if (v === 60)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 1,
+                          durationUnit: 'hours',
+                        });
+                      if (v === 480)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 1,
+                          durationUnit: 'days',
+                        });
                     }}
                     className="text-[8px] font-black text-white/20 hover:text-primary transition-all uppercase tracking-[0.2em] border-b border-transparent hover:border-primary pb-0.5"
                   >
-                    {v === 15 ? 'Quick Fix (15M)' : v === 60 ? 'Standard (1H)' : 'Full Day (1D)'}
+                    {v === 15
+                      ? 'Quick Fix (15M)'
+                      : v === 60
+                        ? 'Standard (1H)'
+                        : 'Full Day (1D)'}
                   </button>
                 ))}
               </div>
@@ -264,13 +371,18 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
               <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
                 Mission Assets
               </label>
-              
+
               <div className="flex flex-wrap gap-2">
                 {newTask.attachments?.map((file, idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 group transition-all hover:bg-white/10">
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 group transition-all hover:bg-white/10"
+                  >
                     <FileIcon size={12} className="text-primary" />
-                    <span className="text-[9px] font-black text-white/80 truncate max-w-[100px] uppercase tracking-tighter">{file.name}</span>
-                    <button 
+                    <span className="text-[9px] font-black text-white/80 truncate max-w-[100px] uppercase tracking-tighter">
+                      {file.name}
+                    </span>
+                    <button
                       type="button"
                       onClick={() => removeAttachment(idx)}
                       className="text-white/20 hover:text-status-error transition-colors"
@@ -279,8 +391,10 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                     </button>
                   </div>
                 ))}
-                
-                <label className={`flex items-center gap-2 px-4 py-2 border border-dashed border-white/20 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer ${uploading ? 'opacity-50 cursor-wait' : ''}`}>
+
+                <label
+                  className={`flex items-center gap-2 px-4 py-2 border border-dashed border-white/20 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer ${uploading ? 'opacity-50 cursor-wait' : ''}`}
+                >
                   {uploading ? (
                     <Loader2 size={14} className="text-primary animate-spin" />
                   ) : (
@@ -289,10 +403,10 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
                     {uploading ? 'UPLOADING...' : 'ATTACH_ASSETS'}
                   </span>
-                  <input 
-                    type="file" 
-                    multiple 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
                     onChange={handleFileChange}
                     disabled={uploading}
                   />

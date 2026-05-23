@@ -1,0 +1,290 @@
+import React from 'react';
+import { useAuth } from '../../context/AuthContext';
+import {
+  User,
+  Mail,
+  Shield,
+  ShieldCheck,
+  Calendar,
+  Settings,
+  LogOut,
+  Lock,
+  Key,
+  BadgeCheck,
+  Clock,
+  ChevronRight,
+  Camera,
+  Loader2,
+} from 'lucide-react';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../../components/atoms/Button';
+import { ROUTES } from '../../constants';
+
+/**
+ * Clean and professional Profile page for NexaSetu.
+ * Focuses on clarity, high contrast, and structured information layouts.
+ */
+const Profile = () => {
+  const { user, logout, updateAvatar } = useAuth();
+  const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate(ROUTES.LOGIN);
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('FILE_SIZE_EXCEEDS_2MB_LIMIT');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      setIsUploading(true);
+      await updateAvatar(formData);
+    } catch (err) {
+      console.error('[AVATAR_UPLOAD_FAILURE]:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-screen-xl mx-auto">
+      <div className="space-y-6">
+        {/* Simple Professional Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center gap-4">
+            <div
+              className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative cursor-pointer group overflow-hidden"
+              onClick={handleAvatarClick}
+            >
+              {user.profilePicture ? (
+                <img
+                  src={user.profilePicture}
+                  alt={user.name}
+                  className="w-full h-full object-cover rounded"
+                />
+              ) : (
+                <span className="text-xl font-black text-white/50">
+                  {user.name.charAt(0)}
+                </span>
+              )}
+
+              {isUploading && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+                  <Loader2 className="animate-spin text-primary" size={20} />
+                </div>
+              )}
+
+              <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10 backdrop-blur-[2px]">
+                <Camera size={16} className="text-white" />
+              </div>
+
+              <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-black border border-white/10 rounded flex items-center justify-center text-primary z-30">
+                <ShieldCheck size={10} />
+              </div>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+              />
+            </div>
+            <div>
+              <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">
+                {user.name}
+              </h1>
+              <div className="flex items-center gap-2 text-white/80">
+                <span className="uppercase tracking-[0.2em] text-primary text-[9px] font-black">
+                  {user.jobTitle || 'TEAM MEMBER'}
+                </span>
+                <span className="w-1 h-1 bg-white/40 rounded-full" />
+                <span className="uppercase tracking-[0.2em] text-[9px] font-black">
+                  {user._id.slice(-8)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+            <Button
+              variant="outline"
+              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest border-white/10 rounded"
+              onClick={() => navigate(ROUTES.SETTINGS)}
+            >
+              SETTINGS
+            </Button>
+            <Button
+              variant="danger"
+              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest rounded"
+              onClick={handleLogout}
+            >
+              SIGN_OUT
+            </Button>
+          </div>
+        </div>
+
+        {/* Informational Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Info Columns */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Account Details Section */}
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+                ACCOUNT_INFORMATION
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
+                <InfoRow
+                  label="FULL_NAME"
+                  value={user.name}
+                  icon={<User size={12} />}
+                />
+                <InfoRow
+                  label="EMAIL_ADDRESS"
+                  value={user.email}
+                  icon={<Mail size={12} />}
+                />
+                <InfoRow
+                  label="ACCOUNT_ROLE"
+                  value={user.jobTitle || user.role.replace('_', ' ')}
+                  icon={<Shield size={12} />}
+                />
+                <InfoRow
+                  label="JOINED_WORKSPACE"
+                  value={new Date(user.createdAt).toLocaleDateString()}
+                  icon={<Calendar size={12} />}
+                />
+                <InfoRow
+                  label="CURRENT_STATUS"
+                  value="ACTIVE"
+                  icon={<Clock size={12} />}
+                  status="active"
+                />
+              </div>
+            </section>
+
+            {/* Security Section */}
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+                SECURITY_&_ACCESS
+              </h2>
+              <div className="grid grid-cols-1 gap-2">
+                <ActionTile
+                  icon={<Key size={14} />}
+                  title="UPDATE_PASSWORD"
+                  desc="SECURE ACCOUNT CREDENTIALS"
+                />
+                <ActionTile
+                  icon={<Lock size={14} />}
+                  title="TWO_FACTOR_AUTHENTICATION"
+                  desc="ADD LAYERED PROTECTION"
+                  badge="RECOMMENDED"
+                />
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar / Preferences */}
+          <div className="space-y-6">
+            {/* Preferences Section */}
+            <section className="space-y-4">
+              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+                PREFERENCES
+              </h2>
+              <div className="p-4 bg-white/5 border border-white/10 rounded space-y-4">
+                <PreferenceToggle label="EMAIL_NOTIFICATIONS" active />
+                <PreferenceToggle label="REAL_TIME_STATUS" active />
+                <PreferenceToggle label="COMPACT_VIEW" />
+                <PreferenceToggle label="DEVELOPER_MODE" />
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {/* Professional Footer */}
+        <footer className="pt-8 pb-4 border-t border-white/10 flex justify-end items-center text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
+          <span>WORKSPACE_ID: {user._id.slice(0, 12)}</span>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+// Sub-components for a structured, clean UI
+const InfoRow = ({ label, value, icon, status }) => (
+  <div className="bg-black p-3 sm:p-4 flex flex-col gap-1">
+    <span className="text-[8px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+      {icon} {label}
+    </span>
+    <span className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-2 mt-1">
+      {status === 'active' && (
+        <div className="w-1.5 h-1.5 bg-status-success rounded-full" />
+      )}
+      {value}
+    </span>
+  </div>
+);
+
+const ActionTile = ({ icon, title, desc, badge }) => (
+  <div className="p-3 sm:p-4 bg-white/5 border border-white/10 rounded flex items-center justify-between hover:border-white/20 transition-all cursor-pointer group">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded bg-black border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors shrink-0">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <h4 className="text-[9px] font-black uppercase tracking-widest text-white truncate">
+            {title}
+          </h4>
+          {badge && (
+            <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">
+              {badge}
+            </span>
+          )}
+        </div>
+        <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/40 truncate">
+          {desc}
+        </p>
+      </div>
+    </div>
+    <ChevronRight
+      size={14}
+      className="text-white/20 group-hover:text-white transition-transform transform group-hover:translate-x-1 shrink-0"
+    />
+  </div>
+);
+
+const PreferenceToggle = ({ label, active }) => (
+  <div className="flex items-center justify-between group cursor-pointer">
+    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60 group-hover:text-white transition-colors">
+      {label}
+    </span>
+    <div
+      className={`w-8 h-4 rounded-full relative transition-all ${active ? 'bg-primary' : 'bg-white/10'}`}
+    >
+      <div
+        className={`absolute top-[2px] w-3 h-3 rounded-full transition-all ${active ? 'right-[2px] bg-black' : 'left-[2px] bg-white/40'}`}
+      />
+    </div>
+  </div>
+);
+
+export default Profile;

@@ -14,9 +14,9 @@ export const usePermission = (action) => {
         setLoading(false);
         return;
       }
-      
+
       try {
-        setHasPermission(true); 
+        setHasPermission(true);
       } catch (error) {
         console.error('Permission check failed', error);
         setHasPermission(false);

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from '../atoms/ErrorBoundary';
 
 // A modal component that presents an AI-generated summary and key metrics upon sprint completion.
 const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {

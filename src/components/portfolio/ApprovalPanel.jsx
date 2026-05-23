@@ -1,7 +1,12 @@
 import React from 'react';
 
 // A panel component that displays pending AI-driven strategic actions requiring user oversight and approval.
-const ApprovalPanel = ({ actions, handleApprove, handleReject, isLoading = false }) => {
+const ApprovalPanel = ({
+  actions,
+  handleApprove,
+  handleReject,
+  isLoading = false,
+}) => {
   if (isLoading) {
     return (
       <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-8 animate-pulse">

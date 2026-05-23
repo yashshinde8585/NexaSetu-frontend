@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Layout, Zap, Bot } from 'lucide-react';
 import CapacityChart from './CapacityChart';
 
@@ -21,14 +15,6 @@ const RoleAnalytics = ({
   sprints = [],
   isLoading = false,
 }) => {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
-        <div className="h-[350px] bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />
-        <div className="h-[350px] bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />
-      </div>
-    );
-  }
   const isLead =
     (user?.jobTitle || '').toUpperCase().includes('LEAD') ||
     user?.role === 'TECH_LEAD';
@@ -68,6 +54,15 @@ const RoleAnalytics = ({
       { name: 'Manual', value: aiImpact.manual, color: '#475569' },
     ];
   }, [aiImpact]);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+        <div className="h-[350px] bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />
+        <div className="h-[350px] bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />
+      </div>
+    );
+  }
 
   // 2. Role-Based Rendering Logic
   if (isAdmin) {
@@ -255,4 +250,4 @@ const RoleAnalytics = ({
   );
 };
 
-export default RoleAnalytics;
+export default React.memo(RoleAnalytics);
