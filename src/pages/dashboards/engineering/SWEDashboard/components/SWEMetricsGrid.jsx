@@ -166,27 +166,25 @@ const SWEMetricsGrid = ({
         </div>
         <div className="flex items-center gap-4 mt-1">
           <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={[
-                    { value: codeHealthScore, color: '#10B981' },
-                    {
-                      value: Math.max(0, 100 - codeHealthScore),
-                      color: 'rgba(255,255,255,0.05)',
-                    },
-                  ]}
-                  dataKey="value"
-                  innerRadius={15}
-                  outerRadius={21}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <Cell fill="#10B981" />
-                  <Cell fill="rgba(255,255,255,0.05)" />
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+            <PieChart width={48} height={48}>
+              <Pie
+                data={[
+                  { value: codeHealthScore, color: '#10B981' },
+                  {
+                    value: Math.max(0, 100 - codeHealthScore),
+                    color: 'rgba(255,255,255,0.05)',
+                  },
+                ]}
+                dataKey="value"
+                innerRadius={15}
+                outerRadius={21}
+                startAngle={90}
+                endAngle={-270}
+              >
+                <Cell fill="#10B981" />
+                <Cell fill="rgba(255,255,255,0.05)" />
+              </Pie>
+            </PieChart>
             <span className="absolute text-[8px] font-black text-white leading-none">
               {codeHealthScore}
             </span>
@@ -226,25 +224,23 @@ const SWEMetricsGrid = ({
             </div>
           </div>
           <div className="w-16 h-8">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={myVelocity.sparkline || []}>
-                <defs>
-                  <linearGradient id="velocityGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#60A5FA" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area
-                  type="monotone"
-                  dataKey="val"
-                  stroke="#60A5FA"
-                  strokeWidth={1.5}
-                  fillOpacity={1}
-                  fill="url(#velocityGrad)"
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart width={64} height={32} data={myVelocity.sparkline || []}>
+              <defs>
+                <linearGradient id="velocityGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#60A5FA" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="val"
+                stroke="#60A5FA"
+                strokeWidth={1.5}
+                fillOpacity={1}
+                fill="url(#velocityGrad)"
+                dot={false}
+              />
+            </AreaChart>
           </div>
         </div>
       </div>

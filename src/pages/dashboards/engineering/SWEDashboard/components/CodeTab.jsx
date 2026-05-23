@@ -26,7 +26,7 @@ const CodeTab = ({
           Velocity Trend
         </h3>
         <div className="w-full h-80">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart
               data={myVelocity.sparkline || []}
               margin={{ top: 20, right: 20, left: -20, bottom: 0 }}

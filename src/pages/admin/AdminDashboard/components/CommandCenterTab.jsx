@@ -239,18 +239,16 @@ const CommandCenterTab = ({
               </div>
             </div>
             <div className="w-14 h-7 opacity-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sparklineData.projects}>
-                  <Area
-                    type="monotone"
-                    dataKey="val"
-                    stroke="#8B5CF6"
-                    fill="rgba(139, 92, 246, 0.1)"
-                    strokeWidth={1.5}
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <AreaChart width={56} height={28} data={sparklineData.projects}>
+                <Area
+                  type="monotone"
+                  dataKey="val"
+                  stroke="#8B5CF6"
+                  fill="rgba(139, 92, 246, 0.1)"
+                  strokeWidth={1.5}
+                  dot={false}
+                />
+              </AreaChart>
             </div>
           </div>
         </div>
@@ -278,18 +276,16 @@ const CommandCenterTab = ({
               </div>
             </div>
             <div className="w-14 h-7 opacity-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sparklineData.totalUsers}>
-                  <Area
-                    type="monotone"
-                    dataKey="val"
-                    stroke="#3B82F6"
-                    fill="rgba(59, 130, 246, 0.1)"
-                    strokeWidth={1.5}
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <AreaChart width={56} height={28} data={sparklineData.totalUsers}>
+                <Area
+                  type="monotone"
+                  dataKey="val"
+                  stroke="#3B82F6"
+                  fill="rgba(59, 130, 246, 0.1)"
+                  strokeWidth={1.5}
+                  dot={false}
+                />
+              </AreaChart>
             </div>
           </div>
         </div>
@@ -315,18 +311,16 @@ const CommandCenterTab = ({
               </div>
             </div>
             <div className="w-14 h-7 opacity-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sparklineData.activeUsers}>
-                  <Area
-                    type="monotone"
-                    dataKey="val"
-                    stroke="#22C55E"
-                    fill="rgba(34, 197, 94, 0.1)"
-                    strokeWidth={1.5}
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <AreaChart width={56} height={28} data={sparklineData.activeUsers}>
+                <Area
+                  type="monotone"
+                  dataKey="val"
+                  stroke="#22C55E"
+                  fill="rgba(34, 197, 94, 0.1)"
+                  strokeWidth={1.5}
+                  dot={false}
+                />
+              </AreaChart>
             </div>
           </div>
         </div>
@@ -354,18 +348,16 @@ const CommandCenterTab = ({
               </div>
             </div>
             <div className="w-14 h-7 opacity-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sparklineData.adminUsers}>
-                  <Area
-                    type="monotone"
-                    dataKey="val"
-                    stroke="#F59E0B"
-                    fill="rgba(245, 158, 11, 0.1)"
-                    strokeWidth={1.5}
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <AreaChart width={56} height={28} data={sparklineData.adminUsers}>
+                <Area
+                  type="monotone"
+                  dataKey="val"
+                  stroke="#F59E0B"
+                  fill="rgba(245, 158, 11, 0.1)"
+                  strokeWidth={1.5}
+                  dot={false}
+                />
+              </AreaChart>
             </div>
           </div>
         </div>
@@ -458,7 +450,7 @@ const CommandCenterTab = ({
           </div>
 
           <div className="flex-1 flex items-center justify-center relative h-48 py-2">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={userDistributionData}
@@ -539,7 +531,7 @@ const CommandCenterTab = ({
           </div>
 
           <div className="flex-1 w-full h-56 mt-4">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart
                 data={usersGrowthTrend}
                 margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
