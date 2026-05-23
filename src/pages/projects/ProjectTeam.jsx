@@ -32,9 +32,9 @@ const ProjectTeam = () => {
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   /**
-   * Fetch squad members with memory safety
+   * Fetch team members with memory safety
    */
-  const fetchProjectSquad = useCallback(
+  const fetchProjectTeam = useCallback(
     async (signal) => {
       try {
         setLoading(true);
@@ -71,7 +71,7 @@ const ProjectTeam = () => {
         setData({ projectName, members: filtered });
       } catch (err) {
         if (err.name === 'AbortError') return;
-        setError('SQUAD_LINKAGE_FAILURE: DATA_STREAM_DISRUPTED.');
+        setError('Failed to load team data.');
       } finally {
         if (!signal.aborted) setLoading(false);
       }
@@ -81,9 +81,9 @@ const ProjectTeam = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchProjectSquad(abortController.signal);
+    fetchProjectTeam(abortController.signal);
     return () => abortController.abort();
-  }, [fetchProjectSquad]);
+  }, [fetchProjectTeam]);
 
   const ROLE_PRIORITY = {
     CTO: 1,
@@ -161,7 +161,7 @@ const ProjectTeam = () => {
               />
               <input
                 type="text"
-                placeholder="SEARCH PERSONNEL..."
+                placeholder="SEARCH MEMBERS..."
                 className="w-full h-9 bg-black border border-white/10 text-white rounded px-4 pl-10 focus:outline-none focus:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -193,7 +193,7 @@ const ProjectTeam = () => {
           </div>
         )}
 
-        {/* Tactical Personnel Grid */}
+        {/* Team Members Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
           {loading
             ? [...Array(6)].map((_, i) => (
@@ -262,10 +262,10 @@ const ProjectTeam = () => {
           <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl">
             <Users size={40} className="mx-auto text-white/10 mb-6" />
             <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">
-              ZERO PERSONNEL DETECTED
+              NO MEMBERS FOUND
             </h3>
             <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em] max-w-sm mx-auto">
-              NO MEMBERS MATCH THE CURRENT SEARCH PARAMETERS FOR THIS SECTOR.
+              NO MEMBERS MATCH THE CURRENT SEARCH PARAMETERS.
             </p>
           </div>
         )}

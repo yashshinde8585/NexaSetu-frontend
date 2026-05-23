@@ -37,7 +37,7 @@ const DirectiveBanner = () => {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                Strategic Directive
+                Workspace Announcement
               </span>
               <span
                 className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${
@@ -69,7 +69,7 @@ const DirectiveBanner = () => {
             ) : (
               <>
                 <CheckCircle size={16} />
-                Acknowledge Mission
+                Acknowledge
               </>
             )}
           </button>

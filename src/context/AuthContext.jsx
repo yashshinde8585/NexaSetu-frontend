@@ -16,7 +16,7 @@ import {
 import AuthService from '../api/authApi';
 import { setTokenGetter } from '../api/axios';
 import socketService from '../services/socketService';
-import { queryClient } from '../main';
+import { queryClient } from '../queryClient';
 import { useQuery } from '@tanstack/react-query';
 import { API_ENDPOINTS } from '../constants';
 import apiClient from '../api/apiClient';

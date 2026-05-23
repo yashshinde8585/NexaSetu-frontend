@@ -17,7 +17,7 @@ const ProjectSetup = () => {
   const navigate = useNavigate();
   const { handleCreateProject, isLoading } = useDashboard();
 
-  const [mission, setMission] = useState({
+  const [project, setProject] = useState({
     name: '',
     type: 'Product Development',
     objective: '',
@@ -34,10 +34,10 @@ const ProjectSetup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
-  const onInitialize = async (e, isDraft = false) => {
+  const onCreate = async (e, isDraft = false) => {
     if (e) e.preventDefault();
 
-    const validationError = validateProjectForm(mission);
+    const validationError = validateProjectForm(project);
     if (validationError) {
       setSubmitError(validationError);
       return;
@@ -46,20 +46,20 @@ const ProjectSetup = () => {
     setSubmitError(null);
     setIsSubmitting(true);
     try {
-      const sanitizedMission = {
-        ...mission,
-        name: sanitizeInput(mission.name),
-        objective: sanitizeInput(mission.objective),
+      const sanitizedProject = {
+        ...project,
+        name: sanitizeInput(project.name),
+        objective: sanitizeInput(project.objective),
       };
 
-      setMission(sanitizedMission);
+      setProject(sanitizedProject);
 
       const result = await handleCreateProject({
-        ...sanitizedMission,
+        ...sanitizedProject,
         status: isDraft ? 'draft' : 'active',
       });
 
-      MetricsService.trackProjectCreated(result?._id, mission.name);
+      MetricsService.trackProjectCreated(result?._id, project.name);
 
       navigate('/project-info');
     } catch (error) {
@@ -74,7 +74,7 @@ const ProjectSetup = () => {
   };
 
   const toggleTeam = (team) => {
-    setMission((prev) => ({
+    setProject((prev) => ({
       ...prev,
       teams: prev.teams.includes(team)
         ? prev.teams.filter((t) => t !== team)
@@ -103,7 +103,7 @@ const ProjectSetup = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
           {/* Header/Summary for Mobile - Always Visible */}
           <div className="lg:hidden">
-            <MobileSummary mission={mission} />
+            <MobileSummary project={project} />
           </div>
 
           {/* Left: Setup Panel */}
@@ -135,9 +135,9 @@ const ProjectSetup = () => {
                       </label>
                       <input
                         placeholder="E.G., CLIENT PORTAL"
-                        value={mission.name}
+                        value={project.name}
                         onChange={(e) =>
-                          setMission({ ...mission, name: e.target.value })
+                          setProject({ ...project, name: e.target.value })
                         }
                         className="w-full h-9 bg-black/40 border border-white/10 px-4 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all placeholder:text-white/10"
                       />
@@ -148,9 +148,9 @@ const ProjectSetup = () => {
                         PROJECT TYPE
                       </label>
                       <select
-                        value={mission.type}
+                        value={project.type}
                         onChange={(e) =>
-                          setMission({ ...mission, type: e.target.value })
+                          setProject({ ...project, type: e.target.value })
                         }
                         className="w-full h-9 bg-black/40 border border-white/10 px-3 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                       >
@@ -171,9 +171,9 @@ const ProjectSetup = () => {
                     <textarea
                       placeholder="DESCRIBE THE KEY GOALS AND DELIVERABLES..."
                       rows={2}
-                      value={mission.objective}
+                      value={project.objective}
                       onChange={(e) =>
-                        setMission({ ...mission, objective: e.target.value })
+                        setProject({ ...project, objective: e.target.value })
                       }
                       className="w-full bg-black/40 border border-white/10 p-4 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all resize-none placeholder:text-white/10"
                     />
@@ -203,7 +203,7 @@ const ProjectSetup = () => {
                         type="button"
                         onClick={() => toggleTeam(team)}
                         className={`px-4 py-2 rounded border text-[9px] font-black uppercase tracking-[0.2em] transition-all ${
-                          mission.teams.includes(team)
+                          project.teams.includes(team)
                             ? 'bg-white text-black border-white'
                             : 'bg-white/5 border-white/10 text-white/40 hover:border-white/20'
                         }`}
@@ -230,12 +230,12 @@ const ProjectSetup = () => {
                       </label>
                       <input
                         type="date"
-                        value={mission.timeline.start}
+                        value={project.timeline.start}
                         onChange={(e) =>
-                          setMission({
-                            ...mission,
+                          setProject({
+                            ...project,
                             timeline: {
-                              ...mission.timeline,
+                              ...project.timeline,
                               start: e.target.value,
                             },
                           })
@@ -249,12 +249,12 @@ const ProjectSetup = () => {
                       </label>
                       <input
                         type="date"
-                        value={mission.timeline.end}
+                        value={project.timeline.end}
                         onChange={(e) =>
-                          setMission({
-                            ...mission,
+                          setProject({
+                            ...project,
                             timeline: {
-                              ...mission.timeline,
+                              ...project.timeline,
                               end: e.target.value,
                             },
                           })
@@ -270,7 +270,7 @@ const ProjectSetup = () => {
                   <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                     <button
                       type="button"
-                      onClick={(e) => onInitialize(e)}
+                      onClick={(e) => onCreate(e)}
                       disabled={isSubmitting}
                       className="w-full sm:w-auto h-9 px-8 bg-primary text-black hover:bg-primary/90 rounded text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                     >
@@ -278,7 +278,7 @@ const ProjectSetup = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={(e) => onInitialize(e, true)}
+                      onClick={(e) => onCreate(e, true)}
                       disabled={isSubmitting}
                       className="w-full sm:w-auto h-9 px-6 bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-[0.2em] transition-all rounded"
                     >
@@ -318,15 +318,15 @@ const ProjectSetup = () => {
                   {/* Project Name & Objective */}
                   <div className="space-y-2">
                     <h2
-                      className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${mission.name ? 'text-xl text-white' : 'text-lg text-white/10'}`}
+                      className={`font-black uppercase tracking-tight break-words transition-all duration-500 ${project.name ? 'text-xl text-white' : 'text-lg text-white/10'}`}
                     >
-                      {mission.name || 'PROJECT_NAME'}
+                      {project.name || 'PROJECT_NAME'}
                     </h2>
                     <div className="w-8 h-1 bg-primary/40" />
                     <p
-                      className={`text-[9px] leading-relaxed uppercase tracking-[0.1em] transition-all duration-300 ${mission.objective ? 'text-white/40' : 'text-white/5'}`}
+                      className={`text-[9px] leading-relaxed uppercase tracking-[0.1em] transition-all duration-300 ${project.objective ? 'text-white/40' : 'text-white/5'}`}
                     >
-                      {mission.objective ||
+                      {project.objective ||
                         'Your project description will appear here...'}
                     </p>
                   </div>
@@ -337,7 +337,7 @@ const ProjectSetup = () => {
                         TYPE
                       </p>
                       <p className="text-[9px] font-black text-white uppercase tracking-wider">
-                        {mission.type}
+                        {project.type}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -347,8 +347,8 @@ const ProjectSetup = () => {
                       <div className="flex items-center gap-2 text-white">
                         <Calendar size={10} className="text-secondary" />
                         <p className="text-[9px] font-black uppercase tracking-wider">
-                          {mission.timeline.start || 'TBD'} —{' '}
-                          {mission.timeline.end || 'TBD'}
+                          {project.timeline.start || 'TBD'} —{' '}
+                          {project.timeline.end || 'TBD'}
                         </p>
                       </div>
                     </div>
@@ -360,8 +360,8 @@ const ProjectSetup = () => {
                       ASSIGNED TEAMS
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {mission.teams.length > 0 ? (
-                        mission.teams.map((team) => (
+                      {project.teams.length > 0 ? (
+                        project.teams.map((team) => (
                           <span
                             key={team}
                             className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[8px] font-black text-white/50 uppercase tracking-[0.1em]"
@@ -383,7 +383,7 @@ const ProjectSetup = () => {
                   <div className="pt-4 border-t border-white/10 flex justify-end items-center opacity-20">
                     <span className="text-[9px] font-black text-white tracking-[0.1em]">
                       ID: NEXA-
-                      {mission.name ? mission.name.substring(0, 4) : '####'}
+                      {project.name ? project.name.substring(0, 4) : '####'}
                     </span>
                   </div>
                 </div>
@@ -397,14 +397,14 @@ const ProjectSetup = () => {
 };
 
 /* Mobile-Specific Summary Component */
-const MobileSummary = ({ mission }) => (
+const MobileSummary = ({ project }) => (
   <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4 animate-in slide-in-from-top-2 relative overflow-hidden">
     <div className="flex justify-between items-start">
       <div className="space-y-1">
         <h2
-          className={`font-black uppercase tracking-tight leading-none ${mission.name ? 'text-lg text-white' : 'text-md text-white/10'}`}
+          className={`font-black uppercase tracking-tight leading-none ${project.name ? 'text-lg text-white' : 'text-md text-white/10'}`}
         >
-          {mission.name || 'NEW_PROJECT'}
+          {project.name || 'NEW_PROJECT'}
         </h2>
         <p className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">
           PROJECT SUMMARY
@@ -418,7 +418,7 @@ const MobileSummary = ({ mission }) => (
           TIMELINE
         </p>
         <p className="text-[9px] font-black text-white uppercase tracking-widest">
-          {mission.timeline.start || 'TBD'} — {mission.timeline.end || 'TBD'}
+          {project.timeline.start || 'TBD'} — {project.timeline.end || 'TBD'}
         </p>
       </div>
       <div className="text-right">
@@ -426,7 +426,7 @@ const MobileSummary = ({ mission }) => (
           TEAMS
         </p>
         <span className="text-[9px] font-black text-primary uppercase tracking-widest">
-          {mission.teams.length} ASSIGNED
+          {project.teams.length} ASSIGNED
         </span>
       </div>
     </div>

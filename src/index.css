@@ -564,6 +564,16 @@
     scrollbar-width: none;
   }
 
+  /* Alias for convenience */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+
   /* Accessibility: Respect OS-level reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
     *,

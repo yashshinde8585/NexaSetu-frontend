@@ -274,7 +274,7 @@ const TaskDetailPage = () => {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              {/* Tactical Blocking Action */}
+              {/* Blocking Action */}
               <button
                 onClick={() => {
                   if (taskData?.blocked) {
@@ -297,7 +297,7 @@ const TaskDetailPage = () => {
                     : 'BLOCK'}
               </button>
 
-              {/* Status Command Interface */}
+              {/* Status Selector */}
               <div className="relative flex-1 sm:flex-none">
                 <TacticalCustomSelect
                   value={taskData?.status}
@@ -325,11 +325,11 @@ const TaskDetailPage = () => {
 
         <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 lg:overflow-hidden min-h-0">
           <div className="lg:col-span-8 flex flex-col gap-4 min-h-0">
-            {/* Task Briefing Area */}
+            {/* Task Description Area */}
             <section className="flex flex-col bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl min-h-[400px] lg:min-h-0 lg:flex-1">
               <div className="px-5 py-2 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.02]">
                 <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em]">
-                  TASK BRIEFING
+                  TASK DESCRIPTION
                 </h3>
 
                 <div className="flex items-center gap-4">
@@ -355,14 +355,14 @@ const TaskDetailPage = () => {
               </div>
               <div className="flex-1 overflow-y-auto p-4 custom-scrollbar-thin">
                 <div className="text-[13px] text-white/80 font-bold whitespace-pre-wrap leading-relaxed tracking-tight selection:bg-primary/30">
-                  {taskData?.description || 'AWAITING MISSION DATA...'}
+                  {taskData?.description || 'AWAITING TASK DATA...'}
                 </div>
 
                 {/* Attachments Display */}
                 {taskData?.attachments?.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-white/10">
                     <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
-                      MISSION ASSETS ({taskData?.attachments?.length})
+                      TASK ATTACHMENTS ({taskData?.attachments?.length})
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {taskData?.attachments?.map((file, idx) => (
@@ -462,7 +462,7 @@ const TaskDetailPage = () => {
               </section>
             )}
 
-            {/* Tactical Logistics Hub */}
+            {/* Task Details Hub */}
             <section className="bg-white/5 border border-white/10 p-2 rounded-xl flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 shrink-0 shadow-xl px-4">
               <div className="flex items-center gap-2.5 shrink-0">
                 <div className="w-7 h-7 rounded-lg bg-black border border-primary/40 flex items-center justify-center text-[10px] font-black text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)]">
@@ -470,7 +470,7 @@ const TaskDetailPage = () => {
                 </div>
                 <div className="min-w-0">
                   <span className="block text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">
-                    OPERATOR
+                    ASSIGNEE
                   </span>
                   <p className="text-[10px] font-black text-white truncate tracking-tight uppercase">
                     {taskData?.assignedUser?.name?.split(' ')[0] ||
@@ -544,7 +544,7 @@ const TaskDetailPage = () => {
                               day: 'numeric',
                             })
                             .toUpperCase()
-                        : 'ESTABLISHING...'}
+                        : 'CALCULATING...'}
                     </p>
                   </div>
                 </div>
@@ -552,7 +552,7 @@ const TaskDetailPage = () => {
             </section>
           </div>
 
-          {/* Tactical Interaction Panel */}
+          {/* Comments Panel */}
           <aside className="lg:col-span-4 flex flex-col gap-2 min-h-[400px] lg:min-h-0 lg:overflow-hidden">
             <section className="flex flex-col min-h-0 bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-xl flex-1">
               <TaskComments taskId={taskId} />
@@ -606,7 +606,7 @@ const TaskDetailPage = () => {
             </div>
           </div>
         )}
-        {/* Block Mission Modal */}
+        {/* Block Task Modal */}
         {isBlockModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black animate-in fade-in duration-500">
             <div className="bg-black border border-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-3xl animate-in zoom-in-95 duration-500 text-center">

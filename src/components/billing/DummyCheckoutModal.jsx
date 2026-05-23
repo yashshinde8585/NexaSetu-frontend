@@ -7,6 +7,8 @@ const DummyCheckoutModal = ({
   onConfirm,
   plan,
   isProcessing,
+  billingCycle = 'monthly',
+  currency = 'inr',
 }) => {
   if (!isOpen) return null;
 
@@ -47,10 +49,14 @@ const DummyCheckoutModal = ({
               <span className="text-white/60 text-sm">Amount Due Today</span>
               <div className="text-right">
                 <div className="text-2xl font-black text-white">
-                  ₹{plan?.price}
+                  {currency === 'inr'
+                    ? `₹${billingCycle === 'monthly' ? plan?.price : ((plan?.priceAnnual || Math.round(plan?.price * 0.8)) * 12).toLocaleString()}`
+                    : `$${billingCycle === 'monthly' ? (plan?.globalPrice || 0) : ((plan?.globalPriceAnnual || 0) * 12).toLocaleString()}`}
                 </div>
-                <div className="text-[10px] text-white/40 uppercase font-bold tracking-tighter">
-                  Billed Monthly
+                <div className="text-[9px] text-white/40 uppercase font-bold tracking-[0.1em] mt-1">
+                  {billingCycle === 'monthly'
+                    ? 'Billed Monthly'
+                    : `${currency === 'inr' ? '₹' : '$'}${currency === 'inr' ? (plan?.priceAnnual || Math.round(plan?.price * 0.8)) : (plan?.globalPriceAnnual || 0)}/mo billed annually`}
                 </div>
               </div>
             </div>

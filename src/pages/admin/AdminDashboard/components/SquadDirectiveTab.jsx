@@ -15,17 +15,17 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <DashboardSection title="SQUAD_DIRECTIVE" icon={<Zap size={14} />}>
+      <DashboardSection title="TEAMS" icon={<Zap size={14} />}>
         <div className="flex flex-col gap-3">
           <div className="flex justify-between items-center px-1 mb-2">
             <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">
-              TOTAL_UNITS: {teams.length}
+              TOTAL TEAMS: {teams.length}
             </span>
             <button
               onClick={() => navigate('/admin/teams/create')}
               className="p-2 px-4 bg-white/5 border border-white/10 rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-colors flex items-center gap-2 cursor-pointer"
             >
-              <Plus size={12} /> ADD_UNIT
+              <Plus size={12} /> ADD TEAM
             </button>
           </div>
 
@@ -33,7 +33,7 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {teams.map((t, idx) => {
                 const teamId = t.id || t._id || t.name || `team-${idx}`;
-                const teamName = t.name || 'Unnamed Squad';
+                const teamName = t.name || 'Unnamed Team';
                 const membersCount = t.members || 0;
                 return (
                   <div
@@ -46,7 +46,7 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
                       </span>
                       <span className="text-[8px] text-white/20 font-black uppercase tracking-widest flex items-center gap-2">
                         <Users size={12} className="text-primary/40" />{' '}
-                        {membersCount}_OPERATIVES
+                        {membersCount} MEMBERS
                       </span>
                       {t.lead && (
                         <span className="text-[8px] text-white/25 uppercase font-bold">
@@ -65,18 +65,18 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
                         onClick={() => {
                           if (
                             window.confirm(
-                              `Are you sure you want to delete squad unit ${teamName}?`
+                              `Are you sure you want to delete team ${teamName}?`
                             )
                           ) {
                             deleteTeamMutation.mutate(teamId, {
                               onSuccess: () => {
                                 toast.success(
-                                  'Squad unit successfully deleted'
+                                  'Team successfully deleted'
                                 );
                               },
                               onError: (err) => {
                                 toast.error(
-                                  err?.message || 'Failed to delete squad unit'
+                                  err?.message || 'Failed to delete team'
                                 );
                               },
                             });
@@ -94,7 +94,7 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
           ) : (
             <div className="py-16 text-center border border-dashed border-white/10">
               <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">
-                NO_SQUAD_UNITS_REGISTERED
+                NO TEAMS REGISTERED
               </span>
             </div>
           )}

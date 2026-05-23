@@ -123,7 +123,7 @@ const Team = () => {
         setAllProjects(projectArray);
       } catch (err) {
         if (err.name === 'AbortError') return;
-        setError('SYSTEM_LINK_FAILURE: DATA_SYNCHRONIZATION_INTERRUPTED.');
+        setError('Failed to load team data. Please try again.');
       } finally {
         if (!signal.aborted) setLoading(false);
       }
@@ -169,7 +169,7 @@ const Team = () => {
       await TeamService.removeInvitation(id);
     } catch (err) {
       setData(previousData);
-      setError('REVOKE_FAILED: CONNECTION_UNSTABLE_REVERTING_STATE.');
+      setError('Failed to remove invitation. Please try again.');
     } finally {
       setActionLoading((prev) => ({ ...prev, removingInvitation: null }));
     }
@@ -189,7 +189,7 @@ const Team = () => {
       // Refresh to update groupings
       fetchData(new AbortController().signal);
     } catch (err) {
-      setError('ASSIGNMENT_FAILURE: TARGET_SECTOR_UNAVAILABLE.');
+      setError('Failed to assign project. Please try again.');
     } finally {
       setActionLoading((prev) => ({ ...prev, assigningMember: null }));
     }
@@ -204,7 +204,7 @@ const Team = () => {
     const groups = members.reduce((acc, member) => {
       const projectId = member.assignedProjectId?.id || 'unassigned';
       const projectName =
-        member.assignedProjectId?.name || 'Reserve Operations';
+        member.assignedProjectId?.name || 'Unassigned';
 
       if (!acc[projectId]) {
         acc[projectId] = { name: projectName, members: [], id: projectId };
@@ -233,10 +233,10 @@ const Team = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-1">
           <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
-            TEAM DIRECTORY
+            Team
           </h1>
           <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
-            ORCHESTRATE WORKSPACE PERSONNEL AND SECTOR ALLOCATION.
+            Manage workspace members and project assignments.
           </p>
         </div>
 
@@ -248,8 +248,8 @@ const Team = () => {
             />
             <input
               type="text"
-              placeholder="SEARCH PERSONNEL..."
-              className="w-full h-9 bg-black border border-white/10 text-white rounded px-4 pl-10 focus:outline-none focus:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/10"
+              placeholder="Search members..."
+              className="w-full h-9 bg-black border border-white/10 text-white rounded px-4 pl-10 focus:outline-none focus:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -259,7 +259,7 @@ const Team = () => {
               onClick={() => navigate('/team/add')}
               className="h-9 px-6 bg-primary text-black font-black uppercase tracking-[0.2em] text-[9px] rounded transition-all flex items-center justify-center gap-2 active:scale-95"
             >
-              <UserPlus size={14} /> INVITE MEMBER
+              <UserPlus size={14} /> Invite Member
             </button>
           )}
         </div>
@@ -273,7 +273,7 @@ const Team = () => {
           />
           <div className="flex-1">
             <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">
-              DATA_LINK_FAILURE
+              Something went wrong
             </h4>
             <p className="text-[9px] text-white/50 font-black uppercase tracking-widest">
               {error}
@@ -299,7 +299,7 @@ const Team = () => {
         <section className="space-y-4">
           <div className="flex items-center gap-4 px-1">
             <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] whitespace-nowrap">
-              ASSIGNED TEAMS
+              Project Teams
             </h2>
             <div className="h-[1px] w-full bg-white/10" />
           </div>
@@ -326,7 +326,7 @@ const Team = () => {
           <section className="space-y-4">
             <div className="flex items-center gap-4 px-1">
               <h2 className="text-[10px] font-black text-status-warning/40 uppercase tracking-[0.2em] whitespace-nowrap">
-                PENDING_DISPATCH
+                Pending Invitations
               </h2>
               <div className="h-[1px] w-full bg-status-warning/5" />
             </div>
@@ -343,7 +343,7 @@ const Team = () => {
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <span className="px-2 py-0.5 bg-status-warning/10 border border-status-warning/20 text-[8px] font-black text-status-warning uppercase tracking-widest rounded">
-                        INVITED
+                        Invited
                       </span>
                       <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
                         {invite.role}
@@ -357,7 +357,7 @@ const Team = () => {
                     <div className="text-[8px] font-black text-white/30 truncate flex items-center gap-2 uppercase tracking-widest">
                       <Box size={10} />{' '}
                       <span className="text-white/40">
-                        {invite.projectId?.name || 'GLOBAL CORE'}
+                        {invite.projectId?.name || 'No project assigned'}
                       </span>
                     </div>
                   </div>
@@ -365,7 +365,7 @@ const Team = () => {
                     <div className="flex items-center gap-2">
                       <Clock size={10} className="text-status-warning/30" />
                       <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.1em]">
-                        AWAITING_UPLINK
+                        Awaiting response
                       </span>
                     </div>
                     <button
@@ -394,9 +394,9 @@ const Team = () => {
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig({ isOpen: false, targetId: null })}
         onConfirm={handleRemoveInvitation}
-        title="TERMINATE_DISPATCH"
-        message="ARE YOU CERTAIN YOU WANT TO REVOKE THIS PENDING INVITATION? THIS ACTION IS PERMANENT."
-        confirmText="REVOKE_ACCESS"
+        title="Revoke Invitation"
+        message="Are you sure you want to cancel this pending invitation? This action cannot be undone."
+        confirmText="Revoke"
         type="danger"
       />
     </div>

@@ -69,7 +69,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                 />
               </div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
-                ANALYZING SIGNALS...
+                ANALYZING TASK...
               </p>
             </div>
           ) : error ? (
@@ -108,7 +108,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                           className="text-white/60 group-hover/help:text-primary transition-colors"
                         />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 group-hover/help:text-white transition-colors">
-                          REQUEST IMPLEMENTATION STRATEGY
+                          REQUEST IMPLEMENTATION PLAN
                         </span>
                         <ArrowRight
                           size={14}
@@ -124,7 +124,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                           className="text-primary animate-spin"
                         />
                         <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/60">
-                          ARCHITECTING SOLUTIONS...
+                          GENERATING PLAN...
                         </span>
                       </div>
                     )}
@@ -136,7 +136,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
 
                         <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary mb-6 flex items-center gap-2">
                           <ListChecks size={14} className="text-secondary" />
-                          TACTICAL IMPLEMENTATION STRATEGY
+                          IMPLEMENTATION PLAN
                         </h5>
                         <div className="nexa-prose">
                           <LazyMarkdown>{helpData}</LazyMarkdown>

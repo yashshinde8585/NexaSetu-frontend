@@ -75,7 +75,7 @@ const TeamBuilderForm = ({
           <span
             className={`${isPrimary ? 'text-primary/40' : 'text-secondary/40'}`}
           >
-            {isPrimary ? 'SQUAD_ASSEMBLY' : 'UNIT_RECONFIGURATION'}
+            {isPrimary ? 'CREATE TEAM' : 'EDIT TEAM'}
           </span>
         </div>
       </div>
@@ -132,13 +132,13 @@ const TeamBuilderForm = ({
 
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 block">
-                  MISSION OBJECTIVE
+                  TEAM DESCRIPTION
                 </label>
                 <textarea
                   rows={3}
                   value={mission}
                   onChange={(e) => setMission(e.target.value)}
-                  placeholder="DEFINE PRIMARY SQUAD GOALS..."
+                  placeholder="DEFINE PRIMARY TEAM GOALS..."
                   className="w-full bg-black border border-white/10 rounded p-3 text-[10px] font-black text-white/60 focus:border-primary/50 outline-none transition-all resize-none placeholder:text-white/5 leading-relaxed uppercase"
                 />
               </div>
@@ -183,7 +183,7 @@ const TeamBuilderForm = ({
                 onClick={() => navigate(-1)}
                 className="w-full text-white/10 hover:text-white font-black text-[9px] uppercase tracking-widest transition-colors py-1"
               >
-                DISCARD_CHANGES
+                DISCARD CHANGES
               </button>
             </div>
           </div>
@@ -196,7 +196,7 @@ const TeamBuilderForm = ({
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 rounded-full bg-status-success" />
                 <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                  AVAILABLE_PERSONNEL
+                  AVAILABLE MEMBERS
                 </span>
               </div>
               <div className="bg-status-success/10 text-status-success text-[8px] font-black px-2 py-0.5 rounded border border-status-success/20">
@@ -233,7 +233,7 @@ const TeamBuilderForm = ({
                   className={`w-1 h-1 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'}`}
                 />
                 <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                  {isPrimary ? 'SELECTED_UNITS' : 'ACTIVE_DEPLOYMENTS'}
+                  {isPrimary ? 'SELECTED MEMBERS' : 'ACTIVE MEMBERS'}
                 </span>
               </div>
               <div

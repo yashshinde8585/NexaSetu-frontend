@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: (token) => `/auth/reset-password/${token}`,
     AVATAR: '/auth/avatar',
+    CHANGE_PASSWORD: '/auth/change-password',
   },
   PROJECTS: {
     BASE: '/projects',

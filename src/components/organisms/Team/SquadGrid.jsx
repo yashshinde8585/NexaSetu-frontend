@@ -6,11 +6,11 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
   if (groups.length === 0) {
     return (
       <EmptyState
-        title={searchTerm ? 'ZERO_RESULTS' : 'NO_TEAMS_DETECTED'}
+        title={searchTerm ? 'No results found' : 'No teams yet'}
         message={
           searchTerm
-            ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.`
-            : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'
+            ? `No members matched "${searchTerm}".`
+            : 'Team members will appear here once assigned to a project.'
         }
       />
     );
@@ -41,7 +41,7 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
               <div className="flex items-center gap-2">
                 <ShieldCheck size={10} className="text-primary/50" />
                 <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">
-                  {group.members.length} OPERATIVES
+                  {group.members.length} members
                 </span>
               </div>
             </div>
@@ -71,7 +71,7 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
                 )}
               </div>
               <div className="text-[8px] font-black text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-widest">
-                VIEW SECTOR
+                View team
               </div>
             </div>
           </div>

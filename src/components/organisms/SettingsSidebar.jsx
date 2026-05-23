@@ -2,63 +2,66 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ChevronRight, BadgeCheck } from 'lucide-react';
 
-// Sidebar navigation panel for settings.
-const SettingsSidebar = ({
-  tabs,
-  activeTab,
-  onTabChange,
-  userRole,
-  jobTitle,
-}) => {
+/**
+ * Settings sidebar — renders as a horizontal tab bar on mobile/tablet,
+ * and as a vertical sidebar on xl+ screens.
+ */
+const SettingsSidebar = ({ tabs, activeTab, onTabChange, userRole, jobTitle }) => {
+  const roleLabel = jobTitle || (userRole ? userRole.replace(/_/g, ' ') : 'User');
+
   return (
-    <div className="w-full lg:w-64 flex flex-col gap-2">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          className={`flex items-center justify-between h-9 px-4 rounded transition-all group relative overflow-hidden border ${
-            activeTab === tab.id
-              ? 'bg-white/5 border-primary/40 text-white'
-              : 'bg-black border-white/5 text-white/40 hover:bg-white/5 hover:border-white/10 hover:text-white/80'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <span
-              className={
+    <div className="xl:w-52 flex flex-col gap-1.5">
+
+      {/* Tab buttons */}
+      {/* Mobile: horizontal scrollable pill tabs */}
+      <div className="flex xl:flex-col gap-1.5 overflow-x-auto pb-0.5 xl:pb-0 hide-scrollbar">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            className={`flex items-center gap-2 whitespace-nowrap h-8 px-3 rounded transition-all group relative overflow-hidden border shrink-0 xl:justify-between xl:w-full ${
+              activeTab === tab.id
+                ? 'bg-white/5 border-primary/40 text-white'
+                : 'bg-black border-white/5 text-white/40 hover:bg-white/5 hover:border-white/10 hover:text-white/80'
+            }`}
+          >
+            {/* Active indicator stripe */}
+            {activeTab === tab.id && (
+              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary" />
+            )}
+
+            <div className="flex items-center gap-2">
+              <span className={activeTab === tab.id ? 'text-primary' : 'text-white/30 group-hover:text-white/50'}>
+                {React.cloneElement(tab.icon, { size: 12 })}
+              </span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+                {tab.label}
+              </span>
+            </div>
+
+            {/* Chevron — desktop only */}
+            <ChevronRight
+              size={11}
+              className={`hidden xl:block ${
                 activeTab === tab.id
                   ? 'text-primary'
-                  : 'text-white/20 group-hover:text-white/40 border-r border-white/5 pr-3'
-              }
-            >
-              {React.cloneElement(tab.icon, { size: 14 })}
-            </span>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em]">
-              {tab.label}
-            </span>
-          </div>
-          <ChevronRight
-            size={14}
-            className={
-              activeTab === tab.id
-                ? 'text-primary transition-all'
-                : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white/20'
-            }
-          />
-          {activeTab === tab.id && (
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary group-hover:w-1 transition-all" />
-          )}
-        </button>
-      ))}
+                  : 'opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white/20'
+              }`}
+            />
+          </button>
+        ))}
+      </div>
 
-      <div className="mt-4 p-4 bg-white/5 rounded border border-white/10 text-center sm:text-left">
-        <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-          <BadgeCheck size={12} className="text-primary" />
-          <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">
-            PERMISSION_LEVEL
-          </span>
-        </div>
-        <div className="text-[9px] font-black text-white uppercase tracking-widest border-t border-white/5 pt-2">
-          {jobTitle || userRole.replace('_', ' ')}
+      {/* Role badge — desktop only */}
+      <div className="hidden xl:flex mt-2 p-3 bg-white/5 rounded border border-white/10 items-center gap-2">
+        <BadgeCheck size={11} className="text-primary shrink-0" />
+        <div className="min-w-0">
+          <div className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">
+            Role
+          </div>
+          <div className="text-[9px] font-black text-white uppercase tracking-widest truncate">
+            {roleLabel}
+          </div>
         </div>
       </div>
     </div>

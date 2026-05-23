@@ -18,15 +18,15 @@ const CreateTeam = () => {
       await createTeam(teamData);
       navigate(ROUTES.ADMIN_PANEL);
     } catch (err) {
-      console.error('Failed to initialize squad:', err);
+      console.error('Failed to create team:', err);
     }
   };
 
   return (
     <TeamBuilderForm
       title="Create New Team"
-      description="Define a new organizational unit and allocate resources."
-      submitLabel="Deploy Team"
+      description="Define a new team and assign members."
+      submitLabel="Create Team"
       onSubmit={handleCreate}
       users={users}
     />

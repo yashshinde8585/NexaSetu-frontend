@@ -31,7 +31,7 @@ const MemberAssignmentCard = React.memo(
               {member.name}
             </span>
             <span className="text-[8px] text-primary/50 font-black uppercase truncate tracking-[0.1em]">
-              {member.jobTitle || 'OPERATIVE'}
+              {member.jobTitle || 'Team Member'}
             </span>
           </div>
         </div>
@@ -42,7 +42,7 @@ const MemberAssignmentCard = React.memo(
               <TacticalCustomSelect
                 value={selectedProjectId || ''}
                 onChange={(val) => onProjectChange(member.id, val)}
-                placeholder="SELECT SECTOR..."
+                placeholder="Select project..."
                 options={allProjects.map((p) => ({
                   label: p.name,
                   value: p.id,
@@ -57,7 +57,7 @@ const MemberAssignmentCard = React.memo(
               {isLoading ? (
                 <Loader2 className="animate-spin" size={12} />
               ) : (
-                'ASSIGN'
+                'Assign'
               )}
             </button>
           </div>
