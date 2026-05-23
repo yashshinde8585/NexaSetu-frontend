@@ -184,7 +184,7 @@ const CommandCenterTab = ({
       let resource = 'System Config';
       const act = log?.action || '';
       if (act.includes('USER')) resource = 'User Account';
-      if (act.includes('TEAM')) resource = 'Team Unit';
+      if (act.includes('TEAM')) resource = 'Team';
       if (act.includes('ROLE')) resource = 'Access Role';
 
       let timeFormatted = 'Recent';
@@ -581,7 +581,7 @@ const CommandCenterTab = ({
 
           <div className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] text-center border-t border-white/5 pt-4 flex items-center justify-center gap-1.5">
             <TrendingUp size={10} className="text-secondary" />
-            <span>Steady trajectory of member resource onboardings</span>
+            <span>Steady growth in user onboarding</span>
           </div>
         </div>
 
@@ -634,7 +634,7 @@ const CommandCenterTab = ({
             ) : (
               <div className="py-16 text-center border border-dashed border-white/10 my-auto">
                 <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">
-                  NO_RECENT_SECURITY_TELEMETRY
+                  No recent security activities
                 </span>
               </div>
             )}
@@ -909,7 +909,7 @@ const CommandCenterTab = ({
             </span>
             <span
               className="text-[8px] font-black uppercase tracking-widest text-secondary hover:underline cursor-pointer"
-              onClick={() => toast.success('All microservices fully synced.')}
+              onClick={() => toast.success('All services running normally.')}
             >
               View All
             </span>
@@ -995,7 +995,7 @@ const CommandCenterTab = ({
                       colSpan="5"
                       className="py-8 text-center text-white/10 text-[8px] font-bold uppercase tracking-widest"
                     >
-                      NO_AUDIT_LOG_TELEMETRY
+                      No audit logs found
                     </td>
                   </tr>
                 )}
@@ -1012,7 +1012,7 @@ const CommandCenterTab = ({
             </span>
             <span
               className="text-[8px] font-black uppercase tracking-widest text-secondary hover:underline cursor-pointer"
-              onClick={() => toast.success('Approval telemetry up to date.')}
+              onClick={() => toast.success('Approvals up to date.')}
             >
               View All
             </span>
@@ -1024,7 +1024,7 @@ const CommandCenterTab = ({
                 count: data?.pendingApprovals?.pendingActionRequests || 0,
               },
               {
-                name: 'Deactivated Operatives',
+                name: 'Deactivated Users',
                 count: data?.pendingApprovals?.deactivatedUsersCount || 0,
               },
               {
@@ -1032,7 +1032,7 @@ const CommandCenterTab = ({
                 count: data?.pendingApprovals?.pendingInvitations || 0,
               },
               {
-                name: 'AI Compute Operations',
+                name: 'AI Compute Logs',
                 count: data?.pendingApprovals?.aiLogsCount || 0,
               },
             ].map((item) => (
@@ -1067,7 +1067,7 @@ const CommandCenterTab = ({
                 size={14}
                 className="text-primary mb-1.5 group-hover:scale-110 transition-transform"
               />
-              <span>Create Workspace</span>
+              <span>Create Project</span>
             </button>
 
             <button
@@ -1145,7 +1145,7 @@ const CommandCenterTab = ({
       {/* Sparkline status indicators */}
       <div className="text-[8px] text-white/5 tracking-[0.2em] font-black uppercase flex items-center justify-between border-t border-white/5 pt-4">
         <span>Last updated: just now</span>
-        <span>Auto-refresh: On (120s cycle)</span>
+        <span>Auto-refresh: On (120s interval)</span>
         <span>
           Data as of:{' '}
           {new Date().toLocaleDateString(undefined, {

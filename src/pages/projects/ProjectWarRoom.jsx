@@ -43,7 +43,7 @@ const ProjectWarRoom = () => {
   if (error || !warRoomData)
     return (
       <ResilientPage
-        error={error || { message: 'TACTICAL_DATA_UNAVAILABLE' }}
+        error={error || { message: 'Project data unavailable' }}
         onRetry={() => window.location.reload()}
       />
     );
@@ -110,7 +110,7 @@ const ProjectWarRoom = () => {
           <div className="flex items-center gap-4">
             <div className="text-right">
               <span className="block text-[8px] font-black text-white/30 uppercase tracking-widest mb-0.5">
-                Velocity
+                Progress
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-black text-white">
@@ -219,7 +219,7 @@ const ProjectWarRoom = () => {
           {/* Active Directives: Control Flow */}
           <section className="bg-white/5 border border-white/10 rounded-xl p-4">
             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-              <Zap size={12} className="text-primary" /> Tactical Directives
+              <Zap size={12} className="text-primary" /> Project Directives
             </h3>
             <div className="space-y-3">
               {directives.length > 0 ? (
@@ -249,7 +249,7 @@ const ProjectWarRoom = () => {
                 ))
               ) : (
                 <div className="py-6 text-center text-white/20 text-[9px] font-black uppercase tracking-widest">
-                  Awaiting Directives
+                  No active directives
                 </div>
               )}
             </div>
@@ -261,7 +261,7 @@ const ProjectWarRoom = () => {
           {/* Autonomous Intelligence: Sentinel Action */}
           <section className="bg-gradient-to-br from-status-error/5 to-transparent border border-status-error/10 rounded-xl p-4">
             <h3 className="text-[10px] font-black text-status-error uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-              <ShieldAlert size={12} /> Autonomous Sentinel
+              <ShieldAlert size={12} /> System Alerts
             </h3>
             <div className="space-y-3">
               {blockers.map((b, i) => (
@@ -273,20 +273,20 @@ const ProjectWarRoom = () => {
                     {b.title}
                   </h4>
                   <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-white/40">
-                    <span>STAGNATION: 48h+</span>
+                    <span>INACTIVE: 48h+</span>
                     <span className="text-status-error">CRITICAL</span>
                   </div>
                   <button
                     onClick={() => navigate(`/task/${b.id}`)}
                     className="w-full py-1.5 bg-status-error border border-status-error/30 text-white text-[8px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded"
                   >
-                    Enforce Intervention
+                    Open Task
                   </button>
                 </div>
               ))}
               {blockers.length === 0 && (
                 <div className="py-2 text-center text-status-success text-[8px] font-black uppercase tracking-widest">
-                  Signals Green
+                  No issues detected
                 </div>
               )}
             </div>
@@ -295,8 +295,7 @@ const ProjectWarRoom = () => {
           {/* Personnel Intelligence: Burnout Risk */}
           <section className="bg-white/5 border border-white/10 rounded-xl p-4">
             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-              <Flame size={12} className="text-status-warning" /> Burnout
-              Sentinel
+              <Flame size={12} className="text-status-warning" /> Workload Risks
             </h3>
             <div className="space-y-2">
               {burnoutRisks.length > 0 ? (
@@ -325,7 +324,7 @@ const ProjectWarRoom = () => {
                 ))
               ) : (
                 <div className="py-2 text-center text-white/10 text-[9px] font-black uppercase tracking-widest">
-                  Load Nominal
+                  Normal Workload
                 </div>
               )}
             </div>

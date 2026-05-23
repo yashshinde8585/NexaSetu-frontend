@@ -5,22 +5,22 @@ const TeamStats = React.memo(
   ({ activeSectors, totalPersonnel, reservePool, pendingInvites }) => {
     const stats = [
       {
-        label: 'ACTIVE SECTORS',
+        label: 'Active Projects',
         value: activeSectors,
         icon: <Layout className="text-secondary" size={14} />,
       },
       {
-        label: 'TOTAL PERSONNEL',
+        label: 'Total Members',
         value: totalPersonnel,
         icon: <Users size={14} className="text-primary" />,
       },
       {
-        label: 'RESERVE POOL',
+        label: 'Unassigned',
         value: reservePool,
         icon: <Clock size={14} className="text-status-warning" />,
       },
       {
-        label: 'PENDING INVITES',
+        label: 'Pending Invites',
         value: pendingInvites,
         icon: <Mail size={14} className="text-status-info" />,
       },

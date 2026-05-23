@@ -34,17 +34,17 @@ const ProjectStatusList = ({
               <Layout size={18} />
             </div>
             <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">
-              SECTOR <span className="text-secondary">INVENTORY</span>
+              PROJECT <span className="text-secondary">INVENTORY</span>
             </h3>
           </div>
           <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
-            OPERATIONAL STATUS OF ACTIVE DEPLOYMENT NODES
+            STATUS OF ACTIVE PROJECTS
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] bg-white/5 px-4 py-2 rounded border border-white/10 shadow-lg">
-            {projects.length} ACTIVE NODES
+            {projects.length} ACTIVE PROJECTS
           </span>
         </div>
       </div>
@@ -77,14 +77,14 @@ const ProjectStatusList = ({
                   </h4>
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em]">
-                      NODE ID: {project._id?.slice(-8).toUpperCase()}
+                      PROJECT ID: {project._id?.slice(-8).toUpperCase()}
                     </span>
                     <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/5 border border-white/20">
                       <div
                         className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-white/10'}`}
                       />
                       <span className="text-[9px] font-black uppercase text-white/60 tracking-widest">
-                        {isAssigned ? 'SYNCED' : 'DETACHED'}
+                        {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
                       </span>
                     </div>
                   </div>
@@ -95,7 +95,7 @@ const ProjectStatusList = ({
               <div className="flex-1 flex flex-col gap-2.5 relative z-10 px-2 lg:px-6 border-l border-white/5 lg:border-r">
                 <div className="flex justify-between items-end">
                   <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
-                    OPERATIONAL STRENGTH
+                    PROJECT PROGRESS
                   </span>
                   <div className="flex items-center gap-2">
                     <span
@@ -146,7 +146,7 @@ const ProjectStatusList = ({
                         className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300"
                       >
                         <input
-                          placeholder="MISSION..."
+                          placeholder="TASK TITLE..."
                           value={quickTicketTitle}
                           onChange={(e) => setQuickTicketTitle(e.target.value)}
                           autoFocus
@@ -157,7 +157,7 @@ const ProjectStatusList = ({
                           disabled={createTicketLoading}
                           className="h-9 px-4 bg-primary text-black hover:bg-primary-dark rounded text-[9px] font-black uppercase tracking-[0.1em] transition-all disabled:opacity-50"
                         >
-                          {createTicketLoading ? '...' : 'DISPATCH'}
+                          {createTicketLoading ? '...' : 'ADD TASK'}
                         </button>
                         <button
                           type="button"
@@ -177,7 +177,7 @@ const ProjectStatusList = ({
                           className="text-primary group-hover/btn:rotate-90 transition-transform"
                         />
                         <span className="text-[9px] font-black uppercase tracking-[0.2em]">
-                          QUICK MISSION
+                          QUICK TASK
                         </span>
                       </button>
                     )}
@@ -190,7 +190,7 @@ const ProjectStatusList = ({
                     className="h-9 px-6 bg-white/5 border border-white/10 text-white/40 hover:bg-primary hover:text-black hover:border-primary rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center gap-3"
                   >
                     <Target size={14} />
-                    SYNC TO CYCLE
+                    ASSIGN TO SPRINT
                   </button>
                 )}
               </div>
@@ -204,7 +204,7 @@ const ProjectStatusList = ({
         <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl space-y-4">
           <Zap size={40} className="mx-auto text-white/10" />
           <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
-            Zero Sectors Detected in Current Roster
+            No projects found
           </p>
         </div>
       )}

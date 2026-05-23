@@ -127,7 +127,7 @@ const RolePermissionsModal = ({
               onClick={handleSave}
               className="px-8 py-2.5 bg-primary text-black rounded-xl text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]"
             >
-              Save Configuration
+              Save Permissions
             </button>
           </div>
         </div>

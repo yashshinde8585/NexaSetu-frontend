@@ -38,7 +38,7 @@ const VPEDashboard = () => {
   if (error)
     return (
       <div className="p-12 text-status-error bg-background text-text min-h-screen font-mono font-bold uppercase text-center flex items-center justify-center border border-status-error/20">
-        {error?.message || 'CRITICAL_ERROR: SYSTEM_DATA_UNAVAILABLE'}
+        {error?.message || 'Error: System data unavailable'}
       </div>
     );
 
@@ -127,7 +127,7 @@ const VPEDashboard = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em] border-b border-white/5">
-                    <th className="py-3 px-3">TEAM_DOMAIN</th>
+                    <th className="py-3 px-3">TEAM</th>
                     <th className="py-3 px-3 text-center">PROGRESS</th>
                     <th className="py-3 px-3 text-center">VELOCITY</th>
                     <th className="py-3 px-3 text-center">WORKLOAD</th>
@@ -148,7 +148,7 @@ const VPEDashboard = () => {
                           </span>
                           {row.blockers > 0 && (
                             <span className="text-[7px] text-status-error tracking-[0.2em] font-black">
-                              {row.blockers}_BLOCKED
+                              {row.blockers} BLOCKED
                             </span>
                           )}
                         </div>
@@ -197,7 +197,7 @@ const VPEDashboard = () => {
                 <div className="flex justify-between items-end leading-none">
                   <div className="flex flex-col gap-2">
                     <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">
-                      AGGREGATE_PROGRESS
+                      AGGREGATE PROGRESS
                     </span>
                     <div className="text-2xl font-black text-white tracking-widest">
                       {sprintExecution?.progress || 0}%
@@ -247,14 +247,14 @@ const VPEDashboard = () => {
                 <div className="bg-white/5 border border-white/10 p-4 rounded-none group hover:bg-white/10 transition-colors border-l-2 border-l-primary/40">
                   <h4 className="text-[8px] font-black text-primary uppercase flex items-center gap-2 mb-3 tracking-[0.2em]">
                     <Zap size={10} fill="currentColor" />{' '}
-                    OPTIMIZATION_SUGGESTION
+                    RECOMMENDED OPTIMIZATION
                   </h4>
                   <p className="text-[9px] text-white/60 uppercase font-black tracking-[0.2em] leading-relaxed">
                     RE-ALLOCATE RESOURCES TO{' '}
                     {teamGrid.sort(
                       (a, b) => parseInt(a.load) - parseInt(b.load)
-                    )[0]?.team || 'AVAILABLE'}
-                    _UNIT TO REDUCE OVERLOAD.
+                    )[0]?.team || 'AVAILABLE'}{' '}
+                    TEAM TO REDUCE OVERLOAD.
                   </p>
                 </div>
 
@@ -326,7 +326,7 @@ const VPEDashboard = () => {
               {Object.keys(blockers).length === 0 && (
                 <div className="py-12 text-center opacity-20 border border-white/10 border-dashed rounded-none">
                   <span className="text-[8px] uppercase font-black tracking-[0.2em]">
-                    NO_BLOCKERS_REGISTERED
+                    NO ACTIVE BLOCKERS
                   </span>
                 </div>
               )}
@@ -345,7 +345,7 @@ const VPEDashboard = () => {
                       {item.project}
                     </span>
                     <span className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em]">
-                      SCHEDULE_DRIFT
+                      SCHEDULE DELAY
                     </span>
                   </div>
                   <div

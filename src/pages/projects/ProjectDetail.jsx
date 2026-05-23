@@ -243,7 +243,7 @@ const ProjectDetail = () => {
                 </div>
                 <div>
                   <h2 className="text-[12px] font-black text-status-error uppercase tracking-[0.3em]">
-                    ACTIVE DIRECTIVE: STABILIZE
+                    PROJECT SYSTEM LOCK ENABLED
                   </h2>
                   <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">
                     {activeStabilize.title}
@@ -251,14 +251,14 @@ const ProjectDetail = () => {
                 </div>
               </div>
               <div className="bg-status-error/20 px-4 py-2 rounded-xl border border-status-error/30">
-                <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
-                  SYSTEM LOCK: NEW TASKS DISABLED • ONLY REVIEWS ALLOWED
-                </span>
+                  <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
+                    PROJECT SYSTEM LOCKED: NEW TASKS DISABLED • ONLY REVIEWS ALLOWED
+                  </span>
               </div>
             </div>
           )}
 
-          {/* High-Contrast Tactical Header */}
+          {/* Header */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-white/10">
             <div className="space-y-4 flex-1 w-full">
               <div className="flex flex-wrap items-center gap-3"></div>
@@ -349,7 +349,7 @@ const ProjectDetail = () => {
                   ) : (
                     <GitBranch size={14} />
                   )}
-                  {ui.showGithubPanel ? 'ABORT' : 'REPO'}
+                  {ui.showGithubPanel ? 'CLOSE' : 'REPO'}
                 </button>
               )}
 
@@ -367,7 +367,7 @@ const ProjectDetail = () => {
                 ) : (
                   <Sparkles size={14} />
                 )}
-                {ui.showAiInput ? 'ABORT' : isTicketView ? 'AI GEN' : 'AI TASK'}
+                {ui.showAiInput ? 'CLOSE' : isTicketView ? 'AI GEN' : 'AI TASK'}
               </button>
 
               <button
@@ -385,7 +385,7 @@ const ProjectDetail = () => {
                   <Plus size={14} strokeWidth={3} />
                 )}
                 {ui.showTaskForm
-                  ? 'ABORT'
+                  ? 'CLOSE'
                   : isTicketView
                     ? 'NEW TICKET'
                     : 'NEW TASK'}
@@ -474,7 +474,7 @@ const ProjectDetail = () => {
                 />
                 <input
                   type="text"
-                  placeholder="SEARCH ENGINE..."
+                  placeholder="SEARCH TASKS..."
                   className="flex-1 bg-transparent px-2 text-[10px] font-black text-white placeholder:text-white/20 focus:outline-none tracking-widest truncate uppercase"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -511,7 +511,7 @@ const ProjectDetail = () => {
                     <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                       <div className="p-1.5 space-y-1">
                         {[
-                          { id: 'all', label: 'ALL OPERATORS' },
+                          { id: 'all', label: 'ALL MEMBERS' },
                           { id: user?._id, label: 'SELF ONLY' },
                         ].map((opt) => (
                           <button

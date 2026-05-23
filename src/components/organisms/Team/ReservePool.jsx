@@ -17,7 +17,7 @@ const ReservePool = React.memo(
       <section className="space-y-4">
         <div className="flex items-center gap-4 px-1">
           <h2 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] whitespace-nowrap">
-            RESERVE POOL
+            Unassigned Members
           </h2>
           <div className="h-[1px] w-full bg-white/10" />
         </div>

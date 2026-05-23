@@ -58,7 +58,7 @@ const CreateRoleModal = ({
         <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <div className="space-y-2">
             <label className="text-xs font-bold text-white/40 uppercase tracking-widest px-1">
-              Role Nomenclature
+              Role Name
             </label>
             <input
               type="text"
@@ -71,7 +71,7 @@ const CreateRoleModal = ({
 
           <div className="space-y-4">
             <label className="text-xs font-bold text-white/40 uppercase tracking-widest px-1">
-              Assign Capability Permissions
+              Assign Permissions
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {availablePermissions.map((perm) => {
@@ -122,7 +122,7 @@ const CreateRoleModal = ({
             onClick={handleCreate}
             className="px-8 py-3 bg-primary text-black rounded-xl text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]"
           >
-            Provision Role
+            Create Role
           </button>
         </div>
       </div>

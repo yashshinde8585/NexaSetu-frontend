@@ -128,11 +128,11 @@ const AdminDashboard = () => {
         {[
           {
             id: 'overview',
-            label: 'Command Center',
+            label: 'System Overview',
             icon: <Layout size={12} />,
           },
           { id: 'users', label: 'User Directory', icon: <Users size={12} /> },
-          { id: 'teams', label: 'Squad Directive', icon: <Zap size={12} /> },
+          { id: 'teams', label: 'Teams', icon: <Zap size={12} /> },
           { id: 'roles', label: 'Roles & Access', icon: <Shield size={12} /> },
           {
             id: 'settings',

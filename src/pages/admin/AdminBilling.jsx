@@ -9,6 +9,7 @@ const AdminBilling = () => {
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [currency, setCurrency] = useState('inr');
 
   if (isLoading)
     return (
@@ -22,18 +23,16 @@ const AdminBilling = () => {
     plans.find((p) => p.id === currentPlanId) ||
     plans.find((p) => p.id === 'free');
 
-  // Find plans with a higher price point for the featured suggestion
   const availableUpgrades = plans.filter(
     (p) => p.price > (currentPlan?.price || 0)
   );
-  const featuredUpgrade = availableUpgrades[0]; // Next logical tier
+  const featuredUpgrade = availableUpgrades[0];
 
   const handleUpgrade = async (plan) => {
     setSelectedPlan(plan);
     setIsProvisioning(true);
     setProgress(0);
 
-    // UX Provisioning Sequence (15s)
     const duration = 15000;
     const interval = 100;
     const steps = duration / interval;
@@ -53,7 +52,7 @@ const AdminBilling = () => {
       setProgress(100);
       setTimeout(() => {
         setIsProvisioning(false);
-        window.location.reload(); // Refresh to update subscription state
+        window.location.reload();
       }, 1000);
     } catch (err) {
       console.error('Upgrade failed:', err);
@@ -64,14 +63,15 @@ const AdminBilling = () => {
 
   return (
     <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-background text-text min-h-screen animate-in fade-in duration-700">
-      {/* Provisioning Overlay */}
+
+      {/* Upgrade progress overlay */}
       {isProvisioning && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-xs space-y-6 text-center">
             <Loader2 size={28} className="text-primary animate-spin mx-auto" />
             <div className="space-y-2">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-white">
-                DEPLOYING {selectedPlan?.name}
+                Activating {selectedPlan?.name}
               </h3>
               <div className="h-1 w-full bg-white/10 rounded overflow-hidden">
                 <div
@@ -80,36 +80,57 @@ const AdminBilling = () => {
                 />
               </div>
               <p className="text-[9px] uppercase font-black tracking-[0.2em] text-white/40">
-                {Math.round(progress)}% INTEGRATED
+                {Math.round(progress)}% complete
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Compact Header */}
+      {/* Page Header */}
       <div className="flex justify-between items-end gap-6 flex-wrap border-b border-white/10 pb-4">
         <div className="space-y-1">
           <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
-            BILLING DIRECTORY
+            Billing
           </h1>
           <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
-            ORCHESTRATE WORKSPACE SUBSCRIPTIONS AND TELEMETRY.
+            Manage your workspace subscription and usage.
           </p>
         </div>
-        <button
-          onClick={() => setShowAllPlans(!showAllPlans)}
-          className="h-9 px-6 bg-white/5 border border-white/10 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:bg-white/10 flex items-center justify-center gap-2 group"
-        >
-          {showAllPlans ? 'HIDE TIERS' : 'ALL PLANS'}{' '}
-          <ArrowRight
-            size={14}
-            className={`${showAllPlans ? 'rotate-90' : ''} transition-transform`}
-          />
-        </button>
+        <div className="flex items-center gap-4">
+          {/* Currency Toggle */}
+          <div className="flex items-center bg-white/5 border border-white/10 p-0.5 rounded-lg h-9">
+            <button
+              onClick={() => setCurrency('inr')}
+              className={`px-3 h-full text-[8px] font-black uppercase tracking-widest transition-all rounded cursor-pointer ${
+                currency === 'inr' ? 'bg-white text-black' : 'text-white/40 hover:text-white'
+              }`}
+            >
+              INR (₹)
+            </button>
+            <button
+              onClick={() => setCurrency('usd')}
+              className={`px-3 h-full text-[8px] font-black uppercase tracking-widest transition-all rounded cursor-pointer ${
+                currency === 'usd' ? 'bg-white text-black' : 'text-white/40 hover:text-white'
+              }`}
+            >
+              USD ($)
+            </button>
+          </div>
+          <button
+            onClick={() => setShowAllPlans(!showAllPlans)}
+            className="h-9 px-6 bg-white/5 border border-white/10 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:bg-white/10 flex items-center justify-center gap-2 group cursor-pointer"
+          >
+            {showAllPlans ? 'Hide Plans' : 'View All Plans'}{' '}
+            <ArrowRight
+              size={14}
+              className={`${showAllPlans ? 'rotate-90' : ''} transition-transform`}
+            />
+          </button>
+        </div>
       </div>
 
-      {/* Slim Current Plan Card */}
+      {/* Current Plan Card */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:bg-white/10 transition-all">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary">
@@ -121,17 +142,17 @@ const AdminBilling = () => {
                 {planName}
               </h2>
               <span className="px-2 py-0.5 bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest rounded">
-                ACTIVE
+                Active
               </span>
             </div>
             <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-              STANDARD SECTOR ACCESS
+              Current Plan
             </p>
           </div>
         </div>
         <div className="sm:text-right border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-4 w-full sm:w-auto">
           <p className="text-white/40 text-[8px] font-black uppercase tracking-[0.2em] mb-1">
-            USERS
+            Users
           </p>
           <p className="text-xl font-black tracking-tighter tabular-nums text-white">
             {subscription?.usage?.users || 1}
@@ -139,7 +160,7 @@ const AdminBilling = () => {
         </div>
       </div>
 
-      {/* High-Density Telemetry Grid */}
+      {/* Usage Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
@@ -187,7 +208,7 @@ const AdminBilling = () => {
         ))}
       </div>
 
-      {/* All Plans View - Dense */}
+      {/* All Plans Grid */}
       {showAllPlans && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
           {plans.map((plan) => (
@@ -201,36 +222,40 @@ const AdminBilling = () => {
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl font-black text-white tracking-widest">
-                    ₹{plan.price}
+                    {currency === 'inr' ? `₹${plan.price}` : `$${plan.globalPrice || 0}`}
                   </span>
                   <span className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">
-                    /MO
+                    / month
                   </span>
                 </div>
               </div>
               <ul className="space-y-3 flex-1 pt-2 border-t border-white/5 mt-2">
-                {Object.entries(plan.features).map(([key, val]) => (
-                  <li
-                    key={key}
-                    className="flex items-start gap-2 text-[9px] text-white/60 font-black uppercase tracking-[0.1em]"
-                  >
-                    <Check size={12} className="text-primary shrink-0 mt-0.5" />
-                    <span>
-                      {val === Infinity ? 'UNLIMITED' : val} {key}
-                    </span>
-                  </li>
-                ))}
+                {Object.entries(plan.features).map(([key, val]) => {
+                  const displayVal = val === Infinity || val === null || val === 'Infinity' ? 'Unlimited' : val;
+                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  return (
+                    <li
+                      key={key}
+                      className="flex items-start gap-2 text-[9px] text-white/60 font-black uppercase tracking-[0.1em]"
+                    >
+                      <Check size={12} className="text-primary shrink-0 mt-0.5" />
+                      <span>
+                        {displayVal} {displayKey}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
               {plan.id !== currentPlanId ? (
                 <button
                   onClick={() => handleUpgrade(plan)}
-                  className="w-full h-9 bg-white text-black hover:bg-primary hover:text-black rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center mt-4"
+                  className="w-full h-9 bg-white text-black hover:bg-primary hover:text-black rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center mt-4 cursor-pointer"
                 >
-                  ACTIVATE
+                  Select Plan
                 </button>
               ) : (
                 <div className="w-full h-9 border border-white/10 text-white/30 text-[9px] font-black uppercase tracking-[0.2em] rounded flex items-center justify-center gap-2 mt-4 bg-black/40">
-                  <Check size={12} /> CURRENT
+                  <Check size={12} /> Current Plan
                 </div>
               )}
             </div>
@@ -238,7 +263,7 @@ const AdminBilling = () => {
         </div>
       )}
 
-      {/* Compact Featured Upgrade Card */}
+      {/* Featured Upgrade Card */}
       {!showAllPlans &&
         (featuredUpgrade ? (
           <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-5 group hover:bg-white/10 transition-all relative overflow-hidden">
@@ -247,24 +272,24 @@ const AdminBilling = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="space-y-1">
                 <h2 className="text-[11px] font-black uppercase tracking-widest text-white">
-                  UPGRADE TO {featuredUpgrade.name}
+                  Upgrade to {featuredUpgrade.name}
                 </h2>
                 <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-                  ADVANCE TO ₹{featuredUpgrade.price} PER NODE/MO
+                  {currency === 'inr' ? `₹${featuredUpgrade.price}` : `$${featuredUpgrade.globalPrice || 0}`} per month
                 </p>
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setShowAllPlans(true)}
-                  className="text-white/40 hover:text-white text-[9px] font-black uppercase tracking-[0.2em] transition-colors flex-1 sm:flex-initial text-center py-2 px-4"
+                  className="text-white/40 hover:text-white text-[9px] font-black uppercase tracking-[0.2em] transition-colors flex-1 sm:flex-initial text-center py-2 px-4 cursor-pointer"
                 >
-                  VIEW TIERS
+                  Compare Plans
                 </button>
                 <button
                   onClick={() => setShowAllPlans(true)}
-                  className="bg-primary hover:bg-primary/90 text-black px-6 h-9 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex-1 sm:flex-initial flex items-center justify-center"
+                  className="bg-primary hover:bg-primary/90 text-black px-6 h-9 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex-1 sm:flex-initial flex items-center justify-center cursor-pointer"
                 >
-                  UPGRADE NOW
+                  Upgrade Now
                 </button>
               </div>
             </div>
@@ -272,17 +297,21 @@ const AdminBilling = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-5">
               {Object.entries(featuredUpgrade.features)
                 .slice(0, 4)
-                .map(([key, val], idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-2 text-[9px] font-black text-white/60 uppercase tracking-[0.1em]"
-                  >
-                    <Check size={12} className="text-primary mt-0.5 shrink-0" />
-                    <span className="truncate">
-                      {val === Infinity ? 'UNLIMITED' : val} {key}
-                    </span>
-                  </div>
-                ))}
+                .map(([key, val], idx) => {
+                  const displayVal = val === Infinity || val === null || val === 'Infinity' ? 'Unlimited' : val;
+                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 text-[9px] font-black text-white/60 uppercase tracking-[0.1em]"
+                    >
+                      <Check size={12} className="text-primary mt-0.5 shrink-0" />
+                      <span className="truncate">
+                        {displayVal} {displayKey}
+                      </span>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         ) : (
@@ -292,23 +321,23 @@ const AdminBilling = () => {
             </div>
             <div className="space-y-1">
               <h2 className="text-[11px] font-black uppercase tracking-widest text-white">
-                ENTERPRISE TIER ACTIVE
+                You're on the highest plan
               </h2>
               <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-                YOU ARE CURRENTLY OPERATING ON THE HIGHEST SYSTEMIC TIER
+                Your workspace has access to all features.
               </p>
             </div>
           </div>
         ))}
 
-      {/* Slim Payment Configuration */}
+      {/* Payment Method */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
           <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">
-            PAYMENT CONFIGURATION
+            Payment Method
           </h3>
           <button className="text-[9px] font-black text-primary hover:underline uppercase tracking-widest">
-            UPDATE METHOD
+            Update
           </button>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-white/10 transition-all">
@@ -321,26 +350,26 @@ const AdminBilling = () => {
                 •••• •••• •••• 4242
               </p>
               <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">
-                EXP 12/28
+                Expires 12/28
               </p>
             </div>
           </div>
           <div className="sm:text-right">
             <p className="text-[10px] font-black text-white/80 tracking-widest uppercase">
-              BILLING@NEXASETU.AI
+              billing@nexasetu.ai
             </p>
             <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">
-              PRIMARY IDENTITY
+              Billing Email
             </p>
           </div>
         </div>
       </div>
 
-      {/* Compact Audit History */}
+      {/* Transaction History */}
       <div className="space-y-4 pt-2">
         <div className="px-1">
           <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">
-            AUDIT HISTORY
+            Transaction History
           </h3>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col items-center justify-center gap-3">
@@ -348,10 +377,11 @@ const AdminBilling = () => {
             <X size={14} />
           </div>
           <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-            NO TRANSACTION RECORDS
+            No transactions yet
           </p>
         </div>
       </div>
+
     </div>
   );
 };

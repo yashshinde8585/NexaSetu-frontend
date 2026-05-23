@@ -22,7 +22,7 @@ const WorkspaceSettingsTab = ({
       {/* Settings Section */}
       <div className="lg:col-span-6 flex flex-col gap-6">
         <DashboardSection
-          title="WORKSPACE_SETTINGS"
+          title="WORKSPACE SETTINGS"
           icon={<SettingsIcon size={14} />}
         >
           <div className="flex flex-col gap-3 py-1">
@@ -34,7 +34,7 @@ const WorkspaceSettingsTab = ({
                 icon: <Globe size={14} />,
               },
               {
-                label: 'WORK_HOURS',
+                label: 'WORKING HOURS',
                 key: 'workingHours',
                 value: settings?.workingHours,
                 icon: <Clock size={14} />,
@@ -72,7 +72,7 @@ const WorkspaceSettingsTab = ({
             ))}
           </div>
           <p className="mt-3 text-[8px] text-white/5 text-center uppercase tracking-widest font-black">
-            SYSTEM_WIDE_DIRECTIVES_ENFORCED.
+            Workspace settings apply to all users.
           </p>
         </DashboardSection>
       </div>
@@ -109,7 +109,7 @@ const WorkspaceSettingsTab = ({
                         className={`w-1.5 h-1.5 rounded-none ${toolStatus === 'connected' ? 'bg-status-success' : 'bg-white/10'}`}
                       />
                       <span className="text-[7px] font-black uppercase tracking-widest text-white/20">
-                        {toolStatus === 'connected' ? 'CONNECTED' : 'OFFLINE'}
+                        {toolStatus === 'connected' ? 'CONNECTED' : 'DISCONNECTED'}
                       </span>
                     </div>
                   </div>
@@ -118,7 +118,7 @@ const WorkspaceSettingsTab = ({
             })}
           </div>
           <p className="mt-4 text-[8px] text-white/10 uppercase font-black tracking-[0.2em] text-center border-t border-white/5 pt-4">
-            UPGRADE TO CORE_OPERATOR FOR EXPANDED ACCESS.
+            Upgrade plan to unlock more integrations.
           </p>
         </DashboardSection>
       </div>

@@ -224,10 +224,10 @@ const ProjectInfo = () => {
             <div className="flex items-center gap-3">
               <div className="space-y-1">
                 <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
-                  SPRINT INTELLIGENCE CORE
+                  SPRINT DASHBOARD
                 </h1>
                 <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
-                  MISSION CONTROL FOR ORGANIZATIONAL DEVELOPMENT CYCLES
+                  MANAGE AND TRACK SPRINT PROGRESS AND METRICS
                 </p>
               </div>
             </div>
@@ -235,12 +235,12 @@ const ProjectInfo = () => {
             <div className="flex flex-wrap items-center gap-6 pt-1">
               <div className="flex flex-col gap-1.5">
                 <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
-                  ACTIVE CYCLES
+                  ACTIVE SPRINTS
                 </span>
                 <div className="flex items-center gap-2">
                   <Clock size={12} className="text-primary-light" />
                   <span className="text-[11px] font-black text-white uppercase tracking-tight">
-                    {sprintsForUser?.length || 0} SECTORS
+                    {sprintsForUser?.length || 0} SPRINTS
                   </span>
                 </div>
               </div>
@@ -254,7 +254,7 @@ const ProjectInfo = () => {
                 className="flex-1 sm:flex-none h-9 px-6 bg-primary text-black hover:bg-primary-dark rounded text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 group"
               >
                 <Plus size={14} strokeWidth={3} />
-                INITIATE NEW SPRINT
+                CREATE NEW SPRINT
               </button>
             )}
           </div>
@@ -284,11 +284,11 @@ const ProjectInfo = () => {
               </div>
               <div className="space-y-2 max-w-sm mx-auto mb-8">
                 <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">
-                  STATUS: STANDBY
+                  STATUS: NO ACTIVE SPRINT
                 </h3>
                 <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed px-4">
-                  No active development cycle detected. Initialize a new sprint
-                  to begin telemetry tracking.
+                  No active sprint detected. Create a new sprint
+                  to begin tracking progress.
                 </p>
               </div>
               {canCreate && (
@@ -296,7 +296,7 @@ const ProjectInfo = () => {
                   onClick={() => setShowSprintForm(true)}
                   className="h-9 px-8 bg-white text-black hover:bg-white/90 rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95"
                 >
-                  + INITIALIZE CYCLE
+                  + CREATE SPRINT
                 </button>
               )}
             </div>
