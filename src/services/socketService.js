@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 export let socket = null;
 
@@ -25,7 +25,7 @@ export const connect = (explicitToken = null) => {
     reconnectionDelay: 2000,
     reconnectionDelayMax: 10000,
     timeout: 20000,
-    transports: ['websocket'], // Prioritize websocket for stability
+    transports: ['websocket', 'polling'], // Prioritize websocket but fall back to polling if blocked
   });
 
   socket.on('connect_error', (err) => {

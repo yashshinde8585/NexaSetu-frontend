@@ -31,7 +31,7 @@ const VelocityIndicator = ({ data, statsLoading }) => {
       </div>
 
       <div className="h-16 -mx-5 -mb-5 mt-2 opacity-50 group-hover:opacity-100 transition-opacity">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
