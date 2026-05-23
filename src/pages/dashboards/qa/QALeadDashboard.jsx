@@ -114,7 +114,7 @@ const QALeadDashboard = () => {
           accent="bg-white/10"
         />
         <MetricStripItem
-          label="Units at Risk"
+          label="Teams at Risk"
           value={globalControl.teamsAtRisk}
           icon={<Users size={14} />}
           color={
@@ -145,11 +145,11 @@ const QALeadDashboard = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[8px] text-white/30 uppercase font-black tracking-[0.2em] border-b border-white/5">
-                    <th className="py-3 px-3">PRODUCTION_UNIT</th>
-                    <th className="py-3 px-3">VALIDATION_QUOTA</th>
+                    <th className="py-3 px-3">TEAM</th>
+                    <th className="py-3 px-3">TEST VOLUME</th>
                     <th className="py-3 px-3 text-center">DEFECTS</th>
                     <th className="py-3 px-3 text-center">BLOCKERS</th>
-                    <th className="py-3 px-3 text-right">INTEGRITY_STATUS</th>
+                    <th className="py-3 px-3 text-right">STATUS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.02]">
@@ -228,7 +228,7 @@ const QALeadDashboard = () => {
                   upIsGood
                 />
                 <TrendMetric
-                  label="GLOBAL_BUG_DENSITY"
+                  label="GLOBAL_BUG_COUNT"
                   now={qualityTrend.bugCount.now}
                   last={qualityTrend.bugCount.last}
                   unit=""
@@ -238,7 +238,7 @@ const QALeadDashboard = () => {
             </DashboardSection>
 
             <DashboardSection
-              title="Integrity Exceptions"
+              title="Quality Issues"
               icon={<AlertTriangle size={14} />}
             >
               <div className="flex flex-col gap-2 py-2">
@@ -255,7 +255,7 @@ const QALeadDashboard = () => {
                         {b.issue}
                       </span>
                       <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em]">
-                        {b.impact}_IMPACT
+                        {b.impact} IMPACT
                       </span>
                     </div>
                     <div className="ml-auto">
@@ -327,7 +327,7 @@ const QALeadDashboard = () => {
           </DashboardSection>
 
           <DashboardSection
-            title="Integrity Watchlist"
+            title="Critical Watchlist"
             icon={<ShieldAlert size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -341,7 +341,7 @@ const QALeadDashboard = () => {
                       {bug.title}
                     </span>
                     <span className="text-[8px] font-black uppercase text-status-error/40 tracking-[0.2em]">
-                      {bug.team}_UNIT
+                      {bug.team} TEAM
                     </span>
                   </div>
                   <ChevronRight

@@ -82,11 +82,11 @@ export const publicRoutes = [
 
 export const privateRoutes = [
   // General Protected Routes
-  { path: ROUTES.TEAMS, component: Team, title: 'Squad Management' },
+  { path: ROUTES.TEAMS, component: Team, title: 'Team Management' },
   {
     path: '/team/project/:projectId',
     component: ProjectTeam,
-    title: 'Project Squad',
+    title: 'Project Team',
   },
   {
     path: '/project-info',
@@ -123,7 +123,7 @@ export const privateRoutes = [
   },
   { path: ROUTES.MY_TASKS, component: MyTasks, title: 'My Assigned Tasks' },
   { path: '/velocity', component: Velocity, title: 'Velocity Controller' },
-  { path: ROUTES.PROFILE, component: Profile, title: 'Operative Profile' },
+  { path: ROUTES.PROFILE, component: Profile, title: 'User Profile' },
   { path: ROUTES.SETTINGS, component: Settings, title: 'System Settings' },
   { path: '/theme', component: Theme, title: 'Interface Customization' },
 
@@ -149,28 +149,28 @@ export const privateRoutes = [
     component: CTODashboard,
     roles: ['WORKSPACE_ADMIN'],
     titles: ['cto'],
-    title: 'CTO Command Center',
+    title: 'CTO Dashboard',
   },
   {
     path: ROUTES.EXECUTION_COMMANDER,
     component: VPEDashboard,
     roles: ['WORKSPACE_ADMIN', 'VP_ENGINEERING', 'WORKSPACE_MANAGER'],
     titles: ['vp engineering'],
-    title: 'VPE Execution Commander',
+    title: 'VPE Dashboard',
   },
   {
     path: ROUTES.TEAM_COMMAND_CENTER,
     component: EMDashboard,
     roles: ['ENGINEERING_MANAGER', 'WORKSPACE_ADMIN', 'TECH_LEAD'],
     titles: ['engineering manager'],
-    title: 'EM Team Command Center',
+    title: 'EM Dashboard',
   },
   {
     path: ROUTES.SYSTEM_HEALTH_CONTROL,
     component: TLDashboard,
     roles: ['TECH_LEAD', 'WORKSPACE_ADMIN', 'VP_ENGINEERING'],
     titles: ['tech lead'],
-    title: 'TL System Health Control',
+    title: 'TL Dashboard',
   },
   {
     path: ROUTES.EXECUTION_CONTROL,
@@ -183,7 +183,7 @@ export const privateRoutes = [
       'ENGINEERING_MANAGER',
     ],
     titles: ['senior engineer'],
-    title: 'SE Execution Control',
+    title: 'Developer Dashboard',
   },
   {
     path: ROUTES.QUALITY_CONTROL,
@@ -196,7 +196,7 @@ export const privateRoutes = [
       'WORKSPACE_ADMIN',
     ],
     titles: ['qa engineer'],
-    title: 'QA Quality Control',
+    title: 'QA Dashboard',
   },
   {
     path: ROUTES.QUALITY_STRATEGY,
@@ -209,7 +209,7 @@ export const privateRoutes = [
       'WORKSPACE_ADMIN',
     ],
     titles: ['senior qa engineer'],
-    title: 'SQA Quality Strategy',
+    title: 'Senior QA Dashboard',
   },
   {
     path: ROUTES.QUALITY_COMMAND,
@@ -222,7 +222,7 @@ export const privateRoutes = [
       'WORKSPACE_ADMIN',
     ],
     titles: ['qa lead'],
-    title: 'QA Quality Command',
+    title: 'QA Lead Dashboard',
   },
   {
     path: ROUTES.HR,
@@ -234,7 +234,7 @@ export const privateRoutes = [
       'ENGINEERING_MANAGER',
     ],
     titles: ['hr', 'hr manager'],
-    title: 'HR Workforce Control',
+    title: 'HR Dashboard',
   },
   {
     path: ROUTES.ADMIN_PANEL,
@@ -246,13 +246,13 @@ export const privateRoutes = [
     path: '/admin/teams/create',
     component: CreateTeam,
     roles: ['WORKSPACE_ADMIN'],
-    title: 'Create Squad Unit',
+    title: 'Create Team',
   },
   {
     path: '/admin/teams/edit/:id',
     component: EditTeam,
     roles: ['WORKSPACE_ADMIN'],
-    title: 'Edit Squad Unit',
+    title: 'Edit Team',
   },
   {
     path: '/admin/billing',

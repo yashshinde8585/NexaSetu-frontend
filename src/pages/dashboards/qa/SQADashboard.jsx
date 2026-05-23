@@ -256,7 +256,7 @@ const SQADashboard = () => {
               ))}
               {(!flakyTests || flakyTests.length === 0) && (
                 <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">
-                  STABLE_ENVIRONMENT
+                  NO FLAKY TESTS
                 </div>
               )}
             </div>
@@ -265,16 +265,16 @@ const SQADashboard = () => {
 
         <div className="lg:col-span-8 flex flex-col gap-6">
           <DashboardSection
-            title="Integrity Intelligence"
+            title="Quality Intelligence"
             icon={<PieChart size={14} />}
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] border-b border-white/5">
-                    <th className="py-3 px-3">SUBSYSTEM_DOMAIN</th>
-                    <th className="py-3 px-3">CYCLICAL_TREND</th>
-                    <th className="py-3 px-3 text-right">INTEGRITY</th>
+                    <th className="py-3 px-3">MODULE</th>
+                    <th className="py-3 px-3">TREND</th>
+                    <th className="py-3 px-3 text-right">HEALTH</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.02]">
@@ -358,7 +358,7 @@ const SQADashboard = () => {
             </DashboardSection>
 
             <DashboardSection
-              title="Integrity Feedback"
+              title="Quality Feedback"
               icon={<Users size={14} />}
             >
               <div className="flex flex-col gap-2 py-2">
@@ -375,19 +375,19 @@ const SQADashboard = () => {
         {/* 6. Release Authority Analysis */}
         <div className="lg:col-span-8">
           <DashboardSection
-            title="Strategic Quality Variance"
+            title="Quality Metrics"
             icon={<TrendingUp size={14} />}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
               <TrendDisplay
-                label="FAILURE_QUOTA"
+                label="FAILURE RATE"
                 value={`${qualityTrends.failureRate.now}%`}
                 lastValue={`${qualityTrends.failureRate.lastWeek}%`}
                 color="text-status-error"
                 upIsBad
               />
               <TrendDisplay
-                label="VALIDATION_QUOTA"
+                label="PASS RATE"
                 value={`${qualityTrends.passRate.now}%`}
                 lastValue={`${qualityTrends.passRate.lastWeek}%`}
                 color="text-status-success"
@@ -415,7 +415,7 @@ const SQADashboard = () => {
                   </div>
                 </div>
                 <span className="text-[8px] font-black uppercase tracking-[0.2em] mt-3 text-white/20">
-                  VECTOR_RISK
+                  RISK LEVEL
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-px bg-white/5 border-t border-white/5">

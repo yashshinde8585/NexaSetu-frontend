@@ -27,14 +27,14 @@ const EditTeam = () => {
       await updateTeam(id, teamData);
       navigate(ROUTES.ADMIN_PANEL);
     } catch (err) {
-      console.error('Failed to update squad:', err);
+      console.error('Failed to update team:', err);
     }
   };
 
   return (
     <TeamBuilderForm
       title="Team Configuration"
-      description="Update team details, change leadership, or reassign resources."
+      description="Update team details, change leadership, or reassign members."
       submitLabel="Save Changes"
       onSubmit={handleUpdate}
       users={users}

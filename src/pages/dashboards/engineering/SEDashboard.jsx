@@ -73,7 +73,7 @@ const SEDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      {/* 1. Tactical Execution Strip */}
+      {/* 1. Execution Overview Strip */}
       <div
         id="se-metrics-strip"
         className="grid grid-cols-1 md:grid-cols-5 gap-4"
@@ -98,7 +98,7 @@ const SEDashboard = () => {
           }
         />
         <MetricStripItem
-          label="Blocked Nodes"
+          label="Blocked Tasks"
           value={executionMetrics.blocked}
           icon={<ShieldAlert size={14} />}
           color={
@@ -134,9 +134,9 @@ const SEDashboard = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[9px] text-white/40 uppercase font-black tracking-[0.2em] border-b border-white/5">
-                    <th className="pb-3 px-4">ASSIGNED_OBJECTIVE</th>
+                    <th className="pb-3 px-4">ASSIGNED TASK</th>
                     <th className="pb-3 px-4 text-center">PRIORITY</th>
-                    <th className="pb-3 px-4">TEMPORAL_LIMIT</th>
+                    <th className="pb-3 px-4">DEADLINE</th>
                     <th className="pb-3 px-4 text-right">ACTION</th>
                   </tr>
                 </thead>
@@ -161,7 +161,7 @@ const SEDashboard = () => {
                             </span>
                             {task.priority === 'urgent' && (
                               <span className="text-[6px] text-status-error font-black">
-                                IMMEDIATE_ATTENTION_REQUIRED
+                                IMMEDIATE ACTION REQUIRED
                               </span>
                             )}
                           </div>
@@ -230,7 +230,7 @@ const SEDashboard = () => {
           </DashboardSection>
 
           <DashboardSection
-            title="Peer Support Directives"
+            title="Peer Support Requests"
             icon={<Users size={14} />}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-2">
@@ -270,7 +270,7 @@ const SEDashboard = () => {
         {/* 3. Sidebar: Stability & Review */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardSection
-            title="Operational Blockers"
+            title="Blocked Tasks"
             icon={<ShieldAlert size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -295,13 +295,13 @@ const SEDashboard = () => {
                     </button>
                   </div>
                   <span className="block text-[8px] text-status-error/60 uppercase tracking-[0.2em] font-black flex items-center gap-2">
-                    <Clock size={10} /> WAITING_ON: {block.waitingOn}
+                    <Clock size={10} /> WAITING ON: {block.waitingOn}
                   </span>
                 </div>
               ))}
               {!myBlockers?.length && (
                 <div className="py-8 text-center text-[9px] text-white/10 uppercase font-black tracking-[0.2em] italic">
-                  ZERO_BLOCKADE_STATE
+                  NO ACTIVE BLOCKERS
                 </div>
               )}
             </div>
@@ -317,7 +317,7 @@ const SEDashboard = () => {
                 onClick={() => navigate('/my-tasks')}
               >
                 <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
-                  ACTIVE_REQUESTS
+                  ACTIVE REQUESTS
                 </span>
                 <span className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 font-black rounded text-[9px] tracking-[0.2em]">
                   {prStatus?.pendingReviews}
@@ -335,14 +335,14 @@ const SEDashboard = () => {
                     {prStatus.stalePR.title}
                   </span>
                   <span className="block text-[8px] text-status-warning/60 uppercase tracking-[0.2em] font-black mt-2 flex items-center gap-2 italic">
-                    STALE_T: {prStatus.stalePR.pendingDays} DAYS_INACTIVE
+                    STALE FOR: {prStatus.stalePR.pendingDays} DAYS INACTIVE
                   </span>
                 </div>
               )}
             </div>
           </DashboardSection>
 
-          <DashboardSection title="Sync Integrity" icon={<Target size={14} />}>
+          <DashboardSection title="Activity Sync" icon={<Target size={14} />}>
             <div className="flex items-center justify-around py-4 mt-2 bg-white/5 rounded border border-white/10">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-2xl font-black text-white tracking-widest">
@@ -379,7 +379,7 @@ const SEDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4">
           <DashboardSection
-            title="Domain Stability"
+            title="Module Health"
             icon={<Shield size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -400,7 +400,7 @@ const SEDashboard = () => {
                           : 'text-status-error/60'
                       }`}
                     >
-                      INTEGRITY: {module.health}
+                      HEALTH: {module.health}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ const SEDashboard = () => {
 
         <div className="lg:col-span-8">
           <DashboardSection
-            title="Structural Defect Queue"
+            title="Bug Backlog"
             icon={<Bug size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -461,7 +461,7 @@ const SEDashboard = () => {
               ))}
               {!myBugs?.length && (
                 <div className="py-8 text-center text-[9px] text-white/10 uppercase font-black tracking-[0.2em] italic">
-                  ZERO_DEFECT_ENVIRONMENT
+                  NO ACTIVE BUGS
                 </div>
               )}
             </div>

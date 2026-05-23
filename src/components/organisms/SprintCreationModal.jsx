@@ -23,15 +23,15 @@ const SprintCreationModal = ({
         <div className="flex items-center gap-4 mb-10">
           <div className="w-1.5 h-8 bg-primary" />
           <h3 className="text-2xl font-black text-white tracking-tighter uppercase">
-            Initialize Strategic Cycle
+            Create New Sprint
           </h3>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-6">
           <FormField
             id="sprintName"
-            label="Cycle Identifier"
-            placeholder="e.g. GAMMA_ZERO_1"
+            label="Sprint Name"
+            placeholder="e.g. Sprint 1"
             required
             value={sprintData.name}
             onChange={(e) =>
@@ -41,10 +41,10 @@ const SprintCreationModal = ({
 
           <div className="space-y-1.5">
             <TacticalCustomSelect
-              label="Connect Objective"
+              label="Select Project"
               value={sprintData.project}
               onChange={(val) => setSprintData({ ...sprintData, project: val })}
-              placeholder="SELECT TARGET PROJECT"
+              placeholder="Select project..."
               options={projects?.map((p) => ({
                 label: p.name,
                 value: p._id,
@@ -55,7 +55,7 @@ const SprintCreationModal = ({
           <div className="grid grid-cols-2 gap-4">
             <FormField
               id="startDate"
-              label="Engagement Start"
+              label="Start Date"
               type="date"
               required
               value={sprintData.startDate}
@@ -65,7 +65,7 @@ const SprintCreationModal = ({
             />
             <FormField
               id="endDate"
-              label="Mission End"
+              label="End Date"
               type="date"
               required
               value={sprintData.endDate}
@@ -82,7 +82,7 @@ const SprintCreationModal = ({
               className="flex-1 rounded-none py-4 text-[11px] font-black tracking-widest uppercase"
               isLoading={isLoading}
             >
-              INITIATE
+              CREATE SPRINT
             </Button>
             <Button
               type="button"

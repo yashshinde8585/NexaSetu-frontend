@@ -15,7 +15,7 @@
     {
       "id": 3,
       "label": "Resource Allocation",
-      "prompt": "Identify resource imbalances across missions",
+      "prompt": "Identify resource imbalances across projects",
       "category": "Operations"
     },
     {
@@ -34,13 +34,13 @@
   "TECH_LEAD": [
     {
       "id": 6,
-      "label": "Mission Health",
-      "prompt": "Analyze velocity and health of my active missions",
+      "label": "Project Health",
+      "prompt": "Analyze velocity and health of my active projects",
       "category": "Intelligence"
     },
     {
       "id": 7,
-      "label": "Squad Blockers",
+      "label": "Team Blockers",
       "prompt": "Show all overdue tasks in my assigned team",
       "category": "Risk"
     },
@@ -61,7 +61,7 @@
     {
       "id": 10,
       "label": "Growth Pulse",
-      "prompt": "Summarize my completed mission impact",
+      "prompt": "Summarize my completed task impact",
       "category": "Performance"
     },
     {

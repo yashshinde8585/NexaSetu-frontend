@@ -126,7 +126,7 @@ const InternDashboard = () => {
         />
         <MetricStripItem
           icon={<ShieldAlert size={14} />}
-          label="Operation Blockers"
+          label="Blocked Tasks"
           value={assignmentMetrics.blocked}
           color={
             assignmentMetrics.blocked > 0
@@ -169,7 +169,7 @@ const InternDashboard = () => {
                   </h2>
                   <div className="bg-white/5 border border-white/10 p-6 rounded-none">
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary block mb-3">
-                      OBJECTIVE
+                      TASK DESCRIPTION
                     </span>
                     <p className="text-[10px] font-black text-white/60 uppercase leading-relaxed tracking-widest">
                       {currentTask.description || 'No objective defined.'}
@@ -214,7 +214,7 @@ const InternDashboard = () => {
                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none group hover:border-primary/40 transition-colors">
                   <span className="text-[9px] font-black text-white/20 flex items-center gap-3 uppercase tracking-widest leading-none">
                     <ExternalLink size={12} className="text-primary/40" />{' '}
-                    DOC_REPOSITORY
+                    DOCUMENTATION REPO
                   </span>
                   <a
                     href={currentTask.githubUrl || '#'}
@@ -222,7 +222,7 @@ const InternDashboard = () => {
                     rel="noreferrer"
                     className="text-[9px] font-black text-primary uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 group-hover:translate-x-1"
                   >
-                    OPEN_LINK <ChevronRight size={10} />
+                    OPEN LINK <ChevronRight size={10} />
                   </a>
                 </div>
               </div>
@@ -230,7 +230,7 @@ const InternDashboard = () => {
               <div className="py-16 text-center flex flex-col items-center gap-4 bg-white/5 border border-white/10 border-dashed rounded-none">
                 <Compass size={32} className="text-white/5" />
                 <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10 italic">
-                  AWAITING_ASSIGNMENT
+                  Awaiting Assignment
                 </span>
               </div>
             )}
@@ -257,7 +257,7 @@ const InternDashboard = () => {
                 ))}
                 {(!feedback || feedback.length === 0) && (
                   <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic border border-white/10 border-dashed rounded-none">
-                    ZERO_FEEDBACK
+                    No Feedback Yet
                   </div>
                 )}
               </div>
@@ -272,7 +272,7 @@ const InternDashboard = () => {
                   Initiate Review
                 </h3>
                 <p className="text-[9px] font-black text-white/20 uppercase leading-relaxed max-w-[15rem]">
-                  SIGNAL_MODULE_COMPLETION
+                  SUBMIT FOR REVIEW
                 </p>
               </div>
               <button
@@ -281,8 +281,8 @@ const InternDashboard = () => {
                 disabled={!currentTask || currentTask.status === 'in_review'}
               >
                 {currentTask?.status === 'in_review'
-                  ? 'UNDER_REVIEW'
-                  : 'SIGNAL_COMPLETION'}
+                  ? 'UNDER REVIEW'
+                  : 'SUBMIT TASK'}
               </button>
             </div>
           </div>
@@ -304,10 +304,10 @@ const InternDashboard = () => {
                 </div>
               </div>
               <h3 className="text-xl font-black text-white uppercase tracking-widest mb-1 leading-none">
-                {currentTask?.mentor?.name || 'CENTRAL_UNIT'}
+                {currentTask?.mentor?.name || 'CENTRAL MENTOR'}
               </h3>
               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary mb-8 leading-none">
-                MENTOR_LEAD
+                MENTOR LEAD
               </p>
 
               <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-none overflow-hidden w-full">
@@ -316,13 +316,13 @@ const InternDashboard = () => {
                   onClick={handleMentorContact}
                   disabled={!currentTask?.mentor?.email}
                 >
-                  <MessageCircle size={14} /> COMM_LINK
+                  <MessageCircle size={14} /> CONTACT MENTOR
                 </button>
                 <button
                   className="flex flex-col items-center justify-center gap-1.5 py-4 bg-black text-[8px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors"
                   onClick={() => navigate('/chat')}
                 >
-                  <HelpCircle size={14} /> SYNC_REQ
+                  <HelpCircle size={14} /> ASK HELP
                 </button>
               </div>
             </div>
@@ -359,7 +359,7 @@ const InternDashboard = () => {
           </DashboardSection>
 
           <DashboardSection
-            title="Operation Blockers"
+            title="Blocked Tasks"
             icon={<ShieldAlert size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -380,18 +380,21 @@ const InternDashboard = () => {
           </DashboardSection>
 
           <DashboardSection
-            title="Overall Progress"
+            title="Progress"
             icon={<Target size={14} />}
           >
             <div className="flex flex-col gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
               <div className="flex items-end justify-between leading-none">
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-4xl font-black text-white tracking-widest tabular-nums">
-                    {progress?.percentage || 0}%
-                  </span>
-                  <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">
-                    EFFICIENCY
-                  </span>
+                  <span className="flex items-center gap-2 text-[8px] font-black text-primary uppercase tracking-[0.2em] mb-2">
+                  <Zap size={10} fill="currentColor" /> PRIORITY TASK
+                </span>
+                <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">
+                  {nextSteps?.main || 'AWAITING TASK'}
+                </p>
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">
+                  {nextSteps?.minor || 'QUEUE EMPTY'}
+                </p>
                 </div>
                 <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-1 tabular-nums">
                   {progress?.completed || 0} / {progress?.total || 0}

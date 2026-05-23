@@ -42,7 +42,7 @@ const JREDashboard = () => {
     guidedTasks = [],
     stuckGuidance = [],
     progress = { percentage: 0, completed: 0 },
-    nextSteps = { main: 'AWAITING_INPUT', minor: 'STANDBY' },
+    nextSteps = { main: 'AWAITING_TASK', minor: 'QUEUE_EMPTY' },
     activity = [],
   } = data || {};
 
@@ -98,7 +98,7 @@ const JREDashboard = () => {
         />
         <MetricStripItem
           icon={<ShieldAlert size={14} />}
-          label="Operation Blockers"
+          label="Blocked Tasks"
           value={dayMetrics.blocked}
           color={dayMetrics.blocked > 0 ? 'text-status-error' : 'text-white/40'}
           accent={dayMetrics.blocked > 0 ? 'bg-status-error' : 'bg-white/5'}
@@ -109,7 +109,7 @@ const JREDashboard = () => {
         {/* Main Column: Active Engineering Sprint */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <DashboardSection
-            title="Active Engineering Tasks"
+            title="Active Tasks"
             icon={<Zap size={14} />}
           >
             <div className="flex flex-col gap-6 py-2">
@@ -136,7 +136,7 @@ const JREDashboard = () => {
                         {task.title}
                       </h3>
                       <p className="text-[9px] font-black text-white/40 uppercase leading-relaxed tracking-widest mb-6 max-w-xl">
-                        {task.description || 'FOLLOW_STANDARD_PROTOCOLS'}
+                        {task.description || 'FOLLOW STANDARD PROCESSES'}
                       </p>
 
                       <div className="flex flex-col gap-2">
@@ -176,7 +176,7 @@ const JREDashboard = () => {
                     <div className="md:w-48 flex flex-col gap-4 md:border-l border-white/10 md:pl-6">
                       <div className="flex flex-col gap-2">
                         <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-                          TASK_CONTROLS
+                          TASK CONTROLS
                         </span>
                         <button
                           className="w-full py-2 bg-white/5 border border-white/10 rounded-none text-white/60 text-[9px] font-black uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-colors"
@@ -184,7 +184,7 @@ const JREDashboard = () => {
                             handleStatusUpdate(task.id, task.status)
                           }
                         >
-                          UPDATE_STATUS
+                          UPDATE STATUS
                         </button>
                       </div>
 
@@ -204,7 +204,7 @@ const JREDashboard = () => {
                         className="flex items-center justify-center gap-2 text-[9px] font-black text-white/20 hover:text-white transition-colors uppercase tracking-[0.2em] mt-auto group/btn"
                         onClick={() => navigate(`/task/${task.id}`)}
                       >
-                        SPEC{' '}
+                        VIEW TASK{' '}
                         <ChevronRight
                           size={12}
                           className="group-hover/btn:translate-x-1 transition-transform"
@@ -218,7 +218,7 @@ const JREDashboard = () => {
                 <div className="py-16 text-center flex flex-col items-center gap-4 bg-white/5 border border-white/10 border-dashed rounded-none">
                   <Zap size={24} className="text-white/10" />
                   <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">
-                    NO_ACTIVE_TASKS
+                    NO ACTIVE TASKS
                   </span>
                 </div>
               )}
@@ -233,7 +233,7 @@ const JREDashboard = () => {
             >
               <div className="flex flex-col gap-4 py-4">
                 <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] leading-relaxed italic">
-                  DIRECT_COMMUNICATION_CHANNELS
+                  DIRECT COMMUNICATION CHANNELS
                 </p>
                 <div className="flex flex-col gap-2">
                   <MentorAction
@@ -272,7 +272,7 @@ const JREDashboard = () => {
                 ))}
                 {(!activity || activity.length === 0) && (
                   <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest">
-                    ZERO_HISTORY
+                    No Feedback Yet
                   </div>
                 )}
               </div>
@@ -297,7 +297,7 @@ const JREDashboard = () => {
                   </span>
                   <div className="p-3 bg-status-error/5 border border-status-error/20 rounded-none mb-3">
                     <span className="text-[8px] font-black text-status-error uppercase tracking-[0.2em] block mb-1">
-                      RECOMMENDED_ACTION
+                      RECOMMENDED ACTION
                     </span>
                     <p className="text-[9px] font-black text-white/60 leading-relaxed uppercase tracking-widest">
                       {s.suggestedAction}
@@ -305,7 +305,7 @@ const JREDashboard = () => {
                   </div>
                   <div className="flex items-center justify-between pt-3 border-t border-white/5">
                     <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">
-                      ESCALATE_TO
+                      ESCALATE TO
                     </span>
                     <span className="text-[9px] font-black text-primary uppercase tracking-widest">
                       {s.suggestedPerson}
@@ -316,14 +316,14 @@ const JREDashboard = () => {
               {(!stuckGuidance || stuckGuidance.length === 0) && (
                 <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest flex flex-col items-center gap-4">
                   <ShieldCheck size={20} className="text-status-success/20" />{' '}
-                  ZERO_BLOCKERS
+                  NO BLOCKERS
                 </div>
               )}
             </div>
           </DashboardSection>
 
           <DashboardSection
-            title="Execution Efficiency"
+            title="Execution Progress"
             icon={<Zap size={14} />}
           >
             <div className="flex flex-col gap-4 py-4 px-5 bg-white/5 border border-white/10 rounded-none">
@@ -333,7 +333,7 @@ const JREDashboard = () => {
                     {progress?.percentage || 0}%
                   </span>
                   <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-                    EFFICIENCY_RATE
+                    PROGRESS RATE
                   </span>
                 </div>
                 <div className="px-3 py-2 bg-black border border-primary/20 rounded-none flex flex-col items-center">
@@ -341,7 +341,7 @@ const JREDashboard = () => {
                     {progress?.completed || 0}
                   </span>
                   <span className="text-[7px] font-black text-primary uppercase tracking-[0.2em] mt-1">
-                    UNITS
+                    TASKS
                   </span>
                 </div>
               </div>
@@ -355,7 +355,7 @@ const JREDashboard = () => {
           </DashboardSection>
 
           <DashboardSection
-            title="Next Operational Phase"
+            title="Next Phase"
             icon={<Sparkles size={14} />}
           >
             <div className="flex flex-col gap-2 py-2">
@@ -364,13 +364,13 @@ const JREDashboard = () => {
                   <ArrowRight size={40} className="text-primary" />
                 </div>
                 <span className="flex items-center gap-2 text-[8px] font-black text-primary uppercase tracking-[0.2em] mb-2">
-                  <Zap size={10} fill="currentColor" /> PRIORITY_DIRECTIVE
+                  <Zap size={10} fill="currentColor" /> PRIORITY TASK
                 </span>
                 <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">
-                  {nextSteps?.main || 'AWAITING_PROTOCOLS'}
+                  {nextSteps?.main || 'AWAITING TASK'}
                 </p>
                 <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">
-                  {nextSteps?.minor || 'STANDBY'}
+                  {nextSteps?.minor || 'QUEUE EMPTY'}
                 </p>
               </div>
             </div>

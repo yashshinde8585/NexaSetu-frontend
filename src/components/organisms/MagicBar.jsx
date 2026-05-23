@@ -5,7 +5,7 @@ import { useMagic } from '../../context/MagicContext';
 import magicData from '../../data/magicCommands.json';
 import ErrorBoundary from '../atoms/ErrorBoundary';
 
-// A tactical command interface that processes natural language directives.
+// A command interface that processes natural language inputs.
 const MagicBar = () => {
   const { user } = useAuth();
   const { setGlobalResult, setPendingCommand } = useMagicActions();
@@ -204,7 +204,7 @@ const MagicBar = () => {
                 type="button"
                 onClick={startVoiceCommand}
                 className={`${isListening ? 'text-status-danger animate-pulse scale-110' : 'text-text-muted hover:text-white'} transition-all`}
-                title="Voice Directive"
+                title="Voice Command"
               >
                 <svg
                   className="w-4 h-4"

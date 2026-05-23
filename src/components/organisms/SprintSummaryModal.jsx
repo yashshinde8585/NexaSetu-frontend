@@ -64,7 +64,7 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
           <div className="mb-8">
             <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-              AI Tactical Summary
+              AI Sprint Summary
             </h3>
             <div className="text-[11px] text-white/80 uppercase tracking-widest leading-loose whitespace-pre-wrap bg-black p-6 rounded-xl border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] font-black">
               {finalSummary.summary}
@@ -103,7 +103,7 @@ const SprintSummaryModal = ({ finalSummary, setFinalSummary }) => {
             onClick={() => setFinalSummary(null)}
             className="flex-1 py-4 text-[11px] font-black uppercase tracking-[0.3em] bg-black text-white/50 rounded-xl hover:text-white hover:border-white transition-all border border-white/20 shadow-none"
           >
-            Acknowledge & Archive
+            Close Summary
           </button>
         </div>
       </div>

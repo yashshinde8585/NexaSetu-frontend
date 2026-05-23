@@ -14,6 +14,8 @@ const SelectPlan = () => {
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [currency, setCurrency] = useState('inr');
 
   const handlePlanClick = (plan) => {
     if (plan.id === subscription?.plan) return;
@@ -141,6 +143,62 @@ const SelectPlan = () => {
           </div>
         </div>
       )}
+      {/* Toggles Container */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+        <h2 className="text-xs font-black text-white uppercase tracking-widest">
+          Available Pricing Tiers
+        </h2>
+        
+        <div className="flex flex-wrap items-center gap-6">
+          {/* Billing Cycle Toggle */}
+          <div className="flex items-center gap-2.5">
+            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+              billingCycle === 'monthly' ? 'text-white' : 'text-white/40'
+            }`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
+              className="w-8 h-4.5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+            >
+              <div className={`w-3 h-3 bg-white rounded-full transition-all duration-300 ${
+                billingCycle === 'annual' ? 'translate-x-3.5' : 'translate-x-0'
+              }`} />
+            </button>
+            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${
+              billingCycle === 'annual' ? 'text-white' : 'text-white/40'
+            }`}>
+              Annually
+              <span className="bg-status-success/15 border border-status-success/20 text-status-success text-[6.5px] font-black px-1.5 py-0.5 rounded tracking-wide">
+                SAVE 20%
+              </span>
+            </span>
+          </div>
+
+          {/* Currency Toggle */}
+          <div className="flex items-center gap-2.5">
+            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+              currency === 'inr' ? 'text-white' : 'text-white/40'
+            }`}>
+              INR (₹)
+            </span>
+            <button
+              onClick={() => setCurrency(currency === 'inr' ? 'usd' : 'inr')}
+              className="w-8 h-4.5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+            >
+              <div className={`w-3 h-3 bg-white rounded-full transition-all duration-300 ${
+                currency === 'usd' ? 'translate-x-3.5' : 'translate-x-0'
+              }`} />
+            </button>
+            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+              currency === 'usd' ? 'text-white' : 'text-white/40'
+            }`}>
+              USD ($)
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {plans.map((plan) => (
           <div
@@ -167,34 +225,50 @@ const SelectPlan = () => {
                 </p>
               </div>
 
-              <div className="flex items-baseline gap-1 py-2 border-y border-white/5">
-                <span className="text-2xl font-black text-white">
-                  ₹{plan.price}
-                </span>
-                <span className="text-white/20 text-[9px] font-black uppercase tracking-wider">
-                  / mo
+              <div className="flex flex-col gap-1 py-2 border-y border-white/5 justify-center min-h-[48px]">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black text-white">
+                    {currency === 'inr' 
+                      ? `₹${billingCycle === 'monthly' ? plan.price.toLocaleString() : (plan.priceAnnual || Math.round(plan.price * 0.8)).toLocaleString()}`
+                      : `$${billingCycle === 'monthly' ? (plan.globalPrice || 0) : (plan.globalPriceAnnual || 0)}`}
+                  </span>
+                  <span className="text-white/20 text-[9px] font-black uppercase tracking-wider">
+                    / mo
+                  </span>
+                </div>
+                <span className="text-[7.5px] font-black text-white/30 uppercase tracking-widest leading-none">
+                  {plan.id === 'free'
+                    ? 'Free forever'
+                    : billingCycle === 'monthly'
+                      ? 'Billed monthly'
+                      : `Billed annually (${currency === 'inr' ? '₹' : '$'}${plan.id === 'pro' ? (currency === 'inr' ? '19,188' : '288') : (currency === 'inr' ? '95,988' : '1,428')}/yr)`
+                  }
                 </span>
               </div>
 
               <div className="space-y-2.5 pt-2">
-                {Object.entries(plan.features).map(([key, value]) => (
-                  <div key={key} className="flex items-start gap-2">
-                    <Check
-                      className={
-                        subscription?.plan === plan.id
-                          ? 'text-primary mt-0.5'
-                          : 'text-white/30 mt-0.5'
-                      }
-                      size={10}
-                    />
-                    <span className="text-[11px] text-white/70 font-semibold leading-none">
-                      <span className="text-white">
-                        {value === Infinity ? 'Unlimited' : value}
-                      </span>{' '}
-                      {key === 'aiUsage' ? 'AI Credits' : key}
-                    </span>
-                  </div>
-                ))}
+                {Object.entries(plan.features).map(([key, value]) => {
+                  const displayValue = value === Infinity || value === null || value === 'Infinity' ? 'Unlimited' : value;
+                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  return (
+                    <div key={key} className="flex items-start gap-2">
+                      <Check
+                        className={
+                          subscription?.plan === plan.id
+                            ? 'text-primary mt-0.5'
+                            : 'text-white/30 mt-0.5'
+                        }
+                        size={10}
+                      />
+                      <span className="text-[11px] text-white/70 font-semibold leading-none">
+                        <span className="text-white font-bold">
+                          {displayValue}
+                        </span>{' '}
+                        {displayKey}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -219,6 +293,8 @@ const SelectPlan = () => {
         onConfirm={handleConfirm}
         plan={selectedPlan}
         isProcessing={isSelecting}
+        billingCycle={billingCycle}
+        currency={currency}
       />
     </div>
   );

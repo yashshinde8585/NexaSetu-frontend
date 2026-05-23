@@ -95,7 +95,7 @@ const UserDirectoryTab = ({
             />
             <input
               type="text"
-              placeholder="SEARCH_OPERATIVES..."
+              placeholder="SEARCH USERS..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -179,7 +179,7 @@ const UserDirectoryTab = ({
                     className="py-16 text-center border-b border-white/5"
                   >
                     <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">
-                      NO_USER_RECORDS_MATCHING_CRITERIA
+                      NO USERS MATCHED YOUR SEARCH
                     </span>
                   </td>
                 </tr>
@@ -191,8 +191,8 @@ const UserDirectoryTab = ({
         {filteredUsers.length > ITEMS_PER_PAGE && (
           <div className="py-4 flex items-center justify-between border-t border-white/5 mt-2">
             <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
-              OPS_LOG: {startIndex} - {endIndex} / {filteredUsers.length}{' '}
-              ENTRIES
+              SHOWING: {startIndex} - {endIndex} / {filteredUsers.length}{' '}
+              USERS
             </span>
             <div className="flex items-center gap-2">
               <button

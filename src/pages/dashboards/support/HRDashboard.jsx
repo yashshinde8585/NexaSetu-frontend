@@ -137,17 +137,17 @@ const HRDashboard = () => {
         {/* 2. Workforce Capacity Hub */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <DashboardSection
-            title="Structural Capacity Matrix"
+            title="Team Capacity Matrix"
             icon={<LayoutGrid size={14} />}
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] border-b border-white/10">
-                    <th className="py-3 px-3">ENGINEERING_UNIT</th>
+                    <th className="py-3 px-3">TEAM</th>
                     <th className="py-3 px-3">HEADCOUNT</th>
                     <th className="py-3 px-3 w-1/3 text-center">UTILIZATION</th>
-                    <th className="py-3 px-3 text-right">INTEGRITY</th>
+                    <th className="py-3 px-3 text-right">STATUS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-[10px] font-black uppercase tracking-widest">
@@ -227,7 +227,7 @@ const HRDashboard = () => {
                             : 'bg-white/5 text-white/20 border-white/10'
                         }`}
                       >
-                        {role.count}_REQS
+                        {role.count} OPENINGS
                       </span>
                     </div>
                   ))}
@@ -235,7 +235,7 @@ const HRDashboard = () => {
             </DashboardSection>
 
             <DashboardSection
-              title="Stability Directives"
+              title="Rebalance Suggestions"
               icon={<RefreshCw size={14} />}
             >
               <div className="flex flex-col gap-2">
@@ -272,7 +272,7 @@ const HRDashboard = () => {
         {/* 3. Sidebar: Health & Signals */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <DashboardSection
-            title="Integrity Signals"
+            title="Retention Risks"
             icon={<Stethoscope size={14} />}
           >
             <div className="flex flex-col gap-3">

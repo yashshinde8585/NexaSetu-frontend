@@ -13,13 +13,13 @@ const RolesAccessTab = ({
         <div className="flex flex-col gap-3">
           <div className="flex justify-between items-center px-1 mb-2">
             <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">
-              SECURITY: ENFORCED
+              STATUS: ACTIVE
             </span>
             <button
               onClick={() => setIsCreateRoleModalOpen(true)}
               className="text-[9px] font-black uppercase text-primary tracking-widest hover:brightness-125 cursor-pointer"
             >
-              ADD_ROLE
+              ADD ROLE
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -61,7 +61,7 @@ const RolesAccessTab = ({
                   </div>
                   <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-1">
                     <span className="text-[7px] font-black text-white/20">
-                      {r.isCustom ? 'CUSTOM ROLE' : 'SYSTEM NATIVE'}
+                      {r.isCustom ? 'CUSTOM ROLE' : 'SYSTEM DEFAULT'}
                     </span>
                     <span className="text-[7px] text-white/30 uppercase">
                       Config permissions

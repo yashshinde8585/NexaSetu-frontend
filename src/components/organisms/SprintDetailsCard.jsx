@@ -59,7 +59,7 @@ const SprintDetailsCard = ({
                     </span>
                     <span className="text-[8px] text-white/40 font-black uppercase tracking-[0.2em] flex items-center gap-2">
                       <Activity size={10} className="text-status-success/60" />
-                      CORE CYCLE STATUS:{' '}
+                      SPRINT STATUS:{' '}
                       {sprint.status?.toUpperCase() || 'UNKNOWN'}
                     </span>
                   </div>
@@ -73,7 +73,7 @@ const SprintDetailsCard = ({
                 <button
                   onClick={onAddSprint}
                   className="w-9 h-9 flex items-center justify-center bg-white/5 border border-white/10 rounded hover:border-primary/50 text-white/40 hover:text-primary transition-all active:scale-95"
-                  title="Initialize New Cycle"
+                  title="Create New Sprint"
                 >
                   <Plus size={16} strokeWidth={3} />
                 </button>
@@ -83,7 +83,7 @@ const SprintDetailsCard = ({
                     disabled={finalizing}
                     className="h-9 px-6 bg-white/5 border border-status-success/30 text-status-success hover:bg-status-success hover:text-black rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50"
                   >
-                    {finalizing ? 'PROCESSING...' : 'COMPLETE CYCLE'}
+                    {finalizing ? 'PROCESSING...' : 'COMPLETE SPRINT'}
                   </button>
                 )}
               </div>
@@ -95,7 +95,7 @@ const SprintDetailsCard = ({
         <div className="flex flex-wrap items-center gap-6 lg:border-l lg:border-white/10 lg:pl-6">
           <div className="flex flex-col gap-1">
             <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
-              INCEPTION DATE
+              START DATE
             </span>
             <span className="text-[11px] font-black text-white uppercase tracking-tight">
               {new Date(sprint.startDate).toLocaleDateString(undefined, {
@@ -108,7 +108,7 @@ const SprintDetailsCard = ({
           <div className="w-1 h-1 rounded-full bg-white/10" />
           <div className="flex flex-col gap-1">
             <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
-              TERMINATION POINT
+              END DATE
             </span>
             <span className="text-[11px] font-black text-white uppercase tracking-tight">
               {new Date(sprint.endDate).toLocaleDateString(undefined, {
@@ -121,7 +121,7 @@ const SprintDetailsCard = ({
           <div className="w-1 h-1 rounded-full bg-white/10" />
           <div className="flex flex-col gap-1">
             <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
-              MISSION SPAN
+              DURATION
             </span>
             <span className="text-[11px] font-black text-primary uppercase tracking-tight">
               {Math.max(
@@ -131,14 +131,14 @@ const SprintDetailsCard = ({
                     (1000 * 60 * 60 * 24)
                 )
               )}{' '}
-              CYCLES
+              DAYS
             </span>
           </div>
           {canCreate && (
             <button
               onClick={onDownload}
               className="ml-auto w-9 h-9 bg-white/5 border border-white/10 rounded hover:border-primary/50 text-primary transition-all flex items-center justify-center active:scale-95"
-              title="Export Protocol Intelligence"
+              title="Export Sprint Report"
             >
               <FileText className="w-4 h-4" />
             </button>
@@ -180,7 +180,7 @@ const SprintDetailsCard = ({
 
             <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-warning/50 transition-all">
               <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
-                STRATEGIC DEBT
+                BACKLOG TASKS
                 <Clock size={10} className="text-status-warning" />
               </div>
               <div className="flex items-center gap-3">
@@ -188,14 +188,14 @@ const SprintDetailsCard = ({
                   {metrics.strategicDebt || 0}
                 </div>
                 <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                  PENDING UNITS
+                  TASKS
                 </div>
               </div>
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-info/50 transition-all">
               <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
-                BLOCKER DENSITY
+                BLOCKED TASKS
                 <AlertCircle size={10} className="text-status-info" />
               </div>
               <div className="flex items-center gap-3">
@@ -203,7 +203,7 @@ const SprintDetailsCard = ({
                   {metrics.blockerDensity || 0}
                 </div>
                 <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-                  ACTIVE STALLS
+                  BLOCKED
                 </div>
               </div>
             </div>
@@ -224,7 +224,7 @@ const SprintDetailsCard = ({
                 <Users size={14} className="text-white/40" />
               </div>
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
-                EXECUTION PULSE MATRIX
+                TEAM WORKLOAD
               </span>
             </div>
             {showWorkload ? (
@@ -266,7 +266,7 @@ const SprintDetailsCard = ({
                 <div className="py-20 text-center bg-black border border-dashed border-white/30 rounded-2xl flex flex-col items-center gap-4">
                   <Users size={40} className="text-white/10" />
                   <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
-                    Zero Personnel Linked to Active Cycle
+                    No members assigned to this sprint
                   </span>
                 </div>
               )}

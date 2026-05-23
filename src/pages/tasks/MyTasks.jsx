@@ -10,7 +10,7 @@ import CenteredLoading from '../../components/atoms/CenteredLoading';
 
 const CARDS_PER_PAGE = 16;
 
-// A task management page that allows users to filter, search, and track their assigned or workspace missions.
+// A task management page that allows users to filter, search, and track their assigned or workspace tasks.
 const MyTasks = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -61,12 +61,12 @@ const MyTasks = () => {
       <div className="flex justify-between items-end gap-6 flex-wrap">
         <div className="space-y-1">
           <h1 className="text-[14px] font-black tracking-widest uppercase text-white">
-            {scope === 'personal' ? 'MY MISSIONS' : 'WORKSPACE MISSIONS'}
+            {scope === 'personal' ? 'MY TASKS' : 'WORKSPACE TASKS'}
           </h1>
           <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] max-w-xl">
             {scope === 'personal'
               ? 'MANAGE AND TRACK YOUR ASSIGNED TASKS ACROSS ALL ACTIVE PROJECTS.'
-              : 'OVERVIEW OF ALL TACTICAL DIRECTIVES ACROSS THE ENTIRE WORKSPACE.'}
+              : 'OVERVIEW OF ALL TASKS ACROSS THE ENTIRE WORKSPACE.'}
           </p>
         </div>
 
@@ -102,7 +102,7 @@ const MyTasks = () => {
           />
           <input
             type="text"
-            placeholder="SEARCH MISSIONS..."
+            placeholder="SEARCH TASKS..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-9 bg-black border border-white/10 text-white rounded px-4 pl-10 focus:outline-none focus:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/10"
@@ -179,7 +179,9 @@ const MyTasks = () => {
                   ? "YOU HAVEN'T FINALIZED ANY TASKS IN THIS VIEW YET."
                   : filter === 'in_review'
                     ? 'YOU ARE ALL CAUGHT UP WITH YOUR TEAM REVIEWS.'
-                    : 'YOUR WORKSPACE IS FULLY SYNCHRONIZED AND UP TO DATE.'}
+                    : scope === 'personal'
+                      ? 'ALL YOUR PERSONAL TASKS ARE FULLY UP TO DATE.'
+                      : 'YOUR WORKSPACE IS FULLY SYNCHRONIZED AND UP TO DATE.'}
             </p>
           </div>
         )}
@@ -191,7 +193,7 @@ const MyTasks = () => {
           <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
             {(page - 1) * CARDS_PER_PAGE + 1}–
             {Math.min(page * CARDS_PER_PAGE, tasks.length)} of {tasks.length}{' '}
-            missions
+            tasks
           </span>
           <div className="flex items-center gap-2">
             <button

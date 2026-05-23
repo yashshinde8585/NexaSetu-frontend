@@ -217,7 +217,7 @@ const EMDashboard = () => {
                         <div className="flex flex-col items-center gap-4 text-white/10 italic">
                           <Package size={32} />
                           <span className="text-[9px] uppercase font-black tracking-[0.2em]">
-                            NO_ACTIVE_TASKS
+                            NO ACTIVE TASKS
                           </span>
                         </div>
                       </td>
@@ -245,7 +245,7 @@ const EMDashboard = () => {
                       </span>
                       {(member.loadV2 ?? member.load) > 90 && (
                         <span className="text-[7px] text-status-error font-black uppercase tracking-tighter">
-                          CRITICAL_OVERLOAD
+                          OVERLOADED
                         </span>
                       )}
                     </div>
@@ -255,7 +255,7 @@ const EMDashboard = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-end text-[8px] uppercase font-black tracking-[0.2em]">
-                      <span className="text-white/40">OPERATIONAL_LOAD</span>
+                      <span className="text-white/40">WORKLOAD</span>
                       <span
                         className={
                           (member.loadV2 ?? member.load) > 90
@@ -291,7 +291,7 @@ const EMDashboard = () => {
               <div className="grid grid-cols-2 gap-px bg-white/10">
                 <div className="bg-black p-4 flex flex-col items-center gap-2 group hover:bg-white/[0.02] transition-colors">
                   <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">
-                    PLANNED_TASKS
+                    PLANNED TASKS
                   </span>
                   <span className="text-2xl font-black text-white tracking-widest">
                     {burndown.planned}
@@ -310,7 +310,7 @@ const EMDashboard = () => {
               <div className="bg-black p-4 flex justify-between items-center group hover:bg-white/[0.02] transition-colors">
                 <div className="flex flex-col gap-1">
                   <span className="text-[8px] text-white/40 uppercase font-black tracking-[0.2em]">
-                    DAYS_LEFT
+                    DAYS LEFT
                   </span>
                   <span className="text-xl font-black text-status-warning tracking-widest uppercase">
                     {burndown.daysLeft} DAYS
