@@ -182,7 +182,7 @@ const OverviewTab = ({
           </div>
         </div>
         <div className="w-full h-64 flex-1">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart
               data={burndownData || []}
               margin={{ top: 10, right: 10, left: -25, bottom: 0 }}

@@ -19,7 +19,7 @@ const TLDeliveryTab = ({ burndownData = [], teamVelocity = [] }) => {
           Sprint Burndown Schedule
         </span>
         <div className="w-full h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart data={burndownData}>
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -71,7 +71,7 @@ const TLDeliveryTab = ({ burndownData = [], teamVelocity = [] }) => {
           Sprint Point Velocity
         </span>
         <div className="w-full h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={teamVelocity}>
               <CartesianGrid
                 strokeDasharray="3 3"
