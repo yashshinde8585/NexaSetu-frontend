@@ -10,7 +10,9 @@ export const connect = (explicitToken = null) => {
 
   const token = explicitToken || localStorage.getItem('token');
   if (!token) {
-    console.warn('[SOCKET] Connection aborted: No authentication token available.');
+    console.warn(
+      '[SOCKET] Connection aborted: No authentication token available.'
+    );
     return;
   }
 
@@ -23,7 +25,7 @@ export const connect = (explicitToken = null) => {
     reconnectionDelay: 2000,
     reconnectionDelayMax: 10000,
     timeout: 20000,
-    transports: ['websocket'] // Prioritize websocket for stability
+    transports: ['websocket'], // Prioritize websocket for stability
   });
 
   socket.on('connect_error', (err) => {
@@ -106,4 +108,3 @@ export default {
   offSignal,
   disconnect,
 };
-

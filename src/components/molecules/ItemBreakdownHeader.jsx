@@ -3,10 +3,34 @@ import { Activity, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const ItemBreakdownHeader = ({ metrics, statsLoading }) => {
   const items = [
-    { label: 'Open', count: metrics.open, icon: <AlertCircle size={14} />, color: 'text-status-error', bg: 'bg-status-error/10' },
-    { label: 'In Progress', count: metrics.active, icon: <Activity size={14} />, color: 'text-status-warning', bg: 'bg-status-warning/10' },
-    { label: 'In Review', count: metrics.review, icon: <Clock size={14} />, color: 'text-secondary', bg: 'bg-secondary/10' },
-    { label: 'Completed', count: metrics.completed, icon: <CheckCircle2 size={14} />, color: 'text-status-success', bg: 'bg-status-success/10' },
+    {
+      label: 'Open',
+      count: metrics.open,
+      icon: <AlertCircle size={14} />,
+      color: 'text-status-error',
+      bg: 'bg-status-error/10',
+    },
+    {
+      label: 'In Progress',
+      count: metrics.active,
+      icon: <Activity size={14} />,
+      color: 'text-status-warning',
+      bg: 'bg-status-warning/10',
+    },
+    {
+      label: 'In Review',
+      count: metrics.review,
+      icon: <Clock size={14} />,
+      color: 'text-secondary',
+      bg: 'bg-secondary/10',
+    },
+    {
+      label: 'Completed',
+      count: metrics.completed,
+      icon: <CheckCircle2 size={14} />,
+      color: 'text-status-success',
+      bg: 'bg-status-success/10',
+    },
   ];
 
   return (
@@ -25,7 +49,9 @@ const ItemBreakdownHeader = ({ metrics, statsLoading }) => {
             </div>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className={`text-2xl font-black ${item.color} ${statsLoading ? 'animate-pulse' : ''}`}>
+            <span
+              className={`text-2xl font-black ${item.color} ${statsLoading ? 'animate-pulse' : ''}`}
+            >
               {item.count}
             </span>
             <span className="text-[9px] font-bold text-text-muted/30 uppercase tracking-tighter">

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import TaskService from '../api/taskService';
+import TaskService from '../api/taskApi';
 import { TASK_STATUS } from '../constants';
 
 import { useAuth } from '../context/AuthContext';
@@ -18,23 +18,25 @@ export const useTasks = (
   const [search, setSearch] = useState('');
 
   // Synchronized Data Fetching: Utilizes React Query's SWR strategy
-  const { 
-    data: tasks = [], 
-    isLoading, 
+  const {
+    data: tasks = [],
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['my-tasks', scope, user?._id],
-    queryFn: () => TaskService.getMyTasks(scope).then(res => res.data?.tasks || []),
-    staleTime: 30000, 
-    gcTime: 1000 * 60 * 5, 
+    queryFn: () =>
+      TaskService.getMyTasks(scope).then((res) => res.data?.tasks || []),
+    staleTime: 30000,
+    gcTime: 1000 * 60 * 5,
     enabled: authReady && !!user,
   });
 
   // Atomic Status Update with Optimistic UI & Targeted Cache Invalidation
   const statusMutation = useMutation({
-    mutationFn: ({ taskId, newStatus }) => TaskService.updateTaskStatus(taskId, newStatus),
-    
+    mutationFn: ({ taskId, newStatus }) =>
+      TaskService.updateTaskStatus(taskId, newStatus),
+
     // Step 1: Optimistic Update
     onMutate: async ({ taskId, newStatus }) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
@@ -46,7 +48,7 @@ export const useTasks = (
       // Optimistically update to the new value
       queryClient.setQueryData(['my-tasks', scope], (old) => {
         if (!old) return [];
-        return old.map(task => 
+        return old.map((task) =>
           task._id === taskId ? { ...task, status: newStatus } : task
         );
       });
@@ -100,7 +102,8 @@ export const useTasks = (
         t.title.toLowerCase().includes(search.toLowerCase()) ||
         t.project?.name?.toLowerCase().includes(search.toLowerCase());
 
-      const matchesUser = !userId || t.assignedUser === userId || t.assignedUser?._id === userId;
+      const matchesUser =
+        !userId || t.assignedUser === userId || t.assignedUser?._id === userId;
 
       return matchesFilter && matchesSearch && matchesUser;
     });

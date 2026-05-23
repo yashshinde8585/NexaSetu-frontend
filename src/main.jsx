@@ -20,11 +20,11 @@ const ReactQueryDevtools = import.meta.env.DEV
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 10 * 60 * 1000,           
-      gcTime: 30 * 60 * 1000,             
+      staleTime: 10 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
       retry: (failureCount, error) => {
         if (error?.status === 401 || error?.status === 403) return false;
-        return failureCount < 1; 
+        return failureCount < 1;
       },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
@@ -38,7 +38,7 @@ import { ClerkProvider } from '@clerk/clerk-react';
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
+  throw new Error('Missing Publishable Key');
 }
 
 createRoot(document.getElementById('root')).render(

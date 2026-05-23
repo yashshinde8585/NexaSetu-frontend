@@ -1,13 +1,10 @@
 import React from 'react';
 
-/**
- * Functional unit summary card for strategic dashboards.
- * Optimized for high-density information display.
- */
+// Functional grid card component.
 const FunctionalCard = ({ title, metrics, focus, id, onClick }) => (
-  <div 
-    id={id} 
-    onClick={onClick} 
+  <div
+    id={id}
+    onClick={onClick}
     className="bg-white/5 border border-white/10 p-4 rounded-none hover:bg-white/10 transition-colors group cursor-pointer flex flex-col gap-3"
   >
     <header className="flex justify-between items-center">
@@ -21,9 +18,18 @@ const FunctionalCard = ({ title, metrics, focus, id, onClick }) => (
 
     <div className="grid grid-cols-2 gap-3">
       {metrics.map((m, i) => (
-        <div key={i} className="flex flex-col gap-1 border-l border-white/10 pl-3 first:border-l-0 first:pl-0">
-          <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] truncate">{m.label}</span>
-          <span className={`text-[12px] font-black uppercase tracking-[0.2em] ${m.color || 'text-white'}`}>{m.value}</span>
+        <div
+          key={i}
+          className="flex flex-col gap-1 border-l border-white/10 pl-3 first:border-l-0 first:pl-0"
+        >
+          <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] truncate">
+            {m.label}
+          </span>
+          <span
+            className={`text-[12px] font-black uppercase tracking-[0.2em] ${m.color || 'text-white'}`}
+          >
+            {m.value}
+          </span>
         </div>
       ))}
     </div>
@@ -38,4 +44,3 @@ const FunctionalCard = ({ title, metrics, focus, id, onClick }) => (
 );
 
 export default FunctionalCard;
-

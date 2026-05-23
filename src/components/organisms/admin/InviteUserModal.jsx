@@ -39,13 +39,12 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-      <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in" 
-        onClick={onClose} 
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in"
+        onClick={onClose}
       />
-      
+
       <div className="relative w-full max-w-lg bg-slate-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        
         {/* Header */}
         <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center gap-3">
@@ -53,11 +52,15 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
               <User className="text-primary" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white">Invite Member</h2>
-              <p className="text-xs text-white/40">Invite new members to join your workspace.</p>
+              <h2 className="text-xl font-bold tracking-tight text-white">
+                Invite Member
+              </h2>
+              <p className="text-xs text-white/40">
+                Invite new members to join your workspace.
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-full text-white/30 hover:text-white transition-colors"
           >
@@ -66,7 +69,6 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          
           {error && (
             <div className="p-3 bg-status-error/10 border border-status-error/30 rounded-xl text-status-error text-xs font-medium animate-in slide-in-from-top-2">
               {error}
@@ -75,7 +77,9 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
 
           {/* Email Field */}
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Email Address</label>
+            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">
+              Email Address
+            </label>
             <div className="relative group">
               <input
                 type="email"
@@ -85,13 +89,18 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
                 placeholder="roshan@nexasetu.ai"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-10 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all"
               />
-              <Send className="absolute right-3 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors" size={18} />
+              <Send
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-colors"
+                size={18}
+              />
             </div>
           </div>
 
           {/* Role Field */}
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Member Role</label>
+            <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">
+              Member Role
+            </label>
             <div className="relative">
               <select
                 value={role}
@@ -99,12 +108,23 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
                 className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all cursor-pointer"
               >
                 {roles.map((r) => (
-                  <option key={r.value} value={r.value} className="bg-slate-900">{r.label}</option>
+                  <option
+                    key={r.value}
+                    value={r.value}
+                    className="bg-slate-900"
+                  >
+                    {r.label}
+                  </option>
                 ))}
               </select>
-              <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+              <Shield
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40"
+                size={18}
+              />
             </div>
-            <p className="text-[10px] text-white/20 mt-2 px-1 italic">Permissions are automatically assigned based on the selected role.</p>
+            <p className="text-[10px] text-white/20 mt-2 px-1 italic">
+              Permissions are automatically assigned based on the selected role.
+            </p>
           </div>
 
           {/* Action Footer */}
@@ -121,12 +141,15 @@ const InviteUserModal = ({ isOpen, onClose, onInvite }) => {
               disabled={isSubmitting}
               className="flex-[2] px-6 py-3 bg-primary text-black rounded-xl text-sm font-bold transition-all hover:brightness-110 shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
             >
-              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              {isSubmitting ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <Send size={18} />
+              )}
               Send Invitation
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );

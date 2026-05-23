@@ -23,7 +23,8 @@ const Button = ({
     outline:
       'bg-transparent border-2 border-primary text-primary hover:bg-primary/10',
     ghost: 'bg-transparent text-text hover:bg-white/5',
-    glass: 'bg-[#0a0a0a]/40 backdrop-blur-[12px] text-text hover:bg-white/10 border border-white/10',
+    glass:
+      'bg-[#0a0a0a]/40 backdrop-blur-[12px] text-text hover:bg-white/10 border border-white/10',
     error:
       'bg-status-error text-white hover:opacity-90 shadow-lg shadow-status-error/20',
     success:

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { normalizeError } from './apiUtils';
 import toast from 'react-hot-toast';
-import MetricsService from './metricsService';
+import MetricsService from './metricsApi';
 
 const api = axios.create({
   baseURL:
@@ -29,7 +29,12 @@ api.interceptors.request.use(
 
     try {
       const token = await getToken();
-      if (token && typeof token === 'string' && token !== 'null' && token !== 'undefined') {
+      if (
+        token &&
+        typeof token === 'string' &&
+        token !== 'null' &&
+        token !== 'undefined'
+      ) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (err) {
@@ -38,24 +43,31 @@ api.interceptors.request.use(
 
     const mutatingMethods = ['post', 'put', 'patch', 'delete'];
     const isMutating = mutatingMethods.includes(config.method?.toLowerCase());
-    
-    const dataHash = config.data ? (JSON.stringify(config.data).length < 1000 ? JSON.stringify(config.data) : 'large-payload') : '';
+
+    const dataHash = config.data
+      ? JSON.stringify(config.data).length < 1000
+        ? JSON.stringify(config.data)
+        : 'large-payload'
+      : '';
     const requestKey = `${config.method}:${config.url}:${dataHash}`;
-    
+
     if (isMutating && pendingRequests.has(requestKey)) {
       const controller = new AbortController();
       config.signal = controller.signal;
       controller.abort('duplicate_request');
       return config;
     }
-    
+
     if (isMutating) {
       pendingRequests.set(requestKey, true);
       config._requestKey = requestKey;
     }
 
     const idempotencyMethods = ['post', 'put', 'patch'];
-    if (idempotencyMethods.includes(config.method?.toLowerCase()) && !config.headers['X-Idempotency-Key']) {
+    if (
+      idempotencyMethods.includes(config.method?.toLowerCase()) &&
+      !config.headers['X-Idempotency-Key']
+    ) {
       config.headers['X-Idempotency-Key'] = crypto.randomUUID();
     }
 
@@ -77,16 +89,25 @@ const processQueue = (error, token = null) => {
 
 const getSuccessMessage = (method, url) => {
   const m = method?.toLowerCase();
-  if (url.includes('/auth/reset-password') && m === 'post') return 'PASSWORD_RESET_SUCCESSFUL';
-  if (url.includes('/auth/register') && m === 'post') return 'WORKSPACE_INITIALIZED_SUCCESSFULLY';
-  if (url.includes('/projects') && m === 'post') return 'PROJECT_INITIALIZED_SUCCESSFULLY';
-  if (url.includes('/projects') && m === 'patch') return 'PROJECT_STATE_SYNCHRONIZED';
-  if (url.includes('/team/invite') && m === 'post') return 'INVITATIONS_SENT_SUCCESSFULLY';
-  if (url.includes('/team/revoke') && m === 'post') return 'INVITATION_REVOKED_SUCCESSFULLY';
-  if (url.includes('/tasks') && url.includes('/status') && m === 'patch') return 'STATUS_SYNCHRONIZED';
-  if (url.includes('/tasks') && url.includes('/blockage') && m === 'patch') return 'TASK_STATE_UPDATED';
+  if (url.includes('/auth/reset-password') && m === 'post')
+    return 'PASSWORD_RESET_SUCCESSFUL';
+  if (url.includes('/auth/register') && m === 'post')
+    return 'WORKSPACE_INITIALIZED_SUCCESSFULLY';
+  if (url.includes('/projects') && m === 'post')
+    return 'PROJECT_INITIALIZED_SUCCESSFULLY';
+  if (url.includes('/projects') && m === 'patch')
+    return 'PROJECT_STATE_SYNCHRONIZED';
+  if (url.includes('/team/invite') && m === 'post')
+    return 'INVITATIONS_SENT_SUCCESSFULLY';
+  if (url.includes('/team/revoke') && m === 'post')
+    return 'INVITATION_REVOKED_SUCCESSFULLY';
+  if (url.includes('/tasks') && url.includes('/status') && m === 'patch')
+    return 'STATUS_SYNCHRONIZED';
+  if (url.includes('/tasks') && url.includes('/blockage') && m === 'patch')
+    return 'TASK_STATE_UPDATED';
   if (url.includes('/tasks') && m === 'put') return 'TASK_METRICS_UPDATED';
-  if (url.includes('/tasks') && m === 'post') return 'TASK_ORCHESTRATED_SUCCESSFULLY';
+  if (url.includes('/tasks') && m === 'post')
+    return 'TASK_ORCHESTRATED_SUCCESSFULLY';
   return 'ACTION_COMPLETED';
 };
 
@@ -96,27 +117,42 @@ api.interceptors.response.use(
       pendingRequests.delete(response.config._requestKey);
     }
 
-    const isMutating = ['post', 'put', 'patch', 'delete'].includes(response.config.method?.toLowerCase());
+    const isMutating = ['post', 'put', 'patch', 'delete'].includes(
+      response.config.method?.toLowerCase()
+    );
     const url = response.config.url || '';
-    
-    if (isMutating && !url.includes('/metrics') && !url.includes('/auth/login')) {
+
+    if (
+      isMutating &&
+      !url.includes('/metrics') &&
+      !url.includes('/auth/login')
+    ) {
       const defaultMsg = getSuccessMessage(response.config.method, url);
       toast.success(response.data?.message || defaultMsg);
 
       setTimeout(() => {
-        if (url.includes('/auth/register')) MetricsService.trackEvent('signup_success');
-        if (url.includes('/projects') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('project_created');
-        if (url.includes('/tasks') && response.config.method?.toLowerCase() === 'post') MetricsService.trackEvent('task_created');
+        if (url.includes('/auth/register'))
+          MetricsService.trackEvent('signup_success');
+        if (
+          url.includes('/projects') &&
+          response.config.method?.toLowerCase() === 'post'
+        )
+          MetricsService.trackEvent('project_created');
+        if (
+          url.includes('/tasks') &&
+          response.config.method?.toLowerCase() === 'post'
+        )
+          MetricsService.trackEvent('task_created');
       }, 0);
     }
-    
+
     return response;
   },
   async (error) => {
     if (error.config?._requestKey) {
       pendingRequests.delete(error.config._requestKey);
     }
-    
+
     if (error.message === 'duplicate_request') return Promise.reject(error);
 
     const originalRequest = error.config;
@@ -125,19 +161,24 @@ api.interceptors.response.use(
 
     // 1. Strict 401 Handling
     if (normalizedError.status === 401) {
-      const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
-                           originalRequest?.url?.includes('/auth/register') ||
-                           originalRequest?.url?.includes('/auth/me');
+      const isAuthRequest =
+        originalRequest?.url?.includes('/auth/login') ||
+        originalRequest?.url?.includes('/auth/register') ||
+        originalRequest?.url?.includes('/auth/me');
 
       // If using Clerk, 401 means backend session is invalid/stale relative to Clerk token
       if (useClerk) {
-        console.warn('[API] Clerk-backed session unauthorized by backend. Dispatching logout.');
+        console.warn(
+          '[API] Clerk-backed session unauthorized by backend. Dispatching logout.'
+        );
         window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(normalizedError);
       }
 
       if (isAuthRequest || originalRequest._retry) {
-        console.warn('[API] Auth failure on sensitive endpoint. Forcing logout.');
+        console.warn(
+          '[API] Auth failure on sensitive endpoint. Forcing logout.'
+        );
         window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(normalizedError);
       }
@@ -161,7 +202,7 @@ api.interceptors.response.use(
         console.log('[API] Session expired. Attempting refresh...');
         const res = await api.get('/auth/refresh');
         const { token } = res.data;
-        
+
         if (token) {
           localStorage.setItem('token', token);
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -184,18 +225,28 @@ api.interceptors.response.use(
     const currentRetry = originalRequest?._retryCount || 0;
     const isNetworkError = !error.response && error.code !== 'ERR_CANCELED';
     const is5xxError = normalizedError.status >= 500;
-    const isTimeout = error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout');
+    const isTimeout =
+      error.code === 'ECONNABORTED' ||
+      error.message?.toLowerCase().includes('timeout');
 
-    if ((isNetworkError || is5xxError || isTimeout) && currentRetry < maxRetries && originalRequest.method?.toLowerCase() === 'get') {
+    if (
+      (isNetworkError || is5xxError || isTimeout) &&
+      currentRetry < maxRetries &&
+      originalRequest.method?.toLowerCase() === 'get'
+    ) {
       originalRequest._retryCount = currentRetry + 1;
       const backoffDelay = Math.pow(2, originalRequest._retryCount) * 1000;
-      console.log(`[API] Retrying request (${currentRetry + 1}/${maxRetries}) in ${backoffDelay}ms...`);
-      await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      console.log(
+        `[API] Retrying request (${currentRetry + 1}/${maxRetries}) in ${backoffDelay}ms...`
+      );
+      await new Promise((resolve) => setTimeout(resolve, backoffDelay));
       return api(originalRequest);
     }
 
     // 4. Mutation Error Toasting
-    const isMutating = ['post', 'put', 'patch', 'delete'].includes(originalRequest?.method?.toLowerCase());
+    const isMutating = ['post', 'put', 'patch', 'delete'].includes(
+      originalRequest?.method?.toLowerCase()
+    );
     if (isMutating && !originalRequest?.url?.includes('/metrics')) {
       toast.error(normalizedError.message || 'Mission protocol failure');
     }

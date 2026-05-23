@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Custom hook to debounce a value
- * @param {any} value - Value to debounce
- * @param {number} delay - Delay in milliseconds
- * @returns {any} - Debounced value
- */
+// Hook to debounce state values.
 export const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

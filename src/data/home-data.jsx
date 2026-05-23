@@ -1,10 +1,10 @@
 import React from 'react';
-import { 
-  Shield, 
-  GitBranch, 
-  Globe, 
-  Terminal, 
-  Rocket, 
+import {
+  Shield,
+  GitBranch,
+  Globe,
+  Terminal,
+  Rocket,
   Layers,
   Cpu,
   Users,
@@ -13,7 +13,7 @@ import {
   GraduationCap,
   Heart,
   Activity,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 export const HOME_CONFIG = {
@@ -42,7 +42,8 @@ export const ROLE_CARDS = [
     icon: <Cpu className="text-primary" size={24} />,
     role: 'Executive Oversight',
     highlight: 'CTOs & VPs',
-    description: 'Track organizational health and mitigate technical risk with high-level portfolio insights.',
+    description:
+      'Track organizational health and mitigate technical risk with high-level portfolio insights.',
     important: true,
     featured: true,
     dir: 'left',
@@ -50,7 +51,11 @@ export const ROLE_CARDS = [
     visualHint: (
       <div className="flex gap-1.5 h-10 items-end">
         {[60, 40, 85, 30, 95].map((h, i) => (
-          <div key={i} className={`w-1.5 rounded-t-sm bg-primary/${i % 2 === 0 ? '40' : '20'}`} style={{ height: `${h}%` }} />
+          <div
+            key={i}
+            className={`w-1.5 rounded-t-sm bg-primary/${i % 2 === 0 ? '40' : '20'}`}
+            style={{ height: `${h}%` }}
+          />
         ))}
       </div>
     ),
@@ -59,13 +64,19 @@ export const ROLE_CARDS = [
     icon: <Users className="text-secondary" size={24} />,
     role: 'Delivery Management',
     highlight: 'EMs & Team Leads',
-    description: 'Stabilize team velocity and eliminate daily execution friction for smoother shipping.',
+    description:
+      'Stabilize team velocity and eliminate daily execution friction for smoother shipping.',
     dir: 'right',
     delay: 100,
     visualHint: (
       <div className="flex -space-x-2 mt-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="w-6 h-6 rounded-full bg-white/10 border border-background-dark flex items-center justify-center text-[8px] font-bold text-secondary">U{i}</div>
+          <div
+            key={i}
+            className="w-6 h-6 rounded-full bg-white/10 border border-background-dark flex items-center justify-center text-[8px] font-bold text-secondary"
+          >
+            U{i}
+          </div>
         ))}
       </div>
     ),
@@ -74,12 +85,14 @@ export const ROLE_CARDS = [
     icon: <Code2 className="text-primary-light" size={24} />,
     role: 'Technical Governance',
     highlight: 'Architects & Tech Leads',
-    description: 'Monitor infrastructure health and enforce deployment standards across the stack.',
+    description:
+      'Monitor infrastructure health and enforce deployment standards across the stack.',
     dir: 'left',
     delay: 150,
     visualHint: (
       <div className="flex items-center gap-2 mt-2 text-[10px] font-mono text-primary-light/40">
-        <CheckCircle size={10} className="text-status-success" /> <span>main:8c4a...</span>
+        <CheckCircle size={10} className="text-status-success" />{' '}
+        <span>main:8c4a...</span>
       </div>
     ),
   },
@@ -87,7 +100,8 @@ export const ROLE_CARDS = [
     icon: <Bug className="text-status-error" size={24} />,
     role: 'Quality Engineering',
     highlight: 'QA Managers',
-    description: 'Certify release readiness with automated trend tracking and managed safety gates.',
+    description:
+      'Certify release readiness with automated trend tracking and managed safety gates.',
     important: true,
     dir: 'right',
     delay: 200,
@@ -101,7 +115,8 @@ export const ROLE_CARDS = [
     icon: <GraduationCap className="text-status-success" size={24} />,
     role: 'Junior Growth',
     highlight: 'Interns & New Grads',
-    description: 'Guided onboarding paths to accelerate individual contributions and skill growth.',
+    description:
+      'Guided onboarding paths to accelerate individual contributions and skill growth.',
     dir: 'left',
     delay: 250,
   },
@@ -109,7 +124,8 @@ export const ROLE_CARDS = [
     icon: <Heart className="text-status-warning" size={24} />,
     role: 'Talent Analytics',
     highlight: 'HR',
-    description: 'Understand engagement and team health through data-driven people insights.',
+    description:
+      'Understand engagement and team health through data-driven people insights.',
     dir: 'right',
     delay: 300,
   },

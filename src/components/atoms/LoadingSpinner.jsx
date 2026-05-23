@@ -8,7 +8,9 @@ const LoadingSpinner = ({ size = 'medium', className = '' }) => {
   };
 
   return (
-    <div className={`animate-spin rounded-full border-t-transparent border-indigo-500 ${sizes[size] || sizes.medium} ${className}`}></div>
+    <div
+      className={`animate-spin rounded-full border-t-transparent border-indigo-500 ${sizes[size] || sizes.medium} ${className}`}
+    ></div>
   );
 };
 

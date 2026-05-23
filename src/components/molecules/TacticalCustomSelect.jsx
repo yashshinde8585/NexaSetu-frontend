@@ -2,19 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDown } from 'lucide-react';
 
-/**
- * A premium, state-based custom select component.
- * Features the NexaSetu tactical aesthetic with smooth animations and outside-click detection.
- */
-const TacticalCustomSelect = ({ 
-  label, 
-  value, 
-  onChange, 
-  options = [], 
-  icon, 
-  placeholder = "Select option...",
+// Custom dropdown select component.
+const TacticalCustomSelect = ({
+  label,
+  value,
+  onChange,
+  options = [],
+  icon,
+  placeholder = 'Select option...',
   displayValue, // Optional: how to display the selected value if different from value
-  renderOption // Optional: custom renderer for options
+  renderOption, // Optional: custom renderer for options
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -35,8 +32,13 @@ const TacticalCustomSelect = ({
   };
 
   // Find the label for the current value
-  const currentOption = options.find(o => (typeof o === 'object' ? o.value : o) === value);
-  const currentOptionLabel = displayValue || (typeof currentOption === 'object' ? currentOption.label : currentOption) || placeholder;
+  const currentOption = options.find(
+    (o) => (typeof o === 'object' ? o.value : o) === value
+  );
+  const currentOptionLabel =
+    displayValue ||
+    (typeof currentOption === 'object' ? currentOption.label : currentOption) ||
+    placeholder;
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
@@ -45,13 +47,15 @@ const TacticalCustomSelect = ({
           {label}
         </label>
       )}
-      
+
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={`w-full min-h-[40px] bg-black border transition-all px-4 py-2 flex items-center justify-between group outline-none rounded-none ${
-            isOpen ? 'border-primary/50' : 'border-white/10 hover:border-white/30'
+            isOpen
+              ? 'border-primary/50'
+              : 'border-white/10 hover:border-white/30'
           }`}
         >
           <div className="text-[10px] font-black text-white uppercase tracking-widest truncate flex-1 text-left">
@@ -59,13 +63,15 @@ const TacticalCustomSelect = ({
           </div>
           <div className="flex items-center gap-3 ml-2">
             {icon && (
-              <div className={`text-white/10 transition-colors ${isOpen ? 'text-primary' : 'group-hover:text-white/40'}`}>
+              <div
+                className={`text-white/10 transition-colors ${isOpen ? 'text-primary' : 'group-hover:text-white/40'}`}
+              >
                 {icon}
               </div>
             )}
-            <ChevronDown 
-              size={14} 
-              className={`text-white/20 transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : ''}`} 
+            <ChevronDown
+              size={14}
+              className={`text-white/20 transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : ''}`}
             />
           </div>
         </button>
@@ -76,7 +82,10 @@ const TacticalCustomSelect = ({
               {options.map((opt, idx) => {
                 if (opt.isGroup) {
                   return (
-                    <div key={idx} className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-white/5 border-b border-white/5 mb-1 mt-1 first:mt-0">
+                    <div
+                      key={idx}
+                      className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-white/5 border-b border-white/5 mb-1 mt-1 first:mt-0"
+                    >
                       {opt.label}
                     </div>
                   );
@@ -85,7 +94,7 @@ const TacticalCustomSelect = ({
                 const optLabel = typeof opt === 'object' ? opt.label : opt;
                 const optValue = typeof opt === 'object' ? opt.value : opt;
                 const isSelected = value === optValue;
-                
+
                 // Allow custom styles from option object
                 const customColor = opt.color || '';
 
@@ -98,13 +107,20 @@ const TacticalCustomSelect = ({
                       isSelected ? 'bg-primary/10' : 'hover:bg-white/5'
                     }`}
                   >
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${
-                      isSelected ? 'text-primary' : (customColor || 'text-white/40 group-hover/opt:text-white')
-                    }`}>
+                    <span
+                      className={`text-[10px] font-black uppercase tracking-widest ${
+                        isSelected
+                          ? 'text-primary'
+                          : customColor ||
+                            'text-white/40 group-hover/opt:text-white'
+                      }`}
+                    >
                       {optLabel}
                     </span>
                     {isSelected && (
-                      <div className={`w-1.5 h-1.5 rounded-full ${customColor ? customColor.replace('text-', 'bg-') : 'bg-primary'}`} />
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${customColor ? customColor.replace('text-', 'bg-') : 'bg-primary'}`}
+                      />
                     )}
                   </button>
                 );
@@ -125,7 +141,7 @@ TacticalCustomSelect.propTypes = {
   icon: PropTypes.node,
   placeholder: PropTypes.string,
   displayValue: PropTypes.string,
-  renderOption: PropTypes.func
+  renderOption: PropTypes.func,
 };
 
 export default TacticalCustomSelect;

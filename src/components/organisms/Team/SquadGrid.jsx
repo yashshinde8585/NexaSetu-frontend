@@ -5,11 +5,13 @@ import EmptyState from '../../atoms/EmptyState';
 const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
   if (groups.length === 0) {
     return (
-      <EmptyState 
+      <EmptyState
         title={searchTerm ? 'ZERO_RESULTS' : 'NO_TEAMS_DETECTED'}
-        message={searchTerm 
-          ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.` 
-          : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'}
+        message={
+          searchTerm
+            ? `SEARCH FAILED TO LOCATE "${searchTerm}" WITHIN ASSIGNED SECTORS.`
+            : 'PERSONNEL ASSIGNMENTS WILL MANIFEST UPON SECTOR ALLOCATION.'
+        }
       />
     );
   }
@@ -37,8 +39,10 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
                 {group.name}
               </h3>
               <div className="flex items-center gap-2">
-                 <ShieldCheck size={10} className="text-primary/50" />
-                 <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">{group.members.length} OPERATIVES</span>
+                <ShieldCheck size={10} className="text-primary/50" />
+                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">
+                  {group.members.length} OPERATIVES
+                </span>
               </div>
             </div>
 
@@ -50,7 +54,11 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
                     className="w-7 h-7 rounded bg-black border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase shadow-lg ring-2 ring-black overflow-hidden"
                   >
                     {m.profilePicture ? (
-                      <img src={m.profilePicture} alt={m.name} className="w-full h-full object-cover" />
+                      <img
+                        src={m.profilePicture}
+                        alt={m.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       m.name.charAt(0)
                     )}
@@ -62,7 +70,9 @@ const SquadGrid = React.memo(({ groups, onNavigate, searchTerm }) => {
                   </div>
                 )}
               </div>
-              <div className="text-[8px] font-black text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-widest">VIEW SECTOR</div>
+              <div className="text-[8px] font-black text-white/20 group-hover:text-white/40 transition-colors uppercase tracking-widest">
+                VIEW SECTOR
+              </div>
             </div>
           </div>
         </div>
