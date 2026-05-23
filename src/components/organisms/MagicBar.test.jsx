@@ -1,13 +1,19 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MagicBar from './MagicBar';
-import MagicService from '../../api/magicService';
+import MagicService from '../../api/magicApi';
 import { useAuth } from '../../context/AuthContext';
 import { useMagic } from '../../context/MagicContext';
 
 // Mock dependencies
-vi.mock('../../api/magicService');
+vi.mock('../../api/magicApi');
 vi.mock('../../context/AuthContext');
 vi.mock('../../context/MagicContext');
 
@@ -28,7 +34,9 @@ describe('MagicBar Component', () => {
       setGlobalResult: mockSetGlobalResult,
       pendingCommand: null,
       setPendingCommand: mockSetPendingCommand,
-      activeProjects: [{ _id: '1', name: 'Project Alpha', healthScore: 85, percentage: 70 }],
+      activeProjects: [
+        { _id: '1', name: 'Project Alpha', healthScore: 85, percentage: 70 },
+      ],
       dashboardContext: { stats: { totalTasks: 10 } },
     });
 
@@ -45,7 +53,7 @@ describe('MagicBar Component', () => {
 
   it('calls MagicService.executeCommand when a command is submitted', async () => {
     render(<MagicBar />);
-    
+
     const input = screen.getByPlaceholderText(/Ask Nexa/i);
     const form = screen.getByRole('textbox').closest('form');
 
@@ -56,8 +64,8 @@ describe('MagicBar Component', () => {
       'Show project health',
       expect.objectContaining({
         visibleProjects: expect.arrayContaining([
-          expect.objectContaining({ name: 'Project Alpha' })
-        ])
+          expect.objectContaining({ name: 'Project Alpha' }),
+        ]),
       })
     );
 
@@ -77,14 +85,14 @@ describe('MagicBar Component', () => {
     MagicService.executeCommand.mockReturnValue(promise);
 
     render(<MagicBar />);
-    
+
     const input = screen.getByPlaceholderText(/Ask Nexa/i);
     fireEvent.change(input, { target: { value: 'Analyze risks' } });
     fireEvent.submit(input.closest('form'));
 
     // Verify input is disabled and spinner is shown
     expect(input).toBeDisabled();
-    
+
     // Resolve the promise to clean up and wait for the component to handle the result
     await act(async () => {
       resolvePromise({ data: { message: 'done' } });
@@ -97,7 +105,7 @@ describe('MagicBar Component', () => {
 
   it('clears query after successful command execution', async () => {
     render(<MagicBar />);
-    
+
     const input = screen.getByPlaceholderText(/Ask Nexa/i);
     fireEvent.change(input, { target: { value: 'Clean workspace' } });
     fireEvent.submit(input.closest('form'));
@@ -109,9 +117,9 @@ describe('MagicBar Component', () => {
 
   it('handles API errors gracefully', async () => {
     MagicService.executeCommand.mockRejectedValue(new Error('Network Error'));
-    
+
     render(<MagicBar />);
-    
+
     const input = screen.getByPlaceholderText(/Ask Nexa/i);
     fireEvent.change(input, { target: { value: 'Break it' } });
     fireEvent.submit(input.closest('form'));
@@ -119,7 +127,9 @@ describe('MagicBar Component', () => {
     await waitFor(() => {
       expect(mockSetGlobalResult).toHaveBeenCalledWith(null);
       expect(mockSetGlobalResult).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'System offline. Command execution failed.' })
+        expect.objectContaining({
+          message: 'System offline. Command execution failed.',
+        })
       );
     });
   });

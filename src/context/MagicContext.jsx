@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 
 const MagicStateContext = createContext();
 const MagicActionsContext = createContext();
@@ -29,22 +35,35 @@ export const MagicProvider = ({ children }) => {
     setActiveProjects(projects || []);
   }, []);
 
-  const stateValue = useMemo(() => ({
-    magicResult,
-    showResults,
-    pendingCommand,
-    activeProjects,
-    dashboardContext
-  }), [magicResult, showResults, pendingCommand, activeProjects, dashboardContext]);
+  const stateValue = useMemo(
+    () => ({
+      magicResult,
+      showResults,
+      pendingCommand,
+      activeProjects,
+      dashboardContext,
+    }),
+    [magicResult, showResults, pendingCommand, activeProjects, dashboardContext]
+  );
 
-  const actionsValue = useMemo(() => ({
-    setGlobalResult,
-    closeGlobalResults,
-    triggerCommand,
-    setPendingCommand,
-    setProjects,
-    setDashboardContext
-  }), [setGlobalResult, closeGlobalResults, triggerCommand, setPendingCommand, setProjects, setDashboardContext]);
+  const actionsValue = useMemo(
+    () => ({
+      setGlobalResult,
+      closeGlobalResults,
+      triggerCommand,
+      setPendingCommand,
+      setProjects,
+      setDashboardContext,
+    }),
+    [
+      setGlobalResult,
+      closeGlobalResults,
+      triggerCommand,
+      setPendingCommand,
+      setProjects,
+      setDashboardContext,
+    ]
+  );
 
   return (
     <MagicStateContext.Provider value={stateValue}>

@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import ProjectService from '../api/projectService';
-import DashboardService from '../api/dashboardService';
-import SprintService from '../api/sprintService';
-import MagicService from '../api/magicService';
-import ActionService from '../api/actionService';
-import TaskService from '../api/taskService';
+import ProjectService from '../api/projectApi';
+import DashboardService from '../api/dashboardApi';
+import SprintService from '../api/sprintApi';
+import MagicService from '../api/magicApi';
+import ActionService from '../api/actionApi';
+import TaskService from '../api/taskApi';
 import { TASK_STATUS, USER_ROLES } from '../constants';
 
 import { useAuth } from '../context/AuthContext';
@@ -33,6 +33,8 @@ export const useDashboard = (initialSprintId = null) => {
         (res) => res.data
       ),
     enabled: authReady && !!user?.workspaceId,
+    staleTime: 2 * 60 * 1000, // 2 min — live metrics, moderate refresh
+    gcTime: 10 * 60 * 1000,
   });
 
   const sprintsQuery = useQuery({
@@ -40,17 +42,23 @@ export const useDashboard = (initialSprintId = null) => {
     queryFn: () =>
       SprintService.getSprints().then((res) => res.data?.sprints || []),
     enabled: authReady && !!user?.workspaceId,
+    staleTime: 10 * 60 * 1000, // 10 min — sprints are created infrequently
+    gcTime: 30 * 60 * 1000,
   });
 
   const sprints = sprintsQuery.data || [];
 
   useEffect(() => {
     if (selectedSprintId && sprints.length > 0) {
-      const exists = sprints.some(s => s._id === selectedSprintId);
+      const exists = sprints.some((s) => s._id === selectedSprintId);
       if (!exists) {
         setSelectedSprintId(null);
       }
-    } else if (selectedSprintId && sprints.length === 0 && !sprintsQuery.isLoading) {
+    } else if (
+      selectedSprintId &&
+      sprints.length === 0 &&
+      !sprintsQuery.isLoading
+    ) {
       setSelectedSprintId(null);
     }
   }, [sprints, selectedSprintId, sprintsQuery.isLoading]);
@@ -60,6 +68,8 @@ export const useDashboard = (initialSprintId = null) => {
     queryFn: () =>
       SprintService.getSprintStats(selectedSprintId).then((res) => res.data),
     enabled: authReady && !!selectedSprintId,
+    staleTime: 5 * 60 * 1000, // 5 min — sprint analytics are per-sprint snapshots
+    gcTime: 15 * 60 * 1000,
   });
 
   const actionsQuery = useQuery({
@@ -67,6 +77,8 @@ export const useDashboard = (initialSprintId = null) => {
     queryFn: () =>
       ActionService.getPendingActions().then((res) => res.data?.actions || []),
     enabled: authReady && !!user,
+    staleTime: 60 * 1000, // 1 min — pending approvals need to feel live
+    gcTime: 5 * 60 * 1000,
   });
 
   const createMutation = useMutation({
@@ -76,7 +88,7 @@ export const useDashboard = (initialSprintId = null) => {
       return ProjectService.createProject({
         ...rest,
         description: objective,
-        sprint: sprintId
+        sprint: sprintId,
       });
     },
     onSuccess: () => {
@@ -94,7 +106,7 @@ export const useDashboard = (initialSprintId = null) => {
 
       // Optimistically remove the action from the list
       queryClient.setQueryData(['pending-actions'], (old) =>
-        old ? old.filter(a => a._id !== actionId) : []
+        old ? old.filter((a) => a._id !== actionId) : []
       );
 
       return { previousActions };
@@ -122,7 +134,7 @@ export const useDashboard = (initialSprintId = null) => {
       const previousActions = queryClient.getQueryData(['pending-actions']);
 
       queryClient.setQueryData(['pending-actions'], (old) =>
-        old ? old.filter(a => a._id !== actionId) : []
+        old ? old.filter((a) => a._id !== actionId) : []
       );
 
       return { previousActions };
@@ -166,15 +178,17 @@ export const useDashboard = (initialSprintId = null) => {
     const name = projectData.name?.trim();
 
     // Verify sprint existence before passing it
-    const activeSprintId = (selectedSprintId && sprints.some(s => s._id === selectedSprintId))
-      ? selectedSprintId
-      : null;
+    const activeSprintId =
+      selectedSprintId && sprints.some((s) => s._id === selectedSprintId)
+        ? selectedSprintId
+        : null;
 
-    if (name) return createMutation.mutateAsync({
-      ...projectData,
-      name,
-      sprintId: activeSprintId
-    });
+    if (name)
+      return createMutation.mutateAsync({
+        ...projectData,
+        name,
+        sprintId: activeSprintId,
+      });
   };
 
   const visibleProjects = useMemo(() => {

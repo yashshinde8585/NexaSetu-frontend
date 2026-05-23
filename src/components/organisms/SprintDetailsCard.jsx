@@ -1,25 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  FileText, 
-  Users, 
-  Clock, 
-  AlertCircle, 
-  Plus, 
+import {
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Users,
+  Clock,
+  AlertCircle,
+  Plus,
   Activity,
-  Zap
+  Zap,
 } from 'lucide-react';
 import VelocityIndicator from '../molecules/VelocityIndicator';
 import ItemBreakdownHeader from '../molecules/ItemBreakdownHeader';
 import TacticalCustomSelect from '../molecules/TacticalCustomSelect';
 
-/**
- * Tactical Sprint Intelligence Module.
- * Orchestrates deep performance analytics and workforce saturation metrics.
- * Optimized for industrial sunlight legibility and decision-first engineering.
- */
+// Detailed sprint analytics card.
 const SprintDetailsCard = ({
   sprint,
   metrics,
@@ -34,27 +30,26 @@ const SprintDetailsCard = ({
   onAddSprint,
   onFinalize,
   finalizing,
-  canCreate
+  canCreate,
 }) => {
   if (!sprint) return null;
 
   return (
     <div className="bg-white/5 border border-white/20 rounded-xl p-4 sm:p-5 relative overflow-hidden group">
-      
       {/* Dynamic Background Telemetry */}
 
       {/* Header Overview - Tactical Orchestration */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 pb-6 border-b border-white/10 relative z-20">
         <div className="flex-1 min-w-0 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
-             {/* Dynamic Cycle Selector */}
+            {/* Dynamic Cycle Selector */}
             <div className="relative z-50 w-full lg:w-auto">
               <TacticalCustomSelect
                 value={sprint._id}
                 onChange={onSprintChange}
-                options={sprints.map(s => ({
+                options={sprints.map((s) => ({
                   label: s.name,
-                  value: s._id
+                  value: s._id,
                 }))}
                 displayValue={
                   <div className="flex flex-col gap-1">
@@ -63,8 +58,9 @@ const SprintDetailsCard = ({
                       {sprint.name.toUpperCase()}
                     </span>
                     <span className="text-[8px] text-white/40 font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                        <Activity size={10} className="text-status-success/60" />
-                        CORE CYCLE STATUS: {sprint.status?.toUpperCase() || 'UNKNOWN'}
+                      <Activity size={10} className="text-status-success/60" />
+                      CORE CYCLE STATUS:{' '}
+                      {sprint.status?.toUpperCase() || 'UNKNOWN'}
                     </span>
                   </div>
                 }
@@ -74,7 +70,7 @@ const SprintDetailsCard = ({
             {/* Tactical Control Suite */}
             {canCreate && (
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={onAddSprint}
                   className="w-9 h-9 flex items-center justify-center bg-white/5 border border-white/10 rounded hover:border-primary/50 text-white/40 hover:text-primary transition-all active:scale-95"
                   title="Initialize New Cycle"
@@ -93,37 +89,56 @@ const SprintDetailsCard = ({
               </div>
             )}
           </div>
-
-
         </div>
 
         {/* Temporal Metrics Row */}
         <div className="flex flex-wrap items-center gap-6 lg:border-l lg:border-white/10 lg:pl-6">
           <div className="flex flex-col gap-1">
-            <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">INCEPTION DATE</span>
+            <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
+              INCEPTION DATE
+            </span>
             <span className="text-[11px] font-black text-white uppercase tracking-tight">
-              {new Date(sprint.startDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+              {new Date(sprint.startDate).toLocaleDateString(undefined, {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
             </span>
           </div>
           <div className="w-1 h-1 rounded-full bg-white/10" />
           <div className="flex flex-col gap-1">
-            <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">TERMINATION POINT</span>
+            <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
+              TERMINATION POINT
+            </span>
             <span className="text-[11px] font-black text-white uppercase tracking-tight">
-              {new Date(sprint.endDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+              {new Date(sprint.endDate).toLocaleDateString(undefined, {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
             </span>
           </div>
           <div className="w-1 h-1 rounded-full bg-white/10" />
           <div className="flex flex-col gap-1">
-             <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">MISSION SPAN</span>
-             <span className="text-[11px] font-black text-primary uppercase tracking-tight">
-              {Math.max(1, Math.ceil((new Date(sprint.endDate) - new Date(sprint.startDate)) / (1000 * 60 * 60 * 24)))} CYCLES
+            <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em]">
+              MISSION SPAN
+            </span>
+            <span className="text-[11px] font-black text-primary uppercase tracking-tight">
+              {Math.max(
+                1,
+                Math.ceil(
+                  (new Date(sprint.endDate) - new Date(sprint.startDate)) /
+                    (1000 * 60 * 60 * 24)
+                )
+              )}{' '}
+              CYCLES
             </span>
           </div>
           {canCreate && (
             <button
-               onClick={onDownload}
-               className="ml-auto w-9 h-9 bg-white/5 border border-white/10 rounded hover:border-primary/50 text-primary transition-all flex items-center justify-center active:scale-95"
-               title="Export Protocol Intelligence"
+              onClick={onDownload}
+              className="ml-auto w-9 h-9 bg-white/5 border border-white/10 rounded hover:border-primary/50 text-primary transition-all flex items-center justify-center active:scale-95"
+              title="Export Protocol Intelligence"
             >
               <FileText className="w-4 h-4" />
             </button>
@@ -134,47 +149,64 @@ const SprintDetailsCard = ({
       {/* Intelligence Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch relative z-10">
         <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
-          <VelocityIndicator data={metrics.velocitySpark} statsLoading={statsLoading} />
+          <VelocityIndicator
+            data={metrics.velocitySpark}
+            statsLoading={statsLoading}
+          />
         </div>
 
         <div className="lg:col-span-8 flex flex-col gap-6">
           <ItemBreakdownHeader metrics={metrics} statsLoading={statsLoading} />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
-             <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-primary/50 transition-all">
-                <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
-                   FLOW EFFICIENCY
-                   <Zap size={10} className="text-secondary" />
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-primary/50 transition-all">
+              <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                FLOW EFFICIENCY
+                <Zap size={10} className="text-secondary" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-white">
+                  {metrics.flowEfficiency || '0'}
+                  <span className="text-[10px] text-white/30 ml-1">%</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xl font-black text-white">{metrics.flowEfficiency || '0'}<span className="text-[10px] text-white/30 ml-1">%</span></div>
-                  <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full bg-secondary" style={{width: `${metrics.flowEfficiency || 0}%`}} />
-                  </div>
+                <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-secondary"
+                    style={{ width: `${metrics.flowEfficiency || 0}%` }}
+                  />
                 </div>
-             </div>
+              </div>
+            </div>
 
-             <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-warning/50 transition-all">
-                <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
-                   STRATEGIC DEBT
-                   <Clock size={10} className="text-status-warning" />
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-warning/50 transition-all">
+              <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                STRATEGIC DEBT
+                <Clock size={10} className="text-status-warning" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-status-warning">
+                  {metrics.strategicDebt || 0}
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xl font-black text-status-warning">{metrics.strategicDebt || 0}</div>
-                  <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">PENDING UNITS</div>
+                <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                  PENDING UNITS
                 </div>
-             </div>
+              </div>
+            </div>
 
-             <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-info/50 transition-all">
-                <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
-                   BLOCKER DENSITY
-                   <AlertCircle size={10} className="text-status-info" />
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 group hover:border-status-info/50 transition-all">
+              <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                BLOCKER DENSITY
+                <AlertCircle size={10} className="text-status-info" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-status-info">
+                  {metrics.blockerDensity || 0}
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xl font-black text-status-info">{metrics.blockerDensity || 0}</div>
-                  <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">ACTIVE STALLS</div>
+                <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                  ACTIVE STALLS
                 </div>
-             </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -182,25 +214,29 @@ const SprintDetailsCard = ({
       {/* Workforce Saturation (Pulse) */}
       {canCreate && (
         <div className="mt-6 pt-6 border-t border-white/10 relative z-10">
-          <button 
+          <button
             onClick={() => setShowWorkload(!showWorkload)}
             className="flex justify-between items-center w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all select-none"
           >
             <div className="flex items-center gap-3">
-               <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <Users size={14} className="text-white/40" />
-               </div>
-               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
-                  EXECUTION PULSE MATRIX
-               </span>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <Users size={14} className="text-white/40" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+                EXECUTION PULSE MATRIX
+              </span>
             </div>
-            {showWorkload ? <ChevronDown size={16} className="text-primary" /> : <ChevronRight size={16} className="text-white/20" />}
+            {showWorkload ? (
+              <ChevronDown size={16} className="text-primary" />
+            ) : (
+              <ChevronRight size={16} className="text-white/20" />
+            )}
           </button>
 
           {showWorkload && (
             <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-               {metrics.workload?.length > 0 ? (
+              {metrics.workload?.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {metrics.workload.map((wp, idx) => (
                     <div
@@ -215,27 +251,29 @@ const SprintDetailsCard = ({
                           {wp.name}
                         </span>
                         <div className="flex items-center gap-2">
-                           <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">
+                          <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.1em]">
                             {wp.count} ACTIVE
-                           </span>
-                           <div className={`w-1 h-1 rounded-full ${wp.count > 5 ? 'bg-status-error' : 'bg-status-success'}`} />
+                          </span>
+                          <div
+                            className={`w-1 h-1 rounded-full ${wp.count > 5 ? 'bg-status-error' : 'bg-status-success'}`}
+                          />
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-               ) : (
-                 <div className="py-20 text-center bg-black border border-dashed border-white/30 rounded-2xl flex flex-col items-center gap-4">
-                    <Users size={40} className="text-white/10" />
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Zero Personnel Linked to Active Cycle</span>
-                 </div>
-               )}
+              ) : (
+                <div className="py-20 text-center bg-black border border-dashed border-white/30 rounded-2xl flex flex-col items-center gap-4">
+                  <Users size={40} className="text-white/10" />
+                  <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
+                    Zero Personnel Linked to Active Cycle
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
       )}
-      
-
     </div>
   );
 };

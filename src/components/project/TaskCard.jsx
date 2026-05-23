@@ -1,8 +1,22 @@
 import React from 'react';
 import { TASK_STATUS, USER_ROLES } from '../../constants';
-import { ChevronRight, Clock, ShieldCheck, GitBranch, Activity, Calendar } from 'lucide-react';
+import {
+  ChevronRight,
+  Clock,
+  ShieldCheck,
+  GitBranch,
+  Activity,
+  Calendar,
+} from 'lucide-react';
 
-const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLayout = 'standard' }) => {
+const TaskCard = ({
+  task,
+  user,
+  columns,
+  handleStatusChange,
+  onTaskClick,
+  cardLayout = 'standard',
+}) => {
   const isCompact = cardLayout === 'compact';
   const isMinimal = cardLayout === 'minimal';
   const isList = cardLayout === 'list';
@@ -22,26 +36,35 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
 
         <div className="flex items-center gap-2 shrink-0">
           {task.assignedUser && (
-             <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center text-[8px] font-black text-white border-2 border-white/30 group-hover:border-primary transition-all">
-               {task.assignedUser.name[0].toUpperCase()}
-             </div>
+            <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center text-[8px] font-black text-white border-2 border-white/30 group-hover:border-primary transition-all">
+              {task.assignedUser.name[0].toUpperCase()}
+            </div>
           )}
-          
+
           {task.status !== TASK_STATUS.DONE && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 let next;
-                if (task.status === TASK_STATUS.TODO) next = TASK_STATUS.IN_PROGRESS;
-                else if (task.status === TASK_STATUS.IN_PROGRESS) next = TASK_STATUS.IN_REVIEW;
+                if (task.status === TASK_STATUS.TODO)
+                  next = TASK_STATUS.IN_PROGRESS;
+                else if (task.status === TASK_STATUS.IN_PROGRESS)
+                  next = TASK_STATUS.IN_REVIEW;
                 else next = TASK_STATUS.DONE;
                 handleStatusChange(task._id, next);
               }}
               className={`text-[8px] px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white/60 font-black uppercase tracking-widest border border-white/10 transition-all active:scale-95 ${
-                user?.role === USER_ROLES.INTERN && task.status === TASK_STATUS.IN_REVIEW ? 'hidden' : ''
+                user?.role === USER_ROLES.INTERN &&
+                task.status === TASK_STATUS.IN_REVIEW
+                  ? 'hidden'
+                  : ''
               }`}
             >
-              {task.status === TASK_STATUS.TODO ? 'GO' : task.status === TASK_STATUS.IN_PROGRESS ? 'REV' : 'DONE'}
+              {task.status === TASK_STATUS.TODO
+                ? 'GO'
+                : task.status === TASK_STATUS.IN_PROGRESS
+                  ? 'REV'
+                  : 'DONE'}
             </button>
           )}
         </div>
@@ -62,10 +85,14 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
         <div className="absolute top-0 right-0 w-16 h-16 bg-status-error/5 blur-2xl" />
       )}
 
-      <div className={`flex justify-between items-start gap-4 ${isMinimal ? 'mb-1' : 'mb-4'}`}>
+      <div
+        className={`flex justify-between items-start gap-4 ${isMinimal ? 'mb-1' : 'mb-4'}`}
+      >
         <div className="flex flex-col min-w-0">
           {!isMinimal && (
-            <div className={`flex flex-wrap items-center gap-3 ${isCompact ? 'mb-2' : 'mb-3'}`}>
+            <div
+              className={`flex flex-wrap items-center gap-3 ${isCompact ? 'mb-2' : 'mb-3'}`}
+            >
               <span className="text-[10px] font-black text-primary font-mono uppercase tracking-widest bg-primary/15 border-2 border-primary/40 px-2.5 py-1">
                 {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
               </span>
@@ -74,21 +101,30 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
                   <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
                     {task.createdFormatted || 'NEW'}
                   </span>
-                  <span className={`text-[8px] font-black uppercase tracking-[0.2em] border px-2 py-0.5 ${
-                    task.type === 'bug' ? 'border-status-error text-status-error bg-status-error/5' :
-                    task.type === 'epic' ? 'border-secondary text-secondary bg-secondary/5' :
-                    task.type === 'story' ? 'border-status-success text-status-success bg-status-success/5' :
-                    task.type === 'spike' ? 'border-primary text-primary bg-primary/5' :
-                    task.type === 'tech_debt' ? 'border-status-warning text-status-warning bg-status-warning/5' :
-                    'border-white/10 text-white/40'
-                  }`}>
+                  <span
+                    className={`text-[8px] font-black uppercase tracking-[0.2em] border px-2 py-0.5 ${
+                      task.type === 'bug'
+                        ? 'border-status-error text-status-error bg-status-error/5'
+                        : task.type === 'epic'
+                          ? 'border-secondary text-secondary bg-secondary/5'
+                          : task.type === 'story'
+                            ? 'border-status-success text-status-success bg-status-success/5'
+                            : task.type === 'spike'
+                              ? 'border-primary text-primary bg-primary/5'
+                              : task.type === 'tech_debt'
+                                ? 'border-status-warning text-status-warning bg-status-warning/5'
+                                : 'border-white/10 text-white/40'
+                    }`}
+                  >
                     {task.type || 'TASK'}
                   </span>
                 </>
               )}
             </div>
           )}
-          <h4 className={`${isMinimal ? 'text-[11px]' : 'text-[13px]'} font-black text-white leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase`}>
+          <h4
+            className={`${isMinimal ? 'text-[11px]' : 'text-[13px]'} font-black text-white leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase`}
+          >
             {task.title}
           </h4>
         </div>
@@ -107,58 +143,88 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
         )}
       </div>
 
-      {!isMinimal && task.status === TASK_STATUS.DONE && task.actualDuration !== null && (
-        <div className="mt-2 pt-2 border-t border-white/5 text-[9px] font-black text-status-success uppercase tracking-[0.3em] flex items-center gap-2">
-           <ShieldCheck size={12} strokeWidth={3} /> CYCLE: {task.actualDuration}M
-        </div>
-      )}
+      {!isMinimal &&
+        task.status === TASK_STATUS.DONE &&
+        task.actualDuration !== null && (
+          <div className="mt-2 pt-2 border-t border-white/5 text-[9px] font-black text-status-success uppercase tracking-[0.3em] flex items-center gap-2">
+            <ShieldCheck size={12} strokeWidth={3} /> CYCLE:{' '}
+            {task.actualDuration}M
+          </div>
+        )}
 
       {!isMinimal && task.timelineHistory?.length > 0 && (
         <div className="mt-2 text-[9px] font-black text-secondary uppercase tracking-[0.2em] flex items-center gap-2 bg-secondary/5 border border-secondary/20 px-2 py-1 w-fit">
-           <Activity size={10} className="animate-pulse" strokeWidth={3} /> AI OPTIMIZED
+          <Activity size={10} className="animate-pulse" strokeWidth={3} /> AI
+          OPTIMIZED
         </div>
       )}
 
       {/* Due Date Indicator */}
-      {(task.dueDate || (task.estimatedDuration && task.status !== TASK_STATUS.DONE)) && !isMinimal && (
-        <div className="mt-3 flex items-center gap-2 px-1">
-           <Calendar size={10} className={task.dueDate && new Date(task.dueDate) < new Date() && task.status !== TASK_STATUS.DONE ? 'text-status-error' : 'text-white/30'} />
-           <span className={`text-[9px] font-black uppercase tracking-widest ${
-             task.dueDate && new Date(task.dueDate) < new Date() && task.status !== TASK_STATUS.DONE ? 'text-status-error' : (task.dueDate ? 'text-white/60' : 'text-primary/80')
-           }`}>
-             {task.dueDate 
-               ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()
-               : (() => {
-                   const mins = task.estimatedDuration || 0;
-                   const durationInMs = mins * 60 * 1000;
-                   const suggested = new Date(Date.now() + durationInMs);
-                   return `~ ${suggested.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`;
-                 })()}
-           </span>
-        </div>
-      )}
+      {(task.dueDate ||
+        (task.estimatedDuration && task.status !== TASK_STATUS.DONE)) &&
+        !isMinimal && (
+          <div className="mt-3 flex items-center gap-2 px-1">
+            <Calendar
+              size={10}
+              className={
+                task.dueDate &&
+                new Date(task.dueDate) < new Date() &&
+                task.status !== TASK_STATUS.DONE
+                  ? 'text-status-error'
+                  : 'text-white/30'
+              }
+            />
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest ${
+                task.dueDate &&
+                new Date(task.dueDate) < new Date() &&
+                task.status !== TASK_STATUS.DONE
+                  ? 'text-status-error'
+                  : task.dueDate
+                    ? 'text-white/60'
+                    : 'text-primary/80'
+              }`}
+            >
+              {task.dueDate
+                ? new Date(task.dueDate)
+                    .toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                    .toUpperCase()
+                : (() => {
+                    const mins = task.estimatedDuration || 0;
+                    const durationInMs = mins * 60 * 1000;
+                    const suggested = new Date(Date.now() + durationInMs);
+                    return `~ ${suggested.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`;
+                  })()}
+            </span>
+          </div>
+        )}
 
       {/* Footer Section */}
       <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {task.assignedUser && (
             <div className="flex items-center gap-2.5">
-               <div className={`${isMinimal ? 'w-5 h-5 text-[8px]' : 'w-7 h-7 text-[10px]'} bg-white/5 flex items-center justify-center font-black text-white/60 border border-white/10 group-hover:border-white/30 transition-all`}>
-                 {task.assignedUser.name[0].toUpperCase()}
-               </div>
-               {!isMinimal && (
-                 <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] group-hover:text-white/70 transition-colors">
-                   {task.assignedUser.name.split(' ')[0]}
-                 </span>
-               )}
+              <div
+                className={`${isMinimal ? 'w-5 h-5 text-[8px]' : 'w-7 h-7 text-[10px]'} bg-white/5 flex items-center justify-center font-black text-white/60 border border-white/10 group-hover:border-white/30 transition-all`}
+              >
+                {task.assignedUser.name[0].toUpperCase()}
+              </div>
+              {!isMinimal && (
+                <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] group-hover:text-white/70 transition-colors">
+                  {task.assignedUser.name.split(' ')[0]}
+                </span>
+              )}
             </div>
           )}
-          
+
           {task.source === 'github' && !isMinimal && (
-             <div className="h-4 w-[1px] bg-white/10 mx-1" />
+            <div className="h-4 w-[1px] bg-white/10 mx-1" />
           )}
           {task.source === 'github' && !isMinimal && (
-             <GitBranch size={12} strokeWidth={3} className="text-white/20" />
+            <GitBranch size={12} strokeWidth={3} className="text-white/20" />
           )}
         </div>
 
@@ -167,13 +233,18 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
             onClick={(e) => {
               e.stopPropagation();
               let next;
-              if (task.status === TASK_STATUS.TODO) next = TASK_STATUS.IN_PROGRESS;
-              else if (task.status === TASK_STATUS.IN_PROGRESS) next = TASK_STATUS.IN_REVIEW;
+              if (task.status === TASK_STATUS.TODO)
+                next = TASK_STATUS.IN_PROGRESS;
+              else if (task.status === TASK_STATUS.IN_PROGRESS)
+                next = TASK_STATUS.IN_REVIEW;
               else next = TASK_STATUS.DONE;
               handleStatusChange(task._id, next);
             }}
             className={`${isMinimal ? 'text-[7px] px-3 py-1' : 'text-[9px] px-4 py-2'} font-black uppercase tracking-[0.3em] transition-all active:scale-95 flex items-center gap-2 ${
-              user?.role === USER_ROLES.INTERN && task.status === TASK_STATUS.IN_REVIEW ? 'hidden' : ''
+              user?.role === USER_ROLES.INTERN &&
+              task.status === TASK_STATUS.IN_REVIEW
+                ? 'hidden'
+                : ''
             } ${
               task.status === TASK_STATUS.TODO
                 ? 'bg-primary text-black hover:brightness-110'
@@ -182,8 +253,14 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick, cardLa
                   : 'bg-secondary text-white hover:brightness-110'
             }`}
           >
-            {task.status === TASK_STATUS.TODO ? 'START' : task.status === TASK_STATUS.IN_PROGRESS ? 'REVIEW' : 'DONE'}
-            {!isMinimal && <ChevronRight size={14} strokeWidth={4} className="opacity-40" />}
+            {task.status === TASK_STATUS.TODO
+              ? 'START'
+              : task.status === TASK_STATUS.IN_PROGRESS
+                ? 'REVIEW'
+                : 'DONE'}
+            {!isMinimal && (
+              <ChevronRight size={14} strokeWidth={4} className="opacity-40" />
+            )}
           </button>
         )}
       </div>

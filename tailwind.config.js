@@ -1,9 +1,5 @@
-
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -30,7 +26,7 @@ export default {
           warning: '#F59E0B',
           error: '#EF4444',
           info: '#38BDF8',
-        }
+        },
       },
       spacing: {
         'brand-xs': '0.5rem',
@@ -38,8 +34,8 @@ export default {
         'brand-md': '1.5rem',
         'brand-lg': '2rem',
         'brand-xl': '3rem',
-      }
+      },
     },
   },
   plugins: [],
-}
+};

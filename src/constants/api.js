@@ -66,9 +66,9 @@ export const API_ENDPOINTS = {
     EXECUTE: '/magic/execute',
   },
   DASHBOARDS: {
-    TACTICAL: (role) => `/engineering/workspace`, 
-    MANAGEMENT: `/leadership/dashboard`,         
-    OPERATIONS: `/operations/dashboard`,         
+    TACTICAL: (role) => `/engineering/workspace`,
+    MANAGEMENT: `/leadership/dashboard`,
+    OPERATIONS: `/operations/dashboard`,
   },
   CTO: {
     DASHBOARD: `/leadership/dashboard`,
@@ -83,4 +83,3 @@ export const API_ENDPOINTS = {
     EVENT: '/metrics/event',
   },
 };
-

@@ -5,17 +5,31 @@ const BUCKET_NAME = 'task-attachments';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = [
-  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-  'application/pdf', 'application/msword', 
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'application/pdf',
+  'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/zip', 'text/plain', 'application/json'
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/zip',
+  'text/plain',
+  'application/json',
 ];
 
-export const uploadAttachment = async (file, workspaceId, projectId, taskId = 'new') => {
+export const uploadAttachment = async (
+  file,
+  workspaceId,
+  projectId,
+  taskId = 'new'
+) => {
   // 1. Validation
   if (file.size > MAX_FILE_SIZE) {
-    throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max limit is 10MB.`);
+    throw new Error(
+      `File is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max limit is 10MB.`
+    );
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
@@ -24,19 +38,22 @@ export const uploadAttachment = async (file, workspaceId, projectId, taskId = 'n
 
   try {
     // 2. Request Signed Upload URL from Backend
-    const { data: signedData } = await apiClient.post('/tasks/attachments/upload-url', {
-      workspaceId,
-      projectId,
-      taskId,
-      fileName: file.name,
-      fileType: file.type,
-      fileSize: file.size
-    });
+    const { data: signedData } = await apiClient.post(
+      '/tasks/attachments/upload-url',
+      {
+        workspaceId,
+        projectId,
+        taskId,
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+      }
+    );
 
-    const { signedUrl, token, storagePath } = signedData;
+    const { token, storagePath } = signedData;
 
     // 3. Upload directly to Supabase using the signed URL
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(BUCKET_NAME)
       .uploadToSignedUrl(storagePath, token, file);
 
@@ -55,10 +72,7 @@ export const uploadAttachment = async (file, workspaceId, projectId, taskId = 'n
   }
 };
 
-/**
- * Deletes a file from Supabase Storage.
- * @param {string} storagePath - The path in the bucket.
- */
+// Service to manage attachments in Supabase Storage.
 export const deleteAttachment = async (storagePath) => {
   try {
     const { error } = await supabase.storage
@@ -76,4 +90,3 @@ export default {
   uploadAttachment,
   deleteAttachment,
 };
-

@@ -2,10 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ChevronRight, BadgeCheck } from 'lucide-react';
 
-/**
- * Clean UI Sidebar for the Settings page.
- * Provides a structured navigation experience with high-contrast active states.
- */
+// Sidebar navigation panel for settings.
 const SettingsSidebar = ({
   tabs,
   activeTab,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TacticalCustomSelect from '../molecules/TacticalCustomSelect';
 import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from '../atoms/ErrorBoundary';
 
 // A modal component for creating new sprints with custom names and date ranges.
 const SprintCreationModal = ({
@@ -45,9 +45,9 @@ const SprintCreationModal = ({
               value={sprintData.project}
               onChange={(val) => setSprintData({ ...sprintData, project: val })}
               placeholder="SELECT TARGET PROJECT"
-              options={projects?.map(p => ({
+              options={projects?.map((p) => ({
                 label: p.name,
-                value: p._id
+                value: p._id,
               }))}
             />
           </div>

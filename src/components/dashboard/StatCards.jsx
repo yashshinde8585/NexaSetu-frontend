@@ -7,7 +7,10 @@ const StatCards = ({ stats, isLoading = false }) => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="p-4 sm:p-5 rounded-2xl border border-white/5 bg-white/[0.02] h-[100px] animate-pulse">
+          <div
+            key={i}
+            className="p-4 sm:p-5 rounded-2xl border border-white/5 bg-white/[0.02] h-[100px] animate-pulse"
+          >
             <div className="flex justify-between items-center mb-4">
               <div className="h-2 bg-white/10 rounded w-20" />
               <div className="h-5 w-5 bg-white/10 rounded" />

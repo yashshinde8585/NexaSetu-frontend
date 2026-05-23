@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Hook to track scroll progress.
- * Uses requestAnimationFrame for optimal performance.
- */
+// Hook to track user scroll percentage.
 export const useScrollProgress = () => {
   const [progress, setProgress] = useState(0);
 
@@ -12,9 +9,12 @@ export const useScrollProgress = () => {
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+          const { scrollTop, scrollHeight, clientHeight } =
+            document.documentElement;
           setProgress(
-            scrollHeight <= clientHeight ? 1 : scrollTop / (scrollHeight - clientHeight)
+            scrollHeight <= clientHeight
+              ? 1
+              : scrollTop / (scrollHeight - clientHeight)
           );
           ticking = false;
         });

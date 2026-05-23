@@ -94,7 +94,6 @@ export const JOB_TITLES = [
   },
 ];
 
-
 // Lists all specific action permissions applicable within the application.
 export const PERMISSIONS = {
   INVITE_USERS: 'INVITE_USERS',

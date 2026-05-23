@@ -4,7 +4,7 @@ import { Zap, TrendingUp } from 'lucide-react';
 
 const VelocityIndicator = ({ data, statsLoading }) => {
   const chartData = data?.map((val, i) => ({ value: val, index: i })) || [];
-  
+
   return (
     <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-5 hover:border-primary/20 transition-all group overflow-hidden relative">
       <div className="flex justify-between items-start mb-4 relative z-10">
@@ -13,8 +13,11 @@ const VelocityIndicator = ({ data, statsLoading }) => {
             Workflow Velocity
           </div>
           <div className="flex items-center gap-2">
-            <div className={`text-2xl font-black text-white ${statsLoading ? 'animate-pulse' : ''}`}>
-              {data?.[data.length - 1] || 0} <span className="text-xs text-text-muted/60">tasks/day</span>
+            <div
+              className={`text-2xl font-black text-white ${statsLoading ? 'animate-pulse' : ''}`}
+            >
+              {data?.[data.length - 1] || 0}{' '}
+              <span className="text-xs text-text-muted/60">tasks/day</span>
             </div>
             <div className="flex items-center gap-1 text-[10px] font-bold text-status-success bg-status-success/10 px-1.5 py-0.5 rounded border border-status-success/10">
               <TrendingUp size={10} />
@@ -32,8 +35,8 @@ const VelocityIndicator = ({ data, statsLoading }) => {
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#2D63FF" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#2D63FF" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#2D63FF" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#2D63FF" stopOpacity={0} />
               </linearGradient>
             </defs>
             <Area
@@ -48,7 +51,7 @@ const VelocityIndicator = ({ data, statsLoading }) => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      
+
       {/* Structural Decorator */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[80px] -mr-16 -mt-16 pointer-events-none" />
     </div>

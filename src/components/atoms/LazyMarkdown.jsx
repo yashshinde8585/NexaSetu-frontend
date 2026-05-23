@@ -9,7 +9,9 @@ const LazyMarkdown = (props) => {
       fallback={
         <div className="flex items-center gap-2 py-4">
           <Loader2 className="animate-spin text-primary/40" size={16} />
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Rendering...</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-white/20">
+            Rendering...
+          </span>
         </div>
       }
     >
