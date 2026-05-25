@@ -287,8 +287,8 @@ const ProjectInfo = () => {
                   STATUS: NO ACTIVE SPRINT
                 </h3>
                 <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em] leading-relaxed px-4">
-                  No active sprint detected. Create a new sprint
-                  to begin tracking progress.
+                  No active sprint detected. Create a new sprint to begin
+                  tracking progress.
                 </p>
               </div>
               {canCreate && (

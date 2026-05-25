@@ -311,7 +311,11 @@ const CommandCenterTab = ({
               </div>
             </div>
             <div className="w-14 h-7 opacity-60">
-              <AreaChart width={56} height={28} data={sparklineData.activeUsers}>
+              <AreaChart
+                width={56}
+                height={28}
+                data={sparklineData.activeUsers}
+              >
                 <Area
                   type="monotone"
                   dataKey="val"

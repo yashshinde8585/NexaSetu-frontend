@@ -6,12 +6,18 @@ import { ChevronRight, BadgeCheck } from 'lucide-react';
  * Settings sidebar — renders as a horizontal tab bar on mobile/tablet,
  * and as a vertical sidebar on xl+ screens.
  */
-const SettingsSidebar = ({ tabs, activeTab, onTabChange, userRole, jobTitle }) => {
-  const roleLabel = jobTitle || (userRole ? userRole.replace(/_/g, ' ') : 'User');
+const SettingsSidebar = ({
+  tabs,
+  activeTab,
+  onTabChange,
+  userRole,
+  jobTitle,
+}) => {
+  const roleLabel =
+    jobTitle || (userRole ? userRole.replace(/_/g, ' ') : 'User');
 
   return (
     <div className="xl:w-52 flex flex-col gap-1.5">
-
       {/* Tab buttons */}
       {/* Mobile: horizontal scrollable pill tabs */}
       <div className="flex xl:flex-col gap-1.5 overflow-x-auto pb-0.5 xl:pb-0 hide-scrollbar">
@@ -31,7 +37,13 @@ const SettingsSidebar = ({ tabs, activeTab, onTabChange, userRole, jobTitle }) =
             )}
 
             <div className="flex items-center gap-2">
-              <span className={activeTab === tab.id ? 'text-primary' : 'text-white/30 group-hover:text-white/50'}>
+              <span
+                className={
+                  activeTab === tab.id
+                    ? 'text-primary'
+                    : 'text-white/30 group-hover:text-white/50'
+                }
+              >
                 {React.cloneElement(tab.icon, { size: 12 })}
               </span>
               <span className="text-[9px] font-black uppercase tracking-[0.2em]">

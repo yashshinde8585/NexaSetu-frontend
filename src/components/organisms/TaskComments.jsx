@@ -62,7 +62,7 @@ const TaskComments = ({ taskId }) => {
     mutationFn: ({ taskId, content }) =>
       CommentService.addComment(taskId, content),
     onSuccess: () => {
-      queryClient.invalidateQueries(['comments', taskId]);
+      queryClient.invalidateQueries({ queryKey: ['comments', taskId] });
       setNewComment('');
       setTimeout(scrollToBottom, 50);
     },

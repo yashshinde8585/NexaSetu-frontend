@@ -573,7 +573,6 @@
     scrollbar-width: none;
   }
 
-
   /* Accessibility: Respect OS-level reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
     *,

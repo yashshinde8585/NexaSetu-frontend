@@ -108,10 +108,7 @@ const JREDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Column: Active Engineering Sprint */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <DashboardSection
-            title="Active Tasks"
-            icon={<Zap size={14} />}
-          >
+          <DashboardSection title="Active Tasks" icon={<Zap size={14} />}>
             <div className="flex flex-col gap-6 py-2">
               {guidedTasks?.map((task, idx) => (
                 <div
@@ -322,10 +319,7 @@ const JREDashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection
-            title="Execution Progress"
-            icon={<Zap size={14} />}
-          >
+          <DashboardSection title="Execution Progress" icon={<Zap size={14} />}>
             <div className="flex flex-col gap-4 py-4 px-5 bg-white/5 border border-white/10 rounded-none">
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
@@ -354,10 +348,7 @@ const JREDashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection
-            title="Next Phase"
-            icon={<Sparkles size={14} />}
-          >
+          <DashboardSection title="Next Phase" icon={<Sparkles size={14} />}>
             <div className="flex flex-col gap-2 py-2">
               <div className="p-4 bg-white/5 border border-white/10 rounded-none relative overflow-hidden group hover:bg-white/10 transition-colors">
                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-colors">

@@ -378,10 +378,7 @@ const SEDashboard = () => {
       {/* 4. Domain Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4">
-          <DashboardSection
-            title="Module Health"
-            icon={<Shield size={14} />}
-          >
+          <DashboardSection title="Module Health" icon={<Shield size={14} />}>
             <div className="flex flex-col gap-2 py-2">
               {moduleOwnership?.map((module, idx) => (
                 <div
@@ -419,10 +416,7 @@ const SEDashboard = () => {
         </div>
 
         <div className="lg:col-span-8">
-          <DashboardSection
-            title="Bug Backlog"
-            icon={<Bug size={14} />}
-          >
+          <DashboardSection title="Bug Backlog" icon={<Bug size={14} />}>
             <div className="flex flex-col gap-2 py-2">
               {myBugs?.map((bug, idx) => (
                 <div

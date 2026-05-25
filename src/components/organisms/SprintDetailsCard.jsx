@@ -59,8 +59,7 @@ const SprintDetailsCard = ({
                     </span>
                     <span className="text-[8px] text-white/40 font-black uppercase tracking-[0.2em] flex items-center gap-2">
                       <Activity size={10} className="text-status-success/60" />
-                      SPRINT STATUS:{' '}
-                      {sprint.status?.toUpperCase() || 'UNKNOWN'}
+                      SPRINT STATUS: {sprint.status?.toUpperCase() || 'UNKNOWN'}
                     </span>
                   </div>
                 }

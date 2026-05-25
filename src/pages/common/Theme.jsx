@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Monitor,
-  ShieldCheck,
-  Sun,
-  Moon,
-  ChevronRight,
-} from 'lucide-react';
+import { Monitor, ShieldCheck, Sun, Moon, ChevronRight } from 'lucide-react';
 import Button from '../../components/atoms/Button';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
@@ -37,8 +31,6 @@ const Theme = () => {
       light: true,
     },
   ];
-
-
 
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4">
@@ -148,8 +140,6 @@ const Theme = () => {
                 ))}
               </div>
             </section>
-
-
           </div>
 
           {/* Sync & Readiness Sidebar */}
@@ -192,9 +182,7 @@ const Theme = () => {
                   onClick={() => {
                     setSelectedTheme('ghost');
                     saveTheme('ghost', accentColor);
-                    toast.success(
-                      'Light Mode activated.'
-                    );
+                    toast.success('Light Mode activated.');
                   }}
                 />
                 <SyncItem
@@ -204,15 +192,11 @@ const Theme = () => {
                   onClick={() => {
                     setSelectedTheme('obsidian');
                     saveTheme('obsidian', accentColor);
-                    toast.success(
-                      'Dark Mode activated.'
-                    );
+                    toast.success('Dark Mode activated.');
                   }}
                 />
               </div>
             </section>
-
-
           </div>
         </div>
 
@@ -243,7 +227,9 @@ const Theme = () => {
               onClick={() => {
                 setSelectedTheme('obsidian');
                 setAccentColor('blue');
-                toast.success('Default configuration selected. Click save to apply.');
+                toast.success(
+                  'Default configuration selected. Click save to apply.'
+                );
               }}
               className="h-9 px-4 rounded transition-all cursor-pointer"
               style={{

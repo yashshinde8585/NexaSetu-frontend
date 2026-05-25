@@ -58,18 +58,16 @@ const Portfolio = () => {
   const approveMutation = useMutation({
     mutationFn: (id) => ActionService.approveAction(id),
     onSuccess: () => {
-      queryClient.invalidateQueries([
-        'pending-actions',
-        'portfolio-stats',
-        'activity-logs',
-      ]);
+      queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
+      queryClient.invalidateQueries({ queryKey: ['portfolio-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['activity-logs'] });
     },
   });
 
   const rejectMutation = useMutation({
     mutationFn: (id) => ActionService.rejectAction(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['pending-actions']);
+      queryClient.invalidateQueries({ queryKey: ['pending-actions'] });
     },
   });
 

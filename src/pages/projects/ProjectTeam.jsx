@@ -185,7 +185,7 @@ const ProjectTeam = () => {
               </p>
             </div>
             <button
-              onClick={() => fetchProjectSquad(new AbortController().signal)}
+              onClick={() => fetchProjectTeam(new AbortController().signal)}
               className="p-2 bg-white/5 border border-white/10 rounded hover:bg-white/10 transition-colors"
             >
               <Rocket size={14} />

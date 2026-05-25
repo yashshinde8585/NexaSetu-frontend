@@ -251,9 +251,10 @@ const ProjectDetail = () => {
                 </div>
               </div>
               <div className="bg-status-error/20 px-4 py-2 rounded-xl border border-status-error/30">
-                  <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
-                    PROJECT SYSTEM LOCKED: NEW TASKS DISABLED • ONLY REVIEWS ALLOWED
-                  </span>
+                <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
+                  PROJECT SYSTEM LOCKED: NEW TASKS DISABLED • ONLY REVIEWS
+                  ALLOWED
+                </span>
               </div>
             </div>
           )}

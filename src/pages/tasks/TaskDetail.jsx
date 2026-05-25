@@ -61,9 +61,8 @@ const TaskDetailPage = () => {
     mutationFn: ({ taskId, status }) =>
       TaskService.updateTaskStatus(taskId, status),
     onSuccess: () => {
-      queryClient.invalidateQueries(['task', taskId]);
-      queryClient.invalidateQueries(['tasks']);
-      setIsStatusMenuOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['task', taskId] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
     onError: () => {},
   });
@@ -72,7 +71,7 @@ const TaskDetailPage = () => {
     mutationFn: ({ blocked, reason }) =>
       TaskService.toggleTaskBlockage(taskId, blocked, reason),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries(['task', taskId]);
+      queryClient.invalidateQueries({ queryKey: ['task', taskId] });
       setIsBlockModalOpen(false);
       setBlockReason('');
     },
@@ -82,8 +81,8 @@ const TaskDetailPage = () => {
   const updateMutation = useMutation({
     mutationFn: (data) => TaskService.updateTask(taskId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['task', taskId]);
-      queryClient.invalidateQueries(['tasks']);
+      queryClient.invalidateQueries({ queryKey: ['task', taskId] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
     onError: () => {},
   });
@@ -92,7 +91,7 @@ const TaskDetailPage = () => {
     mutationFn: ({ result, notes }) =>
       TaskService.submitTaskReview(taskId, result, notes),
     onSuccess: () => {
-      queryClient.invalidateQueries(['task', taskId]);
+      queryClient.invalidateQueries({ queryKey: ['task', taskId] });
       setReviewNotes('');
     },
   });

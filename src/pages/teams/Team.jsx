@@ -203,8 +203,7 @@ const Team = () => {
 
     const groups = members.reduce((acc, member) => {
       const projectId = member.assignedProjectId?.id || 'unassigned';
-      const projectName =
-        member.assignedProjectId?.name || 'Unassigned';
+      const projectName = member.assignedProjectId?.name || 'Unassigned';
 
       if (!acc[projectId]) {
         acc[projectId] = { name: projectName, members: [], id: projectId };

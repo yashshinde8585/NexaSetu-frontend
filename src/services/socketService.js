@@ -72,9 +72,9 @@ export const onEvent = (event, callback) => {
   socket.on(event, callback);
 };
 
-export const offEvent = (event) => {
+export const offEvent = (event, callback) => {
   if (socket) {
-    socket.off(event);
+    socket.off(event, callback);
   }
 };
 

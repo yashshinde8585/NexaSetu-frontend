@@ -40,13 +40,19 @@ export const useTasks = (
     // Step 1: Optimistic Update
     onMutate: async ({ taskId, newStatus }) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['my-tasks', scope] });
+      await queryClient.cancelQueries({
+        queryKey: ['my-tasks', scope, user?._id],
+      });
 
       // Snapshot the previous value
-      const previousTasks = queryClient.getQueryData(['my-tasks', scope]);
+      const previousTasks = queryClient.getQueryData([
+        'my-tasks',
+        scope,
+        user?._id,
+      ]);
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['my-tasks', scope], (old) => {
+      queryClient.setQueryData(['my-tasks', scope, user?._id], (old) => {
         if (!old) return [];
         return old.map((task) =>
           task._id === taskId ? { ...task, status: newStatus } : task
@@ -59,7 +65,10 @@ export const useTasks = (
 
     // Step 2: Rollback on Error
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['my-tasks', scope], context.previousTasks);
+      queryClient.setQueryData(
+        ['my-tasks', scope, user?._id],
+        context.previousTasks
+      );
       console.error('Optimistic update failed, rolling back:', err);
     },
 

@@ -54,7 +54,7 @@ const ProjectSettings = () => {
     try {
       setSaving(true);
       await ProjectService.updateProject(id, formData);
-      queryClient.invalidateQueries(['project', id]);
+      queryClient.invalidateQueries({ queryKey: ['project', id] });
     } catch (err) {
       console.error('Linkage update failed:', err);
     } finally {

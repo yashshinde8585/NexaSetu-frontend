@@ -1176,10 +1176,17 @@ const Home = () => {
               </span>
               <button
                 onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-                className="w-10 h-5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+                className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
+                  billingCycle === 'annual' ? 'bg-status-success/20 border-status-success/30' : 'bg-white/10 border-white/10'
+                }`}
               >
-                <div className={`w-3.8 h-3.8 bg-white rounded-full transition-all duration-300 ${billingCycle === 'annual' ? 'translate-x-5' : 'translate-x-0'
+                <div className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                  billingCycle === 'annual' ? 'translate-x-4 bg-status-success' : 'translate-x-0 bg-white'
+                }`}>
+                  <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                    billingCycle === 'annual' ? 'bg-white' : 'bg-black/30'
                   }`} />
+                </div>
               </button>
               <span className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${billingCycle === 'annual' ? 'text-white' : 'text-white/40'
                 }`}>
@@ -1198,10 +1205,17 @@ const Home = () => {
               </span>
               <button
                 onClick={() => setCurrency(currency === 'inr' ? 'usd' : 'inr')}
-                className="w-10 h-5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+                className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
+                  currency === 'usd' ? 'bg-primary/20 border-primary/30' : 'bg-white/10 border-white/10'
+                }`}
               >
-                <div className={`w-3.8 h-3.8 bg-white rounded-full transition-all duration-300 ${currency === 'usd' ? 'translate-x-5' : 'translate-x-0'
+                <div className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                  currency === 'usd' ? 'translate-x-4 bg-primary' : 'translate-x-0 bg-white'
+                }`}>
+                  <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                    currency === 'usd' ? 'bg-white' : 'bg-black/30'
                   }`} />
+                </div>
               </button>
               <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${currency === 'usd' ? 'text-white' : 'text-white/40'
                 }`}>
@@ -1211,7 +1225,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 bg-white/10 gap-[1px] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 bg-white/10 gap-[1px] border border-white/10 rounded-xl shadow-2xl">
           {[
             {
               plan: 'FREE',
@@ -1229,8 +1243,9 @@ const Home = () => {
             {
               plan: 'PRO',
               price: currency === 'inr'
-                ? (billingCycle === 'monthly' ? '₹999' : '₹5,999')
-                : (billingCycle === 'monthly' ? '$10' : '$63'),
+                ? (billingCycle === 'monthly' ? '₹799' : '₹639')
+                : (billingCycle === 'monthly' ? '$10' : '$8'),
+              priceAnnualNum: currency === 'inr' ? 639 : 8,
               desc: 'Advanced features for growing teams and serious engineering.',
               features: [
                 '20 Projects',
@@ -1246,8 +1261,9 @@ const Home = () => {
             {
               plan: 'ENTERPRISE',
               price: currency === 'inr'
-                ? (billingCycle === 'monthly' ? '₹1,599' : '₹17,269')
-                : (billingCycle === 'monthly' ? '$16' : '$180'),
+                ? (billingCycle === 'monthly' ? '₹2,999' : '₹2,399')
+                : (billingCycle === 'monthly' ? '$36' : '$29'),
+              priceAnnualNum: currency === 'inr' ? 2399 : 29,
               desc: 'Maximum scale, priority support, and unlimited intelligence.',
               features: [
                 'Unlimited Projects',
@@ -1262,8 +1278,13 @@ const Home = () => {
           ].map((p, i) => (
             <div
               key={i}
-              className={`bg-background-light p-8 sm:p-12 flex flex-col text-left ${p.recommended ? 'relative bg-background-elevated/40' : ''
-                }`}
+              className={`bg-background-light p-8 sm:p-12 flex flex-col text-left ${
+                p.recommended ? 'relative bg-background-elevated/40' : ''
+              } ${
+                i === 0 ? 'rounded-t-xl md:rounded-l-xl md:rounded-tr-none' : ''
+              } ${
+                i === 2 ? 'rounded-b-xl md:rounded-r-xl md:rounded-bl-none' : ''
+              }`}
             >
               {p.recommended && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-white text-black text-[9px] font-black uppercase tracking-widest rounded-sm border border-white">
@@ -1279,12 +1300,14 @@ const Home = () => {
                 </span>
                 <span className="text-[10px] font-bold text-white/40 uppercase">/ MO</span>
               </div>
-              <span className="text-[8px] font-black text-white/40 uppercase tracking-widest block mb-6">
+              <span className={`text-[10px] font-bold block mb-6 ${
+                billingCycle === 'annual' && p.plan !== 'FREE' ? 'text-status-success' : 'text-white/40'
+              }`}>
                 {p.plan === 'FREE'
                   ? 'Free forever'
                   : billingCycle === 'monthly'
                     ? 'Billed monthly'
-                    : `Billed annually (${currency === 'inr' ? '₹' : '$'}${p.plan === 'PRO' ? (currency === 'inr' ? '19,188' : '288') : (currency === 'inr' ? '95,988' : '1,428')}/yr)`
+                    : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`
                 }
               </span>
               <p className="text-white/40 text-[10px] font-normal leading-relaxed mb-8 h-10">

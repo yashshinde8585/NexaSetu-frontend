@@ -49,6 +49,7 @@ const InternDashboard = () => {
     progress = { percentage: 0, completed: 0, total: 0 },
     feedback = [],
     blockerOptions = [],
+    nextSteps = { main: '', minor: '' },
   } = data || {};
 
   // --- Handlers ---
@@ -64,7 +65,7 @@ const InternDashboard = () => {
 
     try {
       await taskApi.updateTaskSteps(currentTask.id, newSteps);
-      queryClient.invalidateQueries(['dashboard', 'intern']);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'intern'] });
     } catch (err) {
       console.error('Failed to update step:', err);
     }
@@ -75,7 +76,7 @@ const InternDashboard = () => {
 
     try {
       await taskApi.updateTaskStatus(currentTask.id, 'in_review');
-      queryClient.invalidateQueries(['dashboard', 'intern']);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'intern'] });
     } catch (err) {
       console.error('Failed to signal completion:', err);
     }
@@ -86,7 +87,7 @@ const InternDashboard = () => {
 
     try {
       await taskApi.toggleTaskBlockage(currentTask.id, true, label);
-      queryClient.invalidateQueries(['dashboard', 'intern']);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'intern'] });
     } catch (err) {
       console.error('Failed to set blocker:', err);
     }
@@ -379,22 +380,19 @@ const InternDashboard = () => {
             </div>
           </DashboardSection>
 
-          <DashboardSection
-            title="Progress"
-            icon={<Target size={14} />}
-          >
+          <DashboardSection title="Progress" icon={<Target size={14} />}>
             <div className="flex flex-col gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
               <div className="flex items-end justify-between leading-none">
                 <div className="flex flex-col gap-1.5">
                   <span className="flex items-center gap-2 text-[8px] font-black text-primary uppercase tracking-[0.2em] mb-2">
-                  <Zap size={10} fill="currentColor" /> PRIORITY TASK
-                </span>
-                <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">
-                  {nextSteps?.main || 'AWAITING TASK'}
-                </p>
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">
-                  {nextSteps?.minor || 'QUEUE EMPTY'}
-                </p>
+                    <Zap size={10} fill="currentColor" /> PRIORITY TASK
+                  </span>
+                  <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">
+                    {nextSteps?.main || 'AWAITING TASK'}
+                  </p>
+                  <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">
+                    {nextSteps?.minor || 'QUEUE EMPTY'}
+                  </p>
                 </div>
                 <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-1 tabular-nums">
                   {progress?.completed || 0} / {progress?.total || 0}
