@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 
 // Modular Components
-import TLHeader from './TLDashboard/components/TLHeader';
 import TLOverviewTab from './TLDashboard/components/TLOverviewTab';
 import TLDeliveryTab from './TLDashboard/components/TLDeliveryTab';
 import TLQualityTab from './TLDashboard/components/TLQualityTab';
@@ -25,7 +24,7 @@ import DependenciesTab from './TLDashboard/components/DependenciesTab';
 import TLInsightsTab from './TLDashboard/components/TLInsightsTab';
 
 /**
- * 🛠️ Tech Lead (TL) Dashboard Controller
+ * Tech Lead (TL) Dashboard Controller
  * Reduced from monolithic layout to a modular tab panel switcher wrapped in Error Boundaries.
  */
 const TLDashboard = () => {
@@ -112,8 +111,6 @@ const TLDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      <TLHeader />
-
       <div className="flex border-b border-white/5 overflow-x-auto scrollbar-none gap-1.5">
         {[
           { id: 'overview', label: 'Overview', icon: <Layout size={12} /> },

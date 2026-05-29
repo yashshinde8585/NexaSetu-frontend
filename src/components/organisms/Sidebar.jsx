@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                       ? 'Test Dashboard'
                       : user?.role === 'SENIOR_ENGINEER' ||
                           title.includes('senior engineer')
-                        ? 'Development Dashboard'
+                        ? 'Dashboard'
                         : title.includes('junior engineer')
                           ? 'My Tasks'
                           : user?.role === 'INTERN' || title.includes('intern')

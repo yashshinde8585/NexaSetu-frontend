@@ -118,42 +118,38 @@ const SWEDashboard = () => {
     [blockMutation]
   );
 
+  if (isLoading || !data) return <DashboardSkeleton />;
+
   const {
-    myTasks = [],
-    progress = { percentage: 0, completed: 0, total: 0, daysLeft: 0 },
-    prStats = { open: 0, merged: 0, pendingReview: 0 },
-    sprintName = '',
-    projects = [],
-    pastSprints = [],
+    myTasks,
+    progress,
+    prStats,
+    sprintName,
+    projects,
+    pastSprints,
     sprintId,
-    codeHealthScore = 92,
-    myVelocity = { points: 0, diff: 0, direction: 'up', sparkline: [] },
-    codeQuality = { coverage: 0, eslint: 0, security: 0, techDebt: 0 },
-    pullRequestsList = [],
-    deployments = [],
-    learnAndGrow = [],
-    aiInsights = [],
-    burndownData = [],
-    recentActivity = [],
-    myCodeImpact = {
-      commits: 0,
-      linesChanged: 0,
-      filesChanged: 0,
-      prsMerged: 0,
-      topFilesChanged: [],
-    },
-  } = data || {};
+    codeHealthScore,
+    myVelocity,
+    codeQuality,
+    pullRequestsList,
+    deployments,
+    learnAndGrow,
+    aiInsights,
+    burndownData,
+    recentActivity,
+    myCodeImpact,
+  } = data;
 
   const inProgressTasks = useMemo(
-    () => myTasks.filter((t) => t.status === 'in_progress'),
+    () => (myTasks ? myTasks.filter((t) => t.status === 'in_progress') : []),
     [myTasks]
   );
   const inReviewTasks = useMemo(
-    () => myTasks.filter((t) => t.status === 'in_review'),
+    () => (myTasks ? myTasks.filter((t) => t.status === 'in_review') : []),
     [myTasks]
   );
   const doneTasks = useMemo(
-    () => myTasks.filter((t) => t.status === 'done'),
+    () => (myTasks ? myTasks.filter((t) => t.status === 'done') : []),
     [myTasks]
   );
 
@@ -163,7 +159,7 @@ const SWEDashboard = () => {
     filteredInReview,
     filteredDone,
   } = useSWEFilters(
-    myTasks,
+    myTasks || [],
     inProgressTasks,
     inReviewTasks,
     doneTasks,
@@ -175,18 +171,15 @@ const SWEDashboard = () => {
 
   const workItemsStatus = useMemo(
     () => ({
-      todo: myTasks.filter((t) => t.status === 'todo').length,
+      todo: myTasks ? myTasks.filter((t) => t.status === 'todo').length : 0,
       inProgress: inProgressTasks.length,
       inReview: inReviewTasks.length,
       done: doneTasks.length,
-      blocked: myTasks.filter((t) => t.blocked).length,
-      total: myTasks.length,
+      blocked: myTasks ? myTasks.filter((t) => t.blocked).length : 0,
+      total: myTasks ? myTasks.length : 0,
     }),
     [myTasks, inProgressTasks, inReviewTasks, doneTasks]
   );
-
-  if (isLoading) return <DashboardSkeleton />;
-
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       <SWEHeader

@@ -53,7 +53,14 @@ const ReadField = ({ icon: Icon, value }) => (
 );
 
 // ─── Password input with show/hide ───────────────────────────────────────────
-const PasswordField = ({ id, label, value, onChange, placeholder, disabled }) => {
+const PasswordField = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  disabled,
+}) => {
   const [show, setShow] = useState(false);
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -91,16 +98,23 @@ const PasswordField = ({ id, label, value, onChange, placeholder, disabled }) =>
 
 // ─── Change Password Modal ────────────────────────────────────────────────────
 const ChangePasswordModal = ({ onClose }) => {
-  const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [form, setForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
   const [status, setStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; };
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, []);
 
-  const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const set = (field) => (e) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,17 +135,29 @@ const ChangePasswordModal = ({ onClose }) => {
 
     setStatus('loading');
     try {
-      await changePassword(form.currentPassword, form.newPassword, form.confirmPassword);
+      await changePassword(
+        form.currentPassword,
+        form.newPassword,
+        form.confirmPassword
+      );
       setStatus('success');
     } catch (err) {
-      setErrorMsg(err?.response?.data?.message || 'Something went wrong. Please try again.');
+      setErrorMsg(
+        err?.response?.data?.message ||
+          'Something went wrong. Please try again.'
+      );
       setStatus('error');
     }
   };
 
   const isLoading = status === 'loading';
   const strength = Math.min(4, Math.floor(form.newPassword.length / 3));
-  const strengthColor = strength <= 1 ? 'bg-red-500' : strength <= 2 ? 'bg-yellow-400' : 'bg-green-400';
+  const strengthColor =
+    strength <= 1
+      ? 'bg-red-500'
+      : strength <= 2
+        ? 'bg-yellow-400'
+        : 'bg-green-400';
 
   return createPortal(
     <div
@@ -139,7 +165,6 @@ const ChangePasswordModal = ({ onClose }) => {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="max-w-sm w-full bg-background-dark border border-white/5 rounded-[28px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-
         {/* Header */}
         <div className="flex justify-between items-start px-6 pt-6 pb-3">
           <div>
@@ -165,7 +190,9 @@ const ChangePasswordModal = ({ onClose }) => {
             <div className="w-16 h-16 bg-status-success/20 text-status-success rounded-full flex items-center justify-center mx-auto mb-4 border border-status-success/30 drop-shadow-[0_0_12px_rgba(34,197,94,0.3)]">
               <CheckCircle size={32} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1 tracking-tight">Password Updated</h3>
+            <h3 className="text-lg font-bold text-white mb-1 tracking-tight">
+              Password Updated
+            </h3>
             <p className="text-text-muted text-xs mb-5">
               Your credentials have been changed successfully.
             </p>
@@ -241,9 +268,17 @@ const ChangePasswordModal = ({ onClose }) => {
                 className="px-7 py-3 bg-primary hover:opacity-90 disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 relative overflow-hidden group"
               >
                 {isLoading ? (
-                  <><Loader2 className="animate-spin" size={14} /> Updating…</>
+                  <>
+                    <Loader2 className="animate-spin" size={14} /> Updating…
+                  </>
                 ) : (
-                  <><ShieldCheck size={14} className="group-hover:scale-110 transition-transform" /> Update Password</>
+                  <>
+                    <ShieldCheck
+                      size={14}
+                      className="group-hover:scale-110 transition-transform"
+                    />{' '}
+                    Update Password
+                  </>
                 )}
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </button>
@@ -267,7 +302,10 @@ export const IdentitySection = ({ user }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert('File size exceeds the 2 MB limit.'); return; }
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size exceeds the 2 MB limit.');
+      return;
+    }
     const formData = new FormData();
     formData.append('avatar', file);
     try {
@@ -297,7 +335,9 @@ export const IdentitySection = ({ user }) => {
                 alt={user.name}
               />
             ) : (
-              <span className="text-lg font-black text-white/50">{user.name.charAt(0)}</span>
+              <span className="text-lg font-black text-white/50">
+                {user.name.charAt(0)}
+              </span>
             )}
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -309,13 +349,23 @@ export const IdentitySection = ({ user }) => {
               </div>
             )}
           </button>
-          <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
         </div>
 
         {/* User info */}
         <div className="flex-1 min-w-0">
-          <div className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">Active User</div>
-          <div className="text-[12px] font-black text-white uppercase tracking-wider truncate">{user.name}</div>
+          <div className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">
+            Active User
+          </div>
+          <div className="text-[12px] font-black text-white uppercase tracking-wider truncate">
+            {user.name}
+          </div>
           <div className="text-[9px] text-white/50 truncate">{user.email}</div>
         </div>
 
@@ -344,7 +394,10 @@ export const IdentitySection = ({ user }) => {
         </div>
         <div>
           <FieldLabel>Member Since</FieldLabel>
-          <ReadField icon={Clock} value={new Date(user.createdAt).toLocaleDateString()} />
+          <ReadField
+            icon={Clock}
+            value={new Date(user.createdAt).toLocaleDateString()}
+          />
         </div>
       </div>
     </DeckWrapper>
@@ -393,7 +446,9 @@ const SecurityRow = ({ icon, title, desc, badge, onClick }) => (
             </span>
           )}
         </div>
-        <p className="text-[8px] text-white/40 uppercase tracking-[0.15em]">{desc}</p>
+        <p className="text-[8px] text-white/40 uppercase tracking-[0.15em]">
+          {desc}
+        </p>
       </div>
     </div>
     <ChevronRight

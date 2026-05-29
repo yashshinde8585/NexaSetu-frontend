@@ -78,12 +78,12 @@ const Profile = () => {
               {user.profilePicture ? (
                 <img
                   src={user.profilePicture}
-                  alt={user.name}
+                  alt={user.name || 'User'}
                   className="w-full h-full object-cover rounded"
                 />
               ) : (
                 <span className="text-xl font-black text-white/50">
-                  {user.name.charAt(0)}
+                  {(user.name || 'U').charAt(0)}
                 </span>
               )}
 
@@ -111,7 +111,7 @@ const Profile = () => {
             </div>
             <div>
               <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">
-                {user.name}
+                {user.name || 'User'}
               </h1>
               <div className="flex items-center gap-2 text-white/80">
                 <span className="uppercase tracking-[0.2em] text-primary text-[9px] font-black">
@@ -119,7 +119,7 @@ const Profile = () => {
                 </span>
                 <span className="w-1 h-1 bg-white/40 rounded-full" />
                 <span className="uppercase tracking-[0.2em] text-[9px] font-black">
-                  {user._id.slice(-8)}
+                  {(user._id || user.id || 'N/A').slice(-8)}
                 </span>
               </div>
             </div>
@@ -154,22 +154,29 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
                 <InfoRow
                   label="FULL_NAME"
-                  value={user.name}
+                  value={user.name || 'User'}
                   icon={<User size={12} />}
                 />
                 <InfoRow
                   label="EMAIL_ADDRESS"
-                  value={user.email}
+                  value={user.email || 'N/A'}
                   icon={<Mail size={12} />}
                 />
                 <InfoRow
                   label="ACCOUNT_ROLE"
-                  value={user.jobTitle || user.role.replace('_', ' ')}
+                  value={
+                    user.jobTitle ||
+                    (user.role || 'TEAM MEMBER').replace('_', ' ')
+                  }
                   icon={<Shield size={12} />}
                 />
                 <InfoRow
                   label="JOINED_WORKSPACE"
-                  value={new Date(user.createdAt).toLocaleDateString()}
+                  value={
+                    user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : 'N/A'
+                  }
                   icon={<Calendar size={12} />}
                 />
                 <InfoRow
@@ -221,7 +228,9 @@ const Profile = () => {
 
         {/* Professional Footer */}
         <footer className="pt-8 pb-4 border-t border-white/10 flex justify-end items-center text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-          <span>WORKSPACE_ID: {user._id.slice(0, 12)}</span>
+          <span>
+            WORKSPACE_ID: {(user._id || user.id || 'N/A').slice(0, 12)}
+          </span>
         </footer>
       </div>
     </div>

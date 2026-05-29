@@ -17,7 +17,9 @@ export const getRoleDashboard = (role) => {
   }
 
   if (['qa', 'sqa', 'qa_lead', 'hr'].includes(r)) {
-    return apiClient.get(API_ENDPOINTS.DASHBOARDS.OPERATIONS);
+    return apiClient.get(API_ENDPOINTS.DASHBOARDS.OPERATIONS, {
+      params: { view: r },
+    });
   }
 
   return apiClient.get(API_ENDPOINTS.DASHBOARDS.TACTICAL(r));

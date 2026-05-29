@@ -160,15 +160,41 @@ const Home = () => {
   };
 
   const SIMULATED_EVENTS = [
-    { text: 'commit: dev_sarah pushed "feat: add oauth2 integrations" to master', type: 'commit', val: 68 },
+    {
+      text: 'commit: dev_sarah pushed "feat: add oauth2 integrations" to master',
+      type: 'commit',
+      val: 68,
+    },
     { text: 'NexaSetu: auto-synced commit to "Sprint 3"', type: 'sync' },
-    { text: 'NexaSetu: Project progress updated to 68% (+3%)', type: 'progress', val: 68 },
-    { text: 'PR opened: dev_alex opened PR #114 "refactor: db query indexing"', type: 'pr' },
-    { text: 'NexaSetu: Blocker alert resolved for Task #42 by dev_alex', type: 'blocker' },
-    { text: 'NexaSetu: Project progress updated to 74% (+6%)', type: 'progress', val: 74 },
-    { text: 'commit: dev_john pushed "fix: resolve auth redirect crash" to master', type: 'commit', val: 80 },
+    {
+      text: 'NexaSetu: Project progress updated to 68% (+3%)',
+      type: 'progress',
+      val: 68,
+    },
+    {
+      text: 'PR opened: dev_alex opened PR #114 "refactor: db query indexing"',
+      type: 'pr',
+    },
+    {
+      text: 'NexaSetu: Blocker alert resolved for Task #42 by dev_alex',
+      type: 'blocker',
+    },
+    {
+      text: 'NexaSetu: Project progress updated to 74% (+6%)',
+      type: 'progress',
+      val: 74,
+    },
+    {
+      text: 'commit: dev_john pushed "fix: resolve auth redirect crash" to master',
+      type: 'commit',
+      val: 80,
+    },
     { text: 'NexaSetu: auto-assigned to Sprint 3', type: 'sync' },
-    { text: 'NexaSetu: Project progress updated to 80% (+6%)', type: 'progress', val: 80 },
+    {
+      text: 'NexaSetu: Project progress updated to 80% (+6%)',
+      type: 'progress',
+      val: 80,
+    },
     { text: 'NexaSetu: AI Sprint Summary generated for Sprint 3', type: 'ai' },
   ];
 
@@ -194,8 +220,15 @@ const Home = () => {
     const interval = setInterval(() => {
       const event = SIMULATED_EVENTS[index];
       setLogs((prev) => {
-        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const next = [...prev, { text: `[${timestamp}] ${event.text}`, type: event.type }];
+        const timestamp = new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+        const next = [
+          ...prev,
+          { text: `[${timestamp}] ${event.text}`, type: event.type },
+        ];
         if (next.length > 5) next.shift();
         return next;
       });
@@ -210,9 +243,15 @@ const Home = () => {
   // typing simulator for Command Bar card
   useEffect(() => {
     const commandsList = [
-      { cmd: '/sprint-summary', output: 'Sprint 3: 82% complete. 2 tasks blocked.' },
-      { cmd: '/assign-task #42 @alex', output: 'Assigned Alex Miller to Task #42.' },
-      { cmd: '/view-velocity', output: 'Velocity trend: +12% this week.' }
+      {
+        cmd: '/sprint-summary',
+        output: 'Sprint 3: 82% complete. 2 tasks blocked.',
+      },
+      {
+        cmd: '/assign-task #42 @alex',
+        output: 'Assigned Alex Miller to Task #42.',
+      },
+      { cmd: '/view-velocity', output: 'Velocity trend: +12% this week.' },
     ];
     let currentIdx = 0;
     let charIdx = 0;
@@ -265,7 +304,7 @@ const Home = () => {
     const rolesConfig = {
       Developer: { deploy: false, config: false },
       Lead: { deploy: true, config: false },
-      Admin: { deploy: true, config: true }
+      Admin: { deploy: true, config: true },
     };
     const currentPerms = rolesConfig[activeFeatureRole];
     return (
@@ -279,8 +318,11 @@ const Home = () => {
                 e.stopPropagation();
                 setActiveFeatureRole(r);
               }}
-              className={`flex-1 text-center py-1 text-[8px] font-black rounded uppercase transition-colors cursor-pointer ${activeFeatureRole === r ? 'bg-primary text-black' : 'text-white/40 hover:text-white'
-                }`}
+              className={`flex-1 text-center py-1 text-[8px] font-black rounded uppercase transition-colors cursor-pointer ${
+                activeFeatureRole === r
+                  ? 'bg-primary text-black'
+                  : 'text-white/40 hover:text-white'
+              }`}
             >
               {r}
             </button>
@@ -293,13 +335,25 @@ const Home = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-white/60">DEPLOY_PROD</span>
-            <span className={currentPerms.deploy ? 'text-status-success font-black' : 'text-status-error font-black'}>
+            <span
+              className={
+                currentPerms.deploy
+                  ? 'text-status-success font-black'
+                  : 'text-status-error font-black'
+              }
+            >
               {currentPerms.deploy ? 'ALLOWED' : 'DENIED'}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-white/60">WRITE_CONFIG</span>
-            <span className={currentPerms.config ? 'text-status-success font-black' : 'text-status-error font-black'}>
+            <span
+              className={
+                currentPerms.config
+                  ? 'text-status-success font-black'
+                  : 'text-status-error font-black'
+              }
+            >
               {currentPerms.config ? 'ALLOWED' : 'DENIED'}
             </span>
           </div>
@@ -316,9 +370,15 @@ const Home = () => {
           <span className="animate-pulse text-status-success">ACTIVE</span>
         </div>
         <div className="space-y-1 text-left text-white/70 overflow-hidden h-[54px] flex flex-col justify-end">
-          <div className="opacity-40 scale-95 origin-left transition-all">gh-webhook: branch 'main' updated</div>
-          <div className="opacity-70 scale-95 origin-left transition-all">sync-agent: processing 4 commits</div>
-          <div className="text-primary animate-pulse font-bold">NexaSetu: Sprint 3 progress updated (+4%)</div>
+          <div className="opacity-40 scale-95 origin-left transition-all">
+            gh-webhook: branch 'main' updated
+          </div>
+          <div className="opacity-70 scale-95 origin-left transition-all">
+            sync-agent: processing 4 commits
+          </div>
+          <div className="text-primary animate-pulse font-bold">
+            NexaSetu: Sprint 3 progress updated (+4%)
+          </div>
         </div>
       </div>
     );
@@ -381,12 +441,17 @@ const Home = () => {
           {[
             { name: 'Dev', status: 'Active', color: 'bg-primary' },
             { name: 'Staging', status: 'Active', color: 'bg-secondary' },
-            { name: 'Prod', status: 'Active', color: 'bg-status-success' }
+            { name: 'Prod', status: 'Active', color: 'bg-status-success' },
           ].map((env) => (
-            <div key={env.name} className="border border-white/5 p-1.5 rounded bg-white/[0.02] flex flex-col items-center">
+            <div
+              key={env.name}
+              className="border border-white/5 p-1.5 rounded bg-white/[0.02] flex flex-col items-center"
+            >
               <span className="text-white/80 font-bold">{env.name}</span>
               <div className="flex items-center gap-1 mt-1">
-                <span className={`w-1 h-1 rounded-full ${env.color} animate-pulse`} />
+                <span
+                  className={`w-1 h-1 rounded-full ${env.color} animate-pulse`}
+                />
                 <span className="text-[7px] text-white/40">{env.status}</span>
               </div>
             </div>
@@ -412,8 +477,13 @@ const Home = () => {
               </div>
               <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-1000 ${workloads[i] > 80 ? 'bg-status-error' : workloads[i] < 50 ? 'bg-status-warning' : 'bg-status-success'
-                    }`}
+                  className={`h-full transition-all duration-1000 ${
+                    workloads[i] > 80
+                      ? 'bg-status-error'
+                      : workloads[i] < 50
+                        ? 'bg-status-warning'
+                        : 'bg-status-success'
+                  }`}
                   style={{ width: `${workloads[i]}%` }}
                 />
               </div>
@@ -492,7 +562,11 @@ const Home = () => {
           </span>
         </div>
         <div className="h-24 w-full opacity-70">
-          <svg className="w-full h-full" viewBox="0 0 300 80" preserveAspectRatio="none">
+          <svg
+            className="w-full h-full"
+            viewBox="0 0 300 80"
+            preserveAspectRatio="none"
+          >
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#2D63FF" stopOpacity="0.2" />
@@ -542,7 +616,9 @@ const Home = () => {
             <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
               Project Progress
             </span>
-            <span className="text-[11px] font-black text-primary">{currentProgress}%</span>
+            <span className="text-[11px] font-black text-primary">
+              {currentProgress}%
+            </span>
           </div>
           <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden border border-white/10">
             <div
@@ -557,7 +633,9 @@ const Home = () => {
             AI Sprint Summary
           </span>
           <p className="text-[11px] text-white/85 leading-relaxed bg-black/40 border border-white/10 p-3 rounded-lg uppercase tracking-wide font-medium">
-            Team velocity increased this week. All major database optimizations are completed. 1 resolution of task blockages reported on database indexings.
+            Team velocity increased this week. All major database optimizations
+            are completed. 1 resolution of task blockages reported on database
+            indexings.
           </p>
         </div>
       </div>
@@ -571,9 +649,27 @@ const Home = () => {
       </span>
       <div className="space-y-3.5">
         {[
-          { name: 'Sarah Chen', role: 'Lead Developer', tasks: 3, pct: 30, color: 'bg-status-success' },
-          { name: 'Alex Miller', role: 'Senior Engineer', tasks: 5, pct: 75, color: 'bg-status-warning' },
-          { name: 'John Davis', role: 'Junior Developer', tasks: 2, pct: 20, color: 'bg-status-success' },
+          {
+            name: 'Sarah Chen',
+            role: 'Lead Developer',
+            tasks: 3,
+            pct: 30,
+            color: 'bg-status-success',
+          },
+          {
+            name: 'Alex Miller',
+            role: 'Senior Engineer',
+            tasks: 5,
+            pct: 75,
+            color: 'bg-status-warning',
+          },
+          {
+            name: 'John Davis',
+            role: 'Junior Developer',
+            tasks: 2,
+            pct: 20,
+            color: 'bg-status-success',
+          },
         ].map((member) => (
           <div
             key={member.name}
@@ -666,8 +762,11 @@ const Home = () => {
                   <button
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
-                    className={`flex-1 sm:flex-none px-3.5 py-1.5 text-[8px] font-black uppercase tracking-widest transition-all rounded-md ${activeTab === t.id ? 'bg-white text-black' : 'text-white/40 hover:text-white'
-                      }`}
+                    className={`flex-1 sm:flex-none px-3.5 py-1.5 text-[8px] font-black uppercase tracking-widest transition-all rounded-md ${
+                      activeTab === t.id
+                        ? 'bg-white text-black'
+                        : 'text-white/40 hover:text-white'
+                    }`}
                   >
                     {t.label}
                   </button>
@@ -746,7 +845,8 @@ const Home = () => {
                 Connect Git Provider
               </h3>
               <p className="text-white/60 text-xs font-normal leading-relaxed">
-                Connect NexaSetu to GitHub in seconds. Our webhooks listen to commits, PR status, and branch updates automatically.
+                Connect NexaSetu to GitHub in seconds. Our webhooks listen to
+                commits, PR status, and branch updates automatically.
               </p>
             </div>
           </div>
@@ -765,7 +865,9 @@ const Home = () => {
                 Align Projects & Sprints
               </h3>
               <p className="text-white/60 text-xs font-normal leading-relaxed">
-                Reorganize repositories into project cycles, configure teams, and map sprint deliverables. NexaSetu automatically structures tasks and capacities.
+                Reorganize repositories into project cycles, configure teams,
+                and map sprint deliverables. NexaSetu automatically structures
+                tasks and capacities.
               </p>
             </div>
           </div>
@@ -784,7 +886,9 @@ const Home = () => {
                 Continuous Intelligence
               </h3>
               <p className="text-white/60 text-xs font-normal leading-relaxed">
-                Instantly track team velocity, flow efficiency, and blockages. Get daily updates and automated AI-driven summaries without manual documentation.
+                Instantly track team velocity, flow efficiency, and blockages.
+                Get daily updates and automated AI-driven summaries without
+                manual documentation.
               </p>
             </div>
           </div>
@@ -829,7 +933,6 @@ const Home = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 bg-white/15 gap-[1px] border border-white/10 overflow-hidden rounded-xl">
-
           {/* Feature 1: Access Control */}
           <div className="md:col-span-4 bg-background-light p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px]">
             <div className="space-y-4">
@@ -846,7 +949,8 @@ const Home = () => {
                   Access Control
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed">
-                  Secure organizational workspaces with precise, role-based visibility controls.
+                  Secure organizational workspaces with precise, role-based
+                  visibility controls.
                 </p>
               </div>
             </div>
@@ -869,7 +973,8 @@ const Home = () => {
                   Codebase Sync
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed max-w-md">
-                  Sync GitHub repositories to track PRs, commits, and deployment status in real-time.
+                  Sync GitHub repositories to track PRs, commits, and deployment
+                  status in real-time.
                 </p>
               </div>
             </div>
@@ -892,7 +997,8 @@ const Home = () => {
                   Health Metrics
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed max-w-md">
-                  Monitor sprint velocity and eliminate project blockages with predictive insights.
+                  Monitor sprint velocity and eliminate project blockages with
+                  predictive insights.
                 </p>
               </div>
             </div>
@@ -915,7 +1021,8 @@ const Home = () => {
                   Command Bar
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed">
-                  Manage workspace operations through a natural language interface.
+                  Manage workspace operations through a natural language
+                  interface.
                 </p>
               </div>
             </div>
@@ -938,7 +1045,8 @@ const Home = () => {
                   Environments
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed">
-                  Configure multiple workspaces and projects for different teams.
+                  Configure multiple workspaces and projects for different
+                  teams.
                 </p>
               </div>
             </div>
@@ -961,7 +1069,8 @@ const Home = () => {
                   Workload Balancing
                 </h3>
                 <p className="text-white/60 text-xs font-normal leading-relaxed">
-                  Visualize cross-team dependencies and optimize team workload distribution.
+                  Visualize cross-team dependencies and optimize team workload
+                  distribution.
                 </p>
               </div>
             </div>
@@ -988,24 +1097,44 @@ const Home = () => {
           {/* Left: Role Selection Tabs */}
           <div className="lg:col-span-4 flex flex-row lg:flex-col gap-2.5 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0">
             {[
-              { id: 'executive', label: 'Executive Leadership', desc: 'CTOs & Engineering VPs' },
-              { id: 'delivery', label: 'Product Delivery', desc: 'EMs & Product Managers' },
-              { id: 'engineering', label: 'Software Engineers', desc: 'Individual Contributors' },
-              { id: 'devops', label: 'DevOps & Admins', desc: 'System Administrators' }
+              {
+                id: 'executive',
+                label: 'Executive Leadership',
+                desc: 'CTOs & Engineering VPs',
+              },
+              {
+                id: 'delivery',
+                label: 'Product Delivery',
+                desc: 'EMs & Product Managers',
+              },
+              {
+                id: 'engineering',
+                label: 'Software Engineers',
+                desc: 'Individual Contributors',
+              },
+              {
+                id: 'devops',
+                label: 'DevOps & Admins',
+                desc: 'System Administrators',
+              },
             ].map((role) => (
               <button
                 key={role.id}
                 onClick={() => setActiveRole(role.id)}
-                className={`w-full text-left p-5 rounded-xl border transition-all flex flex-col justify-center min-w-[200px] lg:min-w-0 cursor-pointer ${activeRole === role.id
-                  ? 'bg-white border-white text-black'
-                  : 'bg-white/5 border-white/10 text-white hover:bg-white/[0.08]'
-                  }`}
+                className={`w-full text-left p-5 rounded-xl border transition-all flex flex-col justify-center min-w-[200px] lg:min-w-0 cursor-pointer ${
+                  activeRole === role.id
+                    ? 'bg-white border-white text-black'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/[0.08]'
+                }`}
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider block mb-1">
                   {role.label}
                 </span>
-                <span className={`text-[8px] uppercase tracking-widest ${activeRole === role.id ? 'text-black/60' : 'text-white/40'
-                  }`}>
+                <span
+                  className={`text-[8px] uppercase tracking-widest ${
+                    activeRole === role.id ? 'text-black/60' : 'text-white/40'
+                  }`}
+                >
                   {role.desc}
                 </span>
               </button>
@@ -1031,30 +1160,45 @@ const Home = () => {
               </div>
               <div className="space-y-4">
                 <div>
-                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">The Challenge</span>
+                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">
+                    The Challenge
+                  </span>
                   <p className="text-white/60 text-xs leading-relaxed font-normal">
-                    {activeRole === 'executive' && 'CTOs lack real-time visibility into whether engineering output is actually aligned with strategic roadmaps, resulting in manual sync calls.'}
-                    {activeRole === 'delivery' && 'Managers spend hours chasing updates to figure out if a sprint is on track, only discovering blockages at the end of the sprint.'}
-                    {activeRole === 'engineering' && 'Developers are forced to manually update Jira tickets, write sprint updates, and break their focus with administrative overhead.'}
-                    {activeRole === 'devops' && 'Admins need secure role-based controls and workspace access management that automatically aligns with corporate compliance rules.'}
+                    {activeRole === 'executive' &&
+                      'CTOs lack real-time visibility into whether engineering output is actually aligned with strategic roadmaps, resulting in manual sync calls.'}
+                    {activeRole === 'delivery' &&
+                      'Managers spend hours chasing updates to figure out if a sprint is on track, only discovering blockages at the end of the sprint.'}
+                    {activeRole === 'engineering' &&
+                      'Developers are forced to manually update Jira tickets, write sprint updates, and break their focus with administrative overhead.'}
+                    {activeRole === 'devops' &&
+                      'Admins need secure role-based controls and workspace access management that automatically aligns with corporate compliance rules.'}
                   </p>
                 </div>
                 <div>
-                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">The NexaSetu Solution</span>
+                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">
+                    The NexaSetu Solution
+                  </span>
                   <p className="text-white/80 text-xs leading-relaxed font-normal">
-                    {activeRole === 'executive' && 'NexaSetu compiles repository activities into executive dashboards, displaying high-level project statuses and roadmap metrics automatically.'}
-                    {activeRole === 'delivery' && 'NexaSetu auto-tracks progress and alerts leads when sprint deliverables are blocked by pending pull requests or active developer fatigue.'}
-                    {activeRole === 'engineering' && 'NexaSetu works in the background. Simply write commits and open pull requests—the platform automatically maps commits to active sprint tasks.'}
-                    {activeRole === 'devops' && 'Secure organizational workspaces with precise, role-based controls and audit logs. Verify branch sync statuses in real-time.'}
+                    {activeRole === 'executive' &&
+                      'NexaSetu compiles repository activities into executive dashboards, displaying high-level project statuses and roadmap metrics automatically.'}
+                    {activeRole === 'delivery' &&
+                      'NexaSetu auto-tracks progress and alerts leads when sprint deliverables are blocked by pending pull requests or active developer fatigue.'}
+                    {activeRole === 'engineering' &&
+                      'NexaSetu works in the background. Simply write commits and open pull requests—the platform automatically maps commits to active sprint tasks.'}
+                    {activeRole === 'devops' &&
+                      'Secure organizational workspaces with precise, role-based controls and audit logs. Verify branch sync statuses in real-time.'}
                   </p>
                 </div>
               </div>
               <div className="pt-4 border-t border-white/5 flex gap-8">
                 <div>
-                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">Outcome Metric</span>
+                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest block mb-1">
+                    Outcome Metric
+                  </span>
                   <span className="text-sm font-bold text-status-success uppercase tracking-wide">
                     {activeRole === 'executive' && '92% Fewer Status Meetings'}
-                    {activeRole === 'delivery' && '3.4x Faster Issue Resolution'}
+                    {activeRole === 'delivery' &&
+                      '3.4x Faster Issue Resolution'}
                     {activeRole === 'engineering' && '100% Automated Updates'}
                     {activeRole === 'devops' && 'Zero Config Overhead'}
                   </span>
@@ -1067,7 +1211,9 @@ const Home = () => {
               {activeRole === 'executive' && (
                 <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="font-bold text-white/60">PORTFOLIO OVERVIEW</span>
+                    <span className="font-bold text-white/60">
+                      PORTFOLIO OVERVIEW
+                    </span>
                     <span className="text-primary">Q2 ROADMAP</span>
                   </div>
                   <div className="flex gap-4 items-center">
@@ -1081,7 +1227,9 @@ const Home = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="truncate mr-2">Budget Burn</span>
-                        <span className="font-bold text-status-success">On Track</span>
+                        <span className="font-bold text-status-success">
+                          On Track
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="truncate mr-2">Avg Velocity</span>
@@ -1094,17 +1242,25 @@ const Home = () => {
               {activeRole === 'delivery' && (
                 <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="font-bold text-white/60">DELIVERY SPEED</span>
+                    <span className="font-bold text-white/60">
+                      DELIVERY SPEED
+                    </span>
                     <span className="text-secondary">SPRINT 3</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-[8px] border border-white/5 p-1.5 rounded bg-white/[0.01]">
-                      <span className="truncate mr-2">TASK #42: DB Indexing</span>
-                      <span className="px-1.5 py-0.5 bg-status-error/10 border border-status-error/20 text-status-error font-bold rounded shrink-0">BLOCKED</span>
+                      <span className="truncate mr-2">
+                        TASK #42: DB Indexing
+                      </span>
+                      <span className="px-1.5 py-0.5 bg-status-error/10 border border-status-error/20 text-status-error font-bold rounded shrink-0">
+                        BLOCKED
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-[8px] border border-white/5 p-1.5 rounded bg-white/[0.01]">
                       <span className="truncate mr-2">TASK #44: OAuth API</span>
-                      <span className="px-1.5 py-0.5 bg-status-success/10 border border-status-success/20 text-status-success font-bold rounded shrink-0">IN REVIEW</span>
+                      <span className="px-1.5 py-0.5 bg-status-success/10 border border-status-success/20 text-status-success font-bold rounded shrink-0">
+                        IN REVIEW
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1112,16 +1268,24 @@ const Home = () => {
               {activeRole === 'engineering' && (
                 <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="font-bold text-white/60">MY WORKSPACE</span>
+                    <span className="font-bold text-white/60">
+                      MY WORKSPACE
+                    </span>
                     <span className="text-status-success">CONNECTED</span>
                   </div>
                   <div className="space-y-2">
                     <div className="bg-white/5 border border-white/5 p-2.5 rounded">
                       <div className="flex justify-between font-bold">
-                        <span className="truncate mr-2">#31 Fix SSO redirect</span>
-                        <span className="text-primary shrink-0">In Progress</span>
+                        <span className="truncate mr-2">
+                          #31 Fix SSO redirect
+                        </span>
+                        <span className="text-primary shrink-0">
+                          In Progress
+                        </span>
                       </div>
-                      <p className="text-[7.5px] text-white/40 mt-1.5">Last commit: 'fix: clear cookie store' 10m ago</p>
+                      <p className="text-[7.5px] text-white/40 mt-1.5">
+                        Last commit: 'fix: clear cookie store' 10m ago
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1129,17 +1293,25 @@ const Home = () => {
               {activeRole === 'devops' && (
                 <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="font-bold text-white/60">SECURITY GATEWAY</span>
+                    <span className="font-bold text-white/60">
+                      SECURITY GATEWAY
+                    </span>
                     <span className="text-status-warning">ENFORCED</span>
                   </div>
                   <div className="space-y-1.5">
                     <div className="flex justify-between">
                       <span className="truncate mr-2">SSO Authentication</span>
-                      <span className="text-status-success font-bold shrink-0">SAML2 Ok</span>
+                      <span className="text-status-success font-bold shrink-0">
+                        SAML2 Ok
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="truncate mr-2">Repository Audit Logs</span>
-                      <span className="text-status-success font-bold shrink-0">Synced</span>
+                      <span className="truncate mr-2">
+                        Repository Audit Logs
+                      </span>
+                      <span className="text-status-success font-bold shrink-0">
+                        Synced
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="truncate mr-2">Token Expiry Range</span>
@@ -1170,26 +1342,44 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 pt-4">
             {/* Billing Cycle Toggle */}
             <div className="flex items-center gap-3">
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-white/40'
-                }`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                  billingCycle === 'monthly' ? 'text-white' : 'text-white/40'
+                }`}
+              >
                 Monthly
               </span>
               <button
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
+                onClick={() =>
+                  setBillingCycle(
+                    billingCycle === 'monthly' ? 'annual' : 'monthly'
+                  )
+                }
                 className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
-                  billingCycle === 'annual' ? 'bg-status-success/20 border-status-success/30' : 'bg-white/10 border-white/10'
+                  billingCycle === 'annual'
+                    ? 'bg-status-success/20 border-status-success/30'
+                    : 'bg-white/10 border-white/10'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
-                  billingCycle === 'annual' ? 'translate-x-4 bg-status-success' : 'translate-x-0 bg-white'
-                }`}>
-                  <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${
-                    billingCycle === 'annual' ? 'bg-white' : 'bg-black/30'
-                  }`} />
+                <div
+                  className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                    billingCycle === 'annual'
+                      ? 'translate-x-4 bg-status-success'
+                      : 'translate-x-0 bg-white'
+                  }`}
+                >
+                  <div
+                    className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                      billingCycle === 'annual' ? 'bg-white' : 'bg-black/30'
+                    }`}
+                  />
                 </div>
               </button>
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${billingCycle === 'annual' ? 'text-white' : 'text-white/40'
-                }`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${
+                  billingCycle === 'annual' ? 'text-white' : 'text-white/40'
+                }`}
+              >
                 Annually
                 <span className="bg-status-success/15 border border-status-success/20 text-status-success text-[7px] font-black px-1.5 py-0.5 rounded tracking-wide">
                   SAVE 20%
@@ -1199,26 +1389,40 @@ const Home = () => {
 
             {/* Currency Toggle */}
             <div className="flex items-center gap-3">
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${currency === 'inr' ? 'text-white' : 'text-white/40'
-                }`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                  currency === 'inr' ? 'text-white' : 'text-white/40'
+                }`}
+              >
                 INR (₹)
               </span>
               <button
                 onClick={() => setCurrency(currency === 'inr' ? 'usd' : 'inr')}
                 className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
-                  currency === 'usd' ? 'bg-primary/20 border-primary/30' : 'bg-white/10 border-white/10'
+                  currency === 'usd'
+                    ? 'bg-primary/20 border-primary/30'
+                    : 'bg-white/10 border-white/10'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
-                  currency === 'usd' ? 'translate-x-4 bg-primary' : 'translate-x-0 bg-white'
-                }`}>
-                  <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${
-                    currency === 'usd' ? 'bg-white' : 'bg-black/30'
-                  }`} />
+                <div
+                  className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                    currency === 'usd'
+                      ? 'translate-x-4 bg-primary'
+                      : 'translate-x-0 bg-white'
+                  }`}
+                >
+                  <div
+                    className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                      currency === 'usd' ? 'bg-white' : 'bg-black/30'
+                    }`}
+                  />
                 </div>
               </button>
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${currency === 'usd' ? 'text-white' : 'text-white/40'
-                }`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                  currency === 'usd' ? 'text-white' : 'text-white/40'
+                }`}
+              >
                 USD ($)
               </span>
             </div>
@@ -1242,9 +1446,14 @@ const Home = () => {
             },
             {
               plan: 'PRO',
-              price: currency === 'inr'
-                ? (billingCycle === 'monthly' ? '₹799' : '₹639')
-                : (billingCycle === 'monthly' ? '$10' : '$8'),
+              price:
+                currency === 'inr'
+                  ? billingCycle === 'monthly'
+                    ? '₹799'
+                    : '₹639'
+                  : billingCycle === 'monthly'
+                    ? '$10'
+                    : '$8',
               priceAnnualNum: currency === 'inr' ? 639 : 8,
               desc: 'Advanced features for growing teams and serious engineering.',
               features: [
@@ -1260,9 +1469,14 @@ const Home = () => {
             },
             {
               plan: 'ENTERPRISE',
-              price: currency === 'inr'
-                ? (billingCycle === 'monthly' ? '₹2,999' : '₹2,399')
-                : (billingCycle === 'monthly' ? '$36' : '$29'),
+              price:
+                currency === 'inr'
+                  ? billingCycle === 'monthly'
+                    ? '₹2,999'
+                    : '₹2,399'
+                  : billingCycle === 'monthly'
+                    ? '$36'
+                    : '$29',
               priceAnnualNum: currency === 'inr' ? 2399 : 29,
               desc: 'Maximum scale, priority support, and unlimited intelligence.',
               features: [
@@ -1298,17 +1512,22 @@ const Home = () => {
                 <span className="text-4xl md:text-5xl font-black tracking-tighter text-white">
                   {p.price}
                 </span>
-                <span className="text-[10px] font-bold text-white/40 uppercase">/ MO</span>
+                <span className="text-[10px] font-bold text-white/40 uppercase">
+                  / MO
+                </span>
               </div>
-              <span className={`text-[10px] font-bold block mb-6 ${
-                billingCycle === 'annual' && p.plan !== 'FREE' ? 'text-status-success' : 'text-white/40'
-              }`}>
+              <span
+                className={`text-[10px] font-bold block mb-6 ${
+                  billingCycle === 'annual' && p.plan !== 'FREE'
+                    ? 'text-status-success'
+                    : 'text-white/40'
+                }`}
+              >
                 {p.plan === 'FREE'
                   ? 'Free forever'
                   : billingCycle === 'monthly'
                     ? 'Billed monthly'
-                    : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`
-                }
+                    : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`}
               </span>
               <p className="text-white/40 text-[10px] font-normal leading-relaxed mb-8 h-10">
                 {p.desc}
@@ -1316,10 +1535,11 @@ const Home = () => {
 
               <Link
                 to="/register"
-                className={`w-full py-4 text-[10px] font-bold uppercase tracking-widest transition-all text-center mb-10 rounded cursor-pointer ${p.recommended
-                  ? 'bg-white text-black hover:invert'
-                  : 'border border-white/10 text-white hover:bg-white hover:text-black'
-                  }`}
+                className={`w-full py-4 text-[10px] font-bold uppercase tracking-widest transition-all text-center mb-10 rounded cursor-pointer ${
+                  p.recommended
+                    ? 'bg-white text-black hover:invert'
+                    : 'border border-white/10 text-white hover:bg-white hover:text-black'
+                }`}
               >
                 {p.cta}
               </Link>
@@ -1347,8 +1567,8 @@ const Home = () => {
               NexaSetu
             </h2>
             <p className="text-white/40 text-[10px] md:text-xs font-normal leading-relaxed tracking-wider uppercase">
-              Standardizing engineering execution through unified tools.
-              Built for team reliability.
+              Standardizing engineering execution through unified tools. Built
+              for team reliability.
             </p>
           </div>
           <div className="flex flex-col gap-8 text-left md:text-right w-full md:w-auto">
