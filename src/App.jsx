@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 
 import MainLayout from './components/layouts/MainLayout';
 import Toaster from './components/atoms/Toaster';
+import DashboardSkeleton from './components/atoms/DashboardSkeleton';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { publicRoutes, privateRoutes } from './routes/config';
 import { useAuth } from './context/AuthContext';
@@ -134,13 +135,7 @@ const App = () => {
   return (
     <MainLayout>
       <Toaster />
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center p-20">
-            <Loader2 className="animate-spin text-primary" size={32} />
-          </div>
-        }
-      >
+      <Suspense fallback={<DashboardSkeleton />}>
         <Routes>
           {/* Public Routes */}
           {publicRoutes.map(({ path, component: Component, exact }) => (

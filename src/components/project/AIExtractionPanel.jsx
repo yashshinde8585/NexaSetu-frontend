@@ -82,32 +82,32 @@ const AIExtractionPanel = ({
     >
       {/* AI Intelligence Core (Input Section) */}
       <div
-        className={`bg-white/5 p-6 rounded-2xl border border-white/20 transition-all hover:bg-white/[0.08] ${aiSuggestion ? 'sticky top-6' : ''}`}
+        className={`bg-background-elevated p-6 rounded-2xl border border-border-subtle transition-all hover:bg-white/[0.08] ${aiSuggestion ? 'sticky top-6' : ''}`}
       >
-        <div className="flex items-center gap-4 mb-4 pb-3 border-b border-white/10">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">
+        <div className="flex items-center gap-4 mb-4 pb-3 border-b border-border-subtle">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-subtle">
             DESCRIBE YOUR TASK TO AUTO-GENERATE DETAILS
           </h3>
         </div>
 
         <div className="space-y-6">
           <textarea
-            className="w-full bg-black border border-white/25 text-[13px] font-black text-white px-5 py-4 rounded-xl focus:border-primary focus:bg-white/5 focus:outline-none placeholder:text-white/40 transition-all leading-relaxed min-h-[200px] tracking-widest shadow-inner"
+            className="w-full bg-background-dark border border-white/25 text-[13px] font-black text-text px-5 py-4 rounded-xl focus:border-primary focus:bg-background-elevated focus:outline-none placeholder:text-text-subtle transition-all leading-relaxed min-h-[200px] tracking-widest shadow-inner"
             placeholder="e.g., 'OPTIMIZE AUTHENTICATION MIDDLEWARE FOR JWT STANDARDS...'"
             value={aiInput}
             onChange={(e) => setAiInput(e.target.value)}
           />
-          <div className="pt-5 border-t border-white/10">
+          <div className="pt-5 border-t border-border-subtle">
             <Button
               onClick={handleAiExtract}
               disabled={isAiProcessing || !aiInput.trim()}
               variant="primary"
-              className="w-full h-12 text-[10px] font-black uppercase tracking-[0.3em] bg-primary text-black border-none hover:bg-primary/90 transition-all active:scale-[0.98]"
+              className="w-full h-12 text-[10px] font-black uppercase tracking-[0.3em] bg-primary text-background-dark border-none hover:bg-primary/90 transition-all active:scale-[0.98]"
             >
               {isAiProcessing ? (
                 <RefreshCw size={18} className="animate-spin mr-3" />
               ) : (
-                <Sparkles size={18} className="mr-3 text-black/40" />
+                <Sparkles size={18} className="mr-3 text-background-dark/40" />
               )}
               {isAiProcessing
                 ? 'EXTRACTING PARAMETERS...'
@@ -119,11 +119,11 @@ const AIExtractionPanel = ({
 
       {/* Suggested Object Manifest */}
       {aiSuggestion && (
-        <div className="bg-white/5 p-6 rounded-2xl border border-white/20 transition-all hover:bg-white/[0.08] animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
-          <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+        <div className="bg-background-elevated p-6 rounded-2xl border border-border-subtle transition-all hover:bg-white/[0.08] animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="flex justify-between items-center mb-4 pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-4">
               <div className="space-y-1">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-subtle">
                   VERIFIED AI TASK RECOMMENDATION
                 </h3>
               </div>
@@ -134,12 +134,12 @@ const AIExtractionPanel = ({
             {/* Phase 1: Identity (Title & Priority) */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_180px_180px] gap-4">
               <div className="space-y-1.5">
-                <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+                <label className="block text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
                   TASK TITLE
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-white/5 border border-white/10 text-[13px] font-black text-white px-5 py-3.5 rounded-xl focus:border-primary/50 focus:bg-white/[0.08] focus:outline-none transition-all tracking-tight"
+                  className="w-full bg-background-elevated border border-border-subtle text-[13px] font-black text-text px-5 py-3.5 rounded-xl focus:border-primary/50 focus:bg-white/[0.08] focus:outline-none transition-all tracking-tight"
                   value={aiSuggestion.title}
                   onChange={(e) =>
                     setAiSuggestion({ ...aiSuggestion, title: e.target.value })
@@ -148,11 +148,11 @@ const AIExtractionPanel = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+                <label className="block text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
                   TYPE
                 </label>
                 <select
-                  className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-5 py-3.5 rounded-xl focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer tracking-widest"
+                  className="w-full bg-background-elevated border border-border-subtle text-[11px] font-black text-text px-5 py-3.5 rounded-xl focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer tracking-widest"
                   value={aiSuggestion.type || TASK_TYPE.TASK}
                   onChange={(e) =>
                     setAiSuggestion({ ...aiSuggestion, type: e.target.value })
@@ -180,11 +180,11 @@ const AIExtractionPanel = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+                <label className="block text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
                   PRIORITY
                 </label>
                 <select
-                  className="w-full bg-white/5 border border-white/10 text-[11px] font-black text-white px-5 py-3.5 rounded-xl focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer tracking-widest"
+                  className="w-full bg-background-elevated border border-border-subtle text-[11px] font-black text-text px-5 py-3.5 rounded-xl focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer tracking-widest"
                   value={aiSuggestion.priority || 'medium'}
                   onChange={(e) =>
                     setAiSuggestion({
@@ -211,11 +211,11 @@ const AIExtractionPanel = ({
 
             {/* Phase 2: Context (Description) */}
             <div className="space-y-1.5">
-              <label className="block text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
+              <label className="block text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
                 TASK DESCRIPTION
               </label>
               <textarea
-                className="w-full bg-white/5 border border-white/10 text-[13px] font-black text-white px-6 py-4 rounded-xl focus:border-primary/50 focus:bg-white/[0.08] focus:outline-none transition-all h-[140px] resize-none tracking-widest leading-relaxed shadow-inner"
+                className="w-full bg-background-elevated border border-border-subtle text-[13px] font-black text-text px-6 py-4 rounded-xl focus:border-primary/50 focus:bg-white/[0.08] focus:outline-none transition-all h-[140px] resize-none tracking-widest leading-relaxed shadow-inner"
                 value={aiSuggestion.description}
                 onChange={(e) =>
                   setAiSuggestion({
@@ -227,13 +227,13 @@ const AIExtractionPanel = ({
             </div>
 
             {/* Phase 3: Logistics (Assignee, Sprint, Duration, Start Date) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-4 border-t border-white/5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-4 border-t border-border-subtler">
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
-                  <UserPlus size={12} className="text-white/30" /> ASSIGN TO
+                <label className="flex items-center gap-2 text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
+                  <UserPlus size={12} className="text-text-subtle" /> ASSIGN TO
                 </label>
                 <select
-                  className="w-full bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
+                  className="w-full bg-background-elevated border border-border-subtle text-[10px] font-black text-text px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
                   value={aiSuggestion.assignedUser || ''}
                   onChange={(e) =>
                     setAiSuggestion({
@@ -260,11 +260,11 @@ const AIExtractionPanel = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
-                  <Layers size={12} className="text-white/30" /> SPRINT
+                <label className="flex items-center gap-2 text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
+                  <Layers size={12} className="text-text-subtle" /> SPRINT
                 </label>
                 <select
-                  className="w-full bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
+                  className="w-full bg-background-elevated border border-border-subtle text-[10px] font-black text-text px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
                   value={aiSuggestion.sprint || ''}
                   onChange={(e) =>
                     setAiSuggestion({ ...aiSuggestion, sprint: e.target.value })
@@ -282,11 +282,11 @@ const AIExtractionPanel = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
-                  <Clock size={12} className="text-white/30" /> DURATION
+                <label className="flex items-center gap-2 text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
+                  <Clock size={12} className="text-text-subtle" /> DURATION
                 </label>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center bg-white/5 rounded-lg border border-white/10 h-[42px] overflow-hidden flex-1">
+                  <div className="flex items-center bg-background-elevated rounded-lg border border-border-subtle h-[42px] overflow-hidden flex-1">
                     <button
                       type="button"
                       onClick={() =>
@@ -298,13 +298,13 @@ const AIExtractionPanel = ({
                           ),
                         })
                       }
-                      className="w-10 h-full flex items-center justify-center text-white/30 hover:text-white transition-all border-r border-white/5"
+                      className="w-10 h-full flex items-center justify-center text-text-subtle hover:text-text transition-all border-r border-border-subtler"
                     >
                       <Minus size={14} />
                     </button>
                     <input
                       type="number"
-                      className="bg-transparent text-[11px] font-black text-white text-center w-full focus:outline-none"
+                      className="bg-transparent text-[11px] font-black text-text text-center w-full focus:outline-none"
                       value={aiSuggestion.estimatedDuration || 30}
                       onChange={(e) =>
                         setAiSuggestion({
@@ -322,7 +322,7 @@ const AIExtractionPanel = ({
                             (aiSuggestion.estimatedDuration || 0) + 5,
                         })
                       }
-                      className="w-10 h-full flex items-center justify-center text-white/30 hover:text-white transition-all border-l border-white/5"
+                      className="w-10 h-full flex items-center justify-center text-text-subtle hover:text-text transition-all border-l border-border-subtler"
                     >
                       <Plus size={14} />
                     </button>
@@ -341,7 +341,7 @@ const AIExtractionPanel = ({
                           ],
                       });
                     }}
-                    className="px-4 h-[42px] bg-white/5 border border-white/10 rounded-lg text-[9px] font-black text-white/60 uppercase transition-all hover:bg-white/10 active:scale-95"
+                    className="px-4 h-[42px] bg-background-elevated border border-border-subtle rounded-lg text-[9px] font-black text-text-subtle uppercase transition-all hover:bg-background-elevated active:scale-95"
                   >
                     {aiSuggestion.durationUnit === 'minutes'
                       ? 'min'
@@ -351,8 +351,8 @@ const AIExtractionPanel = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[9px] font-black text-white/50 uppercase tracking-[0.3em] ml-1">
-                  <Calendar size={12} className="text-white/30" /> START DATE
+                <label className="flex items-center gap-2 text-[9px] font-black text-text-subtle uppercase tracking-[0.3em] ml-1">
+                  <Calendar size={12} className="text-text-subtle" /> START DATE
                 </label>
                 <DatePicker
                   selected={
@@ -363,7 +363,7 @@ const AIExtractionPanel = ({
                   onChange={(date) =>
                     setAiSuggestion({ ...aiSuggestion, startDate: date })
                   }
-                  className="w-full bg-white/5 border border-white/10 text-[10px] font-black text-white px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
+                  className="w-full bg-background-elevated border border-border-subtle text-[10px] font-black text-text px-4 py-3 rounded-xl focus:border-primary/50 transition-all outline-none"
                   placeholderText="SELECT START DATE"
                   dateFormat="MMM d, yyyy"
                 />
@@ -372,8 +372,8 @@ const AIExtractionPanel = ({
           </div>
 
           {/* AI Attachment Extension */}
-          <div className="space-y-3 pt-3 border-t border-white/5">
-            <label className="flex items-center gap-2 text-[9px] font-black text-white/70 uppercase tracking-[0.3em] ml-1">
+          <div className="space-y-3 pt-3 border-t border-border-subtler">
+            <label className="flex items-center gap-2 text-[9px] font-black text-text/70 uppercase tracking-[0.3em] ml-1">
               <Paperclip size={10} className="text-primary" /> ATTACHMENTS
             </label>
 
@@ -381,16 +381,16 @@ const AIExtractionPanel = ({
               {aiSuggestion.attachments?.map((file, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg group transition-all hover:bg-white/10"
+                  className="flex items-center gap-2 bg-background-elevated border border-border-subtle px-3 py-1.5 rounded-lg group transition-all hover:bg-background-elevated"
                 >
                   <FileIcon size={12} className="text-primary-light" />
-                  <span className="text-[9px] font-bold text-white/80 truncate max-w-[120px]">
+                  <span className="text-[9px] font-bold text-text-muted truncate max-w-[120px]">
                     {file.name}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeAttachment(idx)}
-                    className="text-white/20 hover:text-status-error transition-colors"
+                    className="text-text-subtler hover:text-status-error transition-colors"
                   >
                     <X size={12} />
                   </button>
@@ -398,14 +398,14 @@ const AIExtractionPanel = ({
               ))}
 
               <label
-                className={`flex items-center gap-2 px-4 py-2 border border-dashed border-white/10 rounded-lg cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all ${uploading ? 'opacity-50 cursor-wait' : ''}`}
+                className={`flex items-center gap-2 px-4 py-2 border border-dashed border-border-subtle rounded-lg cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all ${uploading ? 'opacity-50 cursor-wait' : ''}`}
               >
                 {uploading ? (
                   <Loader2 size={12} className="text-primary animate-spin" />
                 ) : (
-                  <Paperclip size={12} className="text-white/40" />
+                  <Paperclip size={12} className="text-text-subtle" />
                 )}
-                <span className="text-[9px] font-black uppercase tracking-widest text-white/60">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
                   {uploading ? 'UPLOADING...' : 'ATTACH FILES'}
                 </span>
                 <input
@@ -419,11 +419,11 @@ const AIExtractionPanel = ({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mt-6 pt-5 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row gap-4 mt-6 pt-5 border-t border-border-subtle">
             <Button
               onClick={() => handleCreateTask(aiSuggestion)}
               variant="primary"
-              className="flex-1 h-12 text-[10px] font-black uppercase tracking-[0.3em] bg-primary text-black border-none hover:bg-primary/90 transition-all active:scale-[0.98]"
+              className="flex-1 h-12 text-[10px] font-black uppercase tracking-[0.3em] bg-primary text-background-dark border-none hover:bg-primary/90 transition-all active:scale-[0.98]"
             >
               <Check size={18} strokeWidth={3} className="mr-3" /> COMMIT
               OBJECTIVE
@@ -431,7 +431,7 @@ const AIExtractionPanel = ({
             <Button
               onClick={() => setAiSuggestion(null)}
               variant="danger"
-              className="h-12 px-10 text-[10px] font-black uppercase tracking-[0.3em] bg-white/10 border border-white/20 text-white hover:bg-status-error hover:text-black hover:border-status-error transition-all"
+              className="h-12 px-10 text-[10px] font-black uppercase tracking-[0.3em] bg-background-elevated border border-border-subtle text-text hover:bg-status-error hover:text-background-dark hover:border-status-error transition-all"
             >
               <DiscardIcon size={18} strokeWidth={3} className="mr-3" /> DISCARD
             </Button>

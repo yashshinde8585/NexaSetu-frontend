@@ -94,7 +94,7 @@ const RiskSentinel = () => {
           <div className="flex gap-3">
             <button
               onClick={() => {
-                if (alert.projectId) navigate(`/war-room/${alert.projectId}`);
+                if (alert.projectId) navigate(`/project/${alert.projectId}`);
                 setAlert(null);
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -103,7 +103,7 @@ const RiskSentinel = () => {
                   : 'bg-status-warning text-black hover:bg-status-warning/80'
               }`}
             >
-              Enter War Room <ChevronRight size={12} />
+              View Project <ChevronRight size={12} />
             </button>
 
             <button

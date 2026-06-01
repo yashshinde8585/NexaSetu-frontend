@@ -16,7 +16,7 @@ const Join = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const navigate = useNavigate();
-  const { activateInvite } = useAuth();
+  const { activateInvite } = useAuthActions();
 
   const [inviteData, setInviteData] = useState(null);
   const [loading, setLoading] = useState(true);

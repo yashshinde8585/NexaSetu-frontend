@@ -61,7 +61,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
   };
 
   return (
-    <div className="bg-black p-5 sm:p-6 rounded-none mb-8 border border-white/10 animate-in fade-in zoom-in-95 duration-200 shadow-2xl relative overflow-hidden">
+    <div className="bg-background-dark p-5 sm:p-6 rounded-none mb-8 border border-border-subtle animate-in fade-in zoom-in-95 duration-200 shadow-2xl relative overflow-hidden">
       {/* Tactical Header Overlay */}
       <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
 
@@ -76,12 +76,12 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
           {/* Left Column: Core Identity */}
           <div className="space-y-6">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                 Mission Title
               </label>
               <input
                 type="text"
-                className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-black text-xs uppercase tracking-tight placeholder:text-white/10"
+                className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-black text-xs uppercase tracking-tight placeholder:text-text-subtler"
                 placeholder="E.G. CORE_SYSTEM_UPDATE"
                 value={newTask.title}
                 onChange={(e) =>
@@ -93,42 +93,42 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                 Deployment Sprint
               </label>
               <div className="relative">
                 <select
-                  className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
+                  className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
                   value={newTask.sprint || ''}
                   onChange={(e) =>
                     setNewTask({ ...newTask, sprint: e.target.value })
                   }
                 >
-                  <option value="" className="bg-black">
+                  <option value="" className="bg-background-dark">
                     No sprint selected
                   </option>
                   {(sprints || []).map((sprint) => (
                     <option
                       key={sprint._id}
                       value={sprint._id}
-                      className="bg-black"
+                      className="bg-background-dark"
                     >
                       {sprint.name}
                     </option>
                   ))}
                 </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
                   <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                 Operational Brief
               </label>
               <textarea
-                className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-bold text-xs uppercase tracking-tight placeholder:text-white/10 resize-none"
+                className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-bold text-xs uppercase tracking-tight placeholder:text-text-subtler resize-none"
                 rows="3"
                 placeholder="DESCRIBE MISSION PARAMETERS..."
                 value={newTask.description}
@@ -143,49 +143,67 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                   Mission Type
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
+                    className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
                     value={newTask.type || TASK_TYPE.TASK}
                     onChange={(e) =>
                       setNewTask({ ...newTask, type: e.target.value })
                     }
                   >
-                    <option value={TASK_TYPE.EPIC} className="bg-black">
+                    <option
+                      value={TASK_TYPE.EPIC}
+                      className="bg-background-dark"
+                    >
                       Epic
                     </option>
-                    <option value={TASK_TYPE.STORY} className="bg-black">
+                    <option
+                      value={TASK_TYPE.STORY}
+                      className="bg-background-dark"
+                    >
                       Story
                     </option>
-                    <option value={TASK_TYPE.TASK} className="bg-black">
+                    <option
+                      value={TASK_TYPE.TASK}
+                      className="bg-background-dark"
+                    >
                       Task
                     </option>
-                    <option value={TASK_TYPE.BUG} className="bg-black">
+                    <option
+                      value={TASK_TYPE.BUG}
+                      className="bg-background-dark"
+                    >
                       Bug
                     </option>
-                    <option value={TASK_TYPE.SPIKE} className="bg-black">
+                    <option
+                      value={TASK_TYPE.SPIKE}
+                      className="bg-background-dark"
+                    >
                       Spike
                     </option>
-                    <option value={TASK_TYPE.TECH_DEBT} className="bg-black">
+                    <option
+                      value={TASK_TYPE.TECH_DEBT}
+                      className="bg-background-dark"
+                    >
                       Tech Debt
                     </option>
                   </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
                     <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                   Priority Level
                 </label>
                 <div className="relative">
                   <select
-                    className={`w-full bg-white/[0.03] border border-white/10 px-4 py-3 rounded-none focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none ${
+                    className={`w-full bg-background-elevated border border-border-subtle px-4 py-3 rounded-none focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none ${
                       newTask.priority === 'urgent'
                         ? 'text-status-error'
                         : newTask.priority === 'high'
@@ -201,37 +219,40 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                   >
                     <option
                       value="low"
-                      className="bg-black text-status-success"
+                      className="bg-background-dark text-status-success"
                     >
                       Low
                     </option>
-                    <option value="medium" className="bg-black text-primary">
+                    <option
+                      value="medium"
+                      className="bg-background-dark text-primary"
+                    >
                       Medium
                     </option>
                     <option
                       value="high"
-                      className="bg-black text-status-warning"
+                      className="bg-background-dark text-status-warning"
                     >
                       High
                     </option>
                     <option
                       value="urgent"
-                      className="bg-black text-status-error"
+                      className="bg-background-dark text-status-error"
                     >
                       Urgent
                     </option>
                   </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
                     <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                   Projected Deadline
                 </label>
-                <div className="bg-white/[0.03] border border-white/10 px-4 py-3 font-black text-[10px] text-primary uppercase tracking-widest flex items-center justify-between group transition-all hover:bg-white/[0.05]">
+                <div className="bg-background-elevated border border-border-subtle px-4 py-3 font-black text-[10px] text-primary uppercase tracking-widest flex items-center justify-between group transition-all hover:bg-white/[0.05]">
                   <span>
                     {(() => {
                       let mins = newTask.estimatedDuration || 0;
@@ -257,16 +278,16 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
               </div>
             </div>
 
-            <div className="bg-white/[0.02] border border-white/10 p-4 space-y-4">
+            <div className="bg-background-elevated border border-border-subtle p-4 space-y-4">
               <div className="flex items-center gap-2">
                 <Clock size={12} className="text-primary" />
-                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">
+                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-text-subtle">
                   Estimated Duration
                 </label>
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center bg-black border border-white/20 p-0.5">
+                <div className="flex items-center bg-background-dark border border-border-subtle p-0.5">
                   <button
                     type="button"
                     onClick={() =>
@@ -278,14 +299,14 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                         ),
                       })
                     }
-                    className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all"
+                    className="w-8 h-8 flex items-center justify-center text-text-subtle hover:text-text hover:bg-background-elevated transition-all"
                   >
                     <Minus size={12} />
                   </button>
 
                   <input
                     type="number"
-                    className="bg-transparent text-[11px] font-black text-white text-center w-12 focus:outline-none uppercase"
+                    className="bg-transparent text-[11px] font-black text-text text-center w-12 focus:outline-none uppercase"
                     value={newTask.estimatedDuration || 30}
                     onChange={(e) =>
                       setNewTask({
@@ -303,13 +324,13 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                         estimatedDuration: (newTask.estimatedDuration || 0) + 5,
                       })
                     }
-                    className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all"
+                    className="w-8 h-8 flex items-center justify-center text-text-subtle hover:text-text hover:bg-background-elevated transition-all"
                   >
                     <Plus size={12} />
                   </button>
                 </div>
 
-                <div className="flex gap-px bg-white/10 border border-white/10">
+                <div className="flex gap-px bg-background-elevated border border-border-subtle">
                   {['minutes', 'hours', 'days'].map((unit) => (
                     <button
                       key={unit}
@@ -319,8 +340,8 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                       }
                       className={`px-3 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${
                         (newTask.durationUnit || 'minutes') === unit
-                          ? 'bg-primary text-black'
-                          : 'bg-black text-white/30 hover:text-white hover:bg-white/5'
+                          ? 'bg-primary text-background-dark'
+                          : 'bg-background-dark text-text-subtle hover:text-text hover:bg-background-elevated'
                       }`}
                     >
                       {unit === 'minutes' ? 'MINS' : unit.toUpperCase()}
@@ -354,7 +375,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                           durationUnit: 'days',
                         });
                     }}
-                    className="text-[8px] font-black text-white/20 hover:text-primary transition-all uppercase tracking-[0.2em] border-b border-transparent hover:border-primary pb-0.5"
+                    className="text-[8px] font-black text-text-subtler hover:text-primary transition-all uppercase tracking-[0.2em] border-b border-transparent hover:border-primary pb-0.5"
                   >
                     {v === 15
                       ? 'Quick Fix (15M)'
@@ -368,7 +389,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
             {/* Asset Uplink */}
             <div className="space-y-3">
-              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
                 Mission Assets
               </label>
 
@@ -376,16 +397,16 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 {newTask.attachments?.map((file, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 group transition-all hover:bg-white/10"
+                    className="flex items-center gap-2 bg-background-elevated border border-border-subtle px-3 py-2 group transition-all hover:bg-background-elevated"
                   >
                     <FileIcon size={12} className="text-primary" />
-                    <span className="text-[9px] font-black text-white/80 truncate max-w-[100px] uppercase tracking-tighter">
+                    <span className="text-[9px] font-black text-text-muted truncate max-w-[100px] uppercase tracking-tighter">
                       {file.name}
                     </span>
                     <button
                       type="button"
                       onClick={() => removeAttachment(idx)}
-                      className="text-white/20 hover:text-status-error transition-colors"
+                      className="text-text-subtler hover:text-status-error transition-colors"
                     >
                       <X size={12} />
                     </button>
@@ -393,14 +414,14 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
                 ))}
 
                 <label
-                  className={`flex items-center gap-2 px-4 py-2 border border-dashed border-white/20 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer ${uploading ? 'opacity-50 cursor-wait' : ''}`}
+                  className={`flex items-center gap-2 px-4 py-2 border border-dashed border-border-subtle hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer ${uploading ? 'opacity-50 cursor-wait' : ''}`}
                 >
                   {uploading ? (
                     <Loader2 size={14} className="text-primary animate-spin" />
                   ) : (
-                    <Paperclip size={14} className="text-white/40" />
+                    <Paperclip size={14} className="text-text-subtle" />
                   )}
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-subtle">
                     {uploading ? 'UPLOADING...' : 'ATTACH_ASSETS'}
                   </span>
                   <input
@@ -418,7 +439,7 @@ const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
 
         <button
           type="submit"
-          className="bg-primary hover:bg-primary/90 text-black font-black py-4 px-6 rounded-none w-full transition-all duration-300 shadow-2xl shadow-primary/20 text-[11px] uppercase tracking-[0.4em] active:scale-[0.98]"
+          className="bg-primary hover:bg-primary/90 text-background-dark font-black py-4 px-6 rounded-none w-full transition-all duration-300 shadow-2xl shadow-primary/20 text-[11px] uppercase tracking-[0.4em] active:scale-[0.98]"
         >
           Initialize Mission_
         </button>

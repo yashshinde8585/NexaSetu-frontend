@@ -23,22 +23,40 @@ export const getMembers = async (
   params = { page: 1, limit: 20, search: '' }
 ) => {
   const res = await apiClient.get(API_ENDPOINTS.TEAM.MEMBERS, { params });
+  const responseData = res.data || res;
 
-  // Normalize data structure
-  const data = res.data || res;
+  const rawItems = responseData.items || responseData.members || [];
+  const normalizedItems = rawItems.map(normalizeMember);
+
+  const legacyMembers = normalizedItems.filter(
+    (item) => item.type !== 'invitation' && item.status !== 'Invited'
+  );
+  const rawInvitations =
+    responseData.invitations ||
+    normalizedItems.filter(
+      (item) => item.type === 'invitation' || item.status === 'Invited'
+    );
+  const legacyInvitations = rawInvitations.map((inv) => ({
+    ...inv,
+    id: inv._id || inv.id,
+    projectId: inv.projectId
+      ? {
+          ...inv.projectId,
+          id: inv.projectId._id || inv.projectId.id,
+        }
+      : null,
+  }));
+
   return {
-    ...data,
-    members: (data.members || []).map(normalizeMember),
-    invitations: (data.invitations || []).map((inv) => ({
-      ...inv,
-      id: inv._id || inv.id,
-      projectId: inv.projectId
-        ? {
-            ...inv.projectId,
-            id: inv.projectId._id || inv.projectId.id,
-          }
-        : null,
-    })),
+    ...responseData,
+    items: normalizedItems,
+    members: legacyMembers,
+    invitations: legacyInvitations,
+    stats: responseData.stats,
+    data: {
+      members: legacyMembers,
+      invitations: legacyInvitations,
+    },
   };
 };
 
@@ -50,8 +68,8 @@ export const removeInvitation = (id) => {
   return apiClient.delete(API_ENDPOINTS.TEAM.REMOVE_INVITATION(id));
 };
 
-export const updateMemberProject = (id, projectId) => {
-  return apiClient.patch(`/team/members/${id}/project`, { projectId });
+export const updateMemberProject = (id, projectId, config = {}) => {
+  return apiClient.patch(`/team/members/${id}/project`, { projectId }, { skipToast: true, ...config });
 };
 
 export default {

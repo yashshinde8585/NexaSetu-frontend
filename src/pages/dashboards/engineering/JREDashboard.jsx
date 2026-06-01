@@ -1,406 +1,215 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
-import {
-  CheckCircle2,
-  Clock,
-  ShieldAlert,
-  ArrowRight,
-  MessageSquare,
-  HelpCircle,
-  Check,
-  ChevronRight,
-  Zap,
-  Star,
-  MessageCircle,
-  ShieldCheck,
-  Sparkles,
-  Target,
-  Award,
-} from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRoleDashboard } from '../../../hooks/useRoleDashboard';
 import taskApi from '../../../api/taskApi';
-import CenteredLoading from '../../../components/atoms/CenteredLoading';
-import DashboardSection from '../../../components/molecules/dashboard/DashboardSection';
-import MetricStripItem from '../../../components/molecules/dashboard/MetricStripItem';
-import StatusBadge from '../../../components/molecules/dashboard/StatusBadge';
-import ActivityItem from '../../../components/molecules/dashboard/ActivityItem';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import DashboardSkeleton from '../../../components/atoms/DashboardSkeleton';
+import ErrorBoundary from '../../../components/atoms/ErrorBoundary';
+
+import JRETabs from './JREDashboard/components/JRETabs';
+import JREMetricsGrid from './JREDashboard/components/JREMetricsGrid';
+import OverviewTab from './JREDashboard/components/OverviewTab';
+import MyWorkTab from './JREDashboard/components/MyWorkTab';
+import LearnTab from './JREDashboard/components/LearnTab';
+import CodeTab from './JREDashboard/components/CodeTab';
+import FeedbackTab from './JREDashboard/components/FeedbackTab';
+import InsightsTab from './JREDashboard/components/InsightsTab';
 
 /**
- * Junior Engineer Dashboard
- * Focused on task execution, learning path coordination, and technical mentorship.
+ * Premium Guided Work Assistant Dashboard (Junior Engineer)
+ * Refactored into a modular layout using global theme variables and optimistic UI updates.
  */
 const JREDashboard = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data, isLoading } = useRoleDashboard('jre');
 
-  if (isLoading) return <CenteredLoading />;
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const {
-    dayMetrics = { tasksToday: 0, dueToday: 0, blocked: 0 },
-    guidedTasks = [],
-    stuckGuidance = [],
-    progress = { percentage: 0, completed: 0 },
-    nextSteps = { main: 'AWAITING_TASK', minor: 'QUEUE_EMPTY' },
-    activity = [],
-  } = data || {};
-
-  const handleStatusUpdate = async (taskId, currentStatus) => {
-    try {
+  // Optimistic UI for task status update
+  const statusMutation = useMutation({
+    mutationFn: ({ taskId, status }) => {
       const nextMap = {
         todo: 'in_progress',
         in_progress: 'in_review',
         in_review: 'done',
         done: 'todo',
       };
-      const nextStatus = nextMap[currentStatus] || 'in_progress';
-      await taskApi.updateTaskStatus(taskId, nextStatus, 0); // versioning stubbed for simplicity as per requirement
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'jre'] });
-    } catch (err) {
-      console.error('Status update failed:', err);
-    }
-  };
+      const nextStatus = nextMap[status] || 'in_progress';
+      return taskApi.updateTaskStatus(taskId, nextStatus, 0);
+    },
+    onMutate: async ({ taskId, status }) => {
+      await queryClient.cancelQueries({ queryKey: ['dashboard', 'jre'] });
+      const previous = queryClient.getQueryData(['dashboard', 'jre']);
 
-  const handleStepToggle = async (taskId, stepIndex, currentSteps) => {
-    try {
-      const updatedSteps = currentSteps.map((s, idx) =>
-        idx === stepIndex ? { ...s, completed: !s.completed } : s
-      );
-      await taskApi.updateTaskSteps(taskId, updatedSteps);
+      queryClient.setQueryData(['dashboard', 'jre'], (old) => {
+        if (!old?.inProgressTasks) return old;
+        const nextMap = {
+          todo: 'in_progress',
+          in_progress: 'in_review',
+          in_review: 'done',
+          done: 'todo',
+        };
+        const nextStatus = nextMap[status] || 'in_progress';
+        return {
+          ...old,
+          inProgressTasks: old.inProgressTasks.map((t) =>
+            t.id === taskId ? { ...t, status: nextStatus } : t
+          ),
+        };
+      });
+
+      return { previous };
+    },
+    onError: (err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['dashboard', 'jre'], context.previous);
+      }
+      console.error('Status update failed:', err);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'jre'] });
-    } catch (err) {
-      console.error('Step toggle failed:', err);
-    }
-  };
+    },
+  });
+
+  const handleStatusUpdate = useCallback(
+    (taskId, currentStatus) => {
+      statusMutation.mutate({ taskId, status: currentStatus });
+    },
+    [statusMutation]
+  );
+
+  if (isLoading) return <DashboardSkeleton />;
+
+  // Destructure JRE dashboard data from backend with safe empty fallbacks
+  const {
+    sprintName = 'No Active Sprint',
+    sprintDaysLeft = 0,
+    sprintProgress = 0,
+    workItemsStatus = {
+      todo: 0,
+      inProgress: 0,
+      inReview: 0,
+      blocked: 0,
+      done: 0,
+      total: 0,
+    },
+    inProgressTasks = [],
+    pullRequestMetrics = { open: 0, review: 0, merged: 0 },
+    pullRequestsList = [],
+    codeHealthScore = 0,
+    burndownData = [],
+    recentActivity = [],
+    codeQuality = {
+      coverage: 0,
+      coverageDiff: 0,
+      eslint: 0,
+      eslintDiff: 0,
+      security: 0,
+      securityDiff: 0,
+      techDebt: 0,
+      techDebtDiff: 0,
+    },
+    deployments = [],
+    aiInsights = [],
+    upcomingDeadlines = [],
+    learnAndGrow = [],
+    xp: rawXp,
+    level: rawLevel,
+    xpToNextLevel: rawXpToNextLevel,
+  } = data || {};
+
+  // XP Progress Calculation based on actual data or safe defaults
+  const xp = rawXp || 0;
+  const level = rawLevel || 1;
+  const xpToNextLevel = rawXpToNextLevel || 1000 - (xp % 1000);
+
+  // Connect learning path directly to backend data
+  const learningLessons = learnAndGrow || [];
 
   return (
-    <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      {/* 1. Performance Overview */}
-      <div
-        id="jre-metrics-strip"
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <MetricStripItem
-          icon={<Target size={14} />}
-          label="Daily Assignments"
-          value={dayMetrics.tasksToday}
-          accent="bg-primary"
-        />
-        <MetricStripItem
-          icon={<Clock size={14} />}
-          label="Critical Deadlines"
-          value={dayMetrics.dueToday}
-          color={
-            dayMetrics.dueToday > 0 ? 'text-status-warning' : 'text-white/40'
-          }
-          accent={dayMetrics.dueToday > 0 ? 'bg-status-warning' : 'bg-white/5'}
-        />
-        <MetricStripItem
-          icon={<ShieldAlert size={14} />}
-          label="Blocked Tasks"
-          value={dayMetrics.blocked}
-          color={dayMetrics.blocked > 0 ? 'text-status-error' : 'text-white/40'}
-          accent={dayMetrics.blocked > 0 ? 'bg-status-error' : 'bg-white/5'}
-        />
+    <div className="min-h-screen bg-background text-text p-3 lg:p-4 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-4">
+      <JRETabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <div className="flex-1">
+        {activeTab === 'overview' && (
+          <ErrorBoundary>
+            <div className="flex flex-col gap-4 animate-fade-in">
+              <JREMetricsGrid
+                sprintProgress={sprintProgress}
+                sprintDaysLeft={sprintDaysLeft}
+                workItemsStatus={workItemsStatus}
+                pullRequestMetrics={pullRequestMetrics}
+                codeHealthScore={codeHealthScore}
+                xp={xp}
+                level={level}
+                xpToNextLevel={xpToNextLevel}
+                setActiveTab={setActiveTab}
+              />
+              <OverviewTab
+                burndownData={burndownData}
+                recentActivity={recentActivity}
+                upcomingDeadlines={upcomingDeadlines}
+                deployments={deployments}
+                inProgressTasks={inProgressTasks}
+                learningLessons={learningLessons}
+                codeQuality={codeQuality}
+                pullRequestsList={pullRequestsList}
+                aiInsights={aiInsights}
+                setActiveTab={setActiveTab}
+              />
+            </div>
+          </ErrorBoundary>
+        )}
+
+        {activeTab === 'my_work' && (
+          <ErrorBoundary>
+            <MyWorkTab
+              inProgressTasks={inProgressTasks}
+              handleStatusUpdate={handleStatusUpdate}
+            />
+          </ErrorBoundary>
+        )}
+
+        {activeTab === 'learn' && (
+          <ErrorBoundary>
+            <LearnTab learningLessons={learningLessons} />
+          </ErrorBoundary>
+        )}
+
+        {activeTab === 'code' && (
+          <ErrorBoundary>
+            <CodeTab
+              codeQuality={codeQuality}
+              pullRequestsList={pullRequestsList}
+            />
+          </ErrorBoundary>
+        )}
+
+        {activeTab === 'feedback' && (
+          <ErrorBoundary>
+            <FeedbackTab />
+          </ErrorBoundary>
+        )}
+
+        {activeTab === 'insights' && (
+          <ErrorBoundary>
+            <InsightsTab aiInsights={aiInsights} />
+          </ErrorBoundary>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Column: Active Engineering Sprint */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <DashboardSection
-            title="Active Tasks"
-            icon={<Zap size={14} />}
-          >
-            <div className="flex flex-col gap-6 py-2">
-              {guidedTasks?.map((task, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/5 border border-white/10 rounded-sm p-6 group hover:border-primary/40 transition-colors relative overflow-hidden"
-                >
-                  <div className="absolute top-0 left-0 w-0.5 h-full bg-white/10 group-hover:bg-primary transition-colors" />
-
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-4">
-                        <StatusBadge status={task.status} />
-                        <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
-                          DEADLINE: {task.due}
-                        </span>
-                      </div>
-
-                      <h3
-                        className="text-lg font-black text-white mb-2 uppercase tracking-widest group-hover:text-primary transition-colors cursor-pointer"
-                        onClick={() => navigate(`/task/${task.id}`)}
-                      >
-                        {task.title}
-                      </h3>
-                      <p className="text-[9px] font-black text-white/40 uppercase leading-relaxed tracking-widest mb-6 max-w-xl">
-                        {task.description || 'FOLLOW STANDARD PROCESSES'}
-                      </p>
-
-                      <div className="flex flex-col gap-2">
-                        {task.steps?.map((step, sIdx) => (
-                          <div
-                            key={sIdx}
-                            className="flex items-center gap-3 p-3 bg-black border border-white/5 rounded-none hover:border-white/20 transition-colors group/step cursor-pointer"
-                            onClick={() =>
-                              handleStepToggle(task.id, sIdx, task.steps)
-                            }
-                          >
-                            <div
-                              className={`w-5 h-5 rounded-none flex items-center justify-center transition-all ${
-                                step.completed
-                                  ? 'bg-status-success/20 text-status-success border border-status-success/30'
-                                  : 'bg-white/5 text-white/20 border border-white/5'
-                              }`}
-                            >
-                              {step.completed ? (
-                                <Check size={10} strokeWidth={3} />
-                              ) : (
-                                <span className="text-[9px] font-black">
-                                  {sIdx + 1}
-                                </span>
-                              )}
-                            </div>
-                            <span
-                              className={`text-[10px] font-black uppercase tracking-widest ${step.completed ? 'text-white/20 line-through' : 'text-white/60 group-hover/step:text-white'}`}
-                            >
-                              {step.text}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="md:w-48 flex flex-col gap-4 md:border-l border-white/10 md:pl-6">
-                      <div className="flex flex-col gap-2">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-                          TASK CONTROLS
-                        </span>
-                        <button
-                          className="w-full py-2 bg-white/5 border border-white/10 rounded-none text-white/60 text-[9px] font-black uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-colors"
-                          onClick={() =>
-                            handleStatusUpdate(task.id, task.status)
-                          }
-                        >
-                          UPDATE STATUS
-                        </button>
-                      </div>
-
-                      {task.blocked && (
-                        <div className="p-3 bg-status-error/5 border border-status-error/20 rounded-none flex flex-col gap-1 items-center justify-center">
-                          <ShieldAlert
-                            size={14}
-                            className="text-status-error mb-1"
-                          />
-                          <span className="text-[9px] font-black text-status-error uppercase tracking-widest leading-none">
-                            BLOCKED
-                          </span>
-                        </div>
-                      )}
-
-                      <button
-                        className="flex items-center justify-center gap-2 text-[9px] font-black text-white/20 hover:text-white transition-colors uppercase tracking-[0.2em] mt-auto group/btn"
-                        onClick={() => navigate(`/task/${task.id}`)}
-                      >
-                        VIEW TASK{' '}
-                        <ChevronRight
-                          size={12}
-                          className="group-hover/btn:translate-x-1 transition-transform"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {(!guidedTasks || guidedTasks.length === 0) && (
-                <div className="py-16 text-center flex flex-col items-center gap-4 bg-white/5 border border-white/10 border-dashed rounded-none">
-                  <Zap size={24} className="text-white/10" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">
-                    NO ACTIVE TASKS
-                  </span>
-                </div>
-              )}
-            </div>
-          </DashboardSection>
-
-          {/* Bottom Grid: Mentorship & Activity */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DashboardSection
-              title="Mentorship Hub"
-              icon={<MessageSquare size={14} />}
-            >
-              <div className="flex flex-col gap-4 py-4">
-                <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] leading-relaxed italic">
-                  DIRECT COMMUNICATION CHANNELS
-                </p>
-                <div className="flex flex-col gap-2">
-                  <MentorAction
-                    icon={<Star size={16} />}
-                    label="TECH_LEAD"
-                    sub="REVIEW"
-                  />
-                  <MentorAction
-                    icon={<MessageCircle size={16} />}
-                    label="SENIOR_MENTOR"
-                    sub="GUIDANCE"
-                  />
-                </div>
-              </div>
-            </DashboardSection>
-
-            <DashboardSection
-              title="Engagement Log"
-              icon={<ShieldCheck size={14} />}
-            >
-              <div className="flex flex-col gap-2 py-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                {activity?.map((a, idx) => (
-                  <ActivityItem
-                    key={idx}
-                    text={a.text}
-                    time={a.time || 'RECENT'}
-                    type={
-                      a.type === 'approval'
-                        ? 'success'
-                        : a.type === 'review'
-                          ? 'info'
-                          : 'warning'
-                    }
-                    mini
-                  />
-                ))}
-                {(!activity || activity.length === 0) && (
-                  <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest">
-                    No Feedback Yet
-                  </div>
-                )}
-              </div>
-            </DashboardSection>
+      {/* Global Footer Strip */}
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-border-subtle text-[9px] font-black uppercase tracking-widest text-text-subtle">
+        <div className="flex items-center gap-6">
+          <span>Last updated: 2 minutes ago</span>
+          <div className="flex items-center gap-1.5 text-status-success">
+            <span>Auto-refresh: On</span>
+            <div className="w-1.5 h-1.5 rounded-none bg-status-success animate-pulse" />
           </div>
         </div>
-
-        {/* Sidebar: Coordination & Progress */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <DashboardSection
-            title="Bottleneck Mitigation"
-            icon={<HelpCircle size={14} />}
-          >
-            <div className="flex flex-col gap-3 py-2">
-              {stuckGuidance?.map((s, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/5 border border-white/10 p-4 rounded-none group hover:bg-white/10 transition-colors"
-                >
-                  <span className="block text-[10px] font-black text-white uppercase tracking-widest mb-2">
-                    {s.issue}
-                  </span>
-                  <div className="p-3 bg-status-error/5 border border-status-error/20 rounded-none mb-3">
-                    <span className="text-[8px] font-black text-status-error uppercase tracking-[0.2em] block mb-1">
-                      RECOMMENDED ACTION
-                    </span>
-                    <p className="text-[9px] font-black text-white/60 leading-relaxed uppercase tracking-widest">
-                      {s.suggestedAction}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                    <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">
-                      ESCALATE TO
-                    </span>
-                    <span className="text-[9px] font-black text-primary uppercase tracking-widest">
-                      {s.suggestedPerson}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {(!stuckGuidance || stuckGuidance.length === 0) && (
-                <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest flex flex-col items-center gap-4">
-                  <ShieldCheck size={20} className="text-status-success/20" />{' '}
-                  NO BLOCKERS
-                </div>
-              )}
-            </div>
-          </DashboardSection>
-
-          <DashboardSection
-            title="Execution Progress"
-            icon={<Zap size={14} />}
-          >
-            <div className="flex flex-col gap-4 py-4 px-5 bg-white/5 border border-white/10 rounded-none">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                  <span className="text-3xl font-black text-white tracking-widest leading-none">
-                    {progress?.percentage || 0}%
-                  </span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-                    PROGRESS RATE
-                  </span>
-                </div>
-                <div className="px-3 py-2 bg-black border border-primary/20 rounded-none flex flex-col items-center">
-                  <span className="text-lg font-black text-primary leading-none">
-                    {progress?.completed || 0}
-                  </span>
-                  <span className="text-[7px] font-black text-primary uppercase tracking-[0.2em] mt-1">
-                    TASKS
-                  </span>
-                </div>
-              </div>
-              <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
-                <div
-                  className="h-full bg-primary transition-all duration-1000"
-                  style={{ width: `${progress?.percentage || 0}%` }}
-                />
-              </div>
-            </div>
-          </DashboardSection>
-
-          <DashboardSection
-            title="Next Phase"
-            icon={<Sparkles size={14} />}
-          >
-            <div className="flex flex-col gap-2 py-2">
-              <div className="p-4 bg-white/5 border border-white/10 rounded-none relative overflow-hidden group hover:bg-white/10 transition-colors">
-                <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-colors">
-                  <ArrowRight size={40} className="text-primary" />
-                </div>
-                <span className="flex items-center gap-2 text-[8px] font-black text-primary uppercase tracking-[0.2em] mb-2">
-                  <Zap size={10} fill="currentColor" /> PRIORITY TASK
-                </span>
-                <p className="text-[12px] font-black text-white uppercase tracking-widest leading-tight mb-1">
-                  {nextSteps?.main || 'AWAITING TASK'}
-                </p>
-                <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic">
-                  {nextSteps?.minor || 'QUEUE EMPTY'}
-                </p>
-              </div>
-            </div>
-          </DashboardSection>
-        </div>
+        <span>Data as of: May 18, 2025 10:24 AM IST</span>
       </div>
     </div>
   );
 };
-
-const MentorAction = ({ icon, label, sub }) => (
-  <button className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-none hover:bg-white/10 group transition-colors w-full text-left">
-    <div className="flex items-center gap-3">
-      <div className="p-2.5 bg-black border border-white/10 rounded-none group-hover:border-primary text-white/20 group-hover:text-primary transition-colors">
-        {icon}
-      </div>
-      <div className="flex flex-col">
-        <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
-          {label}
-        </span>
-        <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em] leading-none group-hover:text-primary/60 transition-colors">
-          {sub}
-        </span>
-      </div>
-    </div>
-    <ChevronRight
-      size={14}
-      className="text-white/10 group-hover:text-primary transition-transform group-hover:translate-x-1"
-    />
-  </button>
-);
 
 export default JREDashboard;

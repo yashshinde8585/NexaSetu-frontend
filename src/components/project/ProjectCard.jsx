@@ -49,7 +49,8 @@ const ProjectCard = ({ project }) => {
       Medium:
         'bg-status-warning/20 text-status-warning border-status-warning/30',
       Low: 'bg-status-success/20 text-status-success border-status-success/30',
-    }[riskLevel] || 'bg-white/10 text-text-muted border-white/10';
+    }[riskLevel] ||
+    'bg-background-elevated text-text-muted border-border-subtle';
 
   // Progress Bar Color Logic (separate from health score if needed, but keeping consistent)
   const progressColorClass =
@@ -91,7 +92,7 @@ const ProjectCard = ({ project }) => {
               {riskLevel} Risk
             </span>
           </div>
-          <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-primary transition-colors duration-300 truncate max-w-[180px]">
+          <h3 className="text-lg sm:text-xl font-bold text-text group-hover:text-primary transition-colors duration-300 truncate max-w-[180px]">
             {name.replace(/👋 Welcome to/g, '').trim() || name}
           </h3>
         </div>
@@ -111,15 +112,15 @@ const ProjectCard = ({ project }) => {
 
       {project.variant !== 'strategic' && (
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/5">
+          <div className="bg-background-elevated p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-border-subtler">
             <p className="text-[9px] sm:text-[10px] text-text-muted uppercase font-bold mb-1">
               Total Tasks
             </p>
-            <p className="text-lg sm:text-xl font-black text-white">
+            <p className="text-lg sm:text-xl font-black text-text">
               {totalTasks}
             </p>
           </div>
-          <div className="bg-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-white/5">
+          <div className="bg-background-elevated p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-border-subtler">
             <p className="text-[9px] sm:text-[10px] text-text-muted uppercase font-bold mb-1">
               Completed
             </p>
@@ -141,7 +142,7 @@ const ProjectCard = ({ project }) => {
               {percentage}%
             </span>
           </div>
-          <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/5 p-[1px]">
+          <div className="h-2.5 w-full bg-background-elevated rounded-full overflow-hidden border border-border-subtler p-[1px]">
             <div
               className={`h-full rounded-full transition-all duration-1000 ease-out relative ${progressColorClass}`}
               style={{ width: `${percentage}%` }}

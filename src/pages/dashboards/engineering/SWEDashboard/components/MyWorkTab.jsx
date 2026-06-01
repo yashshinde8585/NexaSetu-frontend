@@ -27,7 +27,7 @@ const MyWorkTab = ({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-sm font-black uppercase tracking-widest text-white">
+        <h2 className="text-sm font-black uppercase tracking-widest text-text">
           Work Console Board
         </h2>
         <button
@@ -39,12 +39,12 @@ const MyWorkTab = ({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Column: To Do */}
-        <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col gap-3 min-h-[500px]">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+        <div className="bg-card border border-border-subtle p-4 flex flex-col gap-3 min-h-[500px]">
+          <div className="flex justify-between items-center border-b border-border-subtle pb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               To Do
             </span>
-            <span className="px-2 py-0.5 bg-white/5 text-[9px] font-black text-white/60">
+            <span className="px-2 py-0.5 bg-background-elevated text-[9px] font-black text-text-subtle">
               {todoTasks.length}
             </span>
           </div>
@@ -52,7 +52,7 @@ const MyWorkTab = ({
             {todoTasks.slice(0, COL_LIMIT).map((task) => (
               <div
                 key={task.id}
-                className="p-3 bg-white/[0.01] border border-white/5 hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
+                className="p-3 bg-card border border-border-subtle hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
                 onClick={() => navigate(`/task/${task.id}`)}
               >
                 <div className="flex justify-between items-start">
@@ -65,16 +65,16 @@ const MyWorkTab = ({
                         ? 'bg-status-error/15 text-status-error border border-status-error/20'
                         : task.priority === 'medium'
                           ? 'bg-status-warning/15 text-status-warning border border-status-warning/20'
-                          : 'bg-white/5 text-white/40'
+                          : 'bg-background-elevated text-text-subtle'
                     }`}
                   >
                     {task.priority}
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                <p className="text-[10px] font-bold text-text group-hover:text-primary transition-colors leading-tight">
                   {task.title}
                 </p>
-                <div className="flex justify-between items-center pt-2 border-t border-white/5 text-[8px] font-black uppercase tracking-wider text-white/30">
+                <div className="flex justify-between items-center pt-2 border-t border-border-subtle text-[8px] font-black uppercase tracking-wider text-text-subtle">
                   <span>Due: {task.due}</span>
                   <button
                     onClick={(e) => {
@@ -91,7 +91,7 @@ const MyWorkTab = ({
             {todoTasks.length > COL_LIMIT && (
               <button
                 onClick={() => navigate('/my-tasks?filter=todo')}
-                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors border border-dashed border-white/10 hover:border-primary/30 cursor-pointer bg-transparent w-full"
+                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-text-subtle hover:text-primary transition-colors border border-dashed border-border hover:border-primary/30 cursor-pointer bg-transparent w-full"
               >
                 <ArrowRight size={10} /> {todoTasks.length - COL_LIMIT} more
                 tasks
@@ -101,12 +101,12 @@ const MyWorkTab = ({
         </div>
 
         {/* Column: In Progress */}
-        <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col gap-3 min-h-[500px]">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+        <div className="bg-card border border-border-subtle p-4 flex flex-col gap-3 min-h-[500px]">
+          <div className="flex justify-between items-center border-b border-border-subtle pb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               In Progress
             </span>
-            <span className="px-2 py-0.5 bg-white/5 text-[9px] font-black text-white/60">
+            <span className="px-2 py-0.5 bg-background-elevated text-[9px] font-black text-text-subtle">
               {inProgressTasks.length}
             </span>
           </div>
@@ -114,7 +114,7 @@ const MyWorkTab = ({
             {inProgressTasks.slice(0, COL_LIMIT).map((task) => (
               <div
                 key={task.id}
-                className="p-3 bg-white/[0.01] border border-white/5 hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
+                className="p-3 bg-card border border-border-subtle hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
                 onClick={() => navigate(`/task/${task.id}`)}
               >
                 <div className="flex justify-between items-start">
@@ -127,16 +127,16 @@ const MyWorkTab = ({
                         ? 'bg-status-error/15 text-status-error border border-status-error/20'
                         : task.priority === 'medium'
                           ? 'bg-status-warning/15 text-status-warning border border-status-warning/20'
-                          : 'bg-white/5 text-white/40'
+                          : 'bg-background-elevated text-text-subtle'
                     }`}
                   >
                     {task.priority}
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                <p className="text-[10px] font-bold text-text group-hover:text-primary transition-colors leading-tight">
                   {task.title}
                 </p>
-                <div className="flex justify-between items-center pt-2 border-t border-white/5 text-[8px] font-black uppercase tracking-wider text-white/30">
+                <div className="flex justify-between items-center pt-2 border-t border-border-subtle text-[8px] font-black uppercase tracking-wider text-text-subtle">
                   <span>Due: {task.due}</span>
                   <div className="flex gap-2">
                     <button
@@ -164,7 +164,7 @@ const MyWorkTab = ({
             {inProgressTasks.length > COL_LIMIT && (
               <button
                 onClick={() => navigate('/my-tasks?filter=in_progress')}
-                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors border border-dashed border-white/10 hover:border-primary/30 cursor-pointer bg-transparent w-full"
+                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-text-subtle hover:text-primary transition-colors border border-dashed border-border hover:border-primary/30 cursor-pointer bg-transparent w-full"
               >
                 <ArrowRight size={10} /> {inProgressTasks.length - COL_LIMIT}{' '}
                 more tasks
@@ -174,12 +174,12 @@ const MyWorkTab = ({
         </div>
 
         {/* Column: In Review */}
-        <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col gap-3 min-h-[500px]">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+        <div className="bg-card border border-border-subtle p-4 flex flex-col gap-3 min-h-[500px]">
+          <div className="flex justify-between items-center border-b border-border-subtle pb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               In Review
             </span>
-            <span className="px-2 py-0.5 bg-white/5 text-[9px] font-black text-white/60">
+            <span className="px-2 py-0.5 bg-background-elevated text-[9px] font-black text-text-subtle">
               {inReviewTasks.length}
             </span>
           </div>
@@ -187,7 +187,7 @@ const MyWorkTab = ({
             {inReviewTasks.slice(0, COL_LIMIT).map((task) => (
               <div
                 key={task.id}
-                className="p-3 bg-white/[0.01] border border-white/5 hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
+                className="p-3 bg-card border border-border-subtle hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
                 onClick={() => navigate(`/task/${task.id}`)}
               >
                 <div className="flex justify-between items-start">
@@ -200,16 +200,16 @@ const MyWorkTab = ({
                         ? 'bg-status-error/15 text-status-error border border-status-error/20'
                         : task.priority === 'medium'
                           ? 'bg-status-warning/15 text-status-warning border border-status-warning/20'
-                          : 'bg-white/5 text-white/40'
+                          : 'bg-background-elevated text-text-subtle'
                     }`}
                   >
                     {task.priority}
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                <p className="text-[10px] font-bold text-text group-hover:text-primary transition-colors leading-tight">
                   {task.title}
                 </p>
-                <div className="flex justify-between items-center pt-2 border-t border-white/5 text-[8px] font-black uppercase tracking-wider text-white/30">
+                <div className="flex justify-between items-center pt-2 border-t border-border-subtle text-[8px] font-black uppercase tracking-wider text-text-subtle">
                   <span>Due: {task.due}</span>
                   <button
                     onClick={(e) => {
@@ -226,7 +226,7 @@ const MyWorkTab = ({
             {inReviewTasks.length > COL_LIMIT && (
               <button
                 onClick={() => navigate('/my-tasks?filter=in_review')}
-                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors border border-dashed border-white/10 hover:border-primary/30 cursor-pointer bg-transparent w-full"
+                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-text-subtle hover:text-primary transition-colors border border-dashed border-border hover:border-primary/30 cursor-pointer bg-transparent w-full"
               >
                 <ArrowRight size={10} /> {inReviewTasks.length - COL_LIMIT} more
                 tasks
@@ -236,12 +236,12 @@ const MyWorkTab = ({
         </div>
 
         {/* Column: Done */}
-        <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col gap-3 min-h-[500px]">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+        <div className="bg-card border border-border-subtle p-4 flex flex-col gap-3 min-h-[500px]">
+          <div className="flex justify-between items-center border-b border-border-subtle pb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Done
             </span>
-            <span className="px-2 py-0.5 bg-white/5 text-[9px] font-black text-white/60">
+            <span className="px-2 py-0.5 bg-background-elevated text-[9px] font-black text-text-subtle">
               {doneTasks.length}
             </span>
           </div>
@@ -249,21 +249,21 @@ const MyWorkTab = ({
             {doneTasks.slice(0, COL_LIMIT).map((task) => (
               <div
                 key={task.id}
-                className="p-3 bg-white/[0.01] border border-white/5 hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
+                className="p-3 bg-card border border-border-subtle hover:border-primary/40 cursor-pointer group flex flex-col gap-2 relative"
                 onClick={() => navigate(`/task/${task.id}`)}
               >
                 <div className="flex justify-between items-start">
                   <span className="text-[8px] font-mono text-primary">
                     {task.taskKey}
                   </span>
-                  <span className="text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 leading-none bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/20">
+                  <span className="text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 leading-none bg-status-success/15 text-[#10B981] border border-status-success/20">
                     Done
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-white/40 line-through leading-tight">
+                <p className="text-[10px] font-bold text-text-subtle line-through leading-tight">
                   {task.title}
                 </p>
-                <div className="flex justify-between items-center pt-2 border-t border-white/5 text-[8px] font-black uppercase tracking-wider text-white/20">
+                <div className="flex justify-between items-center pt-2 border-t border-border-subtle text-[8px] font-black uppercase tracking-wider text-text-subtler">
                   <span>Finished</span>
                 </div>
               </div>
@@ -271,7 +271,7 @@ const MyWorkTab = ({
             {doneTasks.length > COL_LIMIT && (
               <button
                 onClick={() => navigate('/my-tasks?filter=completed')}
-                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors border border-dashed border-white/10 hover:border-primary/30 cursor-pointer bg-transparent w-full"
+                className="flex items-center justify-center gap-1.5 py-2 text-[8px] font-black uppercase tracking-widest text-text-subtle hover:text-primary transition-colors border border-dashed border-border hover:border-primary/30 cursor-pointer bg-transparent w-full"
               >
                 <ArrowRight size={10} /> {doneTasks.length - COL_LIMIT} more
                 tasks

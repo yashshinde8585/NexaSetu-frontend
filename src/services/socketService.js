@@ -4,20 +4,26 @@ const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 export let socket = null;
 
+let getToken = async () => localStorage.getItem('token');
+
+export const setTokenGetter = (fn) => {
+  getToken = fn;
+};
+
 export const connect = (explicitToken = null) => {
-  if (socket?.connected) return;
+  if (socket?.connected && !explicitToken) return;
   if (socket) socket.disconnect();
 
-  const token = explicitToken || localStorage.getItem('token');
-  if (!token) {
-    console.warn(
-      '[SOCKET] Connection aborted: No authentication token available.'
-    );
-    return;
-  }
-
   socket = io(SOCKET_URL, {
-    auth: { token },
+    auth: async (cb) => {
+      try {
+        const token = explicitToken || (await getToken());
+        cb({ token });
+      } catch (err) {
+        console.error('[SOCKET] Failed to fetch auth token:', err);
+        cb({ token: null });
+      }
+    },
     withCredentials: true,
     autoConnect: true,
     reconnection: true,
@@ -72,9 +78,9 @@ export const onEvent = (event, callback) => {
   socket.on(event, callback);
 };
 
-export const offEvent = (event) => {
+export const offEvent = (event, callback) => {
   if (socket) {
-    socket.off(event);
+    socket.off(event, callback);
   }
 };
 
@@ -107,4 +113,5 @@ export default {
   onSignal,
   offSignal,
   disconnect,
+  setTokenGetter,
 };

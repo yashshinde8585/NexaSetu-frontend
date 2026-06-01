@@ -18,8 +18,8 @@ import {
 } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../../components/atoms/Button';
 import { ROUTES } from '../../constants';
+import { ChangePasswordModal } from '../../components/organisms/SettingsDecks';
 
 /**
  * Clean and professional Profile page for NexaSetu.
@@ -29,6 +29,7 @@ const Profile = () => {
   const { user, logout, updateAvatar } = useAuth();
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleLogout = async () => {
@@ -46,7 +47,7 @@ const Profile = () => {
 
     // Validate file size (2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('FILE_SIZE_EXCEEDS_2MB_LIMIT');
+      alert('File size exceeds 2MB limit.');
       return;
     }
 
@@ -65,8 +66,23 @@ const Profile = () => {
 
   if (!user) return null;
 
+  const displayName =
+    user.name || user.fullName || user.firstName || user.username || 'User';
+  const displayEmail =
+    user.email ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    '';
+  const displayAvatar = user.profilePicture || user.imageUrl;
+  const displayTitle =
+    user.jobTitle ||
+    (user.role && user.role.replace('_', ' ')) ||
+    (user.publicMetadata?.role &&
+      String(user.publicMetadata.role).replace('_', ' ')) ||
+    'Team Member';
+
   return (
-    <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-screen-xl mx-auto">
+    <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-2xl mx-auto">
       <div className="space-y-6">
         {/* Simple Professional Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
@@ -75,15 +91,15 @@ const Profile = () => {
               className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative cursor-pointer group overflow-hidden"
               onClick={handleAvatarClick}
             >
-              {user.profilePicture ? (
+              {displayAvatar ? (
                 <img
-                  src={user.profilePicture}
-                  alt={user.name}
+                  src={displayAvatar}
+                  alt={displayName}
                   className="w-full h-full object-cover rounded"
                 />
               ) : (
                 <span className="text-xl font-black text-white/50">
-                  {user.name.charAt(0)}
+                  {displayName.charAt(0)}
                 </span>
               )}
 
@@ -111,118 +127,113 @@ const Profile = () => {
             </div>
             <div>
               <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">
-                {user.name}
+                {displayName}
               </h1>
               <div className="flex items-center gap-2 text-white/80">
                 <span className="uppercase tracking-[0.2em] text-primary text-[9px] font-black">
-                  {user.jobTitle || 'TEAM MEMBER'}
+                  {displayTitle}
                 </span>
                 <span className="w-1 h-1 bg-white/40 rounded-full" />
                 <span className="uppercase tracking-[0.2em] text-[9px] font-black">
-                  {user._id.slice(-8)}
+                  {(user._id || user.id || 'N/A').slice(-8)}
                 </span>
               </div>
             </div>
           </div>
           <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
-            <Button
-              variant="outline"
-              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest border-white/10 rounded"
-              onClick={() => navigate(ROUTES.SETTINGS)}
-            >
-              SETTINGS
-            </Button>
-            <Button
-              variant="danger"
-              className="h-9 px-4 text-[9px] font-black uppercase tracking-widest rounded"
+            <button
               onClick={handleLogout}
+              className="h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+              style={{
+                backgroundColor: 'var(--color-status-danger, #ef4444)',
+                border: '1px solid var(--color-status-danger, #ef4444)',
+                color: '#ffffff',
+              }}
             >
-              SIGN_OUT
-            </Button>
+              Sign Out
+            </button>
           </div>
         </div>
 
-        {/* Informational Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Info Columns */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Account Details Section */}
-            <section className="space-y-4">
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
-                ACCOUNT_INFORMATION
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
-                <InfoRow
-                  label="FULL_NAME"
-                  value={user.name}
-                  icon={<User size={12} />}
-                />
-                <InfoRow
-                  label="EMAIL_ADDRESS"
-                  value={user.email}
-                  icon={<Mail size={12} />}
-                />
-                <InfoRow
-                  label="ACCOUNT_ROLE"
-                  value={user.jobTitle || user.role.replace('_', ' ')}
-                  icon={<Shield size={12} />}
-                />
-                <InfoRow
-                  label="JOINED_WORKSPACE"
-                  value={new Date(user.createdAt).toLocaleDateString()}
-                  icon={<Calendar size={12} />}
-                />
-                <InfoRow
-                  label="CURRENT_STATUS"
-                  value="ACTIVE"
-                  icon={<Clock size={12} />}
-                  status="active"
-                />
-              </div>
-            </section>
+        {/* Informational Layout */}
+        <div className="space-y-6">
+          {/* Account Details Section */}
+          <section className="space-y-4">
+            <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+              Account Information
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
+              <InfoRow
+                label="Full Name"
+                value={displayName}
+                icon={<User size={12} />}
+              />
+              <InfoRow
+                label="Email Address"
+                value={displayEmail || 'N/A'}
+                icon={<Mail size={12} />}
+              />
+              <InfoRow
+                label="Account Role"
+                value={displayTitle}
+                icon={<Shield size={12} />}
+              />
+              <InfoRow
+                label="Joined Workspace"
+                value={
+                  user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString()
+                    : 'N/A'
+                }
+                icon={<Calendar size={12} />}
+              />
+              <InfoRow
+                label="Current Status"
+                value="Active"
+                icon={<Clock size={12} />}
+                status="active"
+              />
+              <InfoRow
+                label="Workspace ID"
+                value={(user._id || user.id || 'N/A').slice(0, 12)}
+                icon={<Key size={12} />}
+              />
+            </div>
+          </section>
 
-            {/* Security Section */}
-            <section className="space-y-4">
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
-                SECURITY_&_ACCESS
-              </h2>
-              <div className="grid grid-cols-1 gap-2">
-                <ActionTile
-                  icon={<Key size={14} />}
-                  title="UPDATE_PASSWORD"
-                  desc="SECURE ACCOUNT CREDENTIALS"
-                />
-                <ActionTile
-                  icon={<Lock size={14} />}
-                  title="TWO_FACTOR_AUTHENTICATION"
-                  desc="ADD LAYERED PROTECTION"
-                  badge="RECOMMENDED"
-                />
+          {/* Account Security Section */}
+          <section className="space-y-4">
+            <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+              Account Security
+            </h2>
+            <button
+              onClick={() => setShowModal(true)}
+              className="w-full p-3 bg-black border border-white/10 hover:border-white/20 rounded flex items-center justify-between group transition-all text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors shrink-0">
+                  <Lock size={13} />
+                </div>
+                <div>
+                  <h4 className="text-[9px] font-black uppercase tracking-widest text-white">
+                    Change Password
+                  </h4>
+                  <p className="text-[8px] text-white/40 uppercase tracking-[0.15em] mt-0.5">
+                    Regularly update your credentials.
+                  </p>
+                </div>
               </div>
-            </section>
-          </div>
-
-          {/* Sidebar / Preferences */}
-          <div className="space-y-6">
-            {/* Preferences Section */}
-            <section className="space-y-4">
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
-                PREFERENCES
-              </h2>
-              <div className="p-4 bg-white/5 border border-white/10 rounded space-y-4">
-                <PreferenceToggle label="EMAIL_NOTIFICATIONS" active />
-                <PreferenceToggle label="REAL_TIME_STATUS" active />
-                <PreferenceToggle label="COMPACT_VIEW" />
-                <PreferenceToggle label="DEVELOPER_MODE" />
-              </div>
-            </section>
-          </div>
+              <ChevronRight
+                size={12}
+                className="text-white/20 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0"
+              />
+            </button>
+          </section>
         </div>
 
-        {/* Professional Footer */}
-        <footer className="pt-8 pb-4 border-t border-white/10 flex justify-end items-center text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-          <span>WORKSPACE_ID: {user._id.slice(0, 12)}</span>
-        </footer>
+        {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
+
+
       </div>
     </div>
   );

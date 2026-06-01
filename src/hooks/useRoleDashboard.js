@@ -37,11 +37,11 @@ export const useRoleDashboard = (role, options = {}) => {
     socketService.onEvent('TEAM_SYNC_REQUIRED', invalidate);
 
     return () => {
-      socketService.offEvent('task_updated');
-      socketService.offEvent('sprint_updated');
-      socketService.offEvent('blocker_detected');
-      socketService.offEvent('service_updated');
-      socketService.offEvent('TEAM_SYNC_REQUIRED');
+      socketService.offEvent('task_updated', invalidate);
+      socketService.offEvent('sprint_updated', invalidate);
+      socketService.offEvent('blocker_detected', invalidate);
+      socketService.offEvent('service_updated', invalidate);
+      socketService.offEvent('TEAM_SYNC_REQUIRED', invalidate);
     };
   }, [role, queryClient]);
 

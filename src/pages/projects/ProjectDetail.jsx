@@ -239,27 +239,28 @@ const ProjectDetail = () => {
             <div className="bg-status-error/10 border-2 border-status-error/50 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse">
               <div className="flex items-center gap-4">
                 <div className="bg-status-error p-3 rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)]">
-                  <ShieldAlert className="text-white" size={24} />
+                  <ShieldAlert className="text-text" size={24} />
                 </div>
                 <div>
                   <h2 className="text-[12px] font-black text-status-error uppercase tracking-[0.3em]">
                     PROJECT SYSTEM LOCK ENABLED
                   </h2>
-                  <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-text/70 uppercase tracking-widest">
                     {activeStabilize.title}
                   </p>
                 </div>
               </div>
               <div className="bg-status-error/20 px-4 py-2 rounded-xl border border-status-error/30">
-                  <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
-                    PROJECT SYSTEM LOCKED: NEW TASKS DISABLED • ONLY REVIEWS ALLOWED
-                  </span>
+                <span className="text-[9px] font-black text-status-error uppercase tracking-widest">
+                  PROJECT SYSTEM LOCKED: NEW TASKS DISABLED • ONLY REVIEWS
+                  ALLOWED
+                </span>
               </div>
             </div>
           )}
 
           {/* Header */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-white/10">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-6 border-b border-border-subtle">
             <div className="space-y-4 flex-1 w-full">
               <div className="flex flex-wrap items-center gap-3"></div>
 
@@ -270,7 +271,7 @@ const ProjectDetail = () => {
                   className="flex flex-col gap-1.5 relative"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
                     ACTIVE SPRINT
                   </span>
                   <button
@@ -280,23 +281,23 @@ const ProjectDetail = () => {
                         activeDropdown === 'sprint' ? null : 'sprint'
                       )
                     }
-                    className={`flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded hover:bg-white/10 transition-all group ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''}`}
+                    className={`flex items-center gap-2 bg-background-elevated border border-border-subtle px-2.5 py-1.5 rounded hover:bg-background-elevated transition-all group ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''}`}
                   >
                     <Calendar size={12} className="text-primary-light" />
-                    <span className="text-[11px] font-black text-white uppercase tracking-tight">
+                    <span className="text-[11px] font-black text-text uppercase tracking-tight">
                       {sprints?.find((s) => s._id === project?.sprint)?.name ||
                         'NO SPRINT'}
                     </span>
                     {!isProjectLocked && (
                       <ChevronDown
                         size={12}
-                        className={`text-white/40 transition-transform ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`}
+                        className={`text-text-subtle transition-transform ${activeDropdown === 'sprint' ? 'rotate-180' : ''}`}
                       />
                     )}
                   </button>
 
                   {activeDropdown === 'sprint' && !isProjectLocked && (
-                    <div className="absolute top-full left-0 mt-2 w-64 bg-[#141414] border-2 border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-full left-0 mt-2 w-64 bg-background-elevated border-2 border-border-subtle rounded-2xl shadow-xl z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                       <div className="p-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
                         <button
                           onClick={() => {
@@ -305,8 +306,8 @@ const ProjectDetail = () => {
                           }}
                           className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
                             !project?.sprint
-                              ? 'bg-white text-black'
-                              : 'text-white/60 hover:bg-white/5 hover:text-white'
+                              ? 'bg-white text-background-dark'
+                              : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                           }`}
                         >
                           NO SPRINT SELECTED
@@ -320,8 +321,8 @@ const ProjectDetail = () => {
                             }}
                             className={`w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
                               project?.sprint === s._id
-                                ? 'bg-white text-black'
-                                : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                ? 'bg-white text-background-dark'
+                                : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                             }`}
                           >
                             {s.name}
@@ -340,8 +341,8 @@ const ProjectDetail = () => {
                   onClick={() => ui.setShowGithubPanel(!ui.showGithubPanel)}
                   className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${
                     ui.showGithubPanel
-                      ? 'bg-white text-black border-white'
-                      : 'bg-white/5 text-white/60 border-white/10 hover:border-white/30 hover:bg-white/10'
+                      ? 'bg-white text-background-dark border-white'
+                      : 'bg-background-elevated text-text-subtle border-border-subtle hover:border-border-subtle hover:bg-background-elevated'
                   }`}
                 >
                   {ui.showGithubPanel ? (
@@ -358,8 +359,8 @@ const ProjectDetail = () => {
                 onClick={() => ui.setShowAiInput(!ui.showAiInput)}
                 className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] transition-all flex items-center justify-center gap-2 ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''} ${
                   ui.showAiInput
-                    ? 'bg-status-error text-white border-status-error'
-                    : 'bg-primary text-black border-primary'
+                    ? 'bg-status-error text-text border-status-error'
+                    : 'bg-primary text-background-dark border-primary'
                 }`}
               >
                 {ui.showAiInput ? (
@@ -375,8 +376,8 @@ const ProjectDetail = () => {
                 onClick={() => ui.setShowTaskForm(!ui.setShowTaskForm)}
                 className={`h-9 px-4 rounded border font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all active:scale-95 ${isProjectLocked ? 'opacity-20 cursor-not-allowed' : ''} ${
                   ui.showTaskForm
-                    ? 'bg-status-error text-white border-status-error'
-                    : 'bg-primary text-black border-primary hover:bg-primary/90'
+                    ? 'bg-status-error text-text border-status-error'
+                    : 'bg-primary text-background-dark border-primary hover:bg-primary/90'
                 }`}
               >
                 {ui.showTaskForm ? (
@@ -390,16 +391,6 @@ const ProjectDetail = () => {
                     ? 'NEW TICKET'
                     : 'NEW TASK'}
               </button>
-
-              {!isTicketView && (
-                <button
-                  onClick={() => navigate(`/war-room/${id}`)}
-                  className="h-9 px-4 rounded border border-secondary text-secondary bg-secondary/5 font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all hover:bg-secondary hover:text-white"
-                >
-                  <Zap size={14} />
-                  WAR ROOM
-                </button>
-              )}
             </div>
           </div>
 
@@ -465,24 +456,24 @@ const ProjectDetail = () => {
           {/* Unified Work Console */}
           <div className="space-y-2">
             {/* Tactical Search & Filter Bar */}
-            <div className="bg-white/5 border border-white/20 rounded-xl flex flex-row items-center p-1 gap-1 shadow-2xl">
+            <div className="bg-background-elevated border border-border-subtle rounded-xl flex flex-row items-center p-1 gap-1 shadow-2xl">
               {/* Primary Search Container - Flexible */}
-              <div className="flex-1 flex items-center h-10 bg-white/[0.03] rounded-lg px-3 border border-white/5 focus-within:border-primary/50 transition-all group min-w-0">
+              <div className="flex-1 flex items-center h-10 bg-background-elevated rounded-lg px-3 border border-border-subtler focus-within:border-primary/50 transition-all group min-w-0">
                 <Search
                   size={14}
-                  className="text-white/40 group-focus-within:text-primary shrink-0 transition-colors"
+                  className="text-text-subtle group-focus-within:text-primary shrink-0 transition-colors"
                 />
                 <input
                   type="text"
                   placeholder="SEARCH TASKS..."
-                  className="flex-1 bg-transparent px-2 text-[10px] font-black text-white placeholder:text-white/20 focus:outline-none tracking-widest truncate uppercase"
+                  className="flex-1 bg-transparent px-2 text-[10px] font-black text-text placeholder:text-text-subtler focus:outline-none tracking-widest truncate uppercase"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="text-white/20 hover:text-white transition-colors p-1 hidden sm:block"
+                    className="text-text-subtler hover:text-text transition-colors p-1 hidden sm:block"
                   >
                     <CloseIcon size={14} />
                   </button>
@@ -501,14 +492,14 @@ const ProjectDetail = () => {
                     }
                     className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
                       activeDropdown === 'operator'
-                        ? 'bg-white text-black border-white'
-                        : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
+                        ? 'bg-white text-background-dark border-white'
+                        : 'bg-background-elevated text-text-subtle border-border-subtle hover:border-border-subtle'
                     }`}
                   >
                     <Users size={14} />
                   </button>
                   {activeDropdown === 'operator' && (
-                    <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-background-elevated border-2 border-border-subtle rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                       <div className="p-1.5 space-y-1">
                         {[
                           { id: 'all', label: 'ALL MEMBERS' },
@@ -522,8 +513,8 @@ const ProjectDetail = () => {
                             }}
                             className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${
                               assigneeFilter === opt.id
-                                ? 'bg-white text-black'
-                                : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                ? 'bg-white text-background-dark'
+                                : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                             }`}
                           >
                             {opt.label}
@@ -544,14 +535,14 @@ const ProjectDetail = () => {
                     }
                     className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
                       activeDropdown === 'date'
-                        ? 'bg-white text-black border-white'
-                        : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
+                        ? 'bg-white text-background-dark border-white'
+                        : 'bg-background-elevated text-text-subtle border-border-subtle hover:border-border-subtle'
                     }`}
                   >
                     <Calendar size={14} />
                   </button>
                   {activeDropdown === 'date' && (
-                    <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-background-elevated border-2 border-border-subtle rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                       <div className="p-1.5 space-y-1">
                         {DATE_OPTIONS.map((opt) => (
                           <button
@@ -562,8 +553,8 @@ const ProjectDetail = () => {
                             }}
                             className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${
                               dateFilter === opt.value
-                                ? 'bg-white text-black'
-                                : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                ? 'bg-white text-background-dark'
+                                : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                             }`}
                           >
                             {opt.label}
@@ -584,8 +575,8 @@ const ProjectDetail = () => {
                     }
                     className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-all ${
                       activeDropdown === 'layout'
-                        ? 'bg-white text-black border-white'
-                        : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
+                        ? 'bg-white text-background-dark border-white'
+                        : 'bg-background-elevated text-text-subtle border-border-subtle hover:border-border-subtle'
                     }`}
                   >
                     {cardLayout === 'list' ? (
@@ -595,7 +586,7 @@ const ProjectDetail = () => {
                     )}
                   </button>
                   {activeDropdown === 'layout' && (
-                    <div className="absolute top-full mt-2 right-0 w-48 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-background-elevated border-2 border-border-subtle rounded-xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                       <div className="p-1.5 space-y-1">
                         {[
                           {
@@ -617,8 +608,8 @@ const ProjectDetail = () => {
                             }}
                             className={`w-full text-left px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center gap-2.5 ${
                               cardLayout === opt.id
-                                ? 'bg-white text-black'
-                                : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                ? 'bg-white text-background-dark'
+                                : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                             }`}
                           >
                             {opt.icon}
@@ -634,7 +625,7 @@ const ProjectDetail = () => {
                 {hasActiveFilters && (
                   <button
                     onClick={clearAllFilters}
-                    className="h-10 w-10 flex items-center justify-center bg-status-error/10 border border-status-error/30 text-status-error rounded-lg hover:bg-status-error hover:text-white transition-all active:scale-95"
+                    className="h-10 w-10 flex items-center justify-center bg-status-error/10 border border-status-error/30 text-status-error rounded-lg hover:bg-status-error hover:text-text transition-all active:scale-95"
                     title="RESET FILTERS"
                   >
                     <CloseIcon size={16} />
@@ -674,7 +665,7 @@ const ProjectDetail = () => {
 
               {/* Tactical Pagination Interface */}
               {totalTasks > 0 && (
-                <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 mt-4 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex items-center justify-between gap-2 bg-background-elevated border border-border-subtle rounded-xl p-1.5 mt-4 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
                   {/* Left: Page Size Selector - Custom UI */}
                   <div
                     className="relative"
@@ -686,19 +677,19 @@ const ProjectDetail = () => {
                           activeDropdown === 'pagesize' ? null : 'pagesize'
                         )
                       }
-                      className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg px-2.5 h-8 hover:border-primary/60 transition-all"
+                      className="flex items-center gap-2 bg-background-dark border border-border-subtle rounded-lg px-2.5 h-8 hover:border-primary/60 transition-all"
                     >
-                      <span className="text-[10px] font-black text-white tracking-tighter">
+                      <span className="text-[10px] font-black text-text tracking-tighter">
                         {pageSize}
                       </span>
                       <ChevronDown
                         size={10}
-                        className={`text-white/40 transition-transform ${activeDropdown === 'pagesize' ? 'rotate-180' : ''}`}
+                        className={`text-text-subtle transition-transform ${activeDropdown === 'pagesize' ? 'rotate-180' : ''}`}
                       />
                     </button>
 
                     {activeDropdown === 'pagesize' && (
-                      <div className="absolute bottom-full left-0 mb-2 w-20 bg-[#141414] border-2 border-white/20 rounded-xl shadow-2xl z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      <div className="absolute bottom-full left-0 mb-2 w-20 bg-background-elevated border-2 border-border-subtle rounded-xl shadow-2xl z-[70] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-1 space-y-1">
                           {[10, 20, 30].map((size) => (
                             <button
@@ -710,8 +701,8 @@ const ProjectDetail = () => {
                               }}
                               className={`w-full text-center py-1.5 text-[10px] font-black uppercase rounded-lg transition-all ${
                                 pageSize === size
-                                  ? 'bg-white text-black'
-                                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                  ? 'bg-white text-background-dark'
+                                  : 'text-text-subtle hover:bg-background-elevated hover:text-text'
                               }`}
                             >
                               {size}
@@ -724,25 +715,25 @@ const ProjectDetail = () => {
 
                   {/* Right: Info & Controls Grouped */}
                   <div className="flex items-center gap-1.5">
-                    <div className="hidden sm:flex h-8 bg-black/40 border border-white/10 rounded-lg px-3 items-center gap-2 shadow-inner">
-                      <span className="text-[10px] font-black text-white">
+                    <div className="hidden sm:flex h-8 bg-background-dark border border-border-subtle rounded-lg px-3 items-center gap-2 shadow-inner">
+                      <span className="text-[10px] font-black text-text">
                         {currentPage}
                       </span>
-                      <span className="text-[10px] font-black text-white/40">
+                      <span className="text-[10px] font-black text-text-subtle">
                         /
                       </span>
-                      <span className="text-[10px] font-black text-white/90">
+                      <span className="text-[10px] font-black text-text-muted">
                         {totalPages}
                       </span>
                     </div>
 
-                    <div className="flex items-center bg-black/40 border border-white/10 rounded-lg overflow-hidden h-8">
+                    <div className="flex items-center bg-background-dark border border-border-subtle rounded-lg overflow-hidden h-8">
                       <button
                         disabled={currentPage === 1}
                         onClick={() =>
                           setCurrentPage((prev) => Math.max(1, prev - 1))
                         }
-                        className="w-8 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed border-r border-white/10"
+                        className="w-8 h-full flex items-center justify-center text-text-muted hover:bg-background-elevated hover:text-text transition-all disabled:opacity-10 disabled:cursor-not-allowed border-r border-border-subtle"
                       >
                         <ChevronLeft size={14} strokeWidth={4} />
                       </button>
@@ -753,7 +744,7 @@ const ProjectDetail = () => {
                             Math.min(totalPages, prev + 1)
                           )
                         }
-                        className="w-8 h-full flex items-center justify-center text-white/80 hover:bg-white/10 hover:text-white transition-all disabled:opacity-10 disabled:cursor-not-allowed"
+                        className="w-8 h-full flex items-center justify-center text-text-muted hover:bg-background-elevated hover:text-text transition-all disabled:opacity-10 disabled:cursor-not-allowed"
                       >
                         <ChevronRight size={14} strokeWidth={4} />
                       </button>

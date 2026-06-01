@@ -63,7 +63,6 @@ const AdminBilling = () => {
 
   return (
     <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4 space-y-6 bg-background text-text min-h-screen animate-in fade-in duration-700">
-
       {/* Upgrade progress overlay */}
       {isProvisioning && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-8">
@@ -103,7 +102,9 @@ const AdminBilling = () => {
             <button
               onClick={() => setCurrency('inr')}
               className={`px-3 h-full text-[8px] font-black uppercase tracking-widest transition-all rounded cursor-pointer ${
-                currency === 'inr' ? 'bg-white text-black' : 'text-white/40 hover:text-white'
+                currency === 'inr'
+                  ? 'bg-white text-black'
+                  : 'text-white/40 hover:text-white'
               }`}
             >
               INR (₹)
@@ -111,7 +112,9 @@ const AdminBilling = () => {
             <button
               onClick={() => setCurrency('usd')}
               className={`px-3 h-full text-[8px] font-black uppercase tracking-widest transition-all rounded cursor-pointer ${
-                currency === 'usd' ? 'bg-white text-black' : 'text-white/40 hover:text-white'
+                currency === 'usd'
+                  ? 'bg-white text-black'
+                  : 'text-white/40 hover:text-white'
               }`}
             >
               USD ($)
@@ -222,7 +225,9 @@ const AdminBilling = () => {
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl font-black text-white tracking-widest">
-                    {currency === 'inr' ? `₹${plan.price}` : `$${plan.globalPrice || 0}`}
+                    {currency === 'inr'
+                      ? `₹${plan.price}`
+                      : `$${plan.globalPrice || 0}`}
                   </span>
                   <span className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">
                     / month
@@ -231,14 +236,23 @@ const AdminBilling = () => {
               </div>
               <ul className="space-y-3 flex-1 pt-2 border-t border-white/5 mt-2">
                 {Object.entries(plan.features).map(([key, val]) => {
-                  const displayVal = val === Infinity || val === null || val === 'Infinity' ? 'Unlimited' : val;
-                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  const displayVal =
+                    val === Infinity || val === null || val === 'Infinity'
+                      ? 'Unlimited'
+                      : val;
+                  const displayKey =
+                    key === 'aiUsage'
+                      ? 'AI Credits'
+                      : key.charAt(0).toUpperCase() + key.slice(1);
                   return (
                     <li
                       key={key}
                       className="flex items-start gap-2 text-[9px] text-white/60 font-black uppercase tracking-[0.1em]"
                     >
-                      <Check size={12} className="text-primary shrink-0 mt-0.5" />
+                      <Check
+                        size={12}
+                        className="text-primary shrink-0 mt-0.5"
+                      />
                       <span>
                         {displayVal} {displayKey}
                       </span>
@@ -275,7 +289,10 @@ const AdminBilling = () => {
                   Upgrade to {featuredUpgrade.name}
                 </h2>
                 <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">
-                  {currency === 'inr' ? `₹${featuredUpgrade.price}` : `$${featuredUpgrade.globalPrice || 0}`} per month
+                  {currency === 'inr'
+                    ? `₹${featuredUpgrade.price}`
+                    : `$${featuredUpgrade.globalPrice || 0}`}{' '}
+                  per month
                 </p>
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -298,14 +315,23 @@ const AdminBilling = () => {
               {Object.entries(featuredUpgrade.features)
                 .slice(0, 4)
                 .map(([key, val], idx) => {
-                  const displayVal = val === Infinity || val === null || val === 'Infinity' ? 'Unlimited' : val;
-                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  const displayVal =
+                    val === Infinity || val === null || val === 'Infinity'
+                      ? 'Unlimited'
+                      : val;
+                  const displayKey =
+                    key === 'aiUsage'
+                      ? 'AI Credits'
+                      : key.charAt(0).toUpperCase() + key.slice(1);
                   return (
                     <div
                       key={idx}
                       className="flex items-start gap-2 text-[9px] font-black text-white/60 uppercase tracking-[0.1em]"
                     >
-                      <Check size={12} className="text-primary mt-0.5 shrink-0" />
+                      <Check
+                        size={12}
+                        className="text-primary mt-0.5 shrink-0"
+                      />
                       <span className="truncate">
                         {displayVal} {displayKey}
                       </span>
@@ -381,7 +407,6 @@ const AdminBilling = () => {
           </p>
         </div>
       </div>
-
     </div>
   );
 };

@@ -43,7 +43,7 @@ const TacticalCustomSelect = ({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {label && (
-        <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 mb-2 block">
+        <label className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] ml-1 mb-2 block">
           {label}
         </label>
       )}
@@ -52,39 +52,40 @@ const TacticalCustomSelect = ({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-full min-h-[40px] bg-black border transition-all px-4 py-2 flex items-center justify-between group outline-none rounded-none ${
+          className={`w-full min-h-[40px] bg-background-elevated border transition-all px-4 py-2 flex items-center justify-between group outline-none rounded-none ${
             isOpen
               ? 'border-primary/50'
-              : 'border-white/10 hover:border-white/30'
+              : 'border-border-subtle hover:border-border'
           }`}
         >
-          <div className="text-[10px] font-black text-white uppercase tracking-widest truncate flex-1 text-left">
+          <div className="text-[10px] font-black text-text uppercase tracking-widest truncate flex-1 text-left">
             {currentOptionLabel}
           </div>
           <div className="flex items-center gap-3 ml-2">
             {icon && (
               <div
-                className={`text-white/10 transition-colors ${isOpen ? 'text-primary' : 'group-hover:text-white/40'}`}
+                className={`text-text-subtler transition-colors ${isOpen ? 'text-primary' : 'group-hover:text-text-subtle'}`}
               >
                 {icon}
               </div>
             )}
             <ChevronDown
               size={14}
-              className={`text-white/20 transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : ''}`}
+              className={`text-text-subtle transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : ''}`}
             />
           </div>
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 w-full mt-1 bg-[#0A0A0A] border border-white/15 z-[100] max-h-[300px] overflow-y-auto scrollbar-none animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="absolute top-full left-0 w-full mt-1 bg-background-elevated border border-border-subtle z-[999] max-h-[300px] overflow-y-auto scrollbar-none shadow-2xl block">
             <div className="p-1 space-y-0.5">
-              {options.map((opt, idx) => {
-                if (opt.isGroup) {
+              {options && options.length > 0 ? (
+                options.map((opt, idx) => {
+                  if (opt.isGroup) {
                   return (
                     <div
                       key={idx}
-                      className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-white/5 border-b border-white/5 mb-1 mt-1 first:mt-0"
+                      className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-background-elevated border-b border-border-subtle mb-1 mt-1 first:mt-0"
                     >
                       {opt.label}
                     </div>
@@ -104,7 +105,9 @@ const TacticalCustomSelect = ({
                     type="button"
                     onClick={() => handleSelect(optValue)}
                     className={`w-full text-left px-3 py-2.5 transition-colors group/opt flex items-center justify-between ${
-                      isSelected ? 'bg-primary/10' : 'hover:bg-white/5'
+                      isSelected
+                        ? 'bg-primary/10'
+                        : 'hover:bg-background-elevated'
                     }`}
                   >
                     <span
@@ -112,7 +115,7 @@ const TacticalCustomSelect = ({
                         isSelected
                           ? 'text-primary'
                           : customColor ||
-                            'text-white/40 group-hover/opt:text-white'
+                            'text-text-subtle group-hover/opt:text-text'
                       }`}
                     >
                       {optLabel}
@@ -124,7 +127,12 @@ const TacticalCustomSelect = ({
                     )}
                   </button>
                 );
-              })}
+              })
+            ) : (
+              <div className="px-4 py-3 text-[10px] font-black text-text-subtle uppercase tracking-widest text-center">
+                No options available
+              </div>
+            )}
             </div>
           </div>
         )}

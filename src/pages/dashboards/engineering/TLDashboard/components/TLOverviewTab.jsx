@@ -77,9 +77,9 @@ const TLOverviewTab = ({
       {/* Row 1: Six Key Metrics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Card 1: Sprint Progress */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Sprint Progress
             </span>
             <span className="text-[#10B981]">
@@ -103,30 +103,30 @@ const TLOverviewTab = ({
                     {comparisons.sprintProgress.direction === 'up' ? '↑' : '↓'}{' '}
                     {Math.abs(comparisons.sprintProgress.diff)}%
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
             </div>
           </div>
           {/* Horizontal Progress Bar */}
-          <div className="w-full bg-white/5 h-1.5 rounded-none mt-2.5 overflow-hidden">
+          <div className="w-full bg-background-elevated h-1.5 rounded-none mt-2.5 overflow-hidden">
             <div
-              className="bg-[#10B981] h-full"
+              className="bg-status-success h-full"
               style={{ width: `${sprintProgress}%` }}
             />
           </div>
         </div>
 
         {/* Card 2: Stories Completed */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Stories Completed
             </span>
             <span className="text-blue-400">
@@ -137,7 +137,7 @@ const TLOverviewTab = ({
             <div>
               <span className="text-2xl font-black tracking-tight">
                 {storiesCompleted.completed}{' '}
-                <span className="text-gray-400 text-sm font-normal">
+                <span className="text-text-subtle text-sm font-normal">
                   / {storiesCompleted.total}
                 </span>
               </span>
@@ -155,12 +155,12 @@ const TLOverviewTab = ({
                       : '↓'}{' '}
                     {Math.abs(comparisons.storiesCompleted.diff)}
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
@@ -181,9 +181,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Card 3: Avg. Cycle Time */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Avg. Cycle Time
             </span>
             <span className="text-purple-400">
@@ -194,7 +194,9 @@ const TLOverviewTab = ({
             <div>
               <span className="text-2xl font-black tracking-tight">
                 {cycleTime.value}{' '}
-                <span className="text-gray-400 text-xs font-normal">days</span>
+                <span className="text-text-subtle text-xs font-normal">
+                  days
+                </span>
               </span>
               {comparisons?.cycleTime ? (
                 <div
@@ -208,12 +210,12 @@ const TLOverviewTab = ({
                     {comparisons.cycleTime.direction === 'down' ? '↓' : '↑'}{' '}
                     {Math.abs(comparisons.cycleTime.diff)} days
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
@@ -234,9 +236,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Card 4: Deployment Frequency */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Deployment Freq
             </span>
             <span className="text-[#10B981]">
@@ -247,7 +249,7 @@ const TLOverviewTab = ({
             <div>
               <span className="text-2xl font-black tracking-tight">
                 {deploymentFrequency.value}{' '}
-                <span className="text-gray-400 text-xs font-normal">
+                <span className="text-text-subtle text-xs font-normal">
                   / {deploymentFrequency.unit}
                 </span>
               </span>
@@ -263,12 +265,12 @@ const TLOverviewTab = ({
                     {comparisons.deployCount.direction === 'up' ? '↑' : '↓'}{' '}
                     {Math.abs(comparisons.deployCount.diff)}
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
@@ -289,9 +291,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Card 5: Change Failure Rate */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Change Failure Rate
             </span>
             <span className="text-yellow-500">
@@ -315,12 +317,12 @@ const TLOverviewTab = ({
                     {comparisons.failureRate.direction === 'down' ? '↓' : '↑'}{' '}
                     {Math.abs(comparisons.failureRate.diff)}%
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
@@ -341,9 +343,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Card 6: Code Health Score */}
-        <div className="bg-white/[0.02] border border-white/5 p-3.5 flex flex-col justify-between group hover:border-white/10 transition-all rounded-none min-h-[96px]">
+        <div className="bg-card border border-border-subtle p-3.5 flex flex-col justify-between group hover:border-border transition-all rounded-none min-h-[96px]">
           <div className="flex justify-between items-start">
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
               Code Health Score
             </span>
             <span className="text-[#8B5CF6]">
@@ -354,7 +356,9 @@ const TLOverviewTab = ({
             <div>
               <span className="text-2xl font-black tracking-tight">
                 {codeHealthScore}{' '}
-                <span className="text-gray-400 text-sm font-normal">/ 100</span>
+                <span className="text-text-subtle text-sm font-normal">
+                  / 100
+                </span>
               </span>
               {comparisons?.codeHealth ? (
                 <div
@@ -368,12 +372,12 @@ const TLOverviewTab = ({
                     {comparisons.codeHealth.direction === 'up' ? '↑' : '↓'}{' '}
                     {Math.abs(comparisons.codeHealth.diff)} pts
                   </span>
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">
+                  <span className="text-text-subtle font-bold uppercase tracking-wider">
                     vs last sprint
                   </span>
                 </div>
               ) : (
-                <div className="text-[8px] text-gray-500 font-bold mt-1 uppercase tracking-wider">
+                <div className="text-[8px] text-text-subtler font-bold mt-1 uppercase tracking-wider">
                   No comparison data
                 </div>
               )}
@@ -397,7 +401,7 @@ const TLOverviewTab = ({
                   <Cell fill="rgba(255,255,255,0.05)" />
                 </Pie>
               </PieChart>
-              <span className="absolute text-[8px] font-bold text-white leading-none">
+              <span className="absolute text-[8px] font-bold text-text leading-none">
                 {codeHealthScore}
               </span>
             </div>
@@ -408,9 +412,9 @@ const TLOverviewTab = ({
       {/* Row 2: Work Items status, Sprint Burndown, Top Priorities */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Panel 1: Work Items Status */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Work Items by Status
             </span>
             <div className="flex items-center justify-center h-44 mt-4 relative">
@@ -430,10 +434,10 @@ const TLOverviewTab = ({
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute flex flex-col items-center justify-center leading-none">
-                <span className="text-2xl font-black text-white">
+                <span className="text-2xl font-black text-text">
                   {workItemsStatus.total}
                 </span>
-                <span className="text-[8px] uppercase tracking-wider text-gray-400 mt-1 font-bold">
+                <span className="text-[8px] uppercase tracking-wider text-text-subtle mt-1 font-bold">
                   Total
                 </span>
               </div>
@@ -446,8 +450,8 @@ const TLOverviewTab = ({
                   className="w-1.5 h-1.5"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-gray-400">{item.name}</span>
-                <span className="ml-auto text-white">
+                <span className="text-text-subtle">{item.name}</span>
+                <span className="ml-auto text-text">
                   {item.value} (
                   {workItemsStatus.total > 0
                     ? Math.round((item.value / workItemsStatus.total) * 100)
@@ -460,23 +464,23 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 2: Sprint Burndown */}
-        <div className="lg:col-span-6 bg-white/[0.02] border border-white/5 p-4">
+        <div className="lg:col-span-6 bg-card border border-border-subtle p-4">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Sprint Burndown
             </span>
             <div className="flex items-center gap-3 text-[8px] font-black uppercase tracking-wider">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-0.5 bg-gray-400 border-dashed" />
-                <span className="text-gray-400">Ideal</span>
+                <span className="text-text-subtle">Ideal</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="w-2.5 h-0.5 bg-[#8B5CF6]" />
-                <span className="text-white">Remaining</span>
+                <span className="w-2.5 h-0.5 bg-secondary" />
+                <span className="text-text">Remaining</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="w-2.5 h-0.5 bg-[#10B981]" />
-                <span className="text-white">Completed</span>
+                <span className="w-2.5 h-0.5 bg-status-success" />
+                <span className="text-text">Completed</span>
               </div>
             </div>
           </div>
@@ -532,9 +536,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 3: Top Priorities */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Top Priorities
             </span>
             <button
@@ -548,15 +552,15 @@ const TLOverviewTab = ({
             {topPriorities?.map((item, idx) => (
               <div
                 key={idx}
-                className="p-2.5 bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all flex flex-col gap-1.5 cursor-pointer"
+                className="p-2.5 bg-card border border-border-subtle hover:bg-background-elevated transition-all flex flex-col gap-1.5 cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 truncate">
                     <span className="text-[#8B5CF6] text-[8px] font-bold uppercase tracking-wider">
                       {item.code}
                     </span>
-                    <span className="text-[8px] text-gray-400">•</span>
-                    <span className="text-[8px] text-gray-400 lowercase tracking-wide font-black">
+                    <span className="text-[8px] text-text-subtle">•</span>
+                    <span className="text-[8px] text-text-subtle lowercase tracking-wide font-black">
                       {item.tasksCount} tasks
                     </span>
                   </div>
@@ -572,24 +576,24 @@ const TLOverviewTab = ({
                     {item.severity}
                   </span>
                 </div>
-                <span className="text-[10px] font-bold text-white truncate lowercase tracking-wide first-letter:uppercase leading-none">
+                <span className="text-[10px] font-bold text-text truncate lowercase tracking-wide first-letter:uppercase leading-none">
                   {item.title}
                 </span>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <div className="flex-1 bg-white/5 h-1 rounded-none overflow-hidden">
+                  <div className="flex-1 bg-background-elevated h-1 rounded-none overflow-hidden">
                     <div
-                      className="bg-[#8B5CF6] h-full"
+                      className="bg-secondary h-full"
                       style={{ width: `${item.progress}%` }}
                     />
                   </div>
-                  <span className="text-[8px] font-bold text-gray-400 tabular-nums">
+                  <span className="text-[8px] font-bold text-text-subtle tabular-nums">
                     {item.progress}%
                   </span>
                 </div>
               </div>
             ))}
             {(!topPriorities || topPriorities.length === 0) && (
-              <div className="py-12 text-center text-[9px] text-white/10 uppercase tracking-widest italic font-bold">
+              <div className="py-12 text-center text-[9px] text-text-subtler uppercase tracking-widest italic font-bold">
                 No active priorities
               </div>
             )}
@@ -600,9 +604,9 @@ const TLOverviewTab = ({
       {/* Row 3: Team Velocity, Code Health Overview, PR Metrics, Recent Activity */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Panel 1: Team Velocity */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Team Velocity
             </span>
             <span className="text-[#8B5CF6] text-[8px] font-black uppercase tracking-widest hover:underline cursor-pointer">
@@ -645,9 +649,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 2: Code Health Overview */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Code Health Overview
             </span>
             <button
@@ -658,7 +662,7 @@ const TLOverviewTab = ({
             </button>
           </div>
           <div className="flex flex-col gap-1 mt-1 justify-center flex-1">
-            <div className="flex items-center justify-between p-2.5 border-b border-white/5">
+            <div className="flex items-center justify-between p-2.5 border-b border-border-subtle">
               <div className="flex items-center gap-2">
                 <Target size={13} className="text-[#10B981]" />
                 <span className="text-[10px] font-bold text-gray-300">
@@ -666,7 +670,7 @@ const TLOverviewTab = ({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black text-white">
+                <span className="text-[11px] font-black text-text">
                   {codeHealthOverview.coverage}%
                 </span>
                 {comparisons?.coverage ? (
@@ -677,11 +681,13 @@ const TLOverviewTab = ({
                     {Math.abs(comparisons.coverage.diff)}%
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold">--</span>
+                  <span className="text-[8px] text-text-subtler font-bold">
+                    --
+                  </span>
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between p-2.5 border-b border-white/5">
+            <div className="flex items-center justify-between p-2.5 border-b border-border-subtle">
               <div className="flex items-center gap-2">
                 <Bug size={13} className="text-yellow-500" />
                 <span className="text-[10px] font-bold text-gray-300">
@@ -689,7 +695,7 @@ const TLOverviewTab = ({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black text-white">
+                <span className="text-[11px] font-black text-text">
                   {codeHealthOverview.eslint}
                 </span>
                 {comparisons?.eslint ? (
@@ -700,11 +706,13 @@ const TLOverviewTab = ({
                     {Math.abs(comparisons.eslint.diff)}
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold">--</span>
+                  <span className="text-[8px] text-text-subtler font-bold">
+                    --
+                  </span>
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between p-2.5 border-b border-white/5">
+            <div className="flex items-center justify-between p-2.5 border-b border-border-subtle">
               <div className="flex items-center gap-2">
                 <Shield size={13} className="text-[#EF4444]" />
                 <span className="text-[10px] font-bold text-gray-300">
@@ -712,7 +720,7 @@ const TLOverviewTab = ({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black text-white">
+                <span className="text-[11px] font-black text-text">
                   {codeHealthOverview.security}
                 </span>
                 {comparisons?.security ? (
@@ -723,7 +731,9 @@ const TLOverviewTab = ({
                     {Math.abs(comparisons.security.diff)}
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold">--</span>
+                  <span className="text-[8px] text-text-subtler font-bold">
+                    --
+                  </span>
                 )}
               </div>
             </div>
@@ -735,7 +745,7 @@ const TLOverviewTab = ({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black text-white">
+                <span className="text-[11px] font-black text-text">
                   {codeHealthOverview.debtDays} days
                 </span>
                 {comparisons?.debtDays ? (
@@ -746,7 +756,9 @@ const TLOverviewTab = ({
                     {Math.abs(comparisons.debtDays.diff)}
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold">--</span>
+                  <span className="text-[8px] text-text-subtler font-bold">
+                    --
+                  </span>
                 )}
               </div>
             </div>
@@ -754,9 +766,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 3: Pull Request Metrics */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Pull Request Metrics
             </span>
             <button
@@ -767,12 +779,12 @@ const TLOverviewTab = ({
             </button>
           </div>
           <div className="flex flex-col gap-2 mt-1 justify-center flex-1">
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
+            <div className="flex items-center justify-between py-1 border-b border-border-subtle">
               <div>
-                <span className="text-[8px] uppercase font-bold text-gray-400 block">
+                <span className="text-[8px] uppercase font-bold text-text-subtle block">
                   Median PR Cycle Time
                 </span>
-                <span className="text-[13px] font-black text-white mt-0.5 block">
+                <span className="text-[13px] font-black text-text mt-0.5 block">
                   {pullRequestMetrics.prCycleTime}
                 </span>
               </div>
@@ -785,7 +797,7 @@ const TLOverviewTab = ({
                     {Math.abs(prComparisons.cycleTime.diff)}h
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold block">
+                  <span className="text-[8px] text-text-subtler font-bold block">
                     --
                   </span>
                 )}
@@ -807,12 +819,12 @@ const TLOverviewTab = ({
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
+            <div className="flex items-center justify-between py-1 border-b border-border-subtle">
               <div>
-                <span className="text-[8px] uppercase font-bold text-gray-400 block">
+                <span className="text-[8px] uppercase font-bold text-text-subtle block">
                   PRs Merged
                 </span>
-                <span className="text-[13px] font-black text-white mt-0.5 block">
+                <span className="text-[13px] font-black text-text mt-0.5 block">
                   {pullRequestMetrics.prsMerged}
                 </span>
               </div>
@@ -825,7 +837,7 @@ const TLOverviewTab = ({
                     {Math.abs(prComparisons.mergedCount.diff)}
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold block">
+                  <span className="text-[8px] text-text-subtler font-bold block">
                     --
                   </span>
                 )}
@@ -849,10 +861,10 @@ const TLOverviewTab = ({
             </div>
             <div className="flex items-center justify-between py-1">
               <div>
-                <span className="text-[8px] uppercase font-bold text-gray-400 block">
+                <span className="text-[8px] uppercase font-bold text-text-subtle block">
                   Review Time (Avg.)
                 </span>
-                <span className="text-[13px] font-black text-white mt-0.5 block">
+                <span className="text-[13px] font-black text-text mt-0.5 block">
                   {pullRequestMetrics.reviewTime}
                 </span>
               </div>
@@ -865,7 +877,7 @@ const TLOverviewTab = ({
                     {Math.abs(prComparisons.reviewTime.diff)}h
                   </span>
                 ) : (
-                  <span className="text-[8px] text-gray-500 font-bold block">
+                  <span className="text-[8px] text-text-subtler font-bold block">
                     --
                   </span>
                 )}
@@ -891,9 +903,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 4: Recent Activity */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Recent Activity
             </span>
             <button
@@ -920,19 +932,19 @@ const TLOverviewTab = ({
                     <XCircle size={11} className="text-[#EF4444]" />
                   )}
                   {activity.type === 'commit' && (
-                    <Activity size={11} className="text-gray-400" />
+                    <Activity size={11} className="text-text-subtle" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-white font-bold truncate tracking-wide">
+                    <span className="text-text font-bold truncate tracking-wide">
                       {activity.title}
                     </span>
-                    <span className="text-gray-500 font-bold text-[8px] tracking-normal">
+                    <span className="text-text-subtler font-bold text-[8px] tracking-normal">
                       {activity.time}
                     </span>
                   </div>
-                  <p className="text-gray-400 lowercase tracking-wide font-medium mt-0.5 truncate">
+                  <p className="text-text-subtle lowercase tracking-wide font-medium mt-0.5 truncate">
                     {activity.desc}
                   </p>
                 </div>
@@ -945,9 +957,9 @@ const TLOverviewTab = ({
       {/* Row 4: Dependencies, Team Workload, AI Insights, Deadlines */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Panel 1: Cross-team Dependencies */}
-        <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Cross-team Dependencies
             </span>
             <button
@@ -962,22 +974,22 @@ const TLOverviewTab = ({
               crossTeamDependencies.map((dep, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-2 rounded-none hover:bg-white/[0.04]"
+                  className="flex items-center justify-between bg-card border border-border-subtle p-2 rounded-none hover:bg-background-elevated"
                 >
                   <div className="flex flex-col gap-0.5 truncate">
-                    <span className="text-[9px] font-black text-white uppercase tracking-wider">
+                    <span className="text-[9px] font-black text-text uppercase tracking-wider">
                       {dep.source}
                     </span>
-                    <span className="text-[7px] text-gray-500 uppercase tracking-widest">
+                    <span className="text-[7px] text-text-subtler uppercase tracking-widest">
                       {dep.sourceTeam}
                     </span>
                   </div>
-                  <ArrowRight size={12} className="text-gray-400" />
+                  <ArrowRight size={12} className="text-text-subtle" />
                   <div className="flex flex-col gap-0.5 truncate">
-                    <span className="text-[9px] font-black text-white uppercase tracking-wider">
+                    <span className="text-[9px] font-black text-text uppercase tracking-wider">
                       {dep.target}
                     </span>
-                    <span className="text-[7px] text-gray-500 uppercase tracking-widest">
+                    <span className="text-[7px] text-text-subtler uppercase tracking-widest">
                       {dep.targetTeam}
                     </span>
                   </div>
@@ -995,7 +1007,7 @@ const TLOverviewTab = ({
                 </div>
               ))
             ) : (
-              <div className="py-12 text-center text-[9px] text-white/10 uppercase tracking-widest italic font-bold">
+              <div className="py-12 text-center text-[9px] text-text-subtler uppercase tracking-widest italic font-bold">
                 No cross-team dependencies
               </div>
             )}
@@ -1003,9 +1015,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 2: Team Workload */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Team Workload
             </span>
             <button
@@ -1020,10 +1032,10 @@ const TLOverviewTab = ({
               <div key={idx} className="flex flex-col gap-1">
                 <div className="flex items-center justify-between text-[9px] font-black uppercase">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-bold text-[7px] text-white">
+                    <div className="w-4 h-4 rounded-full bg-background-elevated border border-border flex items-center justify-center font-bold text-[7px] text-text">
                       {user.member?.[0] || ''}
                     </div>
-                    <span className="text-white truncate max-w-[100px]">
+                    <span className="text-text truncate max-w-[100px]">
                       {user.member}
                     </span>
                   </div>
@@ -1040,14 +1052,14 @@ const TLOverviewTab = ({
                   </span>
                 </div>
                 {/* Workload bar */}
-                <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
+                <div className="w-full bg-background-elevated h-1.5 rounded-none overflow-hidden">
                   <div
                     className={`h-full ${
                       user.status === 'Overallocated'
-                        ? 'bg-[#EF4444]'
+                        ? 'bg-status-error'
                         : user.status === 'Committed'
                           ? 'bg-yellow-500'
-                          : 'bg-[#10B981]'
+                          : 'bg-status-success'
                     }`}
                     style={{ width: `${user.load}%` }}
                   />
@@ -1058,9 +1070,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 3: AI Recommendations */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               AI Insights & Recommendations
             </span>
             <button
@@ -1074,13 +1086,13 @@ const TLOverviewTab = ({
             {aiInsights?.map((insight, idx) => (
               <div
                 key={idx}
-                className="bg-white/[0.01] border border-white/5 p-2 rounded-none flex items-center justify-between hover:bg-white/[0.03]"
+                className="bg-card border border-border-subtle p-2 rounded-none flex items-center justify-between hover:bg-card"
               >
                 <div className="flex flex-col gap-0.5 pr-2 truncate">
-                  <span className="text-[8px] font-black uppercase text-white truncate tracking-wider leading-none">
+                  <span className="text-[8px] font-black uppercase text-text truncate tracking-wider leading-none">
                     {insight.title}
                   </span>
-                  <span className="text-[7px] text-gray-400 font-semibold lowercase tracking-wide truncate">
+                  <span className="text-[7px] text-text-subtle font-semibold lowercase tracking-wide truncate">
                     {insight.desc}
                   </span>
                 </div>
@@ -1101,9 +1113,9 @@ const TLOverviewTab = ({
         </div>
 
         {/* Panel 4: Upcoming Deadlines */}
-        <div className="lg:col-span-2 bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-card border border-border-subtle p-4 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
               Upcoming Deadlines
             </span>
           </div>
@@ -1114,10 +1126,10 @@ const TLOverviewTab = ({
                 className="flex items-center justify-between text-[9px] font-black"
               >
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-white uppercase tracking-wider">
+                  <span className="text-text uppercase tracking-wider">
                     {deadline.title}
                   </span>
-                  <span className="text-[7px] text-gray-500 font-bold">
+                  <span className="text-[7px] text-text-subtler font-bold">
                     {deadline.date}
                   </span>
                 </div>

@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MagicBar from './MagicBar';
 import MagicService from '../../api/magicApi';
 import { useAuth } from '../../context/AuthContext';
-import { useMagic } from '../../context/MagicContext';
+import { useMagicState, useMagicActions } from '../../context/MagicContext';
 
 // Mock dependencies
 vi.mock('../../api/magicApi');
@@ -29,15 +29,18 @@ describe('MagicBar Component', () => {
       user: { role: 'ADMIN', name: 'Test Admin' },
     });
 
-    // Setup Magic mock
-    useMagic.mockReturnValue({
-      setGlobalResult: mockSetGlobalResult,
+    // Setup Magic mocks
+    useMagicState.mockReturnValue({
       pendingCommand: null,
-      setPendingCommand: mockSetPendingCommand,
       activeProjects: [
         { _id: '1', name: 'Project Alpha', healthScore: 85, percentage: 70 },
       ],
       dashboardContext: { stats: { totalTasks: 10 } },
+    });
+
+    useMagicActions.mockReturnValue({
+      setGlobalResult: mockSetGlobalResult,
+      setPendingCommand: mockSetPendingCommand,
     });
 
     // Mock MagicService implementation

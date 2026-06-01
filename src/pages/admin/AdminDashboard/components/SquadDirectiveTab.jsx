@@ -70,9 +70,7 @@ const SquadDirectiveTab = ({ teams, deleteTeamMutation }) => {
                           ) {
                             deleteTeamMutation.mutate(teamId, {
                               onSuccess: () => {
-                                toast.success(
-                                  'Team successfully deleted'
-                                );
+                                toast.success('Team successfully deleted');
                               },
                               onError: (err) => {
                                 toast.error(

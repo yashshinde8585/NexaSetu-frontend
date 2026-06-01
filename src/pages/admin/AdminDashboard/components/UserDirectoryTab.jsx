@@ -191,8 +191,7 @@ const UserDirectoryTab = ({
         {filteredUsers.length > ITEMS_PER_PAGE && (
           <div className="py-4 flex items-center justify-between border-t border-white/5 mt-2">
             <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
-              SHOWING: {startIndex} - {endIndex} / {filteredUsers.length}{' '}
-              USERS
+              SHOWING: {startIndex} - {endIndex} / {filteredUsers.length} USERS
             </span>
             <div className="flex items-center gap-2">
               <button

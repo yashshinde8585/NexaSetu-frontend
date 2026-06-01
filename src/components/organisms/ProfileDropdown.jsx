@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../context/AuthContext';
-import { User, Settings, Contrast, LogOut, ChevronRight } from 'lucide-react';
+import { User, Contrast, LogOut, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // A profile menu that provides quick access to account settings and logout options.
@@ -33,6 +33,21 @@ const ProfileDropdown = () => {
 
   if (!user) return null;
 
+  const displayName =
+    user.name || user.fullName || user.firstName || user.username || 'User';
+  const displayEmail =
+    user.email ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    '';
+  const displayAvatar = user.profilePicture || user.imageUrl;
+  const displayTitle =
+    user.jobTitle ||
+    (user.role && user.role.replace('_', ' ')) ||
+    (user.publicMetadata?.role &&
+      String(user.publicMetadata.role).replace('_', ' ')) ||
+    'Team Member';
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Toggle Button */}
@@ -41,24 +56,24 @@ const ProfileDropdown = () => {
         className="flex items-center gap-3 p-1 sm:p-1 border border-white/5 hover:border-white/10 transition-colors outline-none active:scale-95 duration-200 cursor-pointer group"
       >
         <div className="w-8 h-8 rounded-none bg-white/5 flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
-          {user.profilePicture ? (
+          {displayAvatar ? (
             <img
-              src={user.profilePicture}
-              alt={user.name}
+              src={displayAvatar}
+              alt={displayName}
               className="w-full h-full object-cover group-hover:scale-110 transition-all duration-300"
             />
           ) : (
             <span className="text-white font-black text-[10px] uppercase">
-              {user.name.charAt(0)}
+              {displayName.charAt(0)}
             </span>
           )}
         </div>
         <div className="hidden sm:flex flex-col items-start leading-none gap-1 pr-3">
           <span className="text-[10px] font-black text-white uppercase tracking-widest">
-            {user.name}
+            {displayName}
           </span>
           <span className="text-[7px] text-primary font-black uppercase tracking-[0.2em]">
-            {user.jobTitle || (user.role && user.role.replace('_', ' '))}
+            {displayTitle}
           </span>
         </div>
       </button>
@@ -78,16 +93,16 @@ const ProfileDropdown = () => {
             style={{ borderColor: 'var(--color-border-subtle)' }}
           >
             <div className="w-10 h-10 rounded-none bg-black border border-white/10 flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
-              {user.profilePicture ? (
+              {displayAvatar ? (
                 <img
-                  src={user.profilePicture}
-                  alt={user.name}
+                  src={displayAvatar}
+                  alt={displayName}
                   className="w-full h-full rounded-none object-cover"
                 />
               ) : (
                 <div className="w-full h-full rounded-none bg-white/5 flex items-center justify-center">
                   <span className="text-white text-base font-black uppercase">
-                    {user.name.charAt(0)}
+                    {displayName.charAt(0)}
                   </span>
                 </div>
               )}
@@ -97,13 +112,13 @@ const ProfileDropdown = () => {
                 className="text-[11px] font-black text-white uppercase truncate leading-none tracking-widest"
                 style={{ color: 'var(--color-text)' }}
               >
-                {user.name}
+                {displayName}
               </h3>
               <p
                 className="text-[8px] text-white/30 font-black uppercase tracking-[0.2em] truncate leading-none"
                 style={{ color: 'var(--color-text-subtler)' }}
               >
-                {user.email}
+                {displayEmail}
               </p>
             </div>
           </div>
@@ -116,14 +131,6 @@ const ProfileDropdown = () => {
               onClick={() => {
                 setIsOpen(false);
                 navigate('/profile');
-              }}
-            />
-            <DropdownItem
-              icon={<Settings size={18} strokeWidth={2.2} />}
-              label="Account settings"
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/settings');
               }}
             />
             <DropdownItem
