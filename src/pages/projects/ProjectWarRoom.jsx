@@ -72,7 +72,7 @@ const ProjectWarRoom = () => {
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 space-y-6 animate-in fade-in duration-700">
       {/* Header Context */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-white/10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-3">
           <BackButton />
           <div>
@@ -86,7 +86,7 @@ const ProjectWarRoom = () => {
                 {project.health.replace('_', ' ')}
               </span>
             </div>
-            <h1 className="text-xl font-black tracking-tighter text-white">
+            <h1 className="text-xl font-black tracking-tighter text-text">
               {project.name}
             </h1>
           </div>
@@ -96,27 +96,27 @@ const ProjectWarRoom = () => {
           <button
             onClick={() => refetch()}
             disabled={isFetching}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all group disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 bg-background-elevated border border-border-subtle rounded-lg hover:bg-background-elevated transition-all group disabled:opacity-50"
           >
             <RefreshCw
               size={12}
               className={`text-primary transition-transform ${isFetching ? 'animate-spin' : 'group-hover:rotate-180 duration-500'}`}
             />
-            <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">
+            <span className="text-[9px] font-black text-text uppercase tracking-[0.2em]">
               Sync
             </span>
           </button>
 
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <span className="block text-[8px] font-black text-white/30 uppercase tracking-widest mb-0.5">
+              <span className="block text-[8px] font-black text-text-subtle uppercase tracking-widest mb-0.5">
                 Progress
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-white">
+                <span className="text-sm font-black text-text">
                   {project.progress}%
                 </span>
-                <div className="w-20 h-1 bg-white/5 rounded-full overflow-hidden border border-white/10">
+                <div className="w-20 h-1 bg-background-elevated rounded-full overflow-hidden border border-border-subtle">
                   <div
                     className="h-full bg-primary transition-all duration-1000"
                     style={{ width: `${project.progress}%` }}
@@ -138,7 +138,7 @@ const ProjectWarRoom = () => {
                 label: 'Total',
                 value: metrics.total,
                 icon: Target,
-                color: 'text-white',
+                color: 'text-text',
               },
               {
                 label: 'Blocked',
@@ -161,10 +161,10 @@ const ProjectWarRoom = () => {
             ].map((m, i) => (
               <div
                 key={i}
-                className="bg-white/5 border border-white/10 p-3 rounded-xl flex flex-col gap-1"
+                className="bg-background-elevated border border-border-subtle p-3 rounded-xl flex flex-col gap-1"
               >
                 <div className="flex justify-between items-start">
-                  <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">
+                  <span className="text-[8px] font-black text-text-subtle uppercase tracking-widest">
                     {m.label}
                   </span>
                   <m.icon size={12} className={m.color} />
@@ -177,8 +177,8 @@ const ProjectWarRoom = () => {
           </section>
 
           {/* Review Queue: Enforcement Layer */}
-          <section className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <section className="bg-background-elevated border border-border-subtle rounded-xl p-4">
+            <h3 className="text-[10px] font-black text-text-subtle uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
               <ClipboardCheck size={12} className="text-secondary" /> Quality
               Review Queue
             </h3>
@@ -190,14 +190,14 @@ const ProjectWarRoom = () => {
                     className="flex flex-col gap-2 p-3 bg-secondary/5 border border-secondary/20 rounded-lg group hover:border-secondary transition-all"
                   >
                     <div className="flex justify-between items-start">
-                      <h4 className="text-[11px] font-bold text-white group-hover:text-secondary transition-colors line-clamp-1">
+                      <h4 className="text-[11px] font-bold text-text group-hover:text-secondary transition-colors line-clamp-1">
                         {r.title}
                       </h4>
                       <span className="text-[7px] font-black text-secondary px-1 py-0.5 border border-secondary/30 rounded uppercase tracking-widest">
                         PENDING
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-[9px] text-white/40 font-bold uppercase tracking-widest">
+                    <div className="flex justify-between items-center text-[9px] text-text-subtle font-bold uppercase tracking-widest">
                       <span>Owner: {r.owner}</span>
                       <button
                         onClick={() => navigate(`/task/${r.id}`)}
@@ -209,7 +209,7 @@ const ProjectWarRoom = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full py-6 text-center text-white/10 text-[9px] font-black uppercase tracking-widest">
+                <div className="col-span-full py-6 text-center text-text-subtler text-[9px] font-black uppercase tracking-widest">
                   No pending reviews
                 </div>
               )}
@@ -217,8 +217,8 @@ const ProjectWarRoom = () => {
           </section>
 
           {/* Active Directives: Control Flow */}
-          <section className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <section className="bg-background-elevated border border-border-subtle rounded-xl p-4">
+            <h3 className="text-[10px] font-black text-text-subtle uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
               <Zap size={12} className="text-primary" /> Project Directives
             </h3>
             <div className="space-y-3">
@@ -233,22 +233,22 @@ const ProjectWarRoom = () => {
                         {d.type[0]}
                       </div>
                       <div>
-                        <h4 className="text-[11px] font-bold text-white group-hover:text-primary transition-colors">
+                        <h4 className="text-[11px] font-bold text-text group-hover:text-primary transition-colors">
                           {d.title}
                         </h4>
-                        <p className="text-[8px] text-white/40 uppercase tracking-widest">
+                        <p className="text-[8px] text-text-subtle uppercase tracking-widest">
                           P{d.priority} Control
                         </p>
                       </div>
                     </div>
                     <ChevronRight
                       size={14}
-                      className="text-white/20 group-hover:text-white"
+                      className="text-text-subtler group-hover:text-text"
                     />
                   </div>
                 ))
               ) : (
-                <div className="py-6 text-center text-white/20 text-[9px] font-black uppercase tracking-widest">
+                <div className="py-6 text-center text-text-subtler text-[9px] font-black uppercase tracking-widest">
                   No active directives
                 </div>
               )}
@@ -267,18 +267,16 @@ const ProjectWarRoom = () => {
               {blockers.map((b, i) => (
                 <div
                   key={i}
-                  className="p-3 bg-black/40 border border-status-error/10 rounded-lg space-y-2"
+                  className="p-3 bg-background-dark border border-status-error/10 rounded-lg space-y-2"
                 >
-                  <h4 className="text-[10px] font-bold text-white">
-                    {b.title}
-                  </h4>
-                  <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-white/40">
+                  <h4 className="text-[10px] font-bold text-text">{b.title}</h4>
+                  <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-text-subtle">
                     <span>INACTIVE: 48h+</span>
                     <span className="text-status-error">CRITICAL</span>
                   </div>
                   <button
                     onClick={() => navigate(`/task/${b.id}`)}
-                    className="w-full py-1.5 bg-status-error border border-status-error/30 text-white text-[8px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded"
+                    className="w-full py-1.5 bg-status-error border border-status-error/30 text-text text-[8px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded"
                   >
                     Open Task
                   </button>
@@ -293,8 +291,8 @@ const ProjectWarRoom = () => {
           </section>
 
           {/* Personnel Intelligence: Burnout Risk */}
-          <section className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <section className="bg-background-elevated border border-border-subtle rounded-xl p-4">
+            <h3 className="text-[10px] font-black text-text-subtle uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
               <Flame size={12} className="text-status-warning" /> Workload Risks
             </h3>
             <div className="space-y-2">
@@ -302,13 +300,13 @@ const ProjectWarRoom = () => {
                 burnoutRisks.map((m, i) => (
                   <div
                     key={i}
-                    className="flex justify-between items-center p-2 bg-white/[0.02] border border-white/5 rounded-lg"
+                    className="flex justify-between items-center p-2 bg-background-elevated border border-border-subtler rounded-lg"
                   >
                     <div>
-                      <span className="block text-[10px] font-bold text-white">
+                      <span className="block text-[10px] font-bold text-text">
                         {m.name}
                       </span>
-                      <span className="text-[8px] text-white/30 uppercase tracking-widest">
+                      <span className="text-[8px] text-text-subtle uppercase tracking-widest">
                         {m.role}
                       </span>
                     </div>
@@ -323,7 +321,7 @@ const ProjectWarRoom = () => {
                   </div>
                 ))
               ) : (
-                <div className="py-2 text-center text-white/10 text-[9px] font-black uppercase tracking-widest">
+                <div className="py-2 text-center text-text-subtler text-[9px] font-black uppercase tracking-widest">
                   Normal Workload
                 </div>
               )}
@@ -331,26 +329,26 @@ const ProjectWarRoom = () => {
           </section>
 
           {/* Event Log: Real-time Feed */}
-          <section className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <section className="bg-background-elevated border border-border-subtle rounded-xl p-4">
+            <h3 className="text-[10px] font-black text-text-subtle uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
               <Activity size={12} className="text-primary" /> Event Feed
             </h3>
             <div className="space-y-4">
               {eventFeed.map((e, i) => (
                 <div
                   key={i}
-                  className="relative pl-4 before:absolute before:left-0 before:top-1.5 before:w-1 before:h-1 before:bg-primary before:rounded-full after:absolute after:left-0.5 after:top-3.5 after:w-[1px] after:h-[calc(100%+4px)] after:bg-white/10 last:after:hidden"
+                  className="relative pl-4 before:absolute before:left-0 before:top-1.5 before:w-1 before:h-1 before:bg-primary before:rounded-full after:absolute after:left-0.5 after:top-3.5 after:w-[1px] after:h-[calc(100%+4px)] after:bg-background-elevated last:after:hidden"
                 >
-                  <p className="text-[10px] font-bold text-white/80 leading-tight">
+                  <p className="text-[10px] font-bold text-text-muted leading-tight">
                     {e.text}
                   </p>
-                  <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
+                  <span className="text-[8px] font-black text-text-subtler uppercase tracking-widest">
                     {e.time}
                   </span>
                 </div>
               ))}
               {eventFeed.length === 0 && (
-                <div className="py-2 text-center text-white/10 text-[9px] font-black uppercase tracking-widest">
+                <div className="py-2 text-center text-text-subtler text-[9px] font-black uppercase tracking-widest">
                   Awaiting Events
                 </div>
               )}

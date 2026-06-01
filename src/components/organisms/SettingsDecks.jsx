@@ -318,6 +318,21 @@ export const IdentitySection = ({ user }) => {
     }
   };
 
+  const displayName =
+    user.name || user.fullName || user.firstName || user.username || 'User';
+  const displayEmail =
+    user.email ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    '';
+  const displayAvatar = user.profilePicture || user.imageUrl;
+  const displayTitle =
+    user.jobTitle ||
+    (user.role && user.role.replace('_', ' ')) ||
+    (user.publicMetadata?.role &&
+      String(user.publicMetadata.role).replace('_', ' ')) ||
+    'Team Member';
+
   return (
     <DeckWrapper title="User Profile">
       {/* Avatar + info row */}
@@ -328,15 +343,15 @@ export const IdentitySection = ({ user }) => {
             onClick={handleAvatarClick}
             className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative group focus:outline-none"
           >
-            {user.profilePicture ? (
+            {displayAvatar ? (
               <img
-                src={user.profilePicture}
+                src={displayAvatar}
                 className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                alt={user.name}
+                alt={displayName}
               />
             ) : (
               <span className="text-lg font-black text-white/50">
-                {user.name.charAt(0)}
+                {displayName.charAt(0)}
               </span>
             )}
             {/* Overlay on hover */}
@@ -364,9 +379,11 @@ export const IdentitySection = ({ user }) => {
             Active User
           </div>
           <div className="text-[12px] font-black text-white uppercase tracking-wider truncate">
-            {user.name}
+            {displayName}
           </div>
-          <div className="text-[9px] text-white/50 truncate">{user.email}</div>
+          <div className="text-[9px] text-white/50 truncate">
+            {displayEmail}
+          </div>
         </div>
 
         {/* Upload hint */}
@@ -382,21 +399,25 @@ export const IdentitySection = ({ user }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <FieldLabel>Full Name</FieldLabel>
-          <ReadField icon={UserCircle} value={user.name} />
+          <ReadField icon={UserCircle} value={displayName} />
         </div>
         <div>
           <FieldLabel>Email Address</FieldLabel>
-          <ReadField icon={AtSign} value={user.email} />
+          <ReadField icon={AtSign} value={displayEmail} />
         </div>
         <div>
           <FieldLabel>Current Role</FieldLabel>
-          <ReadField icon={BadgeCheck} value={user.jobTitle || 'Team Member'} />
+          <ReadField icon={BadgeCheck} value={displayTitle} />
         </div>
         <div>
           <FieldLabel>Member Since</FieldLabel>
           <ReadField
             icon={Clock}
-            value={new Date(user.createdAt).toLocaleDateString()}
+            value={
+              user.createdAt
+                ? new Date(user.createdAt).toLocaleDateString()
+                : 'N/A'
+            }
           />
         </div>
       </div>

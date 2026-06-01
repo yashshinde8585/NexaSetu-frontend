@@ -18,11 +18,11 @@ const SprintCreationModal = ({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-300 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-black border border-white/20 rounded-none p-8 sm:p-10 animate-in zoom-in-95 duration-300 relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background-dark/80 animate-in fade-in duration-300 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-background border border-border-subtle rounded-none p-8 sm:p-10 animate-in zoom-in-95 duration-300 relative overflow-hidden">
         <div className="flex items-center gap-4 mb-10">
           <div className="w-1.5 h-8 bg-primary" />
-          <h3 className="text-2xl font-black text-white tracking-tighter uppercase">
+          <h3 className="text-2xl font-black text-text tracking-tighter uppercase">
             Create New Sprint
           </h3>
         </div>
@@ -87,7 +87,7 @@ const SprintCreationModal = ({
             <Button
               type="button"
               onClick={onClose}
-              className="px-8 bg-black rounded-none border border-white/20 text-[11px] font-black text-white/80 uppercase hover:text-white hover:border-primary transition-all shadow-none"
+              className="px-8 bg-background-elevated rounded-none border border-border-subtle text-[11px] font-black text-text-subtle uppercase hover:text-text hover:border-primary transition-all shadow-none"
             >
               CANCEL
             </Button>

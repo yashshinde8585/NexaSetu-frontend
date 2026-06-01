@@ -57,7 +57,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
       {/* Content */}
       {isExpanded && (
         <div className="p-4 pt-0 animate-[fadeIn_500ms_cubic-bezier(0.4,0,0.2,1)_forwards,slideInFromBottom_500ms_cubic-bezier(0.4,0,0.2,1)_forwards]">
-          <div className="h-px w-full bg-white/20 mb-6" />
+          <div className="h-px w-full bg-border-subtle mb-6" />
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
@@ -68,7 +68,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                   className="text-primary animate-spin relative"
                 />
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-subtle">
                 ANALYZING TASK...
               </p>
             </div>
@@ -81,12 +81,12 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
             </div>
           ) : (
             data && (
-              <div className="bg-black border border-white/20 rounded-[2rem] overflow-hidden">
+              <div className="bg-background-dark border border-border-subtle rounded-[2rem] overflow-hidden">
                 {/* Intelligence Insights */}
                 <div className="p-10 relative">
                   <div className="flex-1 min-w-0">
                     {/* Analysis */}
-                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mb-6 flex items-center gap-2">
+                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-6 flex items-center gap-2">
                       <Sparkles
                         size={12}
                         className="text-primary animate-pulse"
@@ -101,18 +101,18 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                     {!helpData && !helpLoading && (
                       <button
                         onClick={fetchImplementationHelp}
-                        className="group/help flex items-center gap-3 px-8 py-4 rounded-2xl bg-black border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all outline-none"
+                        className="group/help flex items-center gap-3 px-8 py-4 rounded-2xl bg-background-dark border border-border-subtle hover:border-border-subtle hover:bg-background-elevated transition-all outline-none"
                       >
                         <ListChecks
                           size={16}
-                          className="text-white/60 group-hover/help:text-primary transition-colors"
+                          className="text-text-subtle group-hover/help:text-primary transition-colors"
                         />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 group-hover/help:text-white transition-colors">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-subtle group-hover/help:text-text transition-colors">
                           REQUEST IMPLEMENTATION PLAN
                         </span>
                         <ArrowRight
                           size={14}
-                          className="text-white/30 group-hover/help:translate-x-1 group-hover/help:text-primary transition-all"
+                          className="text-text-subtle group-hover/help:translate-x-1 group-hover/help:text-primary transition-all"
                         />
                       </button>
                     )}
@@ -123,7 +123,7 @@ const TaskEPIExplanation = ({ taskId, isExpanded, onLoadingChange }) => {
                           size={20}
                           className="text-primary animate-spin"
                         />
-                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/60">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-text-subtle">
                           GENERATING PLAN...
                         </span>
                       </div>

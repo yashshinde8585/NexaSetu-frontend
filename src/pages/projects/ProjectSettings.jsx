@@ -75,8 +75,8 @@ const ProjectSettings = () => {
             <span className="px-3 py-1.5 bg-primary/20 border border-primary/40 rounded-full text-[9px] font-black text-primary uppercase tracking-widest shadow-lg">
               PROJECT ID: {id.slice(-8).toUpperCase()}
             </span>
-            <div className="h-1 w-6 bg-white/20 rounded-full" />
-            <span className="text-[9px] font-black text-white/80 uppercase tracking-widest animate-pulse">
+            <div className="h-1 w-6 bg-border-subtle rounded-full" />
+            <span className="text-[9px] font-black text-text-muted uppercase tracking-widest animate-pulse">
               ACTIVE
             </span>
           </div>
@@ -85,14 +85,14 @@ const ProjectSettings = () => {
         {/* Title Section */}
         <div className="border-b border-white/15 pb-10">
           <div className="flex items-center gap-6 mb-4">
-            <div className="w-16 h-16 bg-black border border-white/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
+            <div className="w-16 h-16 bg-background-dark border border-border-subtle rounded-2xl flex items-center justify-center text-primary shadow-2xl">
               <Settings size={32} />
             </div>
             <div className="space-y-1">
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase leading-none">
+              <h1 className="text-3xl sm:text-4xl font-black text-text tracking-tighter uppercase leading-none">
                 Project Configuration
               </h1>
-              <p className="text-[11px] font-black text-white/50 uppercase tracking-[0.3em]">
+              <p className="text-[11px] font-black text-text-subtle uppercase tracking-[0.3em]">
                 Manage your project settings and configuration details.
               </p>
             </div>
@@ -129,7 +129,7 @@ const ProjectSettings = () => {
                     ? 'bg-primary/20 text-primary border-primary/40 shadow-xl'
                     : item.danger
                       ? 'text-status-error/60 border-transparent hover:border-status-error hover:bg-status-error/10 hover:text-status-error'
-                      : 'text-white/40 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
+                      : 'text-text-subtle border-transparent hover:text-text hover:bg-background-elevated hover:border-border-subtle'
                 }`}
               >
                 {item.icon}
@@ -142,11 +142,11 @@ const ProjectSettings = () => {
           <div className="lg:col-span-3 space-y-10">
             <form
               onSubmit={handleSave}
-              className="bg-white/5 border border-white/20 p-8 sm:p-10 rounded-2xl shadow-3xl space-y-10"
+              className="bg-background-elevated border border-border-subtle p-8 sm:p-10 rounded-2xl shadow-3xl space-y-10"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
+                  <label className="text-[10px] font-black text-text/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
                     <Box size={14} className="text-primary" /> PROJECT NAME
                   </label>
                   <input
@@ -155,12 +155,12 @@ const ProjectSettings = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full h-14 bg-black border border-white/20 px-6 rounded-xl text-white font-black text-sm uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-white/5 transition-all shadow-inner"
+                    className="w-full h-14 bg-background-dark border border-border-subtle px-6 rounded-xl text-text font-black text-sm uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-background-elevated transition-all shadow-inner"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
+                  <label className="text-[10px] font-black text-text/70 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
                     <Activity size={14} className="text-primary" /> PROJECT
                     STATUS
                   </label>
@@ -170,7 +170,7 @@ const ProjectSettings = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, status: e.target.value })
                       }
-                      className="w-full h-14 bg-black border border-white/20 px-6 rounded-xl text-white font-black text-[11px] uppercase tracking-widest focus:outline-none focus:border-primary appearance-none transition-all shadow-inner"
+                      className="w-full h-14 bg-background-dark border border-border-subtle px-6 rounded-xl text-text font-black text-[11px] uppercase tracking-widest focus:outline-none focus:border-primary appearance-none transition-all shadow-inner"
                     >
                       <option value="Active" className="bg-[#121212]">
                         ACTIVE
@@ -187,7 +187,7 @@ const ProjectSettings = () => {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/70 uppercase tracking-[0.25em] ml-1">
+                <label className="text-[10px] font-black text-text/70 uppercase tracking-[0.25em] ml-1">
                   PROJECT DESCRIPTION
                 </label>
                 <textarea
@@ -196,7 +196,7 @@ const ProjectSettings = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="w-full bg-black border border-white/20 px-6 py-5 rounded-xl text-white font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-white/5 transition-all leading-relaxed shadow-inner"
+                  className="w-full bg-background-dark border border-border-subtle px-6 py-5 rounded-xl text-text font-bold text-xs uppercase tracking-widest focus:outline-none focus:border-primary focus:bg-background-elevated transition-all leading-relaxed shadow-inner"
                 ></textarea>
               </div>
 
@@ -204,7 +204,7 @@ const ProjectSettings = () => {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="bg-primary hover:bg-primary-dark text-black font-black py-4 px-12 rounded-xl transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] active:scale-95 disabled:opacity-50"
+                  className="bg-primary hover:bg-primary-dark text-background-dark font-black py-4 px-12 rounded-xl transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] active:scale-95 disabled:opacity-50"
                 >
                   <Save size={18} strokeWidth={3} />
                   {saving ? 'SAVING...' : 'SAVE CHANGES'}
@@ -223,16 +223,16 @@ const ProjectSettings = () => {
 
               <div className="bg-status-error/5 border border-status-error/25 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-8 transition-all hover:bg-status-error/10">
                 <div className="text-center sm:text-left space-y-2">
-                  <h4 className="text-white font-black text-lg uppercase tracking-tight">
+                  <h4 className="text-text font-black text-lg uppercase tracking-tight">
                     Delete Project
                   </h4>
-                  <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                  <p className="text-text-subtle text-[10px] font-bold uppercase tracking-widest leading-relaxed">
                     This action results in the permanent erasure of all project
                     data, <br className="hidden sm:block" /> tasks, and
                     associated records.
                   </p>
                 </div>
-                <button className="bg-status-error text-white font-black px-10 py-4 rounded-xl text-[10px] uppercase tracking-[0.25em] transition-all hover:bg-red-600 shadow-xl shadow-status-error/20 active:scale-95">
+                <button className="bg-status-error text-text font-black px-10 py-4 rounded-xl text-[10px] uppercase tracking-[0.25em] transition-all hover:bg-red-600 shadow-xl shadow-status-error/20 active:scale-95">
                   DELETE PROJECT
                 </button>
               </div>

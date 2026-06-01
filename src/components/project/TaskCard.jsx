@@ -26,17 +26,17 @@ const TaskCard = ({
       <div
         key={task._id}
         onClick={() => onTaskClick(task)}
-        className="bg-background-elevated hover:bg-white/5 p-3 rounded-xl border-2 border-white/20 relative overflow-hidden cursor-pointer group shadow-xl flex items-center gap-3 h-14 transition-all"
+        className="bg-background-elevated hover:bg-background-elevated p-3 rounded-xl border-2 border-border-subtle relative overflow-hidden cursor-pointer group shadow-xl flex items-center gap-3 h-14 transition-all"
       >
         <div className="flex-1 min-w-0">
-          <h4 className="text-[11px] font-black text-white leading-none truncate uppercase tracking-tight">
+          <h4 className="text-[11px] font-black text-text leading-none truncate uppercase tracking-tight">
             {task.title}
           </h4>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {task.assignedUser && (
-            <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center text-[8px] font-black text-white border-2 border-white/30 group-hover:border-primary transition-all">
+            <div className="w-5 h-5 rounded bg-background-elevated flex items-center justify-center text-[8px] font-black text-text border-2 border-border-subtle group-hover:border-primary transition-all">
               {task.assignedUser.name[0].toUpperCase()}
             </div>
           )}
@@ -53,7 +53,7 @@ const TaskCard = ({
                 else next = TASK_STATUS.DONE;
                 handleStatusChange(task._id, next);
               }}
-              className={`text-[8px] px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white/60 font-black uppercase tracking-widest border border-white/10 transition-all active:scale-95 ${
+              className={`text-[8px] px-2 py-1 rounded bg-background-elevated hover:bg-border-subtle text-text-subtle font-black uppercase tracking-widest border border-border-subtle transition-all active:scale-95 ${
                 user?.role === USER_ROLES.INTERN &&
                 task.status === TASK_STATUS.IN_REVIEW
                   ? 'hidden'
@@ -76,7 +76,7 @@ const TaskCard = ({
     <div
       key={task._id}
       onClick={() => onTaskClick(task)}
-      className={`bg-background-light p-5 border-2 border-white/20 relative overflow-hidden cursor-pointer group transition-all duration-300 hover:border-primary hover:bg-background-elevated flex flex-col shadow-lg ${
+      className={`bg-background-light p-5 border-2 border-border-subtle relative overflow-hidden cursor-pointer group transition-all duration-300 hover:border-primary hover:bg-background-elevated flex flex-col shadow-lg ${
         isMinimal ? 'h-28' : isCompact ? 'h-40' : 'h-52'
       }`}
     >
@@ -98,7 +98,7 @@ const TaskCard = ({
               </span>
               {!isCompact && (
                 <>
-                  <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
                     {task.createdFormatted || 'NEW'}
                   </span>
                   <span
@@ -113,7 +113,7 @@ const TaskCard = ({
                               ? 'border-primary text-primary bg-primary/5'
                               : task.type === 'tech_debt'
                                 ? 'border-status-warning text-status-warning bg-status-warning/5'
-                                : 'border-white/10 text-white/40'
+                                : 'border-border-subtle text-text-subtle'
                     }`}
                   >
                     {task.type || 'TASK'}
@@ -123,7 +123,7 @@ const TaskCard = ({
             </div>
           )}
           <h4
-            className={`${isMinimal ? 'text-[11px]' : 'text-[13px]'} font-black text-white leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase`}
+            className={`${isMinimal ? 'text-[11px]' : 'text-[13px]'} font-black text-text leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase`}
           >
             {task.title}
           </h4>
@@ -146,7 +146,7 @@ const TaskCard = ({
       {!isMinimal &&
         task.status === TASK_STATUS.DONE &&
         task.actualDuration !== null && (
-          <div className="mt-2 pt-2 border-t border-white/5 text-[9px] font-black text-status-success uppercase tracking-[0.3em] flex items-center gap-2">
+          <div className="mt-2 pt-2 border-t border-border-subtler text-[9px] font-black text-status-success uppercase tracking-[0.3em] flex items-center gap-2">
             <ShieldCheck size={12} strokeWidth={3} /> CYCLE:{' '}
             {task.actualDuration}M
           </div>
@@ -171,7 +171,7 @@ const TaskCard = ({
                 new Date(task.dueDate) < new Date() &&
                 task.status !== TASK_STATUS.DONE
                   ? 'text-status-error'
-                  : 'text-white/30'
+                  : 'text-text-subtle'
               }
             />
             <span
@@ -181,7 +181,7 @@ const TaskCard = ({
                 task.status !== TASK_STATUS.DONE
                   ? 'text-status-error'
                   : task.dueDate
-                    ? 'text-white/60'
+                    ? 'text-text-subtle'
                     : 'text-primary/80'
               }`}
             >
@@ -203,17 +203,17 @@ const TaskCard = ({
         )}
 
       {/* Footer Section */}
-      <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+      <div className="mt-auto pt-4 border-t border-border-subtler flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {task.assignedUser && (
             <div className="flex items-center gap-2.5">
               <div
-                className={`${isMinimal ? 'w-5 h-5 text-[8px]' : 'w-7 h-7 text-[10px]'} bg-white/5 flex items-center justify-center font-black text-white/60 border border-white/10 group-hover:border-white/30 transition-all`}
+                className={`${isMinimal ? 'w-5 h-5 text-[8px]' : 'w-7 h-7 text-[10px]'} bg-background-elevated flex items-center justify-center font-black text-text-subtle border border-border-subtle group-hover:border-border-subtle transition-all`}
               >
                 {task.assignedUser.name[0].toUpperCase()}
               </div>
               {!isMinimal && (
-                <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] group-hover:text-white/70 transition-colors">
+                <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] group-hover:text-text/70 transition-colors">
                   {task.assignedUser.name.split(' ')[0]}
                 </span>
               )}
@@ -221,10 +221,14 @@ const TaskCard = ({
           )}
 
           {task.source === 'github' && !isMinimal && (
-            <div className="h-4 w-[1px] bg-white/10 mx-1" />
+            <div className="h-4 w-[1px] bg-background-elevated mx-1" />
           )}
           {task.source === 'github' && !isMinimal && (
-            <GitBranch size={12} strokeWidth={3} className="text-white/20" />
+            <GitBranch
+              size={12}
+              strokeWidth={3}
+              className="text-text-subtler"
+            />
           )}
         </div>
 
@@ -247,10 +251,10 @@ const TaskCard = ({
                 : ''
             } ${
               task.status === TASK_STATUS.TODO
-                ? 'bg-primary text-black hover:brightness-110'
+                ? 'bg-primary text-background-dark hover:brightness-110'
                 : task.status === TASK_STATUS.IN_PROGRESS
-                  ? 'bg-status-warning text-black hover:brightness-110'
-                  : 'bg-secondary text-white hover:brightness-110'
+                  ? 'bg-status-warning text-background-dark hover:brightness-110'
+                  : 'bg-secondary text-text hover:brightness-110'
             }`}
           >
             {task.status === TASK_STATUS.TODO

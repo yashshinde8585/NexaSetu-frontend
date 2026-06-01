@@ -111,7 +111,7 @@ const TLDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      <div className="flex border-b border-white/5 overflow-x-auto scrollbar-none gap-1.5">
+      <div className="flex border-b border-border-subtle overflow-x-auto scrollbar-none gap-1.5">
         {[
           { id: 'overview', label: 'Overview', icon: <Layout size={12} /> },
           { id: 'delivery', label: 'Delivery', icon: <BarChart2 size={12} /> },
@@ -134,8 +134,8 @@ const TLDashboard = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer border-b-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? 'border-[#8B5CF6] text-white bg-white/5'
-                : 'border-transparent text-white/40 hover:text-white hover:bg-white/[0.02]'
+                ? 'border-secondary text-text bg-background-elevated'
+                : 'border-transparent text-text-subtle hover:text-text hover:bg-card'
             }`}
           >
             {tab.icon}

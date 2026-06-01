@@ -28,9 +28,9 @@ const SWEMetricsGrid = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {/* Metric Card 1: Sprint Progress */}
-      <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col justify-between hover:border-white/10 transition-colors min-h-[96px]">
+      <div className="bg-card border border-border-subtle p-4 flex flex-col justify-between hover:border-border transition-colors min-h-[96px]">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-subtle">
             Sprint Progress
           </span>
           <button
@@ -41,30 +41,30 @@ const SWEMetricsGrid = ({
           </button>
         </div>
         <div className="flex items-baseline gap-1 mt-1 leading-none">
-          <span className="text-3xl font-black text-white">
+          <span className="text-3xl font-black text-text">
             {sprintProgress}%
           </span>
-          <span className="text-[8px] font-bold text-white/40 uppercase tracking-wider">
+          <span className="text-[8px] font-bold text-text-subtle uppercase tracking-wider">
             Completed
           </span>
         </div>
         <div className="mt-3">
-          <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
+          <div className="w-full bg-background-elevated h-1.5 rounded-none overflow-hidden">
             <div
               className="bg-primary h-full transition-all duration-500"
               style={{ width: `${sprintProgress}%` }}
             />
           </div>
-          <p className="text-[8px] text-white/30 font-black uppercase tracking-wider mt-2">
+          <p className="text-[8px] text-text-subtle font-black uppercase tracking-wider mt-2">
             {sprintDaysLeft} days left Sprint end
           </p>
         </div>
       </div>
 
       {/* Metric Card 2: My Work Items */}
-      <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col justify-between hover:border-white/10 transition-colors min-h-[96px]">
+      <div className="bg-card border border-border-subtle p-4 flex flex-col justify-between hover:border-border transition-colors min-h-[96px]">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-subtle">
             My Work Items
           </span>
           <button
@@ -76,18 +76,18 @@ const SWEMetricsGrid = ({
         </div>
         <div className="grid grid-cols-4 gap-1 mt-2 text-center">
           <div>
-            <span className="block text-lg font-black text-white">
+            <span className="block text-lg font-black text-text">
               {workItemsStatus.inProgress || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               In Progress
             </span>
           </div>
-          <div className="border-x border-white/5">
+          <div className="border-x border-border-subtle">
             <span className="block text-lg font-black text-status-warning">
               {workItemsStatus.inReview || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               In Review
             </span>
           </div>
@@ -95,15 +95,15 @@ const SWEMetricsGrid = ({
             <span className="block text-lg font-black text-status-error">
               {workItemsStatus.blocked || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               Blocked
             </span>
           </div>
-          <div className="border-l border-white/5">
+          <div className="border-l border-border-subtle">
             <span className="block text-lg font-black text-status-success">
               {workItemsStatus.done || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               Done
             </span>
           </div>
@@ -111,9 +111,9 @@ const SWEMetricsGrid = ({
       </div>
 
       {/* Metric Card 3: PRs Assigned */}
-      <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col justify-between hover:border-white/10 transition-colors min-h-[96px]">
+      <div className="bg-card border border-border-subtle p-4 flex flex-col justify-between hover:border-border transition-colors min-h-[96px]">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-subtle">
             PRs Assigned
           </span>
           <button
@@ -125,18 +125,18 @@ const SWEMetricsGrid = ({
         </div>
         <div className="grid grid-cols-3 gap-1 mt-2 text-center">
           <div>
-            <span className="block text-lg font-black text-white">
+            <span className="block text-lg font-black text-text">
               {pullRequestMetrics.open || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               Open
             </span>
           </div>
-          <div className="border-x border-white/5">
+          <div className="border-x border-border-subtle">
             <span className="block text-lg font-black text-status-warning">
               {pullRequestMetrics.review || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               Review
             </span>
           </div>
@@ -144,7 +144,7 @@ const SWEMetricsGrid = ({
             <span className="block text-lg font-black text-status-success">
               {pullRequestMetrics.merged || 0}
             </span>
-            <span className="text-[6px] font-black uppercase tracking-wider text-white/20">
+            <span className="text-[6px] font-black uppercase tracking-wider text-text-subtler">
               Merged
             </span>
           </div>
@@ -152,9 +152,9 @@ const SWEMetricsGrid = ({
       </div>
 
       {/* Metric Card 4: Code Health Score */}
-      <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col justify-between hover:border-white/10 transition-colors min-h-[96px]">
+      <div className="bg-card border border-border-subtle p-4 flex flex-col justify-between hover:border-border transition-colors min-h-[96px]">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-subtle">
             Code Health Score
           </span>
           <button
@@ -169,7 +169,10 @@ const SWEMetricsGrid = ({
             <PieChart width={48} height={48}>
               <Pie
                 data={[
-                  { value: codeHealthScore, color: '#10B981' },
+                  {
+                    value: codeHealthScore,
+                    color: 'var(--color-status-success)',
+                  },
                   {
                     value: Math.max(0, 100 - codeHealthScore),
                     color: 'rgba(255,255,255,0.05)',
@@ -181,19 +184,19 @@ const SWEMetricsGrid = ({
                 startAngle={90}
                 endAngle={-270}
               >
-                <Cell fill="#10B981" />
+                <Cell fill="var(--color-status-success)" />
                 <Cell fill="rgba(255,255,255,0.05)" />
               </Pie>
             </PieChart>
-            <span className="absolute text-[8px] font-black text-white leading-none">
+            <span className="absolute text-[8px] font-black text-text leading-none">
               {codeHealthScore}
             </span>
           </div>
           <div className="leading-none">
-            <span className="text-lg font-black text-white">
+            <span className="text-lg font-black text-text">
               {codeHealthScore}/100
             </span>
-            <span className="block text-[8px] font-black uppercase tracking-widest text-[#10B981] mt-1">
+            <span className="block text-[8px] font-black uppercase tracking-widest text-status-success mt-1">
               Great
             </span>
           </div>
@@ -201,9 +204,9 @@ const SWEMetricsGrid = ({
       </div>
 
       {/* Metric Card 5: My Velocity */}
-      <div className="bg-[#0A0C14] border border-white/5 p-4 flex flex-col justify-between hover:border-white/10 transition-colors min-h-[96px]">
+      <div className="bg-card border border-border-subtle p-4 flex flex-col justify-between hover:border-border transition-colors min-h-[96px]">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">
+          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-subtle">
             My Velocity
           </span>
           <button
@@ -215,10 +218,10 @@ const SWEMetricsGrid = ({
         </div>
         <div className="flex items-center justify-between gap-2 mt-1">
           <div className="leading-none">
-            <span className="text-lg font-black text-white">
+            <span className="text-lg font-black text-text">
               {myVelocity.points} Points
             </span>
-            <div className="flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider text-[#10B981] mt-1">
+            <div className="flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider text-status-success mt-1">
               <TrendingUp size={10} />
               <span>{myVelocity.diff}% vs last sprint</span>
             </div>

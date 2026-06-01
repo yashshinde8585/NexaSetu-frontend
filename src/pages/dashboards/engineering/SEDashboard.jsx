@@ -903,7 +903,7 @@ const SEDashboard = () => {
                     <span>Ideal</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="w-2.5 h-0.5 bg-[#8B5CF6]" />
+                    <span className="w-2.5 h-0.5 bg-secondary" />
                     <span>Remaining</span>
                   </div>
                   <div className="flex items-center gap-1">

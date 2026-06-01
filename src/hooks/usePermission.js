@@ -1,32 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Assuming AuthContext provides user object
-import api from '../api/apiClient';
+import { usePermissions } from './usePermissions';
 
+/**
+ * Hook to check singular permission status for a given action.
+ * Reuses the permissions checker to eliminate duplicate logic.
+ */
 export const usePermission = (action) => {
-  const { user } = useAuth();
-  const [hasPermission, setHasPermission] = useState(false);
+  const { hasPermission } = usePermissions();
+  const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkPermission = async () => {
-      if (!user) {
-        setHasPermission(false);
-        setLoading(false);
-        return;
-      }
+    if (action) {
+      setAllowed(hasPermission(action));
+    } else {
+      setAllowed(false);
+    }
+    setLoading(false);
+  }, [hasPermission, action]);
 
-      try {
-        setHasPermission(true);
-      } catch (error) {
-        console.error('Permission check failed', error);
-        setHasPermission(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkPermission();
-  }, [user, action]);
-
-  return { hasPermission, loading };
+  return { hasPermission: allowed, loading };
 };

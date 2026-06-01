@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     title.includes('hr manager')
                   ? 'Dashboard'
                   : title.includes('senior qa engineer')
-                    ? 'Test Strategy'
+                    ? 'Dashboard'
                     : user?.role === 'QA_ENGINEER' ||
                         title.includes('qa engineer')
                       ? 'Test Dashboard'
@@ -53,9 +53,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                           title.includes('senior engineer')
                         ? 'Dashboard'
                         : title.includes('junior engineer')
-                          ? 'My Tasks'
+                          ? 'Dashboard'
                           : user?.role === 'INTERN' || title.includes('intern')
-                            ? 'Learning Hub'
+                            ? 'Dashboard'
                             : user?.role === 'WORKSPACE_ADMIN'
                               ? 'Dashboard'
                               : 'My Dashboard',
@@ -133,14 +133,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       >
         <div className="p-6 shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-6 h-6 bg-primary flex items-center justify-center text-black transition-transform">
-              <Zap size={14} fill="currentColor" />
-            </div>
             <span
               className="text-[12px] font-black tracking-[0.2em] text-white uppercase"
               style={{ color: 'var(--color-text)' }}
             >
-              NEXA_SETU
+              NEXASETU
             </span>
           </Link>
         </div>

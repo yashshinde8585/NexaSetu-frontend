@@ -5,7 +5,7 @@ const ProjectAnalyticsBar = ({ analytics }) => {
   if (!analytics) return null;
 
   return (
-    <div className="sticky top-[68px] sm:top-[72px] z-40 bg-background/80 backdrop-blur-md pb-6 pt-2 mb-4 -mx-4 px-4 border-b border-white/5 transition-all duration-300">
+    <div className="sticky top-[68px] sm:top-[72px] z-40 bg-background/80 backdrop-blur-md pb-6 pt-2 mb-4 -mx-4 px-4 border-b border-border-subtler transition-all duration-300">
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           {
@@ -37,12 +37,12 @@ const ProjectAnalyticsBar = ({ analytics }) => {
           {
             label: 'Completed',
             value: analytics.completedTasks,
-            color: 'text-white',
+            color: 'text-text',
           },
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-background-light p-4 rounded-xl border border-white/5 flex flex-col items-center"
+            className="bg-background-light p-4 rounded-xl border border-border-subtler flex flex-col items-center"
           >
             <span className="text-[10px] uppercase font-bold text-text-muted mb-1">
               {item.label}

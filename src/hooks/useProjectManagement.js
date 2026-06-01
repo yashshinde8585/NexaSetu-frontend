@@ -326,15 +326,7 @@ export const useProjectManagement = (id) => {
   });
 
   const groupedTasks = useMemo(() => {
-    const userId = user?._id;
-    const visibleTasks =
-      user?.role === USER_ROLES.INTERN
-        ? (tasksQuery.data || []).filter(
-            (t) =>
-              (t.assignedUser?._id || t.assignedUser) === userId ||
-              (t.createdBy?._id || t.createdBy) === userId
-          )
-        : tasksQuery.data || [];
+    const visibleTasks = tasksQuery.data || [];
 
     return {
       [TASK_STATUS.TODO]: visibleTasks.filter(

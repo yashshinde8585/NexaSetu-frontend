@@ -20,7 +20,7 @@ const DependenciesTab = ({
         title="Core Infrastructure Map"
         icon={<Database size={14} />}
       >
-        <div className="w-full h-[500px] mt-2 rounded-none border border-white/5 bg-black relative overflow-hidden group">
+        <div className="w-full h-[500px] mt-2 rounded-none border border-border-subtle bg-background-dark relative overflow-hidden group">
           {serviceMap?.length > 0 ? (
             <ReactFlow
               nodes={nodes}
@@ -28,9 +28,13 @@ const DependenciesTab = ({
               nodeTypes={nodeTypes}
               onNodeClick={handleNodeClick}
               fitView
-              className="bg-black"
+              className="bg-background-dark"
             >
-              <Background color="#111" gap={32} size={1} />
+              <Background
+                color="var(--color-border-subtler)"
+                gap={32}
+                size={1}
+              />
               <Controls className="react-flow__controls-tl" />
               <MiniMap
                 nodeStrokeColor={(n) => {
@@ -40,13 +44,13 @@ const DependenciesTab = ({
                 }}
                 nodeColor="#000"
                 maskColor="rgba(0, 0, 0, 0.9)"
-                className="!bg-black !rounded-none !border-white/10"
+                className="!bg-background-dark !rounded-none !border-border"
               />
             </ReactFlow>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-              <Network size={32} className="text-white/5" />
-              <span className="text-[9px] uppercase tracking-[0.2em] font-black text-white/20 italic">
+              <Network size={32} className="text-text-subtler opacity-20" />
+              <span className="text-[9px] uppercase tracking-[0.2em] font-black text-text-subtler italic">
                 ZERO_NODE_CONFIG_STATE
               </span>
             </div>

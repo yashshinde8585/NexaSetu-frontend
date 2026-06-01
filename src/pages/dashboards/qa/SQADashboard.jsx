@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   BarChart3,
   ShieldAlert,
   Bug,
   TrendingUp,
+  TrendingDown,
   Target,
   Activity,
   Users,
@@ -13,514 +14,1116 @@ import {
   Info,
   ChevronRight,
   Fingerprint,
-  PieChart,
+  PieChart as PieIcon,
   Network,
   AlertCircle,
   ShieldCheck,
+  Check,
+  Play,
+  RefreshCw,
+  Calendar,
+  Clock,
+  FileText,
+  Settings,
+  MessageSquare,
+  Flame,
+  ArrowUpRight,
+  ArrowDownRight,
+  Layout,
+  UserCheck,
+  Key,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRoleDashboard } from '../../../hooks/useRoleDashboard';
-import CenteredLoading from '../../../components/atoms/CenteredLoading';
-import DashboardSection from '../../../components/molecules/dashboard/DashboardSection';
-import MetricStripItem from '../../../components/molecules/dashboard/MetricStripItem';
-import StatusBadge from '../../../components/molecules/dashboard/StatusBadge';
-import ActivityItem from '../../../components/molecules/dashboard/ActivityItem';
+import DashboardSkeleton from '../../../components/atoms/DashboardSkeleton';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
 
-/**
- * Senior Quality Assurance (SQA) Dashboard
- * Focused on deep failure analysis, regression patterns, and release risk intelligence.
- */
 const SQADashboard = () => {
   const navigate = useNavigate();
-  const { data, isLoading } = useRoleDashboard('sqa');
+  const { data, isLoading, error, refetch } = useRoleDashboard('sqa');
+  const [activeTab, setActiveTab] = useState('Overview');
+  const [lastUpdated, setLastUpdated] = useState('2 minutes ago');
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
-  if (isLoading) return <CenteredLoading />;
+  // Auto-refresh logic
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      refetch();
+      setLastUpdated('Just now');
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, refetch]);
 
-  const {
-    qualitySignals = {
-      failureRate: 0,
-      blockedTests: 0,
-      criticalBugs: 0,
-      flakyTests: 0,
-      releaseRisk: 'UNKNOWN',
-    },
-    failureAnalysis = [],
-    advancedBlockers = [],
-    bugIntelligence = [],
-    coverageGaps = [],
-    supportSignals = [],
-    releaseRiskBreakdown = {
-      risk: 'UNDEFINED',
-      criticalBugs: 0,
-      highFailures: 0,
-      flakyTests: 0,
-    },
-    qualityTrends = {
-      failureRate: { now: 0, lastWeek: 0 },
-      passRate: { now: 0, lastWeek: 0 },
-    },
-    regressionFailures = [],
-    flakyTests = [],
-  } = data || {};
+  if (isLoading) return <DashboardSkeleton />;
+
+  if (error) {
+    console.error('[SQA-DASHBOARD] API connection failed:', error);
+    return (
+      <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center p-8 text-center font-mono border border-status-error/20 max-w-screen-2xl mx-auto">
+        <AlertCircle size={48} className="text-status-error mb-6" />
+        <h2 className="text-2xl font-black text-text mb-4 uppercase tracking-tighter">
+          API Connection Failure
+        </h2>
+        <p className="text-text-subtle max-w-md text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8">
+          We encountered an issue connecting to the backend services. Details:{' '}
+          {error.message || 'Unknown network error'}.
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="flex items-center gap-3 px-8 py-3 bg-card border border-border text-text text-[10px] uppercase font-bold tracking-[0.2em] rounded-none hover:bg-background-elevated transition-all active:scale-95 cursor-pointer"
+        >
+          <RefreshCw size={14} className="animate-spin" /> Retry API Connection
+        </button>
+      </div>
+    );
+  }
+
+  // Extract variables directly from the database response payload
+  const testExecutionProgress = data?.qualitySignals || {
+    completed: 0,
+    totalTests: 0,
+    executed: 0,
+    change: 0,
+  };
+  const testPassRate = data?.testPassRate || {
+    rate: 0,
+    passed: 0,
+    total: 0,
+    change: 0,
+    sparkline: [],
+  };
+  const defectDensity = data?.defectDensity || {
+    density: 0,
+    change: 0,
+    sparkline: [],
+  };
+  const openDefects = data?.openDefects || {
+    total: 0,
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+  };
+  const automationCoverage = data?.automationCoverage || { rate: 0, change: 0 };
+  const requirementsCoverage = data?.requirementsCoverage || {
+    rate: 0,
+    change: 0,
+  };
+
+  const testExecutionSummary = data?.testExecutionSummary || [];
+  const testExecutionTrend = data?.testExecutionTrend || [];
+  const defectsTrend = data?.defectsTrend || [];
+  const defectsByStatus = data?.defectsByStatus || [];
+  const topDefects = data?.topDefects || [];
+  const flakyTestSummary = data?.flakyTestSummary || {
+    total: 0,
+    rate: 0,
+    change: 0,
+    tests: [],
+  };
+  const testCoverage = data?.testCoverage || [];
+  const myWork = data?.myWork || [];
+  const automationDashboard = data?.automationDashboard || [];
+  const recentActivity = data?.recentActivity || [];
+  const upcomingDeadlines = data?.upcomingDeadlines || [];
+
+  const tabs = [
+    { id: 'Overview', label: 'Overview', icon: <Layout size={12} /> },
+    { id: 'Test Execution', label: 'Test Execution', icon: <Play size={12} /> },
+    { id: 'Defects', label: 'Defects', icon: <Bug size={12} /> },
+    { id: 'Requirements', label: 'Requirements', icon: <Target size={12} /> },
+    { id: 'Automation', label: 'Automation', icon: <Settings size={12} /> },
+    { id: 'Reports', label: 'Reports', icon: <FileText size={12} /> },
+    { id: 'Insights', label: 'Insights', icon: <Activity size={12} /> },
+  ];
 
   return (
-    <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
-      {/* 1. Quality Intelligence Strip */}
-      <div
-        id="sqa-metrics-strip"
-        className="grid grid-cols-1 md:grid-cols-5 gap-4"
-      >
-        <MetricStripItem
-          label="Vector Failure Rate"
-          value={`${qualitySignals.failureRate}%`}
-          icon={<TrendingUp size={14} />}
-          color={
-            qualitySignals.failureRate > 5
-              ? 'text-status-error'
-              : 'text-status-success'
-          }
-          accent={
-            qualitySignals.failureRate > 5
-              ? 'bg-status-error'
-              : 'bg-status-success'
-          }
-        />
-        <MetricStripItem
-          label="Blocked Validations"
-          value={qualitySignals.blockedTests}
-          icon={<ShieldAlert size={14} />}
-          color={
-            qualitySignals.blockedTests > 0
-              ? 'text-status-warning'
-              : 'text-white/40'
-          }
-          accent={
-            qualitySignals.blockedTests > 0 ? 'bg-status-warning' : 'bg-white/5'
-          }
-        />
-        <MetricStripItem
-          label="Critical Defects"
-          value={qualitySignals.criticalBugs}
-          icon={<Bug size={14} />}
-          color={
-            qualitySignals.criticalBugs > 0
-              ? 'text-status-error'
-              : 'text-status-success'
-          }
-          accent={
-            qualitySignals.criticalBugs > 0
-              ? 'bg-status-error'
-              : 'bg-status-success'
-          }
-        />
-        <MetricStripItem
-          label="Instability (Flaky)"
-          value={qualitySignals.flakyTests}
-          icon={<Zap size={14} />}
-          accent="bg-white/10"
-        />
-        <MetricStripItem
-          label="Deployment Risk"
-          value={qualitySignals.releaseRisk}
-          icon={<Target size={14} />}
-          color={
-            qualitySignals.releaseRisk === 'HIGH'
-              ? 'text-status-error'
-              : 'text-status-success'
-          }
-          accent={
-            qualitySignals.releaseRisk === 'HIGH'
-              ? 'bg-status-error'
-              : 'bg-status-success'
-          }
-        />
+    <div className="min-h-screen bg-background text-text p-3 lg:p-3.5 font-sans max-w-screen-2xl mx-auto flex flex-col gap-3.5 select-none">
+      {/* Top Navigation Tab Bar aligned with Workspace Administration */}
+      <div className="flex border-b border-border-subtle/80 overflow-x-auto scrollbar-none gap-1.5">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer border-b-2 whitespace-nowrap ${
+              activeTab === tab.id
+                ? 'border-primary text-text bg-background-elevated'
+                : 'border-transparent text-text-subtle hover:text-text hover:bg-card/40'
+            }`}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* 2. Failure Analysis Board */}
-        <div className="lg:col-span-12">
-          <DashboardSection
-            title="Structural Failure Analysis"
-            icon={<Microscope size={14} />}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
-              {failureAnalysis?.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-4 group hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() =>
-                    navigate(`/quality-control?module=${item.module}`)
-                  }
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[8px] font-black uppercase text-white/20 tracking-[0.2em]">
-                        {item.module}_SECTOR
-                      </span>
-                      <span className="text-2xl font-black text-white tracking-widest leading-none">
-                        {item.failures} ERR
-                      </span>
-                    </div>
-                    <div className="p-1.5 bg-status-error/10 text-status-error border border-status-error/20 rounded-none transition-colors">
-                      <Fingerprint size={14} />
-                    </div>
+      {activeTab === 'Overview' ? (
+        <>
+          {/* Row 1: Metrics Strip aligned with admin overview grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Card 1: Test Execution Progress */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Test Execution Progress
+                </span>
+                <span className="text-status-success flex items-center gap-0.5 text-[8px] font-black uppercase">
+                  <TrendingUp size={10} />+{testExecutionProgress.change}%
+                </span>
+              </div>
+              <div className="flex items-end justify-between">
+                <div>
+                  <span className="text-2xl font-black tracking-tighter">
+                    {testExecutionProgress.completed}%
+                  </span>
+                  <div className="text-[8px] text-text-subtler font-black mt-0.5">
+                    {(testExecutionProgress.executed ?? 0).toLocaleString()} /{' '}
+                    {(testExecutionProgress.totalTests ?? 0).toLocaleString()}
                   </div>
-                  <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-status-error/60">
-                    <TrendingUp size={10} />
-                    {item.trend}_CYCLICAL
-                  </div>
-                  <div className="w-full h-0.5 bg-white/5 rounded-none overflow-hidden">
-                    <div
-                      className="h-full bg-status-error"
-                      style={{
-                        width: `${Math.min(100, (item.failures / 5) * 100)}%`,
-                      }}
+                </div>
+                <div className="relative w-8 h-8 flex items-center justify-center mb-0.5 shrink-0 opacity-80">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="16"
+                      cy="16"
+                      r="13"
+                      className="stroke-border-subtler"
+                      strokeWidth="3"
+                      fill="transparent"
                     />
-                  </div>
+                    <circle
+                      cx="16"
+                      cy="16"
+                      r="13"
+                      className="stroke-status-success"
+                      strokeWidth="3"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 13}
+                      strokeDashoffset={
+                        2 *
+                        Math.PI *
+                        13 *
+                        (1 - (testExecutionProgress.completed ?? 0) / 100)
+                      }
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute text-[7.5px] font-black text-text-subtle">
+                    {testExecutionProgress.completed}%
+                  </span>
                 </div>
-              ))}
-              {(!failureAnalysis || failureAnalysis.length === 0) && (
-                <div className="col-span-3 py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-[0.3em] italic">
-                  ZERO_STRUCTURAL_FAILURES
-                </div>
-              )}
+              </div>
             </div>
-          </DashboardSection>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <DashboardSection
-            title="Validation Blockades"
-            icon={<Network size={14} />}
-          >
-            <div className="flex flex-col gap-2 py-2">
-              {advancedBlockers?.map((block, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-white/5 border border-white/10 rounded-none flex justify-between items-center group hover:bg-white/10 transition-colors cursor-pointer"
-                  onClick={() => navigate('/my-tasks?scope=blocked')}
-                >
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
-                      {block.issue}
-                    </span>
-                    <span className="text-[8px] font-black uppercase text-status-warning tracking-[0.2em]">
-                      {block.impactScope}_IMPACT
-                    </span>
+            {/* Card 2: Test Pass Rate */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Test Pass Rate
+                </span>
+                <span className="text-status-success flex items-center gap-0.5 text-[8px] font-black uppercase">
+                  <TrendingUp size={10} />+{testPassRate.change}%
+                </span>
+              </div>
+              <div className="flex items-end justify-between mt-1">
+                <div>
+                  <span className="text-2xl font-black tracking-tighter">
+                    {testPassRate.rate}%
+                  </span>
+                  <div className="text-[8px] text-status-success font-black mt-0.5">
+                    {(testPassRate.passed ?? 0).toLocaleString()} /{' '}
+                    {(testPassRate.total ?? 0).toLocaleString()}
                   </div>
-                  <ChevronRight
-                    size={12}
-                    className="text-white/10 group-hover:text-status-warning transition-colors"
+                </div>
+                <div className="w-14 h-7 opacity-60">
+                  {testPassRate.sparkline?.length > 0 && (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={testPassRate.sparkline}>
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="var(--color-primary)"
+                          strokeWidth={1.5}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Defect Density */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Defect Density
+                </span>
+                <span className="text-status-success flex items-center gap-0.5 text-[8px] font-black uppercase">
+                  <TrendingDown size={10} />
+                  {defectDensity.change}
+                </span>
+              </div>
+              <div className="flex items-end justify-between mt-1">
+                <div>
+                  <span className="text-2xl font-black tracking-tighter">
+                    {defectDensity.density}
+                  </span>
+                  <div className="text-[8px] text-text-subtler font-black mt-0.5">
+                    defects / KLOC
+                  </div>
+                </div>
+                <div className="w-14 h-7 opacity-60">
+                  {defectDensity.sparkline?.length > 0 && (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={defectDensity.sparkline}>
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="var(--color-secondary)"
+                          strokeWidth={1.5}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Open Defects */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Open Defects
+                </span>
+                <span className="text-status-error">
+                  <Bug size={12} />
+                </span>
+              </div>
+              <div className="flex items-end justify-between">
+                <div>
+                  <span className="text-2xl font-black tracking-tighter text-status-error">
+                    {openDefects.total}
+                  </span>
+                  <div className="text-[8px] text-text-subtler font-black mt-0.5">
+                    Active Defect Log
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[8px] font-black text-right shrink-0">
+                  <div>
+                    <span className="text-status-error">
+                      {openDefects.critical}
+                    </span>{' '}
+                    <span className="text-text-subtler">CRIT</span>
+                  </div>
+                  <div>
+                    <span className="text-status-warning">
+                      {openDefects.high}
+                    </span>{' '}
+                    <span className="text-text-subtler">HIGH</span>
+                  </div>
+                  <div>
+                    <span className="text-text">{openDefects.medium}</span>{' '}
+                    <span className="text-text-subtler">MED</span>
+                  </div>
+                  <div>
+                    <span className="text-status-success">
+                      {openDefects.low}
+                    </span>{' '}
+                    <span className="text-text-subtler">LOW</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 5: Automation Coverage */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Automation Coverage
+                </span>
+                <span className="text-status-success flex items-center gap-0.5 text-[8px] font-black uppercase">
+                  <TrendingUp size={10} />+{automationCoverage.change}%
+                </span>
+              </div>
+              <div className="mt-1">
+                <span className="text-2xl font-black tracking-tighter">
+                  {automationCoverage.rate}%
+                </span>
+                <div className="text-[7.5px] text-text-subtler font-black uppercase mt-0.5">
+                  Coverage of Test Suite
+                </div>
+                <div className="w-full bg-border-subtler h-1 mt-1 rounded-none overflow-hidden">
+                  <div
+                    className="bg-secondary h-full"
+                    style={{ width: `${automationCoverage.rate}%` }}
                   />
                 </div>
-              ))}
-              {(!advancedBlockers || advancedBlockers.length === 0) && (
-                <div className="py-8 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">
-                  NO_CRITICAL_BLOCKADES
-                </div>
-              )}
+              </div>
             </div>
-          </DashboardSection>
 
-          <DashboardSection title="Instability Vector" icon={<Zap size={14} />}>
-            <div className="flex flex-col gap-2 py-2">
-              {flakyTests?.map((test, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors"
-                >
-                  <div className="flex justify-between items-center mb-3 leading-none">
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">
-                      {test.title}
+            {/* Card 6: Requirements Coverage */}
+            <div className="bg-card border border-border/40 p-2.5 flex flex-col justify-between relative group hover:border-border transition-all rounded-none h-24">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-subtle">
+                  Requirements Coverage
+                </span>
+                <span className="text-status-success flex items-center gap-0.5 text-[8px] font-black uppercase">
+                  <TrendingUp size={10} />+{requirementsCoverage.change}%
+                </span>
+              </div>
+              <div className="mt-1">
+                <span className="text-2xl font-black tracking-tighter">
+                  {requirementsCoverage.rate}%
+                </span>
+                <div className="text-[7.5px] text-text-subtler font-black uppercase mt-0.5">
+                  Traceability matrix
+                </div>
+                <div className="w-full bg-border-subtler h-1 mt-1 rounded-none overflow-hidden">
+                  <div
+                    className="bg-primary h-full"
+                    style={{ width: `${requirementsCoverage.rate}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Main Graphs (Height Optimized) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Chart 1: Test Execution Summary (Doughnut) */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-2 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <PieIcon size={12} className="text-secondary" />
+                  Test Execution Summary
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View Details
+                </button>
+              </div>
+              <div className="flex items-center justify-between h-full min-h-0">
+                <div className="relative w-[110px] h-[110px] lg:w-[120px] lg:h-[120px] flex items-center justify-center shrink-0">
+                  {testExecutionSummary?.length > 0 && (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={testExecutionSummary}
+                          innerRadius={36}
+                          outerRadius={48}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {testExecutionSummary.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
+                  <div className="absolute flex flex-col items-center justify-center text-center">
+                    <span className="text-sm font-black tracking-tight leading-none text-text">
+                      {(testExecutionProgress.totalTests ?? 0).toLocaleString()}
                     </span>
-                    <span className="text-[9px] font-black text-status-warning uppercase tracking-[0.2em]">
-                      {test.frequency}
+                    <span className="text-[7px] text-text-subtler font-bold uppercase tracking-wider mt-0.5">
+                      Total Tests
                     </span>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-                      SYSTEM_IMPACT: {test.impact}
-                    </span>
-                    <div className="h-0.5 bg-white/5 rounded-none overflow-hidden border border-white/5">
-                      <div
-                        className="h-full bg-status-warning/40 transition-all duration-1000"
-                        style={{
-                          width: test.frequency.includes('25%') ? '25%' : '10%',
+                </div>
+                {/* Legend list */}
+                <div className="flex flex-col gap-1.5 flex-1 pl-4">
+                  {testExecutionSummary.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center text-[10.5px]"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="w-2 h-2 rounded-none"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-text-subtle font-semibold">
+                          {item.name}
+                        </span>
+                      </div>
+                      <span className="font-bold text-text">
+                        {item.value.toLocaleString()}{' '}
+                        <span className="text-text-subtler text-[9px] font-normal">
+                          ({item.percentage}%)
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Chart 2: Test Execution Trend (Line Chart) */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-2 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <TrendingUp size={12} className="text-secondary" />
+                  Test Execution Trend
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View Trend
+                </button>
+              </div>
+              {/* Legend at Top */}
+              <div className="flex justify-start gap-3 text-[8px] font-black uppercase tracking-wider text-text-subtle -mt-1.5 mb-1.5 shrink-0">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#10b981]" />
+                  <span>Passed</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#ef4444]" />
+                  <span>Failed</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#f59e0b]" />
+                  <span>Blocked</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#3b82f6]" />
+                  <span>Pass Rate %</span>
+                </div>
+              </div>
+              <div className="flex-1 min-h-0 w-full">
+                {testExecutionTrend?.length > 0 && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={testExecutionTrend}
+                      margin={{ top: 5, right: 5, left: -32, bottom: 5 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--color-border-subtler)"
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: 'var(--color-text-subtle)', fontSize: 8 }}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        tick={{ fill: 'var(--color-text-subtle)', fontSize: 8 }}
+                        axisLine={false}
+                        domain={[0, 1500]}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        tick={{ fill: 'var(--color-text-subtle)', fontSize: 8 }}
+                        axisLine={false}
+                        domain={[80, 100]}
+                        tickFormatter={(val) => `${val}%`}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'var(--color-background-elevated)',
+                          borderColor: 'var(--color-border-subtle)',
+                          color: 'var(--color-text)',
+                          fontSize: 10,
                         }}
                       />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {(!flakyTests || flakyTests.length === 0) && (
-                <div className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic">
-                  NO FLAKY TESTS
-                </div>
-              )}
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="Passed"
+                        stroke="#10b981"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="Failed"
+                        stroke="#ef4444"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="Blocked"
+                        stroke="#f59e0b"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="Pass Rate %"
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
             </div>
-          </DashboardSection>
-        </div>
 
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <DashboardSection
-            title="Quality Intelligence"
-            icon={<PieChart size={14} />}
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] border-b border-white/5">
-                    <th className="py-3 px-3">MODULE</th>
-                    <th className="py-3 px-3">TREND</th>
-                    <th className="py-3 px-3 text-right">HEALTH</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.02]">
-                  {bugIntelligence?.map((bug, idx) => (
-                    <tr
-                      key={idx}
-                      className="group hover:bg-white/5 transition-colors cursor-pointer"
-                      onClick={() =>
-                        navigate(
-                          `/quality-control?module=${bug.module}&priority=${bug.severity}`
-                        )
-                      }
+            {/* Chart 3: Defects Trend (Line Chart) */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-2 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <Bug size={12} className="text-secondary" />
+                  Defects Trend
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View Trend
+                </button>
+              </div>
+              {/* Legend */}
+              <div className="flex justify-start gap-3 text-[8px] font-black uppercase tracking-wider text-text-subtle -mt-1.5 mb-1.5 shrink-0">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#ef4444]" />
+                  <span>Critical</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#f59e0b]" />
+                  <span>High</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#fbbf24]" />
+                  <span>Medium</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-0.5 bg-[#10b981]" />
+                  <span>Low</span>
+                </div>
+              </div>
+              <div className="flex-1 min-h-0 w-full">
+                {defectsTrend?.length > 0 && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={defectsTrend}
+                      margin={{ top: 5, right: 5, left: -34, bottom: 5 }}
                     >
-                      <td className="py-3 px-3">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
-                            {bug.module}
-                          </span>
-                          <span className="text-[8px] text-status-error/60 font-black uppercase tracking-[0.2em]">
-                            {bug.severity}_PRIORITY
-                          </span>
-                        </div>
-                      </td>
-                      <td
-                        className={`py-3 px-3 text-[9px] font-black uppercase tracking-[0.2em] ${bug.trend.includes('Increasing') ? 'text-status-error' : 'text-status-success'}`}
-                      >
-                        {bug.trend}
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        <div
-                          className={`h-1.5 w-1.5 rounded-none inline-block ml-auto ${bug.trend.includes('Increasing') ? 'bg-status-error' : 'bg-status-success'}`}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                  {(!bugIntelligence || bugIntelligence.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan="3"
-                        className="py-12 text-center text-[9px] text-white/10 uppercase font-black tracking-widest italic"
-                      >
-                        NO_SUBSYSTEM_DATA
-                      </td>
-                    </tr>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--color-border-subtler)"
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: 'var(--color-text-subtle)', fontSize: 8 }}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        tick={{ fill: 'var(--color-text-subtle)', fontSize: 8 }}
+                        axisLine={false}
+                        domain={[0, 40]}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'var(--color-background-elevated)',
+                          borderColor: 'var(--color-border-subtle)',
+                          color: 'var(--color-text)',
+                          fontSize: 10,
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Critical"
+                        stroke="#ef4444"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="High"
+                        stroke="#f59e0b"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Medium"
+                        stroke="#fbbf24"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="Low"
+                        stroke="#10b981"
+                        strokeWidth={1.5}
+                        dot={{ r: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3: Analysis Panels */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Panel 1: Defects by Status (Doughnut) */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-2 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <ShieldAlert size={12} className="text-secondary" />
+                  Defects by Status
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View All
+                </button>
+              </div>
+              <div className="flex items-center justify-between h-full min-h-0">
+                <div className="relative w-[95px] h-[95px] flex items-center justify-center shrink-0">
+                  {defectsByStatus?.length > 0 && (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={defectsByStatus}
+                          innerRadius={30}
+                          outerRadius={42}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {defectsByStatus.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
                   )}
-                </tbody>
-              </table>
+                  <div className="absolute flex flex-col items-center justify-center text-center">
+                    <span className="text-sm font-black tracking-tight leading-none text-text">
+                      {openDefects.total}
+                    </span>
+                    <span className="text-[6.5px] text-text-subtler font-bold uppercase tracking-wider mt-0.5">
+                      Total Open
+                    </span>
+                  </div>
+                </div>
+                {/* Legend list */}
+                <div className="flex flex-col gap-1 flex-1 pl-3">
+                  {defectsByStatus.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center text-[10.5px]"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="w-1.5 h-1.5 rounded-none"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-text-subtle font-semibold">
+                          {item.name}
+                        </span>
+                      </div>
+                      <span className="font-bold text-text">
+                        {item.value}{' '}
+                        <span className="text-text-subtler text-[9px] font-normal">
+                          ({item.percentage}%)
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </DashboardSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DashboardSection
-              title="Regression Recurrence"
-              icon={<BarChart3 size={14} />}
-            >
-              <div className="flex flex-col gap-2 py-2">
-                {regressionFailures?.map((fail, idx) => (
+            {/* Panel 2: Top Defects */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex flex-col gap-2 min-h-0 overflow-hidden">
+                <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-1.5 shrink-0">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                    <Bug size={12} className="text-secondary" />
+                    Top Defects
+                  </span>
+                  <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                    View All
+                  </button>
+                </div>
+                <div className="overflow-x-auto scrollbar-none min-h-0 flex-1">
+                  <table className="w-full text-left text-[10.5px] border-collapse">
+                    <thead>
+                      <tr className="text-[8px] font-black text-text-subtler uppercase tracking-widest border-b border-border-subtle/40 pb-1">
+                        <th className="pb-1">ID</th>
+                        <th className="pb-1">Title</th>
+                        <th className="pb-1">Module</th>
+                        <th className="pb-1">Severity</th>
+                        <th className="pb-1 text-right">Age</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-subtler">
+                      {topDefects.map((defect, index) => (
+                        <tr
+                          key={defect.id || index}
+                          className="hover:bg-white/[0.02] transition-colors"
+                        >
+                          <td className="py-1.5 text-text font-bold">
+                            {defect.id}
+                          </td>
+                          <td
+                            className="py-1.5 text-text-subtle max-w-[85px] truncate pr-1"
+                            title={defect.title}
+                          >
+                            {defect.title}
+                          </td>
+                          <td className="py-1.5 text-text-subtler">
+                            {defect.module}
+                          </td>
+                          <td className="py-1.5">
+                            <span
+                              className={`px-1.5 py-0.5 rounded-none text-[7.5px] font-extrabold uppercase ${
+                                defect.severity === 'Critical'
+                                  ? 'bg-status-error/15 text-status-error border border-status-error/20'
+                                  : defect.severity === 'High'
+                                    ? 'bg-status-warning/15 text-status-warning border border-status-warning/20'
+                                    : 'bg-yellow-400/10 text-yellow-400 border border-yellow-400/20'
+                              }`}
+                            >
+                              {defect.severity}
+                            </span>
+                          </td>
+                          <td className="py-1.5 text-right text-text-subtler font-semibold">
+                            {defect.age}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {topDefects.length === 0 && (
+                    <div className="py-8 text-center text-[9px] text-text-subtler uppercase font-black tracking-widest italic">
+                      Zero Open Defects
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button className="text-[9px] font-black uppercase text-secondary hover:underline text-left mt-2.5 shrink-0 cursor-pointer">
+                View All Defects
+              </button>
+            </div>
+
+            {/* Panel 3: Flaky Test Summary */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex flex-col gap-2.5 min-h-0 flex-1 justify-between">
+                <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-1 shrink-0">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                    <Zap size={12} className="text-secondary" />
+                    Flaky Test Summary
+                  </span>
+                </div>
+                <div className="flex gap-3.5 items-center border-b border-border-subtle pb-2.5 shrink-0">
+                  <div className="flex flex-col">
+                    <span className="text-xl font-black tracking-tight leading-none">
+                      {flakyTestSummary.total}
+                    </span>
+                    <span className="text-[7px] text-text-subtler font-bold uppercase tracking-wider mt-0.5">
+                      Flaky Tests
+                    </span>
+                  </div>
+                  <div className="w-px h-6 bg-border-subtle" />
+                  <div className="flex flex-col">
+                    <span className="text-xl font-black tracking-tight leading-none">
+                      {flakyTestSummary.rate}%
+                    </span>
+                    <span className="text-[7px] text-text-subtler font-bold uppercase tracking-wider mt-0.5">
+                      Flaky Rate
+                    </span>
+                  </div>
+                  <div className="ml-auto text-status-success flex items-center gap-0.5 text-[8px] font-bold">
+                    <TrendingDown size={10} />
+                    {flakyTestSummary.change}%
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5 flex-1 min-h-0 justify-center">
+                  {flakyTestSummary.tests?.map((test, index) => (
+                    <div
+                      key={test.id || index}
+                      className="flex flex-col gap-0.5 text-[10.5px]"
+                    >
+                      <div className="flex justify-between items-center leading-none">
+                        <span className="text-text-subtle font-semibold flex items-center gap-1 truncate max-w-[120px]">
+                          <FileText size={10} className="text-text-subtler" />
+                          {test.id}
+                        </span>
+                        <span className="font-bold text-text text-[10px]">
+                          {test.rate}%
+                        </span>
+                      </div>
+                      <div className="h-[3px] bg-border-subtler rounded-none overflow-hidden mt-0.5">
+                        <div
+                          className="h-full bg-status-warning/70"
+                          style={{ width: `${(test.rate ?? 0) * 25}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {(!flakyTestSummary.tests ||
+                    flakyTestSummary.tests.length === 0) && (
+                    <div className="text-center py-4 text-[9px] text-text-subtler uppercase font-black tracking-widest italic">
+                      Zero Flaky Tests
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button className="text-[9px] font-black uppercase text-secondary hover:underline text-left mt-2.5 shrink-0 cursor-pointer">
+                View All Flaky Tests
+              </button>
+            </div>
+
+            {/* Panel 4: Test Coverage */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[250px] lg:h-[260px]">
+              <div className="flex flex-col gap-2 min-h-0 flex-1 justify-center">
+                <div className="flex justify-between items-center pb-2.5 border-b border-border-subtle/40 mb-2 shrink-0">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                    <Target size={12} className="text-secondary" />
+                    Test Coverage
+                  </span>
+                  <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                    View Details
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2.5 flex-1 justify-center">
+                  {testCoverage.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-0.5 text-[10.5px]"
+                    >
+                      <div className="flex justify-between items-center leading-none">
+                        <span className="text-text-subtle font-semibold">
+                          {item.label}
+                        </span>
+                        <span className="font-bold text-text text-[10px]">
+                          {item.rate}%
+                        </span>
+                      </div>
+                      <div className="h-[3px] bg-border-subtler rounded-none overflow-hidden mt-0.5">
+                        <div
+                          className="h-full bg-status-success"
+                          style={{ width: `${item.rate}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 4: Operational Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Panel 1: My Work */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[210px] lg:h-[220px]">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle/40 mb-1.5 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <Check size={12} className="text-secondary" />
+                  My Work
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View All
+                </button>
+              </div>
+              <div className="flex flex-col gap-1.5 justify-center flex-1 min-h-0">
+                {myWork.map((item, index) => (
                   <div
-                    key={idx}
-                    className="flex items-center p-3 bg-white/5 hover:bg-white/10 border-l-2 border-status-error rounded-none transition-colors group"
+                    key={index}
+                    className="flex justify-between items-center p-1.5 bg-white/[0.02] border border-border-subtler hover:bg-white/[0.04] transition-colors rounded-none"
                   >
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
-                        {fail.module}
-                      </span>
-                      <span className="text-[8px] font-black uppercase text-status-error/40 tracking-[0.2em]">
-                        {fail.failures}_RECURRING_TRACES
-                      </span>
+                    <div className="flex items-center gap-2 text-[11px] text-text-subtle leading-none">
+                      <div
+                        className={`p-1 rounded-none bg-white/5 ${
+                          item.type === 'assigned'
+                            ? 'text-blue-400'
+                            : item.type === 'progress'
+                              ? 'text-yellow-400'
+                              : item.type === 'review'
+                                ? 'text-green-400'
+                                : 'text-red-400'
+                        }`}
+                      >
+                        {item.type === 'assigned' && <FileText size={10} />}
+                        {item.type === 'progress' && <Clock size={10} />}
+                        {item.type === 'review' && <Check size={10} />}
+                        {item.type === 'blocked' && <ShieldAlert size={10} />}
+                      </div>
+                      <span className="font-semibold">{item.label}</span>
                     </div>
-                    <div className="ml-auto flex flex-col items-end gap-1">
-                      <span className="text-[7px] font-black text-white/10 uppercase tracking-[0.2em]">
-                        IMPACT
-                      </span>
-                      <span className="text-[9px] font-black text-status-error uppercase tracking-[0.2em] leading-none">
-                        {fail.impact}
-                      </span>
-                    </div>
+                    <span className="font-bold text-text text-[11px]">
+                      {item.count}
+                    </span>
                   </div>
                 ))}
               </div>
-            </DashboardSection>
+            </div>
 
-            <DashboardSection
-              title="Quality Feedback"
-              icon={<Users size={14} />}
-            >
-              <div className="flex flex-col gap-2 py-2">
-                {supportSignals?.map((sig, idx) => (
-                  <ActivityItem key={idx} text={sig.issue} time={sig.user} />
+            {/* Panel 2: Automation Dashboard */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[210px] lg:h-[220px]">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle/40 mb-1.5 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <Settings size={12} className="text-secondary" />
+                  Automation Dashboard
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View Details
+                </button>
+              </div>
+              <div className="flex flex-col justify-center flex-1 divide-y divide-border-subtler min-h-0">
+                {automationDashboard.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center py-2 text-[11px]"
+                  >
+                    <span className="text-text-subtle font-semibold">
+                      {item.label}
+                    </span>
+                    <span className="font-bold text-text">{item.value}</span>
+                  </div>
                 ))}
               </div>
-            </DashboardSection>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
-        {/* 6. Release Authority Analysis */}
-        <div className="lg:col-span-8">
-          <DashboardSection
-            title="Quality Metrics"
-            icon={<TrendingUp size={14} />}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4 px-4 bg-white/5 border border-white/10 rounded-none">
-              <TrendDisplay
-                label="FAILURE RATE"
-                value={`${qualityTrends.failureRate.now}%`}
-                lastValue={`${qualityTrends.failureRate.lastWeek}%`}
-                color="text-status-error"
-                upIsBad
-              />
-              <TrendDisplay
-                label="PASS RATE"
-                value={`${qualityTrends.passRate.now}%`}
-                lastValue={`${qualityTrends.passRate.lastWeek}%`}
-                color="text-status-success"
-              />
             </div>
-          </DashboardSection>
-        </div>
 
-        <div className="lg:col-span-4">
-          <DashboardSection
-            title="Deployment Risk"
-            icon={<ShieldAlert size={14} />}
-          >
-            <div
-              className={`rounded-none border ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20 bg-status-error/[0.02]' : 'border-status-success/20 bg-status-success/[0.02]'}`}
-            >
-              <div className="flex flex-col items-center py-4">
-                <div
-                  className={`p-3 rounded-none border-2 ${releaseRiskBreakdown.risk === 'HIGH' ? 'border-status-error/20' : 'border-status-success/20'}`}
-                >
+            {/* Panel 3: Recent Activity */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[210px] lg:h-[220px]">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle/40 mb-1.5 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <Activity size={12} className="text-secondary" />
+                  Recent Activity
+                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View All
+                </button>
+              </div>
+              <div className="flex flex-col gap-2 justify-center flex-1 min-h-0">
+                {recentActivity.map((activity, index) => (
                   <div
-                    className={`w-12 h-12 rounded-none flex items-center justify-center font-black text-xl tracking-widest ${releaseRiskBreakdown.risk === 'HIGH' ? 'text-status-error bg-status-error/10' : 'text-status-success bg-status-success/10'}`}
+                    key={activity.id || index}
+                    className="flex items-start gap-2 text-[10.5px]"
                   >
-                    {releaseRiskBreakdown.risk || 'NONE'}
+                    <div
+                      className={`w-1.5 h-1.5 rounded-none mt-1 shrink-0 ${
+                        activity.status === 'success'
+                          ? 'bg-status-success'
+                          : activity.status === 'warning'
+                            ? 'bg-status-warning'
+                            : activity.status === 'error'
+                              ? 'bg-status-error'
+                              : 'bg-primary'
+                      }`}
+                    />
+                    <div className="flex flex-col gap-0.5 leading-tight">
+                      <span className="text-text font-medium">
+                        {activity.text}
+                      </span>
+                      {activity.meta && (
+                        <span className="text-[8.5px] text-text-subtler uppercase tracking-wider">
+                          {activity.meta}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[8.5px] text-text-subtler ml-auto font-black shrink-0 uppercase">
+                      {activity.time}
+                    </span>
                   </div>
-                </div>
-                <span className="text-[8px] font-black uppercase tracking-[0.2em] mt-3 text-white/20">
-                  RISK LEVEL
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-px bg-white/5 border-t border-white/5">
-                <div className="flex flex-col items-center justify-center p-3 bg-black">
-                  <span className="text-lg font-black text-status-error leading-none">
-                    {releaseRiskBreakdown.criticalBugs}
-                  </span>
-                  <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">
-                    DEFECTS
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center p-3 bg-black">
-                  <span className="text-lg font-black text-status-error leading-none">
-                    {releaseRiskBreakdown.highFailures}
-                  </span>
-                  <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">
-                    FAILURES
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center p-3 bg-black">
-                  <span className="text-lg font-black text-status-warning leading-none">
-                    {releaseRiskBreakdown.flakyTests}
-                  </span>
-                  <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">
-                    FLAKY
-                  </span>
-                </div>
+                ))}
+                {recentActivity.length === 0 && (
+                  <div className="text-center py-4 text-[9px] text-text-subtler uppercase font-black tracking-widest italic">
+                    Zero Recent Activity
+                  </div>
+                )}
               </div>
             </div>
-          </DashboardSection>
-        </div>
-      </div>
 
-      <DashboardSection
-        title="Domain Coverage Gaps"
-        icon={<Target size={14} />}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-2">
-          {coverageGaps?.map((gap, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col gap-3 p-3 bg-white/5 border border-white/10 rounded-none group hover:bg-white/10 transition-colors"
-            >
-              <div className="flex justify-between items-center leading-none">
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">
-                  {gap.module}_VECTOR
+            {/* Panel 4: Upcoming Deadlines */}
+            <div className="bg-card border border-border p-3 flex flex-col justify-between rounded-none h-[210px] lg:h-[220px]">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle/40 mb-1.5 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle flex items-center gap-1.5">
+                  <Calendar size={12} className="text-secondary" />
+                  Upcoming Deadlines
                 </span>
-                <span className="text-[8px] font-black uppercase text-status-error tracking-[0.2em]">
-                  {gap.alert}
-                </span>
+                <button className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer">
+                  View Calendar
+                </button>
               </div>
-              <div className="flex items-center gap-4 py-1">
-                <div className="h-0.5 flex-1 bg-white/5 rounded-none overflow-hidden">
+              <div className="flex flex-col gap-2.5 justify-center flex-1 min-h-0">
+                {upcomingDeadlines.map((deadline, index) => (
                   <div
-                    className={`h-full ${gap.coverage > 80 ? 'bg-status-success' : 'bg-status-error'}`}
-                    style={{ width: `${gap.coverage}%` }}
-                  />
-                </div>
-                <span className="text-[10px] font-black text-white/40 tracking-widest tabular-nums">
-                  {gap.coverage}%
-                </span>
+                    key={index}
+                    className="flex flex-col gap-0.5 leading-tight"
+                  >
+                    <div className="flex justify-between items-start text-[10.5px]">
+                      <span className="text-text font-bold max-w-[150px]">
+                        {deadline.title}
+                      </span>
+                      <span
+                        className={`text-[8.5px] font-black uppercase shrink-0 ${
+                          deadline.status === 'error'
+                            ? 'text-status-error'
+                            : deadline.status === 'warning'
+                              ? 'text-status-warning'
+                              : 'text-status-success'
+                        }`}
+                      >
+                        {deadline.remaining}
+                      </span>
+                    </div>
+                    <span className="text-[8.5px] text-text-subtler font-semibold">
+                      {deadline.date}
+                    </span>
+                  </div>
+                ))}
+                {upcomingDeadlines.length === 0 && (
+                  <div className="text-center py-4 text-[9px] text-text-subtler uppercase font-black tracking-widest italic">
+                    Zero Upcoming Deadlines
+                  </div>
+                )}
               </div>
             </div>
-          ))}
-        </div>
-      </DashboardSection>
-    </div>
-  );
-};
-
-const TrendDisplay = ({ label, value, lastValue, color, upIsBad }) => {
-  const isUp = parseFloat(value) > parseFloat(lastValue);
-  const trendColor = isUp
-    ? upIsBad
-      ? 'text-status-error'
-      : 'text-status-success'
-    : upIsBad
-      ? 'text-status-success'
-      : 'text-status-error';
-
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/20">
-        {label}
-      </span>
-      <div className="flex items-end gap-2 px-1 leading-none">
-        <span className={`text-3xl font-black tracking-widest ${color}`}>
-          {value}
-        </span>
-        <div className="flex flex-col gap-1 mb-1">
-          <div
-            className={`flex items-center gap-1 text-[10px] font-black ${trendColor}`}
-          >
-            {isUp ? (
-              <TrendingUp size={10} />
-            ) : (
-              <TrendingUp size={10} className="rotate-180" />
-            )}
-            {isUp ? 'SEC' : 'DEC'}
           </div>
-          <span className="text-[7px] font-black text-white/10 uppercase tracking-[0.2em]">
-            CYCLE_BASE
+
+          {/* Footer telemetry metadata */}
+          <div className="flex flex-col sm:flex-row justify-between items-center text-[9px] text-text-subtler font-black uppercase tracking-widest border-t border-border-subtle/80 pt-3 mt-1.5 shrink-0">
+            <div className="flex items-center gap-4">
+              <span>Last updated: {lastUpdated}</span>
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className="flex items-center gap-1 hover:text-text cursor-pointer"
+              >
+                <span>Auto-refresh: {autoRefresh ? 'On' : 'Off'}</span>
+                <RefreshCw
+                  size={10}
+                  className={`${autoRefresh ? 'animate-spin' : ''}`}
+                />
+              </button>
+            </div>
+            <span>Data as of: May 18, 2025 10:24 AM IST</span>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center p-20 bg-card border border-border border-dashed text-center rounded-none">
+          <Microscope
+            className="text-text-subtler mb-4 animate-pulse"
+            size={32}
+          />
+          <span className="text-xs font-black text-text uppercase tracking-widest mb-1">
+            {activeTab} Workspace Details
+          </span>
+          <span className="text-[10px] text-text-subtle font-medium max-w-md uppercase tracking-wider leading-normal pr-1">
+            Showing specific quality tracking logs and metrics associated with
+            the current active validation cycle matching the {activeTab}{' '}
+            parameters.
           </span>
         </div>
-      </div>
+      )}
     </div>
   );
 };

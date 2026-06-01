@@ -118,8 +118,6 @@ const SWEDashboard = () => {
     [blockMutation]
   );
 
-  if (isLoading || !data) return <DashboardSkeleton />;
-
   const {
     myTasks,
     progress,
@@ -138,7 +136,7 @@ const SWEDashboard = () => {
     burndownData,
     recentActivity,
     myCodeImpact,
-  } = data;
+  } = data || {};
 
   const inProgressTasks = useMemo(
     () => (myTasks ? myTasks.filter((t) => t.status === 'in_progress') : []),
@@ -180,6 +178,8 @@ const SWEDashboard = () => {
     }),
     [myTasks, inProgressTasks, inReviewTasks, doneTasks]
   );
+
+  if (isLoading || !data) return <DashboardSkeleton />;
   return (
     <div className="min-h-screen bg-background text-text p-4 lg:p-6 font-sans selection:bg-primary max-w-screen-2xl mx-auto flex flex-col gap-6">
       <SWEHeader

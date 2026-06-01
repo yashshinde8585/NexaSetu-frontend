@@ -301,7 +301,7 @@ const ProjectTeam = () => {
       return 'bg-orange-500/10 border border-orange-500/20 text-orange-400';
     if (r.includes('INTERN'))
       return 'bg-gray-500/10 border border-gray-500/20 text-gray-400';
-    return 'bg-white/5 border border-white/10 text-white/60';
+    return 'bg-background-elevated border border-border-subtle text-text-subtle';
   };
 
   const getRoleDisplayName = (role, jobTitle) => {
@@ -323,7 +323,7 @@ const ProjectTeam = () => {
       case 'Invited':
         return 'bg-amber-500/10 border border-amber-500/20 text-amber-400';
       default:
-        return 'bg-white/5 border border-white/10 text-white/40';
+        return 'bg-background-elevated border border-border-subtle text-text-subtle';
     }
   };
 
@@ -583,7 +583,7 @@ const ProjectTeam = () => {
           </div>
 
           <div className="mt-4 pb-1">
-            <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden border border-white/5">
+            <div className="w-full bg-background-elevated h-1.5 rounded-none overflow-hidden border border-border-subtler">
               <div
                 className="bg-blue-500 h-full transition-all duration-700"
                 style={{ width: `${stats.mfaEnabled.percentage}%` }}
@@ -956,7 +956,7 @@ const ProjectTeam = () => {
                     onClick={() => setCurrentPage(p)}
                     className={`w-7 h-7 flex items-center justify-center border rounded-[1px] font-black transition-all cursor-pointer ${
                       currentPage === p
-                        ? 'bg-primary border-primary text-black'
+                        ? 'bg-primary border-primary text-background-dark'
                         : 'border-border-subtle hover:border-border-subtle/55 text-text'
                     }`}
                   >

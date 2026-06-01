@@ -21,8 +21,8 @@ const CodeTab = ({
 }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 bg-[#0A0C14] border border-white/5 p-6 flex flex-col gap-4">
-        <h3 className="text-sm font-black uppercase tracking-widest text-white">
+      <div className="lg:col-span-2 bg-card border border-border-subtle p-6 flex flex-col gap-4">
+        <h3 className="text-sm font-black uppercase tracking-widest text-text">
           Velocity Trend
         </h3>
         <div className="w-full h-80">
@@ -55,37 +55,37 @@ const CodeTab = ({
         </div>
       </div>
 
-      <div className="bg-[#0A0C14] border border-white/5 p-6 flex flex-col gap-4">
-        <h3 className="text-sm font-black uppercase tracking-widest text-white">
+      <div className="bg-card border border-border-subtle p-6 flex flex-col gap-4">
+        <h3 className="text-sm font-black uppercase tracking-widest text-text">
           My Code Impact
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-white/[0.01] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/20">
+          <div className="p-4 bg-card border border-border-subtle">
+            <span className="text-[9px] font-black uppercase tracking-wider text-text-subtler">
               Commits
             </span>
-            <span className="block text-2xl font-black text-white mt-1">
+            <span className="block text-2xl font-black text-text mt-1">
               {myCodeImpact.commits}
             </span>
           </div>
-          <div className="p-4 bg-white/[0.01] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/20">
+          <div className="p-4 bg-card border border-border-subtle">
+            <span className="text-[9px] font-black uppercase tracking-wider text-text-subtler">
               Lines Changed
             </span>
             <span className="block text-2xl font-black text-[#10B981] mt-1">
               +{myCodeImpact.linesChanged}
             </span>
           </div>
-          <div className="p-4 bg-white/[0.01] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/20">
+          <div className="p-4 bg-card border border-border-subtle">
+            <span className="text-[9px] font-black uppercase tracking-wider text-text-subtler">
               Files Changed
             </span>
-            <span className="block text-2xl font-black text-white mt-1">
+            <span className="block text-2xl font-black text-text mt-1">
               {myCodeImpact.filesChanged}
             </span>
           </div>
-          <div className="p-4 bg-white/[0.01] border border-white/5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-white/20">
+          <div className="p-4 bg-card border border-border-subtle">
+            <span className="text-[9px] font-black uppercase tracking-wider text-text-subtler">
               PRs Merged
             </span>
             <span className="block text-2xl font-black text-[#10B981] mt-1">
@@ -94,12 +94,12 @@ const CodeTab = ({
           </div>
         </div>
         <div className="flex flex-col gap-3 mt-2">
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/20">
+          <span className="text-[9px] font-black uppercase tracking-widest text-text-subtler">
             Impact Files
           </span>
           {myCodeImpact.topFilesChanged?.map((file, idx) => (
             <div key={idx} className="flex flex-col gap-1">
-              <div className="flex justify-between items-center text-[9px] font-bold text-white/60">
+              <div className="flex justify-between items-center text-[9px] font-bold text-text-subtle">
                 <span className="truncate max-w-[80%] font-mono leading-none">
                   {file.name}
                 </span>
@@ -107,9 +107,9 @@ const CodeTab = ({
                   +{file.count}
                 </span>
               </div>
-              <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
+              <div className="w-full bg-background-elevated h-1.5 rounded-none overflow-hidden">
                 <div
-                  className="bg-[#10B981] h-full"
+                  className="bg-status-success h-full"
                   style={{
                     width: `${(file.count / (myCodeImpact.topFilesChanged[0]?.count || file.count)) * 100}%`,
                   }}

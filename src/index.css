@@ -21,6 +21,8 @@
   --raw-border-subtler: rgba(255, 255, 255, 0.05);
   --raw-text-subtle: rgba(255, 255, 255, 0.4);
   --raw-text-subtler: rgba(255, 255, 255, 0.2);
+  --raw-card: #0c0c0c;
+  --raw-border: rgba(255, 255, 255, 0.15);
 
   /* Fallback aliases for JS file references */
   --color-primary: var(--raw-primary);
@@ -39,6 +41,8 @@
   --color-border-subtler: var(--raw-border-subtler);
   --color-text-subtle: var(--raw-text-subtle);
   --color-text-subtler: var(--raw-text-subtler);
+  --color-card: var(--raw-card);
+  --color-border: var(--raw-border);
 }
 
 .theme-obsidian {
@@ -52,6 +56,8 @@
   --raw-border-subtler: rgba(255, 255, 255, 0.05);
   --raw-text-subtle: rgba(255, 255, 255, 0.4);
   --raw-text-subtler: rgba(255, 255, 255, 0.2);
+  --raw-card: #0c0c0c;
+  --raw-border: rgba(255, 255, 255, 0.15);
 }
 
 .theme-amber {
@@ -67,6 +73,8 @@
   --raw-border-subtler: rgba(245, 158, 11, 0.08);
   --raw-text-subtle: rgba(255, 255, 255, 0.5);
   --raw-text-subtler: rgba(255, 255, 255, 0.3);
+  --raw-card: #1a1a1a;
+  --raw-border: rgba(245, 158, 11, 0.25);
 }
 
 .theme-ghost {
@@ -82,6 +90,8 @@
   --raw-border-subtler: rgba(15, 23, 42, 0.06);
   --raw-text-subtle: rgba(15, 23, 42, 0.6);
   --raw-text-subtler: rgba(15, 23, 42, 0.4);
+  --raw-card: #ffffff;
+  --raw-border: rgba(15, 23, 42, 0.18);
 }
 
 .accent-blue {
@@ -135,6 +145,8 @@
   --color-border-subtler: var(--raw-border-subtler);
   --color-text-subtle: var(--raw-text-subtle);
   --color-text-subtler: var(--raw-text-subtler);
+  --color-card: var(--raw-card);
+  --color-border: var(--raw-border);
 
   --color-status-success: #4ade80;
   --status-success-rgb: 74, 222, 128;

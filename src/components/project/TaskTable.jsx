@@ -12,33 +12,33 @@ import { TASK_STATUS } from '../../constants';
 const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
   return (
     <div className="space-y-6">
-      <div className="bg-background-light border-2 border-white/20 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
+      <div className="bg-background-light border-2 border-border-subtle overflow-hidden shadow-sm">
         <div className="overflow-x-auto lg:overflow-x-visible">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b-2 border-white/20 bg-background-elevated">
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+              <tr className="border-b-2 border-border-subtle bg-background-elevated">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Priority
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Ticket ID
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Type
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Title
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Status
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Operator
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Due Date
                 </th>
-                <th className="px-5 py-7 text-[10px] font-black text-white/90 uppercase tracking-[0.4em]">
+                <th className="px-5 py-7 text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">
                   Created At
                 </th>
               </tr>
@@ -49,7 +49,7 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                   <tr
                     key={task._id}
                     onClick={() => onTaskClick(task)}
-                    className="group hover:bg-white/5 transition-all cursor-pointer border-l-4 border-transparent hover:border-primary"
+                    className="group hover:bg-background-elevated transition-all cursor-pointer border-l-4 border-transparent hover:border-primary"
                   >
                     <td className="px-5 py-6">
                       <div className="flex items-center gap-3">
@@ -97,14 +97,14 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                                   ? 'bg-primary/10 border-primary text-primary'
                                   : task.type === 'tech_debt'
                                     ? 'bg-status-warning/10 border-status-warning text-status-warning'
-                                    : 'bg-white/5 border-white/20 text-white/60'
+                                    : 'bg-background-elevated border-border-subtle text-text-subtle'
                         }`}
                       >
                         {task.type || 'TASK'}
                       </span>
                     </td>
                     <td className="px-5 py-6">
-                      <span className="text-[12px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight block max-w-[220px] truncate">
+                      <span className="text-[12px] font-black text-text group-hover:text-primary transition-colors uppercase tracking-tight block max-w-[220px] truncate">
                         {task.title}
                       </span>
                     </td>
@@ -122,30 +122,30 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                               ? 'bg-secondary/15 border-secondary/60 text-secondary hover:bg-secondary/30'
                               : task.status === TASK_STATUS.IN_PROGRESS
                                 ? 'bg-status-warning/15 border-status-warning/60 text-status-warning hover:bg-status-warning/30'
-                                : 'bg-white/10 border-white/40 text-white hover:bg-white/20'
+                                : 'bg-background-elevated border-border-subtle text-text hover:bg-border-subtle'
                         }`}
                       >
                         <option
                           value={TASK_STATUS.TODO}
-                          className="bg-[#000] text-white"
+                          className="bg-background-dark text-text"
                         >
                           TO_DO
                         </option>
                         <option
                           value={TASK_STATUS.IN_PROGRESS}
-                          className="bg-[#000] text-white"
+                          className="bg-background-dark text-text"
                         >
                           IN_PROGRESS
                         </option>
                         <option
                           value={TASK_STATUS.IN_REVIEW}
-                          className="bg-[#000] text-white"
+                          className="bg-background-dark text-text"
                         >
                           IN_REVIEW
                         </option>
                         <option
                           value={TASK_STATUS.DONE}
-                          className="bg-[#000] text-white"
+                          className="bg-background-dark text-text"
                         >
                           DONE
                         </option>
@@ -154,15 +154,15 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                     <td className="px-5 py-6">
                       {task.assignedUser ? (
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 bg-white/10 flex items-center justify-center text-[10px] font-black text-white border-2 border-white/30 group-hover:border-primary transition-all">
+                          <div className="w-7 h-7 bg-background-elevated flex items-center justify-center text-[10px] font-black text-text border-2 border-border-subtle group-hover:border-primary transition-all">
                             {task.assignedUser.name[0].toUpperCase()}
                           </div>
-                          <span className="text-[10px] font-black text-white/90 uppercase tracking-[0.2em] group-hover:text-primary transition-colors whitespace-nowrap">
+                          <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] group-hover:text-primary transition-colors whitespace-nowrap">
                             {task.assignedUser.name.split(' ')[0]}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] whitespace-nowrap">
+                        <span className="text-[10px] font-black text-text-subtle uppercase tracking-[0.2em] whitespace-nowrap">
                           UNASSIGNED
                         </span>
                       )}
@@ -175,7 +175,7 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                           task.status !== TASK_STATUS.DONE
                             ? 'text-status-error'
                             : task.dueDate
-                              ? 'text-white/80 group-hover:text-white'
+                              ? 'text-text-muted group-hover:text-text'
                               : 'text-primary/40'
                         }`}
                       >
@@ -198,7 +198,7 @@ const TaskTable = ({ tasks, onTaskClick, handleStatusChange }) => {
                       </span>
                     </td>
                     <td className="px-5 py-6">
-                      <span className="text-[9px] font-black text-white/70 uppercase tracking-[0.2em] whitespace-nowrap group-hover:text-white/90 transition-colors">
+                      <span className="text-[9px] font-black text-text/70 uppercase tracking-[0.2em] whitespace-nowrap group-hover:text-text-muted transition-colors">
                         {task.createdFormatted || 'NEW'}
                       </span>
                     </td>

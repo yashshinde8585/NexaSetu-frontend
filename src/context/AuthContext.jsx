@@ -55,10 +55,13 @@ export const AuthProvider = ({ children }) => {
     retry: false, // 401 is handled by interceptor
   });
 
-  // Register token getter with API layer
+  // Register token getter with API and Socket layers
   useEffect(() => {
     if (useClerkAuthFlag) {
       setTokenGetter(getToken);
+      socketService.setTokenGetter(getToken);
+    } else {
+      socketService.setTokenGetter(async () => localStorage.getItem('token'));
     }
   }, [useClerkAuthFlag, getToken]);
 
@@ -218,6 +221,7 @@ export const AuthProvider = ({ children }) => {
       workspaceName,
       plan,
       admin,
+      clerkUserId = null,
       config = {}
     ) => {
       try {
@@ -230,6 +234,7 @@ export const AuthProvider = ({ children }) => {
           workspaceName,
           plan,
           admin,
+          clerkUserId,
         };
         const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);

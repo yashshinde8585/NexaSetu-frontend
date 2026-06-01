@@ -65,6 +65,21 @@ const Profile = () => {
 
   if (!user) return null;
 
+  const displayName =
+    user.name || user.fullName || user.firstName || user.username || 'User';
+  const displayEmail =
+    user.email ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    '';
+  const displayAvatar = user.profilePicture || user.imageUrl;
+  const displayTitle =
+    user.jobTitle ||
+    (user.role && user.role.replace('_', ' ')) ||
+    (user.publicMetadata?.role &&
+      String(user.publicMetadata.role).replace('_', ' ')) ||
+    'TEAM MEMBER';
+
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4 max-w-screen-xl mx-auto">
       <div className="space-y-6">
@@ -75,15 +90,15 @@ const Profile = () => {
               className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center relative cursor-pointer group overflow-hidden"
               onClick={handleAvatarClick}
             >
-              {user.profilePicture ? (
+              {displayAvatar ? (
                 <img
-                  src={user.profilePicture}
-                  alt={user.name || 'User'}
+                  src={displayAvatar}
+                  alt={displayName}
                   className="w-full h-full object-cover rounded"
                 />
               ) : (
                 <span className="text-xl font-black text-white/50">
-                  {(user.name || 'U').charAt(0)}
+                  {displayName.charAt(0)}
                 </span>
               )}
 
@@ -111,11 +126,11 @@ const Profile = () => {
             </div>
             <div>
               <h1 className="text-[14px] font-black tracking-widest uppercase mb-1">
-                {user.name || 'User'}
+                {displayName}
               </h1>
               <div className="flex items-center gap-2 text-white/80">
                 <span className="uppercase tracking-[0.2em] text-primary text-[9px] font-black">
-                  {user.jobTitle || 'TEAM MEMBER'}
+                  {displayTitle}
                 </span>
                 <span className="w-1 h-1 bg-white/40 rounded-full" />
                 <span className="uppercase tracking-[0.2em] text-[9px] font-black">
@@ -154,20 +169,17 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded overflow-hidden">
                 <InfoRow
                   label="FULL_NAME"
-                  value={user.name || 'User'}
+                  value={displayName}
                   icon={<User size={12} />}
                 />
                 <InfoRow
                   label="EMAIL_ADDRESS"
-                  value={user.email || 'N/A'}
+                  value={displayEmail || 'N/A'}
                   icon={<Mail size={12} />}
                 />
                 <InfoRow
                   label="ACCOUNT_ROLE"
-                  value={
-                    user.jobTitle ||
-                    (user.role || 'TEAM MEMBER').replace('_', ' ')
-                  }
+                  value={displayTitle}
                   icon={<Shield size={12} />}
                 />
                 <InfoRow
