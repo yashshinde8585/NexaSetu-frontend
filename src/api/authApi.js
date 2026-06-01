@@ -47,7 +47,11 @@ export const updateAvatar = (formData) => {
   });
 };
 
-export const changePassword = (currentPassword, newPassword, confirmPassword) => {
+export const changePassword = (
+  currentPassword,
+  newPassword,
+  confirmPassword
+) => {
   return apiClient.patch(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
     currentPassword,
     newPassword,

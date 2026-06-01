@@ -19,10 +19,10 @@ const Navbar = ({ hideLinks = false }) => {
             to="/"
             className="text-xl font-bold tracking-tighter text-white"
           >
-            NexaSetu
+            NEXASETU
           </Link>
           {!hideLinks && (
-            <div className="hidden lg:flex items-center gap-8 text-[10px] font-bold text-white/30">
+            <div className="hidden lg:flex items-center gap-8 text-xs font-bold text-white/30">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -39,7 +39,7 @@ const Navbar = ({ hideLinks = false }) => {
           {location.pathname !== '/login' && (
             <Link
               to="/login"
-              className="text-[9px] md:text-[10px] font-bold text-white/40 hover:text-white transition-colors"
+              className="text-xs font-bold text-white/40 hover:text-white transition-colors"
             >
               Sign In
             </Link>
@@ -47,7 +47,7 @@ const Navbar = ({ hideLinks = false }) => {
           {location.pathname !== '/register' && (
             <Link
               to="/register"
-              className="px-5 md:px-8 py-2.5 md:py-3 bg-white text-black text-[9px] md:text-[10px] font-bold hover:bg-white/90 transition-all"
+              className="px-5 md:px-8 py-2.5 md:py-3 bg-white text-black text-xs font-bold hover:bg-white/90 transition-all"
             >
               Get Started
             </Link>

@@ -62,7 +62,7 @@ const TaskComments = ({ taskId }) => {
     mutationFn: ({ taskId, content }) =>
       CommentService.addComment(taskId, content),
     onSuccess: () => {
-      queryClient.invalidateQueries(['comments', taskId]);
+      queryClient.invalidateQueries({ queryKey: ['comments', taskId] });
       setNewComment('');
       setTimeout(scrollToBottom, 50);
     },
@@ -105,16 +105,16 @@ const TaskComments = ({ taskId }) => {
   return (
     <div className="flex flex-col h-full overflow-hidden bg-transparent">
       {/* Discussion Header */}
-      <div className="px-5 md:px-6 py-4 border-b border-white/20 flex items-center justify-between bg-black">
+      <div className="px-5 md:px-6 py-4 border-b border-border-subtle flex items-center justify-between bg-background-dark">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-black border border-primary/40 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+          <div className="w-8 h-8 rounded-lg bg-background-dark border border-primary/40 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.1)]">
             <MessageSquare size={16} className="text-primary" />
           </div>
           <div className="flex flex-col">
-            <h3 className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em]">
+            <h3 className="text-[10px] md:text-[11px] font-black text-text uppercase tracking-[0.2em]">
               Mission Discussion
             </h3>
-            <span className="text-[8px] font-black text-white/60 uppercase tracking-widest">
+            <span className="text-[8px] font-black text-text-subtle uppercase tracking-widest">
               {comments.length} Signals in thread
             </span>
           </div>
@@ -135,8 +135,8 @@ const TaskComments = ({ taskId }) => {
               <div
                 className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black shadow-lg border shrink-0 transition-transform group-hover:scale-105 ${
                   isOwn
-                    ? 'bg-black border-primary text-primary shadow-[0_0_10px_rgba(59,130,246,0.3)]'
-                    : 'bg-black border-white/30 text-white/60'
+                    ? 'bg-background-dark border-primary text-primary shadow-[0_0_10px_rgba(59,130,246,0.3)]'
+                    : 'bg-background-dark border-border-subtle text-text-subtle'
                 }`}
               >
                 {comment.user?.name ? comment.user.name[0].toUpperCase() : 'U'}
@@ -150,17 +150,17 @@ const TaskComments = ({ taskId }) => {
                   className={`flex items-baseline gap-3 mb-1 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
                 >
                   {!isOwn && (
-                    <span className="text-[12px] font-black tracking-tight text-white/90">
+                    <span className="text-[12px] font-black tracking-tight text-text-muted">
                       {comment.user?.name}
                     </span>
                   )}
-                  <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-widest">
                     {formatTime(comment.createdAt)}
                   </span>
                 </div>
 
                 {/* Message Content */}
-                <div className="text-[13px] leading-relaxed font-bold text-white/80 max-w-[95%] text-left">
+                <div className="text-[13px] leading-relaxed font-bold text-text-muted max-w-[95%] text-left">
                   {comment.content}
                 </div>
               </div>
@@ -171,8 +171,8 @@ const TaskComments = ({ taskId }) => {
 
         {comments.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-10 py-12">
-            <MessageSquare size={48} className="mb-4 text-white" />
-            <p className="text-[11px] font-black uppercase tracking-[0.3em] text-white">
+            <MessageSquare size={48} className="mb-4 text-text" />
+            <p className="text-[11px] font-black uppercase tracking-[0.3em] text-text">
               Initializing Discussion Channel
             </p>
           </div>
@@ -180,19 +180,19 @@ const TaskComments = ({ taskId }) => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 md:p-5 bg-black border-t border-white/20 relative">
+      <div className="p-4 md:p-5 bg-background-dark border-t border-border-subtle relative">
         {showMentions && filteredMembers.length > 0 && (
-          <div className="absolute bottom-full left-4 right-4 mb-3 bg-black border border-white/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden animate-in slide-in-from-bottom-2 duration-300 z-50">
+          <div className="absolute bottom-full left-4 right-4 mb-3 bg-background-dark border border-border-subtle rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden animate-in slide-in-from-bottom-2 duration-300 z-50">
             {filteredMembers.map((member) => (
               <button
                 key={member._id}
                 onClick={() => selectMention(member.name)}
                 className="w-full px-5 py-3 text-left flex items-center gap-4 hover:bg-primary/10 transition-colors group"
               >
-                <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center text-[11px] font-black text-white/50 group-hover:text-primary transition-all border border-transparent group-hover:border-primary">
+                <div className="w-7 h-7 rounded-lg bg-background-dark flex items-center justify-center text-[11px] font-black text-text-subtle group-hover:text-primary transition-all border border-transparent group-hover:border-primary">
                   {member.name[0]}
                 </div>
-                <span className="text-[11px] font-bold text-white/60 group-hover:text-white uppercase tracking-tight">
+                <span className="text-[11px] font-bold text-text-subtle group-hover:text-text uppercase tracking-tight">
                   {member.name}
                 </span>
               </button>
@@ -206,12 +206,12 @@ const TaskComments = ({ taskId }) => {
             value={newComment}
             onChange={handleInputChange}
             placeholder="TYPE OBJECTIVE UPDATE..."
-            className="w-full bg-black border border-white/30 rounded-xl py-3.5 md:py-4 pl-5 md:pl-6 pr-14 text-[11px] font-black tracking-widest text-white placeholder:text-white/20 focus:outline-none focus:border-primary focus:bg-white/5 transition-all shadow-inner uppercase"
+            className="w-full bg-background-dark border border-border-subtle rounded-xl py-3.5 md:py-4 pl-5 md:pl-6 pr-14 text-[11px] font-black tracking-widest text-text placeholder:text-text-subtler focus:outline-none focus:border-primary focus:bg-background-elevated transition-all shadow-inner uppercase"
           />
           <button
             type="submit"
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-white/20 hover:text-primary transition-colors disabled:opacity-5 pr-4"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-text-subtler hover:text-primary transition-colors disabled:opacity-5 pr-4"
           >
             <Send
               size={18}

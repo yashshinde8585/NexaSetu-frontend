@@ -17,8 +17,8 @@ const TaskBoard = ({
 
   return (
     <div>
-      <div className="bg-background-light border-2 border-white/20 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x-2 divide-white/15 items-stretch">
+      <div className="bg-background-light border-2 border-border-subtle overflow-hidden shadow-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x-2 divide-border-subtle items-stretch">
           {columns.map((column) => {
             const allColumnTasks = groupedTasks[column.id] || [];
             const paginatedColumnTasks = allColumnTasks.slice(
@@ -32,25 +32,25 @@ const TaskBoard = ({
                 className="flex-1 min-w-[280px] flex flex-col h-full bg-background-light"
               >
                 {/* Tactical Column Header */}
-                <div className="p-6 border-b-2 border-white/20 flex items-center justify-between bg-background-elevated sticky top-0 z-20">
+                <div className="p-6 border-b-2 border-border-subtle flex items-center justify-between bg-background-elevated sticky top-0 z-20">
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <div
-                        className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} shadow-[0_0_20px_rgba(255,255,255,0.15)]`}
+                        className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} `}
                       />
                       <div
                         className={`absolute inset-0 w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} animate-ping opacity-30`}
                       />
                     </div>
                     <div className="flex flex-col">
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white leading-none">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-text leading-none">
                         {column.title}
                       </h3>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-[1px] bg-white/20" />
-                    <span className="px-2.5 py-1 bg-black/40 border-2 border-white/30 text-[10px] font-black text-white font-mono">
+                    <div className="h-4 w-[1px] bg-border-subtle" />
+                    <span className="px-2.5 py-1 bg-background-dark border-2 border-border-subtle text-[10px] font-black text-text font-mono">
                       {allColumnTasks.length.toString().padStart(2, '0')}
                     </span>
                   </div>
@@ -71,8 +71,8 @@ const TaskBoard = ({
                     ))
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center grayscale opacity-30 py-32 select-none pointer-events-none">
-                      <div className="w-20 h-1 bg-white/40 mb-4" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white">
+                      <div className="w-20 h-1 bg-text-subtle mb-4" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-text">
                         Sector Clear
                       </span>
                     </div>

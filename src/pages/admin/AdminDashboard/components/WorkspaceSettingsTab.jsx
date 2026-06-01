@@ -109,7 +109,9 @@ const WorkspaceSettingsTab = ({
                         className={`w-1.5 h-1.5 rounded-none ${toolStatus === 'connected' ? 'bg-status-success' : 'bg-white/10'}`}
                       />
                       <span className="text-[7px] font-black uppercase tracking-widest text-white/20">
-                        {toolStatus === 'connected' ? 'CONNECTED' : 'DISCONNECTED'}
+                        {toolStatus === 'connected'
+                          ? 'CONNECTED'
+                          : 'DISCONNECTED'}
                       </span>
                     </div>
                   </div>

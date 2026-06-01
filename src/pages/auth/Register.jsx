@@ -120,7 +120,7 @@ const Register = () => {
           formData.admin
         );
         console.log('[AUTH-AUDIT] Local Registration success');
-        if (isMounted.current) navigate('/dashboard');
+        if (isMounted.current) navigate(ROUTES.PRICING);
       }
     } catch (err) {
       console.error('[AUTH-AUDIT] Submission failure:', err);
@@ -185,17 +185,6 @@ const Register = () => {
           );
         }
 
-        console.log('[OTP] Session activation start');
-        setVerifyStatus('Activating session...');
-
-        try {
-          await setActive({ session: completeSignUp.createdSessionId });
-          console.log('[OTP] Session activation success');
-        } catch (activeErr) {
-          console.error('[OTP] setActive FAILED:', activeErr);
-          throw new Error('Failed to activate session: ' + activeErr.message);
-        }
-
         console.log('[OTP] Backend sync start');
         setVerifyStatus('Syncing with backend...');
 
@@ -209,6 +198,7 @@ const Register = () => {
             formData.workspaceName,
             plan,
             formData.admin,
+            completeSignUp.createdUserId,
             { headers: { 'x-skip-token': 'true' } }
           );
 
@@ -221,14 +211,26 @@ const Register = () => {
           console.log('[OTP] Backend sync success');
         } catch (syncErr) {
           console.error('[OTP] Backend sync warning:', syncErr);
-          if (
-            syncErr.status !== 400 &&
-            !syncErr.message?.includes('already registered')
-          ) {
+          const isAlreadyRegistered =
+            syncErr.status === 400 &&
+            syncErr.message?.toLowerCase().includes('already registered');
+          if (!isAlreadyRegistered) {
             throw new Error(
-              'Account verified but sync failed. Please contact support or try logging in.'
+              syncErr.message ||
+                'Account verified but sync failed. Please contact support or try logging in.'
             );
           }
+        }
+
+        console.log('[OTP] Session activation start');
+        setVerifyStatus('Activating session...');
+
+        try {
+          await setActive({ session: completeSignUp.createdSessionId });
+          console.log('[OTP] Session activation success');
+        } catch (activeErr) {
+          console.error('[OTP] setActive FAILED:', activeErr);
+          throw new Error('Failed to activate session: ' + activeErr.message);
         }
 
         setVerifyStatus('Redirecting...');

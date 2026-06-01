@@ -24,9 +24,9 @@ const OverviewTab = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Card 1: My Work (Mini Board) */}
-      <div className="lg:col-span-5 bg-[#0A0C14] border border-white/5 p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+      <div className="lg:col-span-5 bg-card border border-border-subtle p-4 flex flex-col">
+        <div className="flex justify-between items-center mb-4 border-b border-border-subtle pb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
             My Work
           </span>
           <button
@@ -40,9 +40,9 @@ const OverviewTab = ({
         <div className="grid grid-cols-3 gap-3 flex-1 min-h-[300px]">
           {/* Column 1: In Progress */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-white/40 border-b border-white/5 pb-1">
+            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-text-subtle border-b border-border-subtle pb-1">
               <span>In Progress</span>
-              <span className="px-1.5 py-0.5 bg-white/5 text-[7px] font-black text-white/60">
+              <span className="px-1.5 py-0.5 bg-background-elevated text-[7px] font-black text-text-subtle">
                 {filteredInProgress.length}
               </span>
             </div>
@@ -51,30 +51,30 @@ const OverviewTab = ({
                 <div
                   key={task.id}
                   onClick={() => navigate(`/task/${task.id}`)}
-                  className="p-2 bg-white/[0.01] border border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col gap-1"
+                  className="p-2 bg-card border border-border-subtle hover:border-primary/40 transition-all cursor-pointer group flex flex-col gap-1"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[8px] font-bold text-primary group-hover:underline">
                       {task.taskKey}
                     </span>
-                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-white/5 text-white/40">
+                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-background-elevated text-text-subtle">
                       {task.category}
                     </span>
                   </div>
-                  <span className="text-[9px] font-bold text-white leading-tight first-letter:uppercase group-hover:text-primary transition-colors">
+                  <span className="text-[9px] font-bold text-text leading-tight first-letter:uppercase group-hover:text-primary transition-colors">
                     {task.title}
                   </span>
                 </div>
               ))}
               {filteredInProgress.length === 0 && (
-                <div className="text-center py-6 text-[8px] text-white/10 uppercase font-black tracking-widest italic">
+                <div className="text-center py-6 text-[8px] text-text-subtler uppercase font-black tracking-widest italic">
                   No tasks in progress
                 </div>
               )}
             </div>
             <button
               onClick={() => navigate('/my-tasks')}
-              className="mt-auto text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-primary transition-colors flex items-center justify-center gap-1 py-1.5 border border-dashed border-white/10 hover:border-primary/20 cursor-pointer bg-transparent"
+              className="mt-auto text-[8px] font-black uppercase tracking-widest text-text-subtler hover:text-primary transition-colors flex items-center justify-center gap-1 py-1.5 border border-dashed border-border-subtle hover:border-primary/20 cursor-pointer bg-transparent"
             >
               <Plus size={10} /> Add Work Item
             </button>
@@ -82,9 +82,9 @@ const OverviewTab = ({
 
           {/* Column 2: In Review */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-status-warning border-b border-white/5 pb-1">
+            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-status-warning border-b border-border-subtle pb-1">
               <span>In Review</span>
-              <span className="px-1.5 py-0.5 bg-status-warning/5 text-[7px] font-black text-status-warning">
+              <span className="px-1.5 py-0.5 bg-status-warning/10 text-[7px] font-black text-status-warning">
                 {filteredInReview.length}
               </span>
             </div>
@@ -93,23 +93,23 @@ const OverviewTab = ({
                 <div
                   key={task.id}
                   onClick={() => navigate(`/task/${task.id}`)}
-                  className="p-2 bg-white/[0.01] border border-white/5 hover:border-status-warning/30 transition-all cursor-pointer group flex flex-col gap-1"
+                  className="p-2 bg-card border border-border-subtle hover:border-status-warning/30 transition-all cursor-pointer group flex flex-col gap-1"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[8px] font-bold text-status-warning group-hover:underline">
                       {task.taskKey}
                     </span>
-                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-white/5 text-white/40">
+                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-background-elevated text-text-subtle">
                       {task.category}
                     </span>
                   </div>
-                  <span className="text-[9px] font-bold text-white leading-tight first-letter:uppercase group-hover:text-status-warning transition-colors">
+                  <span className="text-[9px] font-bold text-text leading-tight first-letter:uppercase group-hover:text-status-warning transition-colors">
                     {task.title}
                   </span>
                 </div>
               ))}
               {filteredInReview.length === 0 && (
-                <div className="text-center py-6 text-[8px] text-white/10 uppercase font-black tracking-widest italic">
+                <div className="text-center py-6 text-[8px] text-text-subtler uppercase font-black tracking-widest italic">
                   No tasks in review
                 </div>
               )}
@@ -118,9 +118,9 @@ const OverviewTab = ({
 
           {/* Column 3: Done */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-status-success border-b border-white/5 pb-1">
+            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-status-success border-b border-border-subtle pb-1">
               <span>Done</span>
-              <span className="px-1.5 py-0.5 bg-status-success/5 text-[7px] font-black text-status-success">
+              <span className="px-1.5 py-0.5 bg-status-success/10 text-[7px] font-black text-status-success">
                 {filteredDone.length}
               </span>
             </div>
@@ -129,30 +129,30 @@ const OverviewTab = ({
                 <div
                   key={task.id}
                   onClick={() => navigate(`/task/${task.id}`)}
-                  className="p-2 bg-white/[0.01] border border-white/5 hover:border-status-success/30 transition-all cursor-pointer group flex flex-col gap-1"
+                  className="p-2 bg-card border border-border-subtle hover:border-status-success/30 transition-all cursor-pointer group flex flex-col gap-1"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[8px] font-bold text-status-success group-hover:underline">
                       {task.taskKey}
                     </span>
-                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-white/5 text-white/40">
+                    <span className="text-[6px] font-black uppercase tracking-wider px-1 bg-background-elevated text-text-subtle">
                       {task.category}
                     </span>
                   </div>
-                  <span className="text-[9px] font-bold text-white leading-tight first-letter:uppercase line-through text-white/30 group-hover:text-status-success transition-colors">
+                  <span className="text-[9px] font-bold text-text leading-tight first-letter:uppercase line-through text-text-subtle group-hover:text-status-success transition-colors">
                     {task.title}
                   </span>
                 </div>
               ))}
               {filteredDone.length === 0 && (
-                <div className="text-center py-6 text-[8px] text-white/10 uppercase font-black tracking-widest italic">
+                <div className="text-center py-6 text-[8px] text-text-subtler uppercase font-black tracking-widest italic">
                   No completed tasks
                 </div>
               )}
             </div>
             <button
               onClick={() => setActiveTab('My Work')}
-              className="mt-auto text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-status-success transition-colors flex items-center justify-center gap-1 py-1.5 border border-dashed border-white/10 hover:border-status-success/20 cursor-pointer bg-transparent"
+              className="mt-auto text-[8px] font-black uppercase tracking-widest text-text-subtler hover:text-status-success transition-colors flex items-center justify-center gap-1 py-1.5 border border-dashed border-border-subtle hover:border-status-success/20 cursor-pointer bg-transparent"
             >
               View Completed
             </button>
@@ -161,23 +161,23 @@ const OverviewTab = ({
       </div>
 
       {/* Card 2: Sprint Burndown */}
-      <div className="lg:col-span-4 bg-[#0A0C14] border border-white/5 p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+      <div className="lg:col-span-4 bg-card border border-border-subtle p-4 flex flex-col">
+        <div className="flex justify-between items-center mb-4 border-b border-border-subtle pb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
             Sprint Burndown
           </span>
           <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-wider">
             <div className="flex items-center gap-1">
               <span className="w-2 h-0.5 bg-gray-400 border-dashed" />
-              <span className="text-gray-400">Ideal</span>
+              <span className="text-text-subtle">Ideal</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="w-2.5 h-0.5 bg-[#8B5CF6]" />
-              <span className="text-white">Remaining</span>
+              <span className="w-2.5 h-0.5 bg-secondary" />
+              <span className="text-text">Remaining</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="w-2.5 h-0.5 bg-[#10B981]" />
-              <span className="text-white">Completed</span>
+              <span className="w-2.5 h-0.5 bg-status-success" />
+              <span className="text-text">Completed</span>
             </div>
           </div>
         </div>
@@ -189,26 +189,29 @@ const OverviewTab = ({
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.03)"
+                stroke="var(--color-border-subtler)"
                 vertical={false}
               />
               <XAxis
                 dataKey="date"
-                stroke="rgba(255,255,255,0.2)"
+                stroke="var(--color-border-subtle)"
                 tick={{ fontSize: 8 }}
               />
-              <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 8 }} />
+              <YAxis
+                stroke="var(--color-border-subtle)"
+                tick={{ fontSize: 8 }}
+              />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#0A0C14',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: 'var(--color-card)',
+                  border: '1px solid var(--color-border-subtle)',
                   fontSize: '10px',
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="ideal"
-                stroke="rgba(255,255,255,0.25)"
+                stroke="var(--color-border-subtle)"
                 strokeDasharray="4 4"
                 strokeWidth={1.5}
                 dot={false}
@@ -216,14 +219,14 @@ const OverviewTab = ({
               <Line
                 type="monotone"
                 dataKey="remaining"
-                stroke="#8B5CF6"
+                stroke="var(--color-secondary)"
                 strokeWidth={2}
                 dot={{ r: 2 }}
               />
               <Line
                 type="monotone"
                 dataKey="completed"
-                stroke="#10B981"
+                stroke="var(--color-status-success)"
                 strokeWidth={2}
                 dot={{ r: 2 }}
               />
@@ -233,9 +236,9 @@ const OverviewTab = ({
       </div>
 
       {/* Card 3: Recent Activity */}
-      <div className="lg:col-span-3 bg-[#0A0C14] border border-white/5 p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+      <div className="lg:col-span-3 bg-card border border-border-subtle p-4 flex flex-col">
+        <div className="flex justify-between items-center mb-4 border-b border-border-subtle pb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
             Recent Activity
           </span>
           <button
@@ -249,23 +252,23 @@ const OverviewTab = ({
           {recentActivity?.map((activity, idx) => (
             <div key={idx} className="flex gap-3 text-[10px] items-start group">
               <div className="mt-1 relative flex items-center justify-center shrink-0">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-status-success" />
               </div>
               <div className="flex flex-col gap-0.5 leading-tight">
-                <span className="text-white font-bold group-hover:text-primary transition-colors">
+                <span className="text-text font-bold group-hover:text-primary transition-colors">
                   {activity.title}
                 </span>
-                <span className="text-white/40 text-[9px] truncate max-w-[200px]">
+                <span className="text-text-subtle text-[9px] truncate max-w-[200px]">
                   {activity.desc}
                 </span>
               </div>
-              <span className="ml-auto text-[8px] text-white/20 font-black uppercase whitespace-nowrap">
+              <span className="ml-auto text-[8px] text-text-subtler font-black uppercase whitespace-nowrap">
                 {activity.time}
               </span>
             </div>
           ))}
           {(!recentActivity || recentActivity.length === 0) && (
-            <div className="text-center py-12 text-[8px] text-white/10 uppercase font-black tracking-widest italic">
+            <div className="text-center py-12 text-[8px] text-text-subtler uppercase font-black tracking-widest italic">
               No recent activity
             </div>
           )}

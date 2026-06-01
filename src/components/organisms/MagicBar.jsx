@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MagicService from '../../api/magicApi';
 import { useAuth } from '../../context/AuthContext';
-import { useMagic } from '../../context/MagicContext';
+import { useMagicState, useMagicActions } from '../../context/MagicContext';
 import magicData from '../../data/magicCommands.json';
 import ErrorBoundary from '../atoms/ErrorBoundary';
 

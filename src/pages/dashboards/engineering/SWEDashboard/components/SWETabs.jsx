@@ -13,7 +13,7 @@ const SWETabs = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="flex border-b border-white/5 overflow-x-auto scrollbar-none gap-6">
+    <div className="flex border-b border-border-subtle overflow-x-auto scrollbar-none gap-6">
       {tabItems.map((tab) => (
         <button
           key={tab}
@@ -21,7 +21,7 @@ const SWETabs = ({ activeTab, setActiveTab }) => {
           className={`pb-3 text-[9px] font-black uppercase tracking-widest relative transition-all active:scale-[0.98] cursor-pointer border-none bg-transparent ${
             activeTab === tab
               ? 'text-primary'
-              : 'text-white/40 hover:text-white'
+              : 'text-text-subtle hover:text-text'
           }`}
         >
           {tab}

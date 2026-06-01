@@ -9,12 +9,24 @@ const api = axios.create({
     `${window.location.protocol}//${window.location.hostname}:5000/api`,
   withCredentials: true,
   timeout: 15000, // Reduced timeout to 15s (Gap 1)
+  xsrfCookieName: 'csrfToken',
+  xsrfHeaderName: 'X-CSRF-Token',
 });
 
 let getToken = async () => localStorage.getItem('token');
 
 export const setTokenGetter = (fn) => {
   getToken = fn;
+};
+
+const simpleHash = (str) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0;
+  }
+  return hash.toString(16);
 };
 
 const pendingRequests = new Map();
@@ -44,11 +56,23 @@ api.interceptors.request.use(
     const mutatingMethods = ['post', 'put', 'patch', 'delete'];
     const isMutating = mutatingMethods.includes(config.method?.toLowerCase());
 
-    const dataHash = config.data
-      ? JSON.stringify(config.data).length < 1000
-        ? JSON.stringify(config.data)
-        : 'large-payload'
-      : '';
+    let dataHash = '';
+    if (config.data) {
+      if (config.data instanceof FormData) {
+        const parts = [];
+        for (const [key, value] of config.data.entries()) {
+          if (value instanceof File) {
+            parts.push(`${key}:${value.name}:${value.size}`);
+          } else {
+            parts.push(`${key}:${String(value).substring(0, 100)}`);
+          }
+        }
+        dataHash = `form-data:${parts.join(',')}`;
+      } else {
+        const str = JSON.stringify(config.data) || '';
+        dataHash = str.length < 1000 ? str : `large:${simpleHash(str)}`;
+      }
+    }
     const requestKey = `${config.method}:${config.url}:${dataHash}`;
 
     if (isMutating && pendingRequests.has(requestKey)) {
@@ -125,7 +149,8 @@ api.interceptors.response.use(
     if (
       isMutating &&
       !url.includes('/metrics') &&
-      !url.includes('/auth/login')
+      !url.includes('/auth/login') &&
+      !response.config.skipToast
     ) {
       const defaultMsg = getSuccessMessage(response.config.method, url);
       toast.success(response.data?.message || defaultMsg);
@@ -167,7 +192,8 @@ api.interceptors.response.use(
         originalRequest?.url?.includes('/auth/me');
 
       // If using Clerk, 401 means backend session is invalid/stale relative to Clerk token
-      if (useClerk) {
+      // We exclude non-critical telemetry endpoints from triggering global logout
+      if (useClerk && !originalRequest?.url?.includes('/metrics')) {
         console.warn(
           '[API] Clerk-backed session unauthorized by backend. Dispatching logout.'
         );
@@ -247,7 +273,7 @@ api.interceptors.response.use(
     const isMutating = ['post', 'put', 'patch', 'delete'].includes(
       originalRequest?.method?.toLowerCase()
     );
-    if (isMutating && !originalRequest?.url?.includes('/metrics')) {
+    if (isMutating && !originalRequest?.url?.includes('/metrics') && !originalRequest?.skipToast) {
       toast.error(normalizedError.message || 'Mission protocol failure');
     }
 

@@ -246,8 +246,8 @@ const VPEDashboard = () => {
               <div className="flex flex-col gap-6 pt-2">
                 <div className="bg-white/5 border border-white/10 p-4 rounded-none group hover:bg-white/10 transition-colors border-l-2 border-l-primary/40">
                   <h4 className="text-[8px] font-black text-primary uppercase flex items-center gap-2 mb-3 tracking-[0.2em]">
-                    <Zap size={10} fill="currentColor" />{' '}
-                    RECOMMENDED OPTIMIZATION
+                    <Zap size={10} fill="currentColor" /> RECOMMENDED
+                    OPTIMIZATION
                   </h4>
                   <p className="text-[9px] text-white/60 uppercase font-black tracking-[0.2em] leading-relaxed">
                     RE-ALLOCATE RESOURCES TO{' '}

@@ -17,18 +17,21 @@ const ProtectedRoute = ({
   const { hasPermission } = usePermissions();
   const location = useLocation();
 
-  if (loading || billingLoading) return null;
+  // Only block on auth loading — billing loading handled separately below
+  if (loading) return null;
 
   if (!user) {
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
   }
 
+  const isAdmin =
+    user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER';
+
+  // While billing is loading for an admin, show nothing (avoids flash)
+  if (isAdmin && billingLoading) return null;
+
   // Force subscription selection for admins if no plan exists
-  if (
-    !subscription &&
-    location.pathname !== ROUTES.PRICING &&
-    (user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER')
-  ) {
+  if (isAdmin && !subscription && location.pathname !== ROUTES.PRICING) {
     return <Navigate to={ROUTES.PRICING} replace />;
   }
 

@@ -51,12 +51,18 @@ const DummyCheckoutModal = ({
                 <div className="text-2xl font-black text-white">
                   {currency === 'inr'
                     ? `₹${billingCycle === 'monthly' ? plan?.price : ((plan?.priceAnnual || Math.round(plan?.price * 0.8)) * 12).toLocaleString()}`
-                    : `$${billingCycle === 'monthly' ? (plan?.globalPrice || 0) : ((plan?.globalPriceAnnual || 0) * 12).toLocaleString()}`}
+                    : `$${billingCycle === 'monthly' ? plan?.globalPrice || 0 : ((plan?.globalPriceAnnual || 0) * 12).toLocaleString()}`}
                 </div>
-                <div className="text-[9px] text-white/40 uppercase font-bold tracking-[0.1em] mt-1">
+                <div
+                  className={`text-[10px] font-bold tracking-[0.05em] mt-1 ${
+                    billingCycle === 'annual'
+                      ? 'text-status-success'
+                      : 'text-white/40'
+                  }`}
+                >
                   {billingCycle === 'monthly'
                     ? 'Billed Monthly'
-                    : `${currency === 'inr' ? '₹' : '$'}${currency === 'inr' ? (plan?.priceAnnual || Math.round(plan?.price * 0.8)) : (plan?.globalPriceAnnual || 0)}/mo billed annually`}
+                    : `${currency === 'inr' ? '₹' : '$'}${currency === 'inr' ? plan?.priceAnnual || Math.round(plan?.price * 0.8) : plan?.globalPriceAnnual || 0}/mo billed annually`}
                 </div>
               </div>
             </div>

@@ -25,25 +25,25 @@ const ProjectStatusList = ({
   handleLinkProject,
 }) => {
   return (
-    <div className="bg-white/5 border border-white/20 rounded-xl p-4 sm:p-5 shadow-2xl space-y-6 relative overflow-hidden group">
+    <div className="bg-card border border-border-subtle rounded-xl p-4 sm:p-5 shadow-sm space-y-6 relative overflow-hidden group">
       {/* Header Context */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-border-subtle pb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-secondary/15 border border-secondary/30 rounded flex items-center justify-center text-secondary shadow-xl">
               <Layout size={18} />
             </div>
-            <h3 className="text-xl font-black text-white tracking-tighter uppercase leading-none">
+            <h3 className="text-xl font-black text-text tracking-tighter uppercase leading-none">
               PROJECT <span className="text-secondary">INVENTORY</span>
             </h3>
           </div>
-          <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+          <p className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
             STATUS OF ACTIVE PROJECTS
           </p>
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] bg-white/5 px-4 py-2 rounded border border-white/10 shadow-lg">
+          <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] bg-background-elevated px-4 py-2 rounded border border-border-subtle shadow-sm">
             {projects.length} ACTIVE PROJECTS
           </span>
         </div>
@@ -63,27 +63,27 @@ const ProjectStatusList = ({
           return (
             <div
               key={project._id}
-              className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 hover:border-primary/50 transition-all flex flex-col xl:flex-row xl:items-center gap-6 relative overflow-hidden group/item"
+              className="bg-card border border-border-subtle rounded-xl p-4 sm:p-5 hover:border-primary/50 transition-all flex flex-col xl:flex-row xl:items-center gap-6 relative overflow-hidden group/item"
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover/item:opacity-100 transition-opacity" />
 
               <div className="flex items-center gap-4 min-w-0 xl:w-1/3">
-                <div className="w-12 h-12 bg-black border border-white/10 rounded flex items-center justify-center text-lg font-black text-white/30 group-hover/item:text-primary transition-all uppercase shrink-0">
+                <div className="w-12 h-12 bg-background-dark border border-border-subtle rounded flex items-center justify-center text-lg font-black text-text-subtle group-hover/item:text-primary transition-all uppercase shrink-0">
                   {project.name.charAt(0)}
                 </div>
                 <div className="flex flex-col min-w-0 gap-1">
-                  <h4 className="text-lg font-black text-white truncate tracking-tight group-hover/item:text-primary transition-colors uppercase leading-tight">
+                  <h4 className="text-lg font-black text-text truncate tracking-tight group-hover/item:text-primary transition-colors uppercase leading-tight">
                     {project.name}
                   </h4>
                   <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em]">
+                    <span className="text-[9px] font-black text-text-subtler uppercase tracking-[0.1em]">
                       PROJECT ID: {project._id?.slice(-8).toUpperCase()}
                     </span>
-                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/5 border border-white/20">
+                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-background-elevated border border-border-subtle">
                       <div
-                        className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-white/10'}`}
+                        className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-border-subtle'}`}
                       />
-                      <span className="text-[9px] font-black uppercase text-white/60 tracking-widest">
+                      <span className="text-[9px] font-black uppercase text-text-subtle tracking-widest">
                         {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
                       </span>
                     </div>
@@ -92,9 +92,9 @@ const ProjectStatusList = ({
               </div>
 
               {/* Tactical Progress Trace */}
-              <div className="flex-1 flex flex-col gap-2.5 relative z-10 px-2 lg:px-6 border-l border-white/5 lg:border-r">
+              <div className="flex-1 flex flex-col gap-2.5 relative z-10 px-2 lg:px-6 border-l border-border-subtler lg:border-r">
                 <div className="flex justify-between items-end">
-                  <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
                     PROJECT PROGRESS
                   </span>
                   <div className="flex items-center gap-2">
@@ -114,12 +114,12 @@ const ProjectStatusList = ({
                       className={
                         status === 'healthy'
                           ? 'text-status-success/40'
-                          : 'text-white/10'
+                          : 'text-border-subtle'
                       }
                     />
                   </div>
                 </div>
-                <div className="w-full h-1.5 bg-black border border-white/10 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-background-elevated border border-border-subtle rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-[1500ms] ease-out ${
                       status === 'healthy'
@@ -150,7 +150,7 @@ const ProjectStatusList = ({
                           value={quickTicketTitle}
                           onChange={(e) => setQuickTicketTitle(e.target.value)}
                           autoFocus
-                          className="h-9 w-full sm:w-48 bg-black border border-primary/40 px-4 rounded text-white font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all"
+                          className="h-9 w-full sm:w-48 bg-background-dark border border-primary/40 px-4 rounded text-text font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all"
                         />
                         <button
                           type="submit"
@@ -162,7 +162,7 @@ const ProjectStatusList = ({
                         <button
                           type="button"
                           onClick={() => setQuickTicketProject(null)}
-                          className="w-8 h-8 flex items-center justify-center text-white/20 hover:text-white transition-colors shrink-0"
+                          className="w-8 h-8 flex items-center justify-center text-text-subtler hover:text-text transition-colors shrink-0"
                         >
                           <Plus size={16} className="rotate-45" />
                         </button>
@@ -170,7 +170,7 @@ const ProjectStatusList = ({
                     ) : (
                       <button
                         onClick={() => setQuickTicketProject(project._id)}
-                        className="flex items-center gap-3 px-6 h-9 bg-white/5 border border-white/10 hover:border-primary/50 text-white/40 hover:text-white rounded transition-all active:scale-95 group/btn"
+                        className="flex items-center gap-3 px-6 h-9 bg-background-elevated border border-border-subtle hover:border-primary/50 text-text-subtle hover:text-text rounded transition-all active:scale-95 group/btn"
                       >
                         <Plus
                           size={14}
@@ -187,7 +187,7 @@ const ProjectStatusList = ({
                     onClick={() =>
                       handleLinkProject(project._id, selectedSprintId)
                     }
-                    className="h-9 px-6 bg-white/5 border border-white/10 text-white/40 hover:bg-primary hover:text-black hover:border-primary rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center gap-3"
+                    className="h-9 px-6 bg-background-elevated border border-border-subtle text-text-subtle hover:bg-primary hover:text-background-dark hover:border-primary rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center gap-3"
                   >
                     <Target size={14} />
                     ASSIGN TO SPRINT
@@ -201,9 +201,9 @@ const ProjectStatusList = ({
 
       {/* Empty State Manifest */}
       {projects.length === 0 && (
-        <div className="py-20 text-center bg-white/5 border border-dashed border-white/10 rounded-xl space-y-4">
-          <Zap size={40} className="mx-auto text-white/10" />
-          <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
+        <div className="py-20 text-center bg-background-elevated border border-dashed border-border-subtle rounded-xl space-y-4">
+          <Zap size={40} className="mx-auto text-text-subtler" />
+          <p className="text-[10px] font-black text-text-subtle uppercase tracking-[0.4em]">
             No projects found
           </p>
         </div>

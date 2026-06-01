@@ -23,8 +23,7 @@ const Settings = () => {
 
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4">
-      <div className="max-w-screen-xl mx-auto space-y-4 animate-in fade-in duration-700">
-
+      <div className="max-w-2xl mx-auto space-y-4 animate-in fade-in duration-700">
         {/* Page Header */}
         <div className="border-b border-white/10 pb-3">
           <h1 className="text-[13px] font-black tracking-widest uppercase text-white">
@@ -43,8 +42,6 @@ const Settings = () => {
               tabs={tabs}
               activeTab={activeTab}
               onTabChange={setActiveTab}
-              userRole={user.role}
-              jobTitle={user.jobTitle}
             />
           </div>
 
@@ -54,7 +51,6 @@ const Settings = () => {
             {activeTab === 'security' && <SecuritySection />}
           </div>
         </div>
-
       </div>
     </div>
   );

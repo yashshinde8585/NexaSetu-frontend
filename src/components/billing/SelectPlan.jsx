@@ -148,26 +148,48 @@ const SelectPlan = () => {
         <h2 className="text-xs font-black text-white uppercase tracking-widest">
           Available Pricing Tiers
         </h2>
-        
+
         <div className="flex flex-wrap items-center gap-6">
           {/* Billing Cycle Toggle */}
           <div className="flex items-center gap-2.5">
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              billingCycle === 'monthly' ? 'text-white' : 'text-white/40'
-            }`}>
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+                billingCycle === 'monthly' ? 'text-white' : 'text-white/40'
+              }`}
+            >
               Monthly
             </span>
             <button
-              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-              className="w-8 h-4.5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+              onClick={() =>
+                setBillingCycle(
+                  billingCycle === 'monthly' ? 'annual' : 'monthly'
+                )
+              }
+              className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
+                billingCycle === 'annual'
+                  ? 'bg-status-success/20 border-status-success/30'
+                  : 'bg-white/10 border-white/10'
+              }`}
             >
-              <div className={`w-3 h-3 bg-white rounded-full transition-all duration-300 ${
-                billingCycle === 'annual' ? 'translate-x-3.5' : 'translate-x-0'
-              }`} />
+              <div
+                className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                  billingCycle === 'annual'
+                    ? 'translate-x-4 bg-status-success'
+                    : 'translate-x-0 bg-white'
+                }`}
+              >
+                <div
+                  className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                    billingCycle === 'annual' ? 'bg-white' : 'bg-black/30'
+                  }`}
+                />
+              </div>
             </button>
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${
-              billingCycle === 'annual' ? 'text-white' : 'text-white/40'
-            }`}>
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${
+                billingCycle === 'annual' ? 'text-white' : 'text-white/40'
+              }`}
+            >
               Annually
               <span className="bg-status-success/15 border border-status-success/20 text-status-success text-[6.5px] font-black px-1.5 py-0.5 rounded tracking-wide">
                 SAVE 20%
@@ -177,22 +199,40 @@ const SelectPlan = () => {
 
           {/* Currency Toggle */}
           <div className="flex items-center gap-2.5">
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              currency === 'inr' ? 'text-white' : 'text-white/40'
-            }`}>
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+                currency === 'inr' ? 'text-white' : 'text-white/40'
+              }`}
+            >
               INR (₹)
             </span>
             <button
               onClick={() => setCurrency(currency === 'inr' ? 'usd' : 'inr')}
-              className="w-8 h-4.5 bg-white/10 border border-white/10 rounded-full p-0.5 relative transition-all duration-300 cursor-pointer"
+              className={`w-9 h-5 border rounded-full p-0.5 relative transition-all duration-300 cursor-pointer ${
+                currency === 'usd'
+                  ? 'bg-primary/20 border-primary/30'
+                  : 'bg-white/10 border-white/10'
+              }`}
             >
-              <div className={`w-3 h-3 bg-white rounded-full transition-all duration-300 ${
-                currency === 'usd' ? 'translate-x-3.5' : 'translate-x-0'
-              }`} />
+              <div
+                className={`w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
+                  currency === 'usd'
+                    ? 'translate-x-4 bg-primary'
+                    : 'translate-x-0 bg-white'
+                }`}
+              >
+                <div
+                  className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                    currency === 'usd' ? 'bg-white' : 'bg-black/30'
+                  }`}
+                />
+              </div>
             </button>
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              currency === 'usd' ? 'text-white' : 'text-white/40'
-            }`}>
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+                currency === 'usd' ? 'text-white' : 'text-white/40'
+              }`}
+            >
               USD ($)
             </span>
           </div>
@@ -228,28 +268,39 @@ const SelectPlan = () => {
               <div className="flex flex-col gap-1 py-2 border-y border-white/5 justify-center min-h-[48px]">
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-black text-white">
-                    {currency === 'inr' 
+                    {currency === 'inr'
                       ? `₹${billingCycle === 'monthly' ? plan.price.toLocaleString() : (plan.priceAnnual || Math.round(plan.price * 0.8)).toLocaleString()}`
-                      : `$${billingCycle === 'monthly' ? (plan.globalPrice || 0) : (plan.globalPriceAnnual || 0)}`}
+                      : `$${billingCycle === 'monthly' ? plan.globalPrice || 0 : plan.globalPriceAnnual || 0}`}
                   </span>
                   <span className="text-white/20 text-[9px] font-black uppercase tracking-wider">
                     / mo
                   </span>
                 </div>
-                <span className="text-[7.5px] font-black text-white/30 uppercase tracking-widest leading-none">
+                <span
+                  className={`text-[10px] font-bold block ${
+                    billingCycle === 'annual' && plan.id !== 'free'
+                      ? 'text-status-success'
+                      : 'text-white/40'
+                  }`}
+                >
                   {plan.id === 'free'
                     ? 'Free forever'
                     : billingCycle === 'monthly'
                       ? 'Billed monthly'
-                      : `Billed annually (${currency === 'inr' ? '₹' : '$'}${plan.id === 'pro' ? (currency === 'inr' ? '19,188' : '288') : (currency === 'inr' ? '95,988' : '1,428')}/yr)`
-                  }
+                      : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((currency === 'inr' ? plan.priceAnnual : plan.globalPriceAnnual) * 12).toLocaleString()}/yr`}
                 </span>
               </div>
 
               <div className="space-y-2.5 pt-2">
                 {Object.entries(plan.features).map(([key, value]) => {
-                  const displayValue = value === Infinity || value === null || value === 'Infinity' ? 'Unlimited' : value;
-                  const displayKey = key === 'aiUsage' ? 'AI Credits' : (key.charAt(0).toUpperCase() + key.slice(1));
+                  const displayValue =
+                    value === Infinity || value === null || value === 'Infinity'
+                      ? 'Unlimited'
+                      : value;
+                  const displayKey =
+                    key === 'aiUsage'
+                      ? 'AI Credits'
+                      : key.charAt(0).toUpperCase() + key.slice(1);
                   return (
                     <div key={key} className="flex items-start gap-2">
                       <Check
