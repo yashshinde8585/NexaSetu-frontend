@@ -149,7 +149,8 @@ api.interceptors.response.use(
     if (
       isMutating &&
       !url.includes('/metrics') &&
-      !url.includes('/auth/login')
+      !url.includes('/auth/login') &&
+      !response.config.skipToast
     ) {
       const defaultMsg = getSuccessMessage(response.config.method, url);
       toast.success(response.data?.message || defaultMsg);
@@ -272,7 +273,7 @@ api.interceptors.response.use(
     const isMutating = ['post', 'put', 'patch', 'delete'].includes(
       originalRequest?.method?.toLowerCase()
     );
-    if (isMutating && !originalRequest?.url?.includes('/metrics')) {
+    if (isMutating && !originalRequest?.url?.includes('/metrics') && !originalRequest?.skipToast) {
       toast.error(normalizedError.message || 'Mission protocol failure');
     }
 

@@ -92,6 +92,13 @@
   --raw-text-subtler: rgba(15, 23, 42, 0.4);
   --raw-card: #ffffff;
   --raw-border: rgba(15, 23, 42, 0.18);
+
+  /* Status overrides for high-contrast visibility in Light Mode */
+  --color-status-success: #15803d;
+  --color-status-warning: #b45309;
+  --color-status-error: #b91c1c;
+  --color-status-info: #1d4ed8;
+  --color-primary-light: #1d4ed8;
 }
 
 .accent-blue {
@@ -664,13 +671,16 @@
 .theme-ghost .text-white\/90 {
   color: var(--color-text) !important;
 }
+.theme-ghost .text-white\/85,
 .theme-ghost .text-white\/80 {
   color: var(--color-text-muted) !important;
 }
+.theme-ghost .text-white\/70,
 .theme-ghost .text-white\/60,
 .theme-ghost .text-white\/50 {
   color: var(--color-text-muted) !important;
 }
+.theme-ghost .text-white\/55,
 .theme-ghost .text-white\/40,
 .theme-ghost .text-white\/30 {
   color: var(--color-text-subtle) !important;

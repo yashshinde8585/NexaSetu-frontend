@@ -9,13 +9,11 @@ const Home = lazy(() => import('../pages/common/Home'));
 const Join = lazy(() => import('../pages/auth/Join'));
 const Dashboard = lazy(() => import('../pages/dashboards/Dashboard'));
 const ProjectDetail = lazy(() => import('../pages/projects/ProjectDetail'));
-const ProjectWarRoom = lazy(() => import('../pages/projects/ProjectWarRoom'));
 const Pricing = lazy(() => import('../pages/common/Pricing'));
 const Team = lazy(() => import('../pages/teams/Team'));
 const ProjectTeam = lazy(() => import('../pages/projects/ProjectTeam'));
 const AddTeamMember = lazy(() => import('../pages/teams/AddTeamMember'));
 const Profile = lazy(() => import('../pages/common/Profile'));
-const Settings = lazy(() => import('../pages/common/Settings'));
 const Theme = lazy(() => import('../pages/common/Theme'));
 const ProjectInfo = lazy(() => import('../pages/projects/ProjectInfo'));
 const ProjectSetup = lazy(() => import('../pages/projects/ProjectSetup'));
@@ -110,11 +108,6 @@ export const privateRoutes = [
     title: 'Learning Workspace',
   },
   { path: '/project/:id', component: ProjectDetail, title: 'Project Details' },
-  {
-    path: '/war-room/:projectId',
-    component: ProjectWarRoom,
-    title: 'Project War Room',
-  },
   { path: '/task/:taskId', component: TaskDetail, title: 'Task Details' },
   {
     path: '/project/:id/settings',
@@ -124,7 +117,6 @@ export const privateRoutes = [
   { path: ROUTES.MY_TASKS, component: MyTasks, title: 'My Assigned Tasks' },
   { path: '/velocity', component: Velocity, title: 'Velocity Controller' },
   { path: ROUTES.PROFILE, component: Profile, title: 'User Profile' },
-  { path: ROUTES.SETTINGS, component: Settings, title: 'System Settings' },
   { path: '/theme', component: Theme, title: 'Interface Customization' },
 
   // Permission-based Routes

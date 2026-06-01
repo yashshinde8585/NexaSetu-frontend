@@ -77,10 +77,11 @@ const TacticalCustomSelect = ({
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 w-full mt-1 bg-background-elevated border border-border-subtle z-[100] max-h-[300px] overflow-y-auto scrollbar-none animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="absolute top-full left-0 w-full mt-1 bg-background-elevated border border-border-subtle z-[999] max-h-[300px] overflow-y-auto scrollbar-none shadow-2xl block">
             <div className="p-1 space-y-0.5">
-              {options.map((opt, idx) => {
-                if (opt.isGroup) {
+              {options && options.length > 0 ? (
+                options.map((opt, idx) => {
+                  if (opt.isGroup) {
                   return (
                     <div
                       key={idx}
@@ -126,7 +127,12 @@ const TacticalCustomSelect = ({
                     )}
                   </button>
                 );
-              })}
+              })
+            ) : (
+              <div className="px-4 py-3 text-[10px] font-black text-text-subtle uppercase tracking-widest text-center">
+                No options available
+              </div>
+            )}
             </div>
           </div>
         )}

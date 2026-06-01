@@ -391,16 +391,6 @@ const ProjectDetail = () => {
                     ? 'NEW TICKET'
                     : 'NEW TASK'}
               </button>
-
-              {!isTicketView && (
-                <button
-                  onClick={() => navigate(`/war-room/${id}`)}
-                  className="h-9 px-4 rounded border border-secondary text-secondary bg-secondary/5 font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 transition-all hover:bg-secondary hover:text-text"
-                >
-                  <Zap size={14} />
-                  WAR ROOM
-                </button>
-              )}
             </div>
           </div>
 

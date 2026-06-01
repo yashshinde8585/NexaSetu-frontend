@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../context/AuthContext';
-import { User, Settings, Contrast, LogOut, ChevronRight } from 'lucide-react';
+import { User, Contrast, LogOut, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // A profile menu that provides quick access to account settings and logout options.
@@ -131,14 +131,6 @@ const ProfileDropdown = () => {
               onClick={() => {
                 setIsOpen(false);
                 navigate('/profile');
-              }}
-            />
-            <DropdownItem
-              icon={<Settings size={18} strokeWidth={2.2} />}
-              label="Account settings"
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/settings');
               }}
             />
             <DropdownItem

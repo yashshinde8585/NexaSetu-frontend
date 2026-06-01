@@ -68,8 +68,8 @@ export const removeInvitation = (id) => {
   return apiClient.delete(API_ENDPOINTS.TEAM.REMOVE_INVITATION(id));
 };
 
-export const updateMemberProject = (id, projectId) => {
-  return apiClient.patch(`/team/members/${id}/project`, { projectId });
+export const updateMemberProject = (id, projectId, config = {}) => {
+  return apiClient.patch(`/team/members/${id}/project`, { projectId }, { skipToast: true, ...config });
 };
 
 export default {

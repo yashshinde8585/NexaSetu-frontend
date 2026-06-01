@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ChevronRight, BadgeCheck } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 /**
  * Settings sidebar — renders as a horizontal tab bar on mobile/tablet,
@@ -10,12 +10,7 @@ const SettingsSidebar = ({
   tabs,
   activeTab,
   onTabChange,
-  userRole,
-  jobTitle,
 }) => {
-  const roleLabel =
-    jobTitle || (userRole ? userRole.replace(/_/g, ' ') : 'User');
-
   return (
     <div className="xl:w-52 flex flex-col gap-1.5">
       {/* Tab buttons */}
@@ -63,19 +58,6 @@ const SettingsSidebar = ({
           </button>
         ))}
       </div>
-
-      {/* Role badge — desktop only */}
-      <div className="hidden xl:flex mt-2 p-3 bg-white/5 rounded border border-white/10 items-center gap-2">
-        <BadgeCheck size={11} className="text-primary shrink-0" />
-        <div className="min-w-0">
-          <div className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">
-            Role
-          </div>
-          <div className="text-[9px] font-black text-white uppercase tracking-widest truncate">
-            {roleLabel}
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
@@ -90,8 +72,6 @@ SettingsSidebar.propTypes = {
   ).isRequired,
   activeTab: PropTypes.string.isRequired,
   onTabChange: PropTypes.func.isRequired,
-  userRole: PropTypes.string.isRequired,
-  jobTitle: PropTypes.string,
 };
 
 export default SettingsSidebar;

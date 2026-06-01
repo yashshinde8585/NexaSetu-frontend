@@ -177,40 +177,7 @@ const CommandCenterTab = ({
       : [];
   }, [data?.projectsOverview]);
 
-  const auditLogsRows = useMemo(() => {
-    return (
-      Array.isArray(data?.securityLogs) ? data.securityLogs.filter(Boolean) : []
-    ).map((log, idx) => {
-      let resource = 'System Config';
-      const act = log?.action || '';
-      if (act.includes('USER')) resource = 'User Account';
-      if (act.includes('TEAM')) resource = 'Team';
-      if (act.includes('ROLE')) resource = 'Access Role';
 
-      let timeFormatted = 'Recent';
-      if (log?.time) {
-        const d = new Date(log.time);
-        if (!isNaN(d.getTime())) {
-          timeFormatted = d.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          });
-        }
-      }
-      return {
-        id:
-          log?.id ||
-          log?._id ||
-          `log-${log?.performer || 'system'}-${log?.action || ''}-${log?.time || idx}`,
-        time: timeFormatted,
-        user: log?.performer || 'System',
-        action: act.replace(/_/g, ' '),
-        resource,
-        ip: log?.ip || 'Internal',
-      };
-    });
-  }, [data?.securityLogs]);
 
   return (
     <div className="flex flex-col gap-4 animate-fade-in">
@@ -437,10 +404,10 @@ const CommandCenterTab = ({
         </div>
       </div>
 
-      {/* 2. Charts & Recent Activity (Row 2) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* 2. Charts (Row 2) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Distribution Donut */}
-        <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[360px]">
+        <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[360px]">
           <div className="flex justify-between items-center pb-4 border-b border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
               User Distribution by Role
@@ -523,7 +490,7 @@ const CommandCenterTab = ({
         </div>
 
         {/* Users Growth Trend Line */}
-        <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[360px]">
+        <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[360px]">
           <div className="flex justify-between items-center pb-4 border-b border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
               Users Growth Trend
@@ -588,66 +555,8 @@ const CommandCenterTab = ({
             <span>Steady growth in user onboarding</span>
           </div>
         </div>
-
-        {/* Recent User Activity */}
-        <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[360px]">
-          <div className="flex justify-between items-center pb-4 border-b border-white/5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
-              Recent User Activity
-            </span>
-            <button
-              onClick={() =>
-                toast.success('Telemetry logs are fully synchronized.')
-              }
-              className="text-[9px] font-black uppercase text-secondary hover:underline cursor-pointer"
-            >
-              View All
-            </button>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-start mt-3 gap-3 overflow-y-auto max-h-[260px] pr-1 custom-scrollbar">
-            {recentActivities.length > 0 ? (
-              recentActivities.map((act) => (
-                <div
-                  key={act.id}
-                  className="flex items-center justify-between py-2 border-b border-white/[0.02] last:border-0 hover:bg-white/[0.02] px-1 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-none bg-white/5 border border-white/10 flex items-center justify-center text-[9px] font-black text-white/40 uppercase">
-                      {act.avatarInitials}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-white">
-                        {act.name}
-                      </span>
-                      <span className="text-[8px] text-white/30 uppercase font-semibold">
-                        {act.email}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end text-right">
-                    <span className="text-[9px] font-black text-secondary uppercase bg-secondary/10 px-2 py-0.5">
-                      {act.action}
-                    </span>
-                    <span className="text-[8px] text-white/20 mt-1 font-semibold">
-                      {act.time}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-16 text-center border border-dashed border-white/10 my-auto">
-                <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">
-                  No recent security activities
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 3. System Overviews (Row 3) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      </div>      {/* 3. System Overviews (Row 3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Overview */}
         <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
           <div className="flex justify-between items-center pb-3 border-b border-white/5">
@@ -697,8 +606,8 @@ const CommandCenterTab = ({
                         <span
                           className={`text-[8px] px-1.5 py-0.5 uppercase font-bold ${
                             projStatus === 'active'
-                              ? 'bg-status-success/10 text-status-success'
-                              : 'bg-white/10 text-white/40'
+                                ? 'bg-status-success/10 text-status-success'
+                                : 'bg-white/10 text-white/40'
                           }`}
                         >
                           {projStatus}
@@ -797,114 +706,6 @@ const CommandCenterTab = ({
           </div>
         </div>
 
-        {/* System Usage */}
-        <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
-          <div className="flex justify-between items-center pb-3 border-b border-white/5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
-              System Usage
-            </span>
-            <button
-              onClick={() => navigate('/admin/billing')}
-              className="text-[8px] font-black uppercase tracking-widest text-secondary hover:underline cursor-pointer"
-            >
-              View Billing
-            </button>
-          </div>
-          <div className="flex-1 flex flex-col justify-center gap-4 mt-3 text-[9px] font-black uppercase">
-            {(() => {
-              const formatBytes = (bytes) => {
-                if (!bytes || bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-                const idx = Math.floor(Math.log(bytes) / Math.log(k));
-                return (
-                  parseFloat((bytes / Math.pow(k, idx)).toFixed(2)) +
-                  ' ' +
-                  sizes[idx]
-                );
-              };
-              const storageUsed = data?.usage?.storageUsed || 0;
-              const storageQuota = data?.usage?.storageQuota || 104857600;
-              const usedStorageStr = formatBytes(storageUsed);
-              const quotaStorageStr = formatBytes(storageQuota);
-              const storagePct =
-                storageQuota > 0
-                  ? Math.min(
-                      100,
-                      Math.round((storageUsed / storageQuota) * 100)
-                    )
-                  : 0;
-
-              const apiCount = data?.usage?.apiCalls || 0;
-              const apiPct = Math.min(
-                100,
-                Math.round((apiCount / 50000000) * 100)
-              );
-
-              const aiCount = data?.usage?.aiUsage || 0;
-              const aiPct = Math.min(100, Math.round((aiCount / 500000) * 100));
-
-              return (
-                <>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-white/40 flex items-center gap-1">
-                        <HardDrive size={10} /> Storage Used
-                      </span>
-                      <span className="text-white">
-                        {usedStorageStr} / {quotaStorageStr}{' '}
-                        <span className="text-white/30">({storagePct}%)</span>
-                      </span>
-                    </div>
-                    <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
-                      <div
-                        className="bg-primary h-full"
-                        style={{ width: `${storagePct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-white/40 flex items-center gap-1">
-                        <LinkIcon size={10} /> API Requests (30d)
-                      </span>
-                      <span className="text-white">
-                        {apiCount.toLocaleString()} / 50M{' '}
-                        <span className="text-white/30">({apiPct}%)</span>
-                      </span>
-                    </div>
-                    <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
-                      <div
-                        className="bg-secondary h-full"
-                        style={{ width: `${apiPct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-white/40 flex items-center gap-1">
-                        <Zap size={10} /> AI Agent Compute
-                      </span>
-                      <span className="text-white">
-                        {aiCount.toLocaleString()} / 500K{' '}
-                        <span className="text-white/30">({aiPct}%)</span>
-                      </span>
-                    </div>
-                    <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden">
-                      <div
-                        className="bg-status-warning h-full"
-                        style={{ width: `${aiPct}%` }}
-                      />
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        </div>
-
         {/* System Health */}
         <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
           <div className="flex justify-between items-center pb-3 border-b border-white/5">
@@ -924,7 +725,6 @@ const CommandCenterTab = ({
               { name: 'Authorization Service', status: 'Healthy' },
               { name: 'Database', status: 'Healthy' },
               { name: 'File Storage', status: 'Healthy' },
-              { name: 'Audit Logging', status: 'Healthy' },
             ].map((serv) => (
               <div
                 key={serv.name}
@@ -949,67 +749,10 @@ const CommandCenterTab = ({
         </div>
       </div>
 
-      {/* 4. Audit Logs, Pending, Actions (Row 4) */}
+      {/* 4. Pending Approvals & Quick Actions (Row 4) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Audit Logs Table */}
-        <div className="lg:col-span-6 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
-          <div className="flex justify-between items-center pb-3 border-b border-white/5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
-              Audit Logs
-            </span>
-            <button
-              onClick={() => setActiveTab('users')}
-              className="text-[8px] font-black uppercase tracking-widest text-secondary hover:underline cursor-pointer"
-            >
-              View All
-            </button>
-          </div>
-          <div className="flex-1 mt-3 overflow-x-auto scrollbar-none">
-            <table className="w-full text-left text-[9px] font-black uppercase">
-              <thead>
-                <tr className="text-white/20 border-b border-white/5">
-                  <th className="pb-2">Time</th>
-                  <th className="pb-2">User</th>
-                  <th className="pb-2">Action</th>
-                  <th className="pb-2">Resource</th>
-                  <th className="pb-2 text-right">IP Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                {auditLogsRows.length > 0 ? (
-                  auditLogsRows.slice(0, 5).map((log) => (
-                    <tr
-                      key={log.id}
-                      className="hover:bg-white/[0.02] transition-colors border-b border-white/[0.02] last:border-0"
-                    >
-                      <td className="py-2.5 text-white/40">{log.time}</td>
-                      <td className="py-2.5 text-white">{log.user}</td>
-                      <td className="py-2.5 text-secondary">{log.action}</td>
-                      <td className="py-2.5 text-white/60 truncate max-w-[80px]">
-                        {log.resource}
-                      </td>
-                      <td className="py-2.5 text-right text-white/30">
-                        {log.ip}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="py-8 text-center text-white/10 text-[8px] font-bold uppercase tracking-widest"
-                    >
-                      No audit logs found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         {/* Pending Approvals */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
+        <div className="lg:col-span-6 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
           <div className="flex justify-between items-center pb-3 border-b border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
               Pending Approvals
@@ -1056,7 +799,7 @@ const CommandCenterTab = ({
         </div>
 
         {/* Quick Actions Grid */}
-        <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
+        <div className="lg:col-span-6 bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
           <div className="flex justify-between items-center pb-3 border-b border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
               Quick Actions
@@ -1146,19 +889,7 @@ const CommandCenterTab = ({
         </div>
       </div>
 
-      {/* Sparkline status indicators */}
-      <div className="text-[8px] text-white/5 tracking-[0.2em] font-black uppercase flex items-center justify-between border-t border-white/5 pt-4">
-        <span>Last updated: just now</span>
-        <span>Auto-refresh: On (120s interval)</span>
-        <span>
-          Data as of:{' '}
-          {new Date().toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          })}
-        </span>
-      </div>
+
     </div>
   );
 };

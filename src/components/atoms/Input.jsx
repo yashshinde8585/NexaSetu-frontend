@@ -17,11 +17,16 @@ const Input = ({
         type={type}
         id={id}
         placeholder={placeholder}
-        className={`w-full px-4 py-3.5 bg-black rounded-xl border focus:outline-none transition-all text-[12px] font-black tracking-normal text-white placeholder:text-white/30 ${
+        className={`w-full px-3 py-2 rounded border focus:outline-none transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/20 ${
           isError
             ? 'border-status-error focus:border-status-error'
             : 'border-white/20 focus:border-primary focus:bg-white/5'
         } ${className}`}
+        style={{
+          backgroundColor: 'var(--color-background, #000000)',
+          color: 'var(--color-text, #ffffff)',
+          borderColor: 'var(--color-border-subtle, rgba(255,255,255,0.2))',
+        }}
         {...props}
       />
       {isError && errorMsg && (

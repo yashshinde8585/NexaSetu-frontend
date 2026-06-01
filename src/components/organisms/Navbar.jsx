@@ -87,7 +87,6 @@ const Navbar = ({ onToggleSidebar }) => {
                     '/velocity': 'Velocity',
                     [ROUTES.PROFILE || '/profile']: 'Profile',
                     [ROUTES.PRICING]: 'Account',
-                    [ROUTES.SETTINGS]: 'Settings',
                     '/theme': 'Themes',
                   };
 

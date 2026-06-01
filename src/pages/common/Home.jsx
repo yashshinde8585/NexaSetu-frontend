@@ -308,7 +308,7 @@ const Home = () => {
     };
     const currentPerms = rolesConfig[activeFeatureRole];
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2.5 transition-all duration-300">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2.5 transition-all duration-300">
         <div className="flex bg-white/5 border border-white/10 p-0.5 rounded gap-1">
           {['Developer', 'Lead', 'Admin'].map((r) => (
             <button
@@ -364,7 +364,7 @@ const Home = () => {
 
   const renderCodebaseSyncMock = () => {
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
         <div className="flex items-center justify-between text-white/40 border-b border-white/5 pb-1">
           <span>GITHUB WEBHOOKS</span>
           <span className="animate-pulse text-status-success">ACTIVE</span>
@@ -386,7 +386,7 @@ const Home = () => {
 
   const renderHealthMetricsMock = () => {
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-white/40">VELOCITY HEALTH</span>
           <span className="text-status-success font-bold">94% EXCELLENT</span>
@@ -410,7 +410,7 @@ const Home = () => {
 
   const renderCommandBarMock = () => {
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-1.5 min-h-[82px] flex flex-col justify-between">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-1.5 min-h-[82px] flex flex-col justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-1">
             <span className="text-primary font-bold">&gt;</span>
@@ -432,7 +432,7 @@ const Home = () => {
 
   const renderEnvironmentsMock = () => {
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
         <div className="flex justify-between items-center text-white/40">
           <span>ACTIVE DEPLOYMENTS</span>
           <span>3 TOTAL</span>
@@ -463,7 +463,7 @@ const Home = () => {
 
   const renderOptimizationMock = () => {
     return (
-      <div className="bg-black/60 border border-white/10 p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
+      <div className="bg-background-elevated/60 border border-border-subtle p-3 rounded-lg font-mono text-[9px] mt-4 space-y-2">
         <div className="flex justify-between items-center text-white/40">
           <span>CAPACITY MONITOR</span>
           <span>{isBalancing ? 'BALANCING...' : 'SKEWED'}</span>
@@ -499,7 +499,7 @@ const Home = () => {
                 handleBalanceWorkload();
               }}
               disabled={isBalancing}
-              className="w-full text-center py-1.5 bg-white text-black font-black uppercase text-[8px] tracking-wider rounded hover:bg-white/80 transition-colors cursor-pointer"
+              className="w-full text-center py-1.5 bg-text text-background font-black uppercase text-[8px] tracking-wider rounded hover:opacity-90 transition-colors cursor-pointer"
             >
               {isBalancing ? 'Optimizing...' : 'Optimize Load Balance'}
             </button>
@@ -510,7 +510,7 @@ const Home = () => {
                 e.stopPropagation();
                 handleResetWorkload();
               }}
-              className="w-full text-center py-1.5 border border-white/15 text-white font-black uppercase text-[8px] tracking-wider rounded hover:bg-white/10 transition-colors cursor-pointer"
+              className="w-full text-center py-1.5 border border-border-subtle text-text font-black uppercase text-[8px] tracking-wider rounded hover:bg-text/10 transition-colors cursor-pointer"
             >
               Reset Simulation
             </button>
@@ -569,8 +569,8 @@ const Home = () => {
           >
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2D63FF" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#2D63FF" stopOpacity="0" />
+                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path
@@ -580,7 +580,7 @@ const Home = () => {
             <path
               d="M 0 60 Q 30 45, 60 55 T 120 30 T 180 40 T 240 15 T 300 10"
               fill="none"
-              stroke="#2D63FF"
+              stroke="var(--color-primary)"
               strokeWidth="2"
             />
           </svg>
@@ -718,7 +718,7 @@ const Home = () => {
             Your code already knows the truth.{' '}
             <span className="text-white/40">NexaSetu makes it visible.</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-[#D4D4D8] max-w-2xl mx-auto mb-10 font-normal tracking-tight leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-text-muted max-w-2xl mx-auto mb-10 font-normal tracking-tight leading-relaxed">
             Turn GitHub activity into real-time execution intelligence.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto">
@@ -742,7 +742,7 @@ const Home = () => {
       <section className="max-w-[1440px] mx-auto px-6 pb-20 md:pb-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left: Interactive Dashboard Preview */}
-          <div className="lg:col-span-8 bg-[#070708] border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xl">
+          <div className="lg:col-span-8 bg-background-dark border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xl">
             {/* Header / Tabs */}
             <div className="px-6 py-4 bg-white/[0.02] border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="flex items-center gap-1.5">
@@ -921,15 +921,13 @@ const Home = () => {
         id="matrix"
         className="max-w-[1440px] mx-auto px-6 py-20 md:py-28"
       >
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-2xl">
-            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary block mb-3">
-              Capabilities
-            </span>
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase">
-              Platform Features
-            </h2>
-          </div>
+        <div className="mb-16 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/40">
+            Capabilities
+          </span>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
+            Platform Features
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 bg-white/15 gap-[1px] border border-white/10 overflow-hidden rounded-xl">
@@ -1084,7 +1082,7 @@ const Home = () => {
         id="verticals"
         className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-white/10"
       >
-        <div className="mb-16">
+        <div className="mb-16 text-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/40">
             Role Alignment
           </span>
@@ -1142,7 +1140,7 @@ const Home = () => {
           </div>
 
           {/* Right: Role Details and Preview Box */}
-          <div className="lg:col-span-8 bg-[#070708] border border-white/10 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row gap-8 items-center justify-between shadow-2xl">
+          <div className="lg:col-span-8 bg-background-dark border border-white/10 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row gap-8 items-center justify-between shadow-2xl">
             <div className="flex-1 space-y-6 text-left">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">
@@ -1209,7 +1207,7 @@ const Home = () => {
             {/* Simulated mini screen representing the Role View */}
             <div className="w-full md:w-[280px] shrink-0">
               {activeRole === 'executive' && (
-                <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
+                <div className="bg-background-elevated/60 border border-border-subtle rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="font-bold text-white/60">
                       PORTFOLIO OVERVIEW
@@ -1240,7 +1238,7 @@ const Home = () => {
                 </div>
               )}
               {activeRole === 'delivery' && (
-                <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
+                <div className="bg-background-elevated/60 border border-border-subtle rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="font-bold text-white/60">
                       DELIVERY SPEED
@@ -1266,7 +1264,7 @@ const Home = () => {
                 </div>
               )}
               {activeRole === 'engineering' && (
-                <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
+                <div className="bg-background-elevated/60 border border-border-subtle rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="font-bold text-white/60">
                       MY WORKSPACE
@@ -1291,7 +1289,7 @@ const Home = () => {
                 </div>
               )}
               {activeRole === 'devops' && (
-                <div className="bg-black/60 border border-white/10 rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
+                <div className="bg-background-elevated/60 border border-border-subtle rounded-xl p-5 space-y-4 font-mono text-[9px] w-full animate-fade-in">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="font-bold text-white/60">
                       SECURITY GATEWAY
@@ -1328,9 +1326,9 @@ const Home = () => {
       {/* --- PRICING PLANS SECTION --- */}
       <section
         id="tiers"
-        className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-white/10"
+        className="max-w-[1440px] mx-auto px-6 py-12 md:py-16 border-t border-white/10"
       >
-        <div className="mb-12 text-center space-y-4">
+        <div className="mb-8 text-center space-y-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/40">
             Pricing Plans
           </span>
@@ -1339,7 +1337,7 @@ const Home = () => {
           </h2>
 
           {/* Billing Cycle & Currency Toggles */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-2">
             {/* Billing Cycle Toggle */}
             <div className="flex items-center gap-3">
               <span
@@ -1492,7 +1490,7 @@ const Home = () => {
           ].map((p, i) => (
             <div
               key={i}
-              className={`bg-background-light p-8 sm:p-12 flex flex-col text-left ${
+              className={`bg-background-light p-6 sm:p-8 flex flex-col text-left justify-between ${
                 p.recommended ? 'relative bg-background-elevated/40' : ''
               } ${
                 i === 0 ? 'rounded-t-xl md:rounded-l-xl md:rounded-tr-none' : ''
@@ -1500,55 +1498,69 @@ const Home = () => {
                 i === 2 ? 'rounded-b-xl md:rounded-r-xl md:rounded-bl-none' : ''
               }`}
             >
-              {p.recommended && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-white text-black text-[9px] font-black uppercase tracking-widest rounded-sm border border-white">
-                  Most Recommended
+              <div>
+                {p.recommended && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-white text-black text-[9px] font-black uppercase tracking-widest rounded-sm border border-white">
+                    Most Recommended
+                  </div>
+                )}
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mb-2 block">
+                  {p.plan}
+                </span>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-4xl font-black tracking-tighter text-white">
+                    {p.price}
+                  </span>
+                  <span className="text-[10px] font-bold text-white/40 uppercase">
+                    / MO
+                  </span>
                 </div>
-              )}
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mb-4">
-                {p.plan}
-              </span>
-              <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-4xl md:text-5xl font-black tracking-tighter text-white">
-                  {p.price}
+                <span
+                  className={`text-[10px] font-bold block mb-4 ${
+                    billingCycle === 'annual' && p.plan !== 'FREE'
+                      ? 'text-status-success'
+                      : 'text-white/40'
+                  }`}
+                >
+                  {p.plan === 'FREE'
+                    ? 'Free forever'
+                    : billingCycle === 'monthly'
+                      ? 'Billed monthly'
+                      : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`}
                 </span>
-                <span className="text-[10px] font-bold text-white/40 uppercase">
-                  / MO
-                </span>
+                <p className="text-white/40 text-[10px] font-normal leading-relaxed mb-6 min-h-[2.5rem]">
+                  {p.desc}
+                </p>
+
+                <Link
+                  to="/register"
+                  className={`w-full py-3 text-[10px] font-bold uppercase tracking-widest transition-all text-center mb-6 rounded cursor-pointer block ${
+                    p.recommended
+                      ? 'bg-white text-black hover:invert'
+                      : 'border border-white/10 text-white hover:bg-white hover:text-black'
+                  }`}
+                >
+                  {p.cta}
+                </Link>
               </div>
-              <span
-                className={`text-[10px] font-bold block mb-6 ${
-                  billingCycle === 'annual' && p.plan !== 'FREE'
-                    ? 'text-status-success'
-                    : 'text-white/40'
-                }`}
-              >
-                {p.plan === 'FREE'
-                  ? 'Free forever'
-                  : billingCycle === 'monthly'
-                    ? 'Billed monthly'
-                    : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`}
-              </span>
-              <p className="text-white/40 text-[10px] font-normal leading-relaxed mb-8 h-10">
-                {p.desc}
-              </p>
 
-              <Link
-                to="/register"
-                className={`w-full py-4 text-[10px] font-bold uppercase tracking-widest transition-all text-center mb-10 rounded cursor-pointer ${
-                  p.recommended
-                    ? 'bg-white text-black hover:invert'
-                    : 'border border-white/10 text-white hover:bg-white hover:text-black'
-                }`}
-              >
-                {p.cta}
-              </Link>
-
-              <div className="space-y-4">
+              <div className="space-y-2.5 pt-2 border-t border-white/5">
                 {p.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <div className="w-1 h-1 bg-white/20 rounded-full" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                  <div key={idx} className="flex items-center gap-2.5">
+                    <svg
+                      className="w-3 h-3 text-status-success shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
                       {feat}
                     </span>
                   </div>
@@ -1573,10 +1585,20 @@ const Home = () => {
           </div>
           <div className="flex flex-col gap-8 text-left md:text-right w-full md:w-auto">
             <div className="flex flex-wrap gap-8 md:gap-12 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 justify-start md:justify-end">
-              <a href="#" className="hover:text-white transition-colors">
+              <a
+                href="https://github.com/yashshinde8585"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
                 GitHub
               </a>
-              <a href="#" className="hover:text-white transition-colors">
+              <a
+                href="https://linkedin.com/in/yashshinde8585"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
                 LinkedIn
               </a>
             </div>

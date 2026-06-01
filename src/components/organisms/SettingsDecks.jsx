@@ -46,9 +46,16 @@ const FieldLabel = ({ htmlFor, children }) => (
 
 // ─── Read-only display field ──────────────────────────────────────────────────
 const ReadField = ({ icon: Icon, value }) => (
-  <div className="flex items-center gap-2.5 h-9 px-3 bg-black border border-white/5 rounded text-white/40">
-    <Icon size={12} className="shrink-0" />
-    <span className="text-[10px] font-bold truncate">{value}</span>
+  <div
+    className="flex items-center gap-2.5 h-9 px-3 rounded border text-[10px] font-black uppercase tracking-widest"
+    style={{
+      backgroundColor: 'var(--color-background)',
+      borderColor: 'var(--color-border-subtle)',
+      color: 'var(--color-text-subtle)',
+    }}
+  >
+    <Icon size={12} className="shrink-0" style={{ color: 'var(--color-text-subtler)' }} />
+    <span className="truncate">{value}</span>
   </div>
 );
 
@@ -63,10 +70,11 @@ const PasswordField = ({
 }) => {
   const [show, setShow] = useState(false);
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="flex flex-col gap-1.5 w-full">
       <label
         htmlFor={id}
-        className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1"
+        className="text-[9px] font-black uppercase tracking-[0.2em] ml-1"
+        style={{ color: 'var(--color-text-subtle)' }}
       >
         {label}
       </label>
@@ -79,7 +87,12 @@ const PasswordField = ({
           placeholder={placeholder}
           disabled={disabled}
           autoComplete="off"
-          className="w-full px-4 py-3 pr-10 bg-black rounded-xl border border-white/20 focus:border-primary focus:bg-white/5 focus:outline-none transition-all text-[12px] font-black text-white placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-3 py-2 pr-10 rounded border focus:outline-none transition-all text-[10px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-white/20"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderColor: 'var(--color-border-subtle)',
+            color: 'var(--color-text)',
+          }}
         />
         <button
           type="button"
@@ -97,7 +110,7 @@ const PasswordField = ({
 };
 
 // ─── Change Password Modal ────────────────────────────────────────────────────
-const ChangePasswordModal = ({ onClose }) => {
+export const ChangePasswordModal = ({ onClose }) => {
   const [form, setForm] = useState({
     currentPassword: '',
     newPassword: '',
@@ -161,51 +174,81 @@ const ChangePasswordModal = ({ onClose }) => {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background-dark/80 backdrop-blur-sm animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="max-w-sm w-full bg-background-dark border border-white/5 rounded-[28px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+      <div
+        className="max-w-sm w-full border rounded shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
+        style={{
+          backgroundColor: 'var(--color-background-elevated)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
+      >
         {/* Header */}
-        <div className="flex justify-between items-start px-6 pt-6 pb-3">
+        <div
+          className="flex justify-between items-start px-6 pt-6 pb-3 border-b"
+          style={{ borderColor: 'var(--color-border-subtle)' }}
+        >
           <div>
-            <h2 className="text-xl font-black text-white tracking-tighter">
+            <h2
+              className="text-[12px] font-black uppercase tracking-widest animate-in fade-in duration-300"
+              style={{ color: 'var(--color-text)' }}
+            >
               Change Password
             </h2>
-            <p className="text-text-muted text-[10px] font-medium mt-0.5">
+            <p
+              className="text-[8px] font-black uppercase tracking-[0.2em] mt-1"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               Keep your account secure with a strong password.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-text-muted"
+            className="p-1 border hover:bg-white/5 rounded transition-colors"
+            style={{
+              borderColor: 'var(--color-border-subtle)',
+              color: 'var(--color-text-subtle)',
+            }}
             aria-label="Close"
           >
-            <X size={16} />
+            <X size={12} />
           </button>
         </div>
 
         {/* Body */}
         {status === 'success' ? (
-          <div className="px-6 pb-6 text-center animate-in zoom-in-95 duration-500">
-            <div className="w-16 h-16 bg-status-success/20 text-status-success rounded-full flex items-center justify-center mx-auto mb-4 border border-status-success/30 drop-shadow-[0_0_12px_rgba(34,197,94,0.3)]">
-              <CheckCircle size={32} />
+          <div className="p-6 text-center animate-in zoom-in-95 duration-500 space-y-4">
+            <div className="w-12 h-12 bg-status-success/10 text-status-success rounded flex items-center justify-center mx-auto mb-2 border border-status-success/20">
+              <CheckCircle size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1 tracking-tight">
+            <h3
+              className="text-[11px] font-black uppercase tracking-widest"
+              style={{ color: 'var(--color-text)' }}
+            >
               Password Updated
             </h3>
-            <p className="text-text-muted text-xs mb-5">
+            <p
+              className="text-[8px] font-black uppercase tracking-[0.2em]"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               Your credentials have been changed successfully.
             </p>
             <button
               onClick={onClose}
-              className="w-full py-3 bg-primary text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
+              className="w-full h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+              style={{
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-background)',
+                border: '1px solid var(--color-primary)',
+              }}
             >
               Done
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col">
-            <div className="px-6 pb-4 space-y-3">
+            <div className="px-6 py-4 space-y-4">
               <PasswordField
                 id="cp-current"
                 label="Current Password"
@@ -246,41 +289,49 @@ const ChangePasswordModal = ({ onClose }) => {
 
               {/* Error */}
               {(status === 'error' || errorMsg) && (
-                <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-2 text-red-400 text-[10px] font-black uppercase tracking-widest animate-in fade-in zoom-in-95">
-                  <AlertCircle size={12} className="shrink-0" />
+                <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded flex items-center gap-2 text-red-400 text-[8px] font-black uppercase tracking-widest animate-in fade-in zoom-in-95">
+                  <AlertCircle size={10} className="shrink-0" />
                   {errorMsg}
                 </div>
               )}
             </div>
 
             {/* Footer */}
-            <div className="px-6 pb-6 pt-3 border-t border-white/5 flex items-center justify-between">
+            <div
+              className="px-6 py-4 border-t flex items-center justify-between"
+              style={{ borderColor: 'var(--color-border-subtle)' }}
+            >
               <button
                 type="button"
                 onClick={onClose}
-                className="text-[10px] font-black text-text-muted hover:text-white uppercase tracking-[0.2em] transition-colors"
+                className="h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+                style={{
+                  border: '1px solid var(--color-border-subtle, rgba(255,255,255,0.1))',
+                  color: 'var(--color-text-subtle, rgba(255,255,255,0.6))',
+                  backgroundColor: 'transparent',
+                }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-7 py-3 bg-primary hover:opacity-90 disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 relative overflow-hidden group"
+                className="h-9 px-7 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest flex items-center gap-2"
+                style={{
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'var(--color-background)',
+                  border: '1px solid var(--color-primary)',
+                }}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="animate-spin" size={14} /> Updating…
+                    <Loader2 className="animate-spin" size={12} /> Updating…
                   </>
                 ) : (
                   <>
-                    <ShieldCheck
-                      size={14}
-                      className="group-hover:scale-110 transition-transform"
-                    />{' '}
-                    Update Password
+                    <ShieldCheck size={12} /> Update Password
                   </>
                 )}
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </button>
             </div>
           </form>

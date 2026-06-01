@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Monitor, ShieldCheck, Sun, Moon, ChevronRight } from 'lucide-react';
-import Button from '../../components/atoms/Button';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
@@ -34,7 +31,7 @@ const Theme = () => {
 
   return (
     <div className="px-3 sm:px-4 lg:px-6 py-4">
-      <div className="max-w-screen-xl mx-auto space-y-6 animate-in fade-in duration-700">
+      <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-700">
         {/* Header */}
         <div
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4"
@@ -54,23 +51,12 @@ const Theme = () => {
               Customize the visual settings of your workspace dashboard.
             </p>
           </div>
-          <Button
-            variant="primary"
-            onClick={() => {
-              saveTheme(selectedTheme, accentColor);
-              toast.success('Appearance configuration saved successfully.');
-              setTimeout(() => window.location.reload(), 800);
-            }}
-            className="h-9 px-4 text-[9px] font-black uppercase tracking-widest rounded w-full md:w-auto"
-          >
-            Save Theme
-          </Button>
         </div>
 
         {/* Configuration Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="space-y-6">
           {/* Theme & Accent Selection */}
-          <div className="xl:col-span-8 space-y-6">
+          <div className="space-y-6">
             {/* Theme Grid */}
             <section className="space-y-4">
               <h2
@@ -141,63 +127,6 @@ const Theme = () => {
               </div>
             </section>
           </div>
-
-          {/* Sync & Readiness Sidebar */}
-          <div className="xl:col-span-4 space-y-6">
-            {/* System Sync */}
-            <section className="space-y-4">
-              <h2
-                className="text-[9px] font-black uppercase tracking-[0.2em]"
-                style={{ color: 'var(--color-text-subtle)' }}
-              >
-                Display Preferences
-              </h2>
-              <div
-                className="rounded overflow-hidden"
-                style={{
-                  backgroundColor: 'var(--color-background-elevated)',
-                  border: '1px solid var(--color-border-subtle)',
-                }}
-              >
-                <SyncItem
-                  icon={<Monitor size={12} />}
-                  title="Follow System OS"
-                  active={false}
-                  onClick={() => {
-                    const isDark = window.matchMedia(
-                      '(prefers-color-scheme: dark)'
-                    ).matches;
-                    const targetTheme = isDark ? 'obsidian' : 'ghost';
-                    setSelectedTheme(targetTheme);
-                    saveTheme(targetTheme, accentColor);
-                    toast.success(
-                      'Theme synchronized with system preferences.'
-                    );
-                  }}
-                />
-                <SyncItem
-                  icon={<Sun size={12} />}
-                  title="Light Mode"
-                  active={selectedTheme === 'ghost'}
-                  onClick={() => {
-                    setSelectedTheme('ghost');
-                    saveTheme('ghost', accentColor);
-                    toast.success('Light Mode activated.');
-                  }}
-                />
-                <SyncItem
-                  icon={<Moon size={12} />}
-                  title="Dark Mode"
-                  active={selectedTheme === 'obsidian'}
-                  onClick={() => {
-                    setSelectedTheme('obsidian');
-                    saveTheme('obsidian', accentColor);
-                    toast.success('Dark Mode activated.');
-                  }}
-                />
-              </div>
-            </section>
-          </div>
         </div>
 
         {/* Footer */}
@@ -231,7 +160,7 @@ const Theme = () => {
                   'Default configuration selected. Click save to apply.'
                 );
               }}
-              className="h-9 px-4 rounded transition-all cursor-pointer"
+              className="h-9 px-4 rounded transition-all cursor-pointer mr-1"
               style={{
                 backgroundColor: 'var(--color-background-elevated)',
                 border: '1px solid var(--color-border-subtle)',
@@ -240,58 +169,26 @@ const Theme = () => {
             >
               Restore Defaults
             </button>
+            <button
+              onClick={() => {
+                saveTheme(selectedTheme, accentColor);
+                toast.success('Appearance configuration saved successfully.');
+                setTimeout(() => window.location.reload(), 800);
+              }}
+              className="h-9 px-4 rounded transition-all cursor-pointer"
+              style={{
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-background)',
+                border: '1px solid var(--color-primary)',
+              }}
+            >
+              Save Theme
+            </button>
           </div>
         </footer>
       </div>
     </div>
   );
-};
-
-const SyncItem = ({ icon, title, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className="w-full h-9 px-4 flex items-center justify-between group transition-all"
-    style={{
-      backgroundColor: active
-        ? 'var(--color-primary, rgba(96,165,250,0.1))'
-        : 'transparent',
-    }}
-  >
-    <div className="flex items-center gap-3">
-      <div
-        className="w-5 h-5 rounded-sm flex items-center justify-center transition-colors"
-        style={{
-          color: active ? 'var(--color-primary)' : 'var(--color-text-subtler)',
-        }}
-      >
-        {icon}
-      </div>
-      <span
-        className="text-[9px] font-black uppercase tracking-[0.2em] transition-colors"
-        style={{
-          color: active ? 'var(--color-text)' : 'var(--color-text-subtle)',
-        }}
-      >
-        {title}
-      </span>
-    </div>
-    {active ? (
-      <ShieldCheck size={14} className="text-primary" />
-    ) : (
-      <ChevronRight
-        size={14}
-        className="transition-transform transform group-hover:translate-x-1"
-        style={{ color: 'var(--color-text-subtler)' }}
-      />
-    )}
-  </button>
-);
-
-SyncItem.propTypes = {
-  icon: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
-  active: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
 };
 
 export default Theme;
