@@ -5,7 +5,8 @@ import { TASK_STATUS } from '../constants';
 
 import { useAuth } from '../context/AuthContext';
 
-// Manages personal and global workspace task retrieval, filtering, and status tracking.
+// Custom hook managing task querying, state filtration, search indexing, and status updates
+// across personal or workspace dashboard scopes.
 export const useTasks = (
   initialScope = 'personal',
   initialFilter = 'active',
@@ -17,7 +18,6 @@ export const useTasks = (
   const [scope, setScope] = useState(initialScope);
   const [search, setSearch] = useState('');
 
-  // Synchronized Data Fetching: Utilizes React Query's SWR strategy
   const {
     data: tasks = [],
     isLoading,
@@ -32,26 +32,25 @@ export const useTasks = (
     enabled: authReady && !!user,
   });
 
-  // Atomic Status Update with Optimistic UI & Targeted Cache Invalidation
+  // Mutates task status. Uses an optimistic update strategy for perceived instant execution,
+  // falling back to previous state if the API request encounters errors.
   const statusMutation = useMutation({
     mutationFn: ({ taskId, newStatus }) =>
       TaskService.updateTaskStatus(taskId, newStatus),
 
-    // Step 1: Optimistic Update
     onMutate: async ({ taskId, newStatus }) => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      // Cancel active background queries to prevent race conditions where out-of-order responses
+      // might overwrite our optimistic UI state.
       await queryClient.cancelQueries({
         queryKey: ['my-tasks', scope, user?._id],
       });
 
-      // Snapshot the previous value
       const previousTasks = queryClient.getQueryData([
         'my-tasks',
         scope,
         user?._id,
       ]);
 
-      // Optimistically update to the new value
       queryClient.setQueryData(['my-tasks', scope, user?._id], (old) => {
         if (!old) return [];
         return old.map((task) =>
@@ -59,12 +58,11 @@ export const useTasks = (
         );
       });
 
-      // Return a context object with the snapshotted value
       return { previousTasks };
     },
 
-    // Step 2: Rollback on Error
     onError: (err, variables, context) => {
+      // Revert the local cache to the pre-mutation snapshot on request failure.
       queryClient.setQueryData(
         ['my-tasks', scope, user?._id],
         context.previousTasks
@@ -72,11 +70,10 @@ export const useTasks = (
       console.error('Optimistic update failed, rolling back:', err);
     },
 
-    // Step 3: Final Sync
     onSettled: () => {
-      // Invalidate both scope variations to ensure consistency across dashboards
+      // Refresh all task list variations to ensure alignment with database values.
       queryClient.invalidateQueries({ queryKey: ['my-tasks'] });
-      // Also invalidate dashboard stats since status changes impact progress metrics
+      // Invalidate global dashboard stats to trigger progress indicator refreshes.
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     },
   });

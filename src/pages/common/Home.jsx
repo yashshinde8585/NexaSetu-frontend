@@ -714,9 +714,9 @@ const Home = () => {
 
       <header className="relative min-h-[60vh] md:min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
         <div className="max-w-[1440px] w-full flex flex-col items-center justify-center">
-          <h1 className="text-[9vw] sm:text-[7vw] md:text-[5vw] lg:text-[5.5vw] font-bold leading-[0.95] tracking-[-0.05em] uppercase mb-8 max-w-[14ch] mx-auto">
-            Your code already knows the truth.{' '}
-            <span className="text-white/40">NexaSetu makes it visible.</span>
+          <h1 className="text-[9vw] sm:text-[7vw] md:text-[5vw] lg:text-[5.5vw] font-bold leading-[0.95] tracking-[-0.05em] uppercase mb-8 max-w-[20ch] mx-auto">
+            NexaSetu:{' '}
+            <span className="text-white/40">AI-Powered GitHub Project Orchestration for Engineering Teams</span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-text-muted max-w-2xl mx-auto mb-10 font-normal tracking-tight leading-relaxed">
             Turn GitHub activity into real-time execution intelligence.
@@ -826,7 +826,7 @@ const Home = () => {
             Workflows
           </span>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            How NexaSetu Works
+            Enterprise GitHub Sync & Velocity Tracking
           </h2>
         </div>
 
@@ -926,7 +926,7 @@ const Home = () => {
             Capabilities
           </span>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Platform Features
+            Proactive Risk Analysis for Sprints
           </h2>
         </div>
 
@@ -1087,7 +1087,7 @@ const Home = () => {
             Role Alignment
           </span>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Built for every role
+            Real-Time Project Intelligence for Engineering Teams
           </h2>
         </div>
 
@@ -1571,6 +1571,38 @@ const Home = () => {
         </div>
       </section>
 
+      {/* --- ABOUT SECTION --- */}
+      <section className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-white/10">
+        <div className="mb-16 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/40">
+            About NexaSetu
+          </span>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
+            Unified Strategic Operations & Engineering Command
+          </h2>
+        </div>
+        <div className="max-w-4xl mx-auto space-y-6 text-white/60 text-xs sm:text-sm font-normal leading-relaxed">
+          <p>
+            NexaSetu is an enterprise-grade AI-powered project orchestration platform designed to streamline software engineering operations by integrating directly with GitHub. By establishing a direct, real-time codebase sync with your repository pipelines, NexaSetu eliminates manual tracking and transforms developer activity into actionable operational intelligence.
+          </p>
+          <p>
+            At the core of the platform is our proactive risk analysis engine. Instead of waiting for post-sprint retrospectives to identify delay patterns, NexaSetu constantly monitors active sprints, code commits, pull requests, and deployment schedules to detect bottlenecks before they impact delivery. It automatically maps progress, calculates team velocity trends, and warns leads about pending code blockages or skewed workload distributions.
+          </p>
+          <p>
+            Connecting GitHub webhooks to NexaSetu takes only seconds. Once the codebase sync is active, our background agents process incoming telemetry logs, associate commits with active projects, and update project boards instantly. This automated workflow keeps the entire organization aligned—from developers tracking their daily pull requests to engineering managers monitoring velocity metrics and CTOs reviewing strategic command dashboards.
+          </p>
+          <p>
+            Engineering velocity is more than just closing tickets; it is about maintaining a healthy, balanced workload. NexaSetu's capacity monitor evaluates individual workloads and identifies engineers who are overloaded or underutilized. Using advanced heuristics, the platform suggests load balancing adjustments to ensure that sprint targets are achieved without causing burnout. Our predictive risk analysis uses historically tracked sprint velocity to estimate completion dates with extreme accuracy, giving executives and stakeholders clear, data-driven delivery timelines.
+          </p>
+          <p>
+            Built with data privacy and enterprise compliance in mind, NexaSetu operates under a zero data loss framework. All data sync processes are encrypted, and access levels are controlled by rigid role-based permissions (from Developer to Workspace Admin). NexaSetu does not store your source code; it only analyzes structural metadata and activity logs to construct the orchestration model. This ensures complete security and compliance with your organization's internal standards.
+          </p>
+          <p>
+            Whether you are managing a small squad or coordinating projects across multiple enterprise engineering verticals, NexaSetu provides the visibility, automation, and predictive intelligence needed to build software with absolute reliability and speed.
+          </p>
+        </div>
+      </section>
+
       {/* --- FOOTER --- */}
       <footer className="border-t border-white/10 py-16 md:py-24 px-6 bg-black/40">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-16 md:gap-24">
@@ -1586,17 +1618,55 @@ const Home = () => {
           <div className="flex flex-col gap-8 text-left md:text-right w-full md:w-auto">
             <div className="flex flex-wrap gap-8 md:gap-12 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 justify-start md:justify-end">
               <a
-                href="https://github.com/yashshinde8585"
+                href="https://github.com/nexasetu"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="NexaSetu on GitHub"
                 className="hover:text-white transition-colors"
               >
                 GitHub
               </a>
               <a
+                href="https://x.com/nexasetu"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="NexaSetu on X"
+                className="hover:text-white transition-colors"
+              >
+                Twitter/X
+              </a>
+              <a
+                href="https://instagram.com/nexasetu"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="NexaSetu on Instagram"
+                className="hover:text-white transition-colors"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://youtube.com/@nexasetu"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="NexaSetu on YouTube"
+                className="hover:text-white transition-colors"
+              >
+                YouTube
+              </a>
+              <a
+                href="https://facebook.com/nexasetu"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="NexaSetu on Facebook"
+                className="hover:text-white transition-colors"
+              >
+                Facebook
+              </a>
+              <a
                 href="https://linkedin.com/in/yashshinde8585"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Yash Shinde on LinkedIn"
                 className="hover:text-white transition-colors"
               >
                 LinkedIn
@@ -1604,6 +1674,9 @@ const Home = () => {
             </div>
             <div className="text-[9px] font-bold uppercase tracking-[0.5em] text-white/30 not-italic">
               © 2026 NEXASETU INC. ALL RIGHTS RESERVED.
+            </div>
+            <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/20 not-italic mt-2">
+              NexaSetu Systems • Mumbai, Maharashtra, IN • Tel: +91-XXXXXXXXXX
             </div>
           </div>
         </div>

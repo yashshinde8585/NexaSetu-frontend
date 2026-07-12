@@ -25,7 +25,8 @@ export const uploadAttachment = async (
   projectId,
   taskId = 'new'
 ) => {
-  // 1. Validation
+  // Pre-validate file metrics on the client to avoid unnecessary pre-sign API roundtrips
+  // and protect backend bandwidth from obvious policy violations.
   if (file.size > MAX_FILE_SIZE) {
     throw new Error(
       `File is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max limit is 10MB.`
@@ -37,7 +38,8 @@ export const uploadAttachment = async (
   }
 
   try {
-    // 2. Request Signed Upload URL from Backend
+    // Request a short-lived signed write URL from the backend gateway.
+    // This maintains bucket privacy and enforces IAM policy checks at the API layer.
     const { data: signedData } = await apiClient.post(
       '/tasks/attachments/upload-url',
       {
@@ -52,7 +54,8 @@ export const uploadAttachment = async (
 
     const { token, storagePath } = signedData;
 
-    // 3. Upload directly to Supabase using the signed URL
+    // Upload directly to object storage via the signed URL. Bypasses the application
+    // server to prevent thread blocking and memory bloat from file buffering.
     const { error } = await supabase.storage
       .from(BUCKET_NAME)
       .uploadToSignedUrl(storagePath, token, file);
@@ -61,7 +64,7 @@ export const uploadAttachment = async (
 
     return {
       name: file.name,
-      url: '', // Temporary placeholder, backend will sign this on fetch
+      url: '', // Left blank as URLs are dynamically pre-signed on-demand during fetches
       storagePath: storagePath,
       size: file.size,
       type: file.type,
@@ -72,7 +75,7 @@ export const uploadAttachment = async (
   }
 };
 
-// Service to manage attachments in Supabase Storage.
+// Permanently removes the attachment object from the Supabase bucket by its storage key.
 export const deleteAttachment = async (storagePath) => {
   try {
     const { error } = await supabase.storage
