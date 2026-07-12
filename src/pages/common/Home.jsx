@@ -540,7 +540,7 @@ const Home = () => {
 
   const renderOverviewTab = () => (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-card border border-border-subtle p-4 rounded-xl shadow-sm">
           <span className="text-[9px] font-bold text-text-subtle uppercase tracking-widest block mb-1">
             Repositories Linked
@@ -699,7 +699,7 @@ const Home = () => {
         ].map((member) => (
           <div
             key={member.name}
-            className="bg-card border border-border-subtle p-4 rounded-xl flex items-center justify-between gap-4 shadow-sm"
+            className="bg-card border border-border-subtle p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-sm"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-7 h-7 rounded bg-background border border-border-subtle flex items-center justify-center text-[9px] font-bold text-text">
@@ -714,7 +714,7 @@ const Home = () => {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-4 w-1/2">
+            <div className="flex items-center gap-4 w-full sm:w-1/2">
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between text-[8px] font-bold text-text-subtle uppercase">
                   <span>Capacity</span>
