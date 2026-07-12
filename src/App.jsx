@@ -32,9 +32,15 @@ const App = () => {
     });
 
     if (matchedRoute?.title) {
-      document.title = `${matchedRoute.title} | NexaSetu`;
+      if (matchedRoute.path === '/') {
+        document.title =
+          'NexaSetu – AI Project Orchestration for Engineering Teams';
+      } else {
+        document.title = `${matchedRoute.title} | NexaSetu`;
+      }
     } else {
-      document.title = 'NexaSetu | Strategic Operations Command';
+      document.title =
+        'NexaSetu – AI Project Orchestration for Engineering Teams';
     }
   }, [location.pathname]);
 

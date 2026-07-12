@@ -231,9 +231,9 @@ const Profile = () => {
           </section>
         </div>
 
-        {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
-
-
+        {showModal && (
+          <ChangePasswordModal onClose={() => setShowModal(false)} />
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Sitemap: https://nexasetu-frontend.onrender.com/sitemap.xml
