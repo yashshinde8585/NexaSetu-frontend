@@ -33,12 +33,14 @@ const App = () => {
 
     if (matchedRoute?.title) {
       if (matchedRoute.path === '/') {
-        document.title = 'NexaSetu – AI Project Orchestration for Engineering Teams';
+        document.title =
+          'NexaSetu – AI Project Orchestration for Engineering Teams';
       } else {
         document.title = `${matchedRoute.title} | NexaSetu`;
       }
     } else {
-      document.title = 'NexaSetu – AI Project Orchestration for Engineering Teams';
+      document.title =
+        'NexaSetu – AI Project Orchestration for Engineering Teams';
     }
   }, [location.pathname]);
 

@@ -12,22 +12,19 @@ const Navbar = ({ hideLinks = false }) => {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-background-light">
+    <nav className="fixed top-0 w-full z-50 border-b border-border-subtle bg-background-light">
       <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link
-            to="/"
-            className="text-xl font-bold tracking-tighter text-white"
-          >
+          <Link to="/" className="text-xl font-bold tracking-tighter text-text">
             NEXASETU
           </Link>
           {!hideLinks && (
-            <div className="hidden lg:flex items-center gap-8 text-xs font-bold text-white/30">
+            <div className="hidden lg:flex items-center gap-8 text-xs font-bold text-text-subtle">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-text transition-colors"
                 >
                   {link.name}
                 </a>
@@ -39,7 +36,7 @@ const Navbar = ({ hideLinks = false }) => {
           {location.pathname !== '/login' && (
             <Link
               to="/login"
-              className="text-xs font-bold text-white/40 hover:text-white transition-colors"
+              className="text-xs font-bold text-text-subtle hover:text-text transition-colors"
             >
               Sign In
             </Link>
@@ -47,9 +44,9 @@ const Navbar = ({ hideLinks = false }) => {
           {location.pathname !== '/register' && (
             <Link
               to="/register"
-              className="px-5 md:px-8 py-2.5 md:py-3 bg-white text-black text-xs font-bold hover:bg-white/90 transition-all"
+              className="px-5 md:px-8 py-2.5 md:py-3 bg-text text-background text-xs font-bold hover:opacity-90 transition-all"
             >
-              Get Started
+              Connect GitHub
             </Link>
           )}
         </div>

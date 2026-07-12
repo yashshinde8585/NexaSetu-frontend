@@ -38,12 +38,30 @@ const LandingFooter = () => {
               organizations. Built for clarity, speed, and technical precision.
             </p>
             <div className="flex flex-wrap gap-2.5">
-              <SocialLink icon={<Twitter size={18} />} href="https://x.com/nexasetu" />
-              <SocialLink icon={<Github size={18} />} href="https://github.com/nexasetu" />
-              <SocialLink icon={<Linkedin size={18} />} href="https://linkedin.com/in/yashshinde8585" />
-              <SocialLink icon={<Instagram size={18} />} href="https://instagram.com/nexasetu" />
-              <SocialLink icon={<Youtube size={18} />} href="https://youtube.com/@nexasetu" />
-              <SocialLink icon={<Facebook size={18} />} href="https://facebook.com/nexasetu" />
+              <SocialLink
+                icon={<Twitter size={18} />}
+                href="https://x.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Github size={18} />}
+                href="https://github.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Linkedin size={18} />}
+                href="https://linkedin.com/in/yashshinde8585"
+              />
+              <SocialLink
+                icon={<Instagram size={18} />}
+                href="https://instagram.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Youtube size={18} />}
+                href="https://youtube.com/@nexasetu"
+              />
+              <SocialLink
+                icon={<Facebook size={18} />}
+                href="https://facebook.com/nexasetu"
+              />
             </div>
           </div>
 

@@ -32,7 +32,7 @@ const ProtectedRoute = ({
   // status is retrieved from Stripe/backend.
   if (isAdmin && billingLoading) return null;
 
-  // Business Rule: Workspace administrators must have an active subscription plan to access 
+  // Business Rule: Workspace administrators must have an active subscription plan to access
   // administration/dashboard areas. Redirect to the pricing page if no plan is active.
   if (isAdmin && !subscription && location.pathname !== ROUTES.PRICING) {
     return <Navigate to={ROUTES.PRICING} replace />;
