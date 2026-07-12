@@ -17,7 +17,8 @@ const ProtectedRoute = ({
   const { hasPermission } = usePermissions();
   const location = useLocation();
 
-  // Only block on auth loading — billing loading handled separately below
+  // Halt rendering during authentication resolver phase. Billing check logic
+  // is deferred to prevent blocking public/non-admin routes.
   if (loading) return null;
 
   if (!user) {
@@ -27,20 +28,20 @@ const ProtectedRoute = ({
   const isAdmin =
     user.role === 'WORKSPACE_ADMIN' || user.role === 'WORKSPACE_MANAGER';
 
-  // While billing is loading for an admin, show nothing (avoids flash)
+  // Prevent UI flashing/flickering for administrators while active billing
+  // status is retrieved from Stripe/backend.
   if (isAdmin && billingLoading) return null;
 
-  // Force subscription selection for admins if no plan exists
+  // Business Rule: Workspace administrators must have an active subscription plan to access
+  // administration/dashboard areas. Redirect to the pricing page if no plan is active.
   if (isAdmin && !subscription && location.pathname !== ROUTES.PRICING) {
     return <Navigate to={ROUTES.PRICING} replace />;
   }
 
-  // Check specific permissions if required
   if (permission && !hasPermission(permission)) {
     return <Navigate to={fallback} replace />;
   }
 
-  // Check role/title requirements if provided
   if (roles || titles) {
     const userRole = user.role;
     const userTitle = user.jobTitle?.toLowerCase() || '';

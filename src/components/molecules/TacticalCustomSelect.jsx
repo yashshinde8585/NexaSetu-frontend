@@ -82,57 +82,57 @@ const TacticalCustomSelect = ({
               {options && options.length > 0 ? (
                 options.map((opt, idx) => {
                   if (opt.isGroup) {
+                    return (
+                      <div
+                        key={idx}
+                        className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-background-elevated border-b border-border-subtle mb-1 mt-1 first:mt-0"
+                      >
+                        {opt.label}
+                      </div>
+                    );
+                  }
+
+                  const optLabel = typeof opt === 'object' ? opt.label : opt;
+                  const optValue = typeof opt === 'object' ? opt.value : opt;
+                  const isSelected = value === optValue;
+
+                  // Allow custom styles from option object
+                  const customColor = opt.color || '';
+
                   return (
-                    <div
+                    <button
                       key={idx}
-                      className="px-3 py-2 text-[8px] font-black text-primary/40 uppercase tracking-[0.3em] bg-background-elevated border-b border-border-subtle mb-1 mt-1 first:mt-0"
-                    >
-                      {opt.label}
-                    </div>
-                  );
-                }
-
-                const optLabel = typeof opt === 'object' ? opt.label : opt;
-                const optValue = typeof opt === 'object' ? opt.value : opt;
-                const isSelected = value === optValue;
-
-                // Allow custom styles from option object
-                const customColor = opt.color || '';
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleSelect(optValue)}
-                    className={`w-full text-left px-3 py-2.5 transition-colors group/opt flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-primary/10'
-                        : 'hover:bg-background-elevated'
-                    }`}
-                  >
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-widest ${
+                      type="button"
+                      onClick={() => handleSelect(optValue)}
+                      className={`w-full text-left px-3 py-2.5 transition-colors group/opt flex items-center justify-between ${
                         isSelected
-                          ? 'text-primary'
-                          : customColor ||
-                            'text-text-subtle group-hover/opt:text-text'
+                          ? 'bg-primary/10'
+                          : 'hover:bg-background-elevated'
                       }`}
                     >
-                      {optLabel}
-                    </span>
-                    {isSelected && (
-                      <div
-                        className={`w-1.5 h-1.5 rounded-full ${customColor ? customColor.replace('text-', 'bg-') : 'bg-primary'}`}
-                      />
-                    )}
-                  </button>
-                );
-              })
-            ) : (
-              <div className="px-4 py-3 text-[10px] font-black text-text-subtle uppercase tracking-widest text-center">
-                No options available
-              </div>
-            )}
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-widest ${
+                          isSelected
+                            ? 'text-primary'
+                            : customColor ||
+                              'text-text-subtle group-hover/opt:text-text'
+                        }`}
+                      >
+                        {optLabel}
+                      </span>
+                      {isSelected && (
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${customColor ? customColor.replace('text-', 'bg-') : 'bg-primary'}`}
+                        />
+                      )}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="px-4 py-3 text-[10px] font-black text-text-subtle uppercase tracking-widest text-center">
+                  No options available
+                </div>
+              )}
             </div>
           </div>
         )}

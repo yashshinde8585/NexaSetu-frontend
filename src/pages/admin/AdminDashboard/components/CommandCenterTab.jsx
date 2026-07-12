@@ -177,8 +177,6 @@ const CommandCenterTab = ({
       : [];
   }, [data?.projectsOverview]);
 
-
-
   return (
     <div className="flex flex-col gap-4 animate-fade-in">
       {/* 1. Metrics Strip (Row 1) */}
@@ -403,7 +401,6 @@ const CommandCenterTab = ({
           </div>
         </div>
       </div>
-
       {/* 2. Charts (Row 2) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Distribution Donut */}
@@ -555,7 +552,8 @@ const CommandCenterTab = ({
             <span>Steady growth in user onboarding</span>
           </div>
         </div>
-      </div>      {/* 3. System Overviews (Row 3) */}
+      </div>{' '}
+      {/* 3. System Overviews (Row 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Overview */}
         <div className="bg-white/[0.02] border border-white/5 p-5 flex flex-col justify-between rounded-none min-h-[320px]">
@@ -606,8 +604,8 @@ const CommandCenterTab = ({
                         <span
                           className={`text-[8px] px-1.5 py-0.5 uppercase font-bold ${
                             projStatus === 'active'
-                                ? 'bg-status-success/10 text-status-success'
-                                : 'bg-white/10 text-white/40'
+                              ? 'bg-status-success/10 text-status-success'
+                              : 'bg-white/10 text-white/40'
                           }`}
                         >
                           {projStatus}
@@ -748,7 +746,6 @@ const CommandCenterTab = ({
           </div>
         </div>
       </div>
-
       {/* 4. Pending Approvals & Quick Actions (Row 4) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Pending Approvals */}
@@ -888,8 +885,6 @@ const CommandCenterTab = ({
           </div>
         </div>
       </div>
-
-
     </div>
   );
 };

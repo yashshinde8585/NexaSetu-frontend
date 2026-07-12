@@ -273,7 +273,11 @@ api.interceptors.response.use(
     const isMutating = ['post', 'put', 'patch', 'delete'].includes(
       originalRequest?.method?.toLowerCase()
     );
-    if (isMutating && !originalRequest?.url?.includes('/metrics') && !originalRequest?.skipToast) {
+    if (
+      isMutating &&
+      !originalRequest?.url?.includes('/metrics') &&
+      !originalRequest?.skipToast
+    ) {
       toast.error(normalizedError.message || 'Mission protocol failure');
     }
 

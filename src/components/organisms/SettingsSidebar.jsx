@@ -6,11 +6,7 @@ import { ChevronRight } from 'lucide-react';
  * Settings sidebar — renders as a horizontal tab bar on mobile/tablet,
  * and as a vertical sidebar on xl+ screens.
  */
-const SettingsSidebar = ({
-  tabs,
-  activeTab,
-  onTabChange,
-}) => {
+const SettingsSidebar = ({ tabs, activeTab, onTabChange }) => {
   return (
     <div className="xl:w-52 flex flex-col gap-1.5">
       {/* Tab buttons */}

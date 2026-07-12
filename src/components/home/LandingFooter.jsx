@@ -4,6 +4,9 @@ import {
   GitBranch as Github,
   X as Twitter,
   Globe as Linkedin,
+  Instagram,
+  Youtube,
+  Facebook,
   Mail,
   Shield,
 } from 'lucide-react';
@@ -34,10 +37,31 @@ const LandingFooter = () => {
               The high-performance orchestrator for modern engineering
               organizations. Built for clarity, speed, and technical precision.
             </p>
-            <div className="flex gap-4">
-              <SocialLink icon={<Twitter size={18} />} href="#" />
-              <SocialLink icon={<Github size={18} />} href="#" />
-              <SocialLink icon={<Linkedin size={18} />} href="#" />
+            <div className="flex flex-wrap gap-2.5">
+              <SocialLink
+                icon={<Twitter size={18} />}
+                href="https://x.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Github size={18} />}
+                href="https://github.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Linkedin size={18} />}
+                href="https://linkedin.com/in/yashshinde8585"
+              />
+              <SocialLink
+                icon={<Instagram size={18} />}
+                href="https://instagram.com/nexasetu"
+              />
+              <SocialLink
+                icon={<Youtube size={18} />}
+                href="https://youtube.com/@nexasetu"
+              />
+              <SocialLink
+                icon={<Facebook size={18} />}
+                href="https://facebook.com/nexasetu"
+              />
             </div>
           </div>
 
@@ -75,6 +99,9 @@ const LandingFooter = () => {
         <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
             © {currentYear} NexaSetu Systems. All rights reserved.
+          </div>
+          <div className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] md:text-right">
+            Mumbai, Maharashtra, IN • Tel: +91-XXXXXXXXXX
           </div>
         </div>
       </div>

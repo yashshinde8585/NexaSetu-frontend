@@ -54,7 +54,11 @@ const ReadField = ({ icon: Icon, value }) => (
       color: 'var(--color-text-subtle)',
     }}
   >
-    <Icon size={12} className="shrink-0" style={{ color: 'var(--color-text-subtler)' }} />
+    <Icon
+      size={12}
+      className="shrink-0"
+      style={{ color: 'var(--color-text-subtler)' }}
+    />
     <span className="truncate">{value}</span>
   </div>
 );
@@ -306,7 +310,8 @@ export const ChangePasswordModal = ({ onClose }) => {
                 onClick={onClose}
                 className="h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
                 style={{
-                  border: '1px solid var(--color-border-subtle, rgba(255,255,255,0.1))',
+                  border:
+                    '1px solid var(--color-border-subtle, rgba(255,255,255,0.1))',
                   color: 'var(--color-text-subtle, rgba(255,255,255,0.6))',
                   backgroundColor: 'transparent',
                 }}

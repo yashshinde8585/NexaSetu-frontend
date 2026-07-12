@@ -69,7 +69,11 @@ export const removeInvitation = (id) => {
 };
 
 export const updateMemberProject = (id, projectId, config = {}) => {
-  return apiClient.patch(`/team/members/${id}/project`, { projectId }, { skipToast: true, ...config });
+  return apiClient.patch(
+    `/team/members/${id}/project`,
+    { projectId },
+    { skipToast: true, ...config }
+  );
 };
 
 export default {
