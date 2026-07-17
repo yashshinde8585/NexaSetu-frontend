@@ -1,6 +1,6 @@
 # NexaSetu Frontend SPA — Role-Adaptive Sprint Management Interface
 
-**🌐 Live Demo:** https://nexasetu-frontend.onrender.com/
+**🌐 Live Demo:** https://nexasetu-frontend.onrender.com/ <br>
 **⚙️ Backend Repository:** https://github.com/yashshinde8585/NexaSetu-Backend
 
 This is the client-side Single Page Application (SPA) for **NexaSetu**. It is a developer-first interface designed to display GitHub activity, sprint metrics, and dependency graphs without administrative bloat.
