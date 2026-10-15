@@ -33,14 +33,12 @@ const App = () => {
 
     if (matchedRoute?.title) {
       if (matchedRoute.path === '/') {
-        document.title =
-          'NexaSetu – AI Project Orchestration for Engineering Teams';
+        document.title = 'NexaSetu | Project Management for Software Teams';
       } else {
         document.title = `${matchedRoute.title} | NexaSetu`;
       }
     } else {
-      document.title =
-        'NexaSetu – AI Project Orchestration for Engineering Teams';
+      document.title = 'NexaSetu | Project Management for Software Teams';
     }
   }, [location.pathname]);
 
@@ -114,17 +112,12 @@ const App = () => {
             strokeWidth={1}
           />
         </div>
-        <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
-          <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/80">
-              Neural Link
-            </p>
-            <h2 className="text-white font-bold tracking-tighter text-lg">
-              NEXASETU CORE
-            </h2>
-          </div>
-          <p className="text-white/40 text-[11px] font-medium tracking-tight max-w-[240px] leading-relaxed">
-            {loadingMessage}
+        <div className="text-center space-y-2 animate-in fade-in zoom-in duration-500">
+          <h2 className="text-white font-bold tracking-tight text-xl">
+            NEXASETU
+          </h2>
+          <p className="text-white/60 text-xs font-normal tracking-wide">
+            Getting your workspace ready...
           </p>
         </div>
 
@@ -138,10 +131,17 @@ const App = () => {
     );
   }
 
+  const isPublicPage =
+    location.pathname === '/' ||
+    location.pathname === ROUTES.LOGIN ||
+    location.pathname === ROUTES.REGISTER ||
+    location.pathname.startsWith('/forgot-password') ||
+    location.pathname.startsWith('/reset-password');
+
   return (
     <MainLayout>
       <Toaster />
-      <Suspense fallback={<DashboardSkeleton />}>
+      <Suspense fallback={isPublicPage ? null : <DashboardSkeleton />}>
         <Routes>
           {/* Public Routes */}
           {publicRoutes.map(({ path, component: Component, exact }) => (

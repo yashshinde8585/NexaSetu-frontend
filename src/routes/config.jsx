@@ -2,10 +2,11 @@ import React, { lazy } from 'react';
 import { ROUTES } from '../constants';
 import { PERMISSIONS } from '../hooks/usePermissions';
 
+import Home from '../pages/common/Home';
+
 // Pages
 const Login = lazy(() => import('../pages/auth/Login'));
 const Register = lazy(() => import('../pages/auth/Register'));
-const Home = lazy(() => import('../pages/common/Home'));
 const Join = lazy(() => import('../pages/auth/Join'));
 const Dashboard = lazy(() => import('../pages/dashboards/Dashboard'));
 const ProjectDetail = lazy(() => import('../pages/projects/ProjectDetail'));
