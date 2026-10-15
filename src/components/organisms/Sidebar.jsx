@@ -29,55 +29,88 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     {
-      name: user?.role === 'WORKSPACE_ADMIN' ? 'Admin Panel' :
-            user?.jobTitle === 'CTO' ? 'CTO Command Center' : 
-            user?.jobTitle?.toLowerCase() === 'vp engineering' ? 'Execution Commander' : 
-            (user?.role === 'ENGINEERING_MANAGER' || user?.jobTitle?.toLowerCase() === 'engineering manager') ? 'Team Command Center' :
-            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? 'System Health Control' :
-            (title.includes('qa lead')) ? 'Quality Command' :
-            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? 'Workforce Strategy' :
-            (title.includes('senior qa engineer')) ? 'Quality Strategy' :
-            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? 'Quality Control' :
-            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? 'Execution Control' :
-            (title.includes('junior engineer')) ? 'Guided Work Assistant' :
-            (user?.role === 'INTERN' || title.includes('intern')) ? 'Learning Workspace' :
-            'Personal Work Console',
-      path: user?.role === 'WORKSPACE_ADMIN' ? ROUTES.ADMIN_PANEL :
-            user?.jobTitle === 'CTO' ? '/command-center' :
-            title.includes('vp engineering') ? '/execution-commander' : 
-            (user?.role === 'ENGINEERING_MANAGER' || title.includes('engineering manager')) ? '/team-command-center' :
-            (user?.role === 'TECH_LEAD' || title.includes('tech lead')) ? '/system-health-control' :
-            (title.includes('qa lead')) ? '/quality-command' :
-            (user?.role === 'HR_MANAGER' || title.includes('people ops') || title.includes('hr manager')) ? '/people-ops' :
-            (title.includes('senior qa engineer')) ? '/quality-strategy' :
-            (user?.role === 'QA_ENGINEER' || title.includes('qa engineer')) ? '/quality-control' :
-            (user?.role === 'SENIOR_ENGINEER' || title.includes('senior engineer')) ? '/execution-control' :
-            (title.includes('junior engineer')) ? '/guided-assistant' :
-            (user?.role === 'INTERN' || title.includes('intern')) ? '/learning-workspace' :
-            '/work-console',
+      name: title.includes('cto')
+        ? 'Executive Dashboard'
+        : title.includes('vp engineering')
+          ? 'Ops Dashboard'
+          : user?.role === 'ENGINEERING_MANAGER' ||
+              title.includes('engineering manager')
+            ? 'Team Overview'
+            : user?.role === 'TECH_LEAD' || title.includes('tech lead')
+              ? 'Systems Health'
+              : title.includes('qa lead')
+                ? 'Quality Overview'
+                : user?.role === 'HR_MANAGER' ||
+                    title.includes('hr') ||
+                    title.includes('hr manager')
+                  ? 'Dashboard'
+                  : title.includes('senior qa engineer')
+                    ? 'Dashboard'
+                    : user?.role === 'QA_ENGINEER' ||
+                        title.includes('qa engineer')
+                      ? 'Test Dashboard'
+                      : user?.role === 'SENIOR_ENGINEER' ||
+                          title.includes('senior engineer')
+                        ? 'Dashboard'
+                        : title.includes('junior engineer')
+                          ? 'Dashboard'
+                          : user?.role === 'INTERN' || title.includes('intern')
+                            ? 'Dashboard'
+                            : user?.role === 'WORKSPACE_ADMIN'
+                              ? 'Dashboard'
+                              : 'My Dashboard',
+      path: title.includes('cto')
+        ? '/cto-dashboard'
+        : title.includes('vp engineering')
+          ? '/execution-commander'
+          : user?.role === 'ENGINEERING_MANAGER' ||
+              title.includes('engineering manager')
+            ? '/team-command-center'
+            : user?.role === 'TECH_LEAD' || title.includes('tech lead')
+              ? '/system-health-control'
+              : title.includes('qa lead')
+                ? '/quality-command'
+                : user?.role === 'HR_MANAGER' ||
+                    title.includes('hr') ||
+                    title.includes('hr manager')
+                  ? '/hr'
+                  : title.includes('senior qa engineer')
+                    ? '/quality-strategy'
+                    : user?.role === 'QA_ENGINEER' ||
+                        title.includes('qa engineer')
+                      ? '/quality-control'
+                      : user?.role === 'SENIOR_ENGINEER' ||
+                          title.includes('senior engineer')
+                        ? '/execution-control'
+                        : title.includes('junior engineer')
+                          ? '/guided-assistant'
+                          : user?.role === 'INTERN' || title.includes('intern')
+                            ? '/learning-workspace'
+                            : user?.role === 'WORKSPACE_ADMIN'
+                              ? ROUTES.ADMIN_PANEL
+                              : '/work-console',
       icon: <Shield size={20} />,
       permission: null, // Allow visibility based on user detection
     },
     {
-      name: 'Dashboard',
-      path: '/dashboard',
-      icon: <LayoutDashboard size={20} />,
-      permission: null,
-    },
-    {
-      name: 'Team Members',
-      path: user?.assignedProjectId ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}` : '/teams',
+      name: 'Team',
+      path: user?.assignedProjectId
+        ? `/team/project/${user.assignedProjectId._id || user.assignedProjectId}`
+        : '/teams',
       icon: <Users size={20} />,
       permission: null,
     },
     {
       name: 'Billing',
-      path: '#',
+      path: ROUTES.BILLING,
       icon: <CreditCard size={20} />,
       permission: PERMISSIONS.MANAGE_BILLING,
-      disabled: true,
+      disabled: false,
     },
-  ].filter((item) => !item.permission || hasPermission(item.permission));
+  ].filter(
+    (item) =>
+      (!item.permission || hasPermission(item.permission)) && !item.hidden
+  );
 
   const canInvite = hasPermission(PERMISSIONS.INVITE_USERS);
 
@@ -92,21 +125,28 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <aside
-        className={`w-64 bg-background-dark border-r border-white/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-2xl md:shadow-none`}
+        className={`w-64 bg-black border-r border-white/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-3xl md:shadow-none`}
+        style={{
+          backgroundColor: 'var(--color-background-dark)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
       >
-        <div className="p-6">
+        <div className="p-6 shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-              <Zap size={20} fill="currentColor" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              NexaSetu
+            <span
+              className="text-[12px] font-black tracking-[0.2em] text-white uppercase"
+              style={{ color: 'var(--color-text)' }}
+            >
+              NEXASETU
             </span>
           </Link>
         </div>
 
-        <nav className="flex-1 mt-4 px-0 space-y-1">
-          <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">
+        <nav className="flex-1 mt-2 px-0 space-y-1 overflow-y-auto custom-scrollbar">
+          <div
+            className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4"
+            style={{ color: 'var(--color-text-subtle)' }}
+          >
             Workspace
           </div>
           {navItems.map((item) => (
@@ -114,12 +154,12 @@ const Sidebar = ({ isOpen, onClose }) => {
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `relative flex items-center gap-3 px-6 py-3 text-sm font-bold transition-all group ${
+                `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
                   item.disabled
                     ? 'opacity-40 cursor-not-allowed'
                     : isActive
-                      ? 'text-white bg-linear-to-r from-primary/10 via-primary/5 to-transparent'
-                      : 'text-text-muted hover:text-white hover:bg-white/5'
+                      ? 'text-white bg-white/5'
+                      : 'text-white/40 hover:text-white hover:bg-white/5'
                 }`
               }
               onClick={(e) => {
@@ -130,14 +170,14 @@ const Sidebar = ({ isOpen, onClose }) => {
               {({ isActive }) => (
                 <>
                   {!item.disabled && isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
                   )}
 
                   <span
-                    className={`transition-all duration-300 ${
+                    className={`transition-all ${
                       !item.disabled && isActive
-                        ? 'text-primary drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] scale-110'
-                        : 'text-text-muted/60 group-hover:text-white'
+                        ? 'text-primary'
+                        : 'text-white/20 group-hover:text-white/50'
                     }`}
                   >
                     {item.icon}
@@ -150,75 +190,85 @@ const Sidebar = ({ isOpen, onClose }) => {
           ))}
 
           <div className="pt-6">
-            <div className="text-[10px] font-semibold text-text-muted/40 uppercase tracking-[0.15em] px-6 mb-4">
+            <div
+              className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] px-6 mb-4"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               Management
             </div>
             {[
               {
-                name: 'Tasks & Tickets',
+                name: 'Task Board',
                 path: user?.assignedProjectId
                   ? `/project/${user.assignedProjectId._id || user.assignedProjectId}`
                   : '/my-tasks?scope=workspace',
                 icon: <Box size={18} />,
               },
               {
-                name: 'Sprint Management',
+                name: 'Sprints',
                 path: '/project-info',
-                icon: <Settings size={18} />,
+                icon: <Rocket size={18} />,
               },
               {
-                name: 'Create Project',
+                name: 'New Project',
                 path: '/project-setup',
                 icon: <PlusSquare size={18} />,
                 permission: PERMISSIONS.CREATE_PROJECT,
+                hidden: user?.role !== 'WORKSPACE_ADMIN',
               },
-            ].filter(item => {
-              const isAdmin = user?.role === 'WORKSPACE_ADMIN';
-              if (isAdmin) {
-                // Admins only see Create Project in this section, following "System Control" focus
-                return item.name === 'Create Project';
-              }
-              const isIntern = user?.role?.toUpperCase() === 'INTERN';
-              const hasRegistryPerm = item.name === 'Sprint Management';
-              const hasSetupPerm = item.name === 'Create Project' && hasPermission(PERMISSIONS.CREATE_PROJECT);
-              const otherItems = !['Sprint Management', 'Create Project'].includes(item.name);
-              
-              return hasRegistryPerm || hasSetupPerm || otherItems;
-            })
-            .map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                onClick={item.disabled ? (e) => e.preventDefault() : onClose}
-                className={({ isActive }) =>
-                  `relative flex items-center gap-3 px-6 py-3 text-sm font-bold transition-all group ${
-                    item.disabled
-                      ? 'opacity-40 cursor-not-allowed'
-                      : isActive
-                        ? 'text-white bg-linear-to-r from-secondary/10 via-secondary/5 to-transparent'
-                        : 'text-text-muted hover:text-white hover:bg-white/5'
-                  }`
+            ]
+              .filter((item) => {
+                if (item.hidden) return false;
+                if (item.permission && !hasPermission(item.permission))
+                  return false;
+
+                // Ensure "Sprints" is visible to everyone
+                if (item.name === 'Sprints') return true;
+
+                const isAdmin = user?.role === 'WORKSPACE_ADMIN';
+                if (isAdmin) {
+                  // Admins primarily focus on "New Project" but must also access "Task Board"
+                  if (item.name === 'New Project' || item.name === 'Task Board')
+                    return true;
+                  return false;
                 }
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-secondary shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
-                    )}
-                    <span
-                      className={`transition-all duration-300 ${
-                        isActive
-                          ? 'text-secondary drop-shadow-[0_0_8px_rgba(139,92,246,0.5)] scale-110'
-                          : 'text-text-muted/60 group-hover:text-white'
-                      }`}
-                    >
-                      {item.icon}
-                    </span>
-                    {item.name}
-                  </>
-                )}
-              </NavLink>
-            ))}
+
+                return true;
+              })
+              .map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={item.disabled ? (e) => e.preventDefault() : onClose}
+                  className={({ isActive }) =>
+                    `relative flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase transition-all group ${
+                      item.disabled
+                        ? 'opacity-40 cursor-not-allowed'
+                        : isActive
+                          ? 'text-white bg-white/5'
+                          : 'text-white/40 hover:text-white hover:bg-white/5'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary" />
+                      )}
+                      <span
+                        className={`transition-all ${
+                          isActive
+                            ? 'text-secondary'
+                            : 'text-white/20 group-hover:text-white/50'
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      {item.name}
+                    </>
+                  )}
+                </NavLink>
+              ))}
           </div>
 
           {/* Invite Member - Orchestrator Level Only */}
@@ -226,12 +276,12 @@ const Sidebar = ({ isOpen, onClose }) => {
             <Link
               to="/team/add"
               onClick={onClose}
-              className="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-primary/80 hover:text-primary hover:bg-primary/5 transition-all group mt-4 border-t border-white/5 pt-6"
+              className="w-full flex items-center gap-3 px-6 h-9 text-[10px] font-black tracking-[0.2em] uppercase text-primary hover:text-black hover:bg-primary transition-all group mt-4 border-t border-white/5 pt-2 mb-4"
             >
-              <span className="p-1 px-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <UserPlus size={16} />
+              <span className="transition-colors">
+                <UserPlus size={14} />
               </span>
-              Invite Members
+              INVITE_COLLEAGUE
             </Link>
           )}
         </nav>

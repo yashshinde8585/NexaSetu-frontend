@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Clock, MapPin, CheckCircle2, Play } from 'lucide-react';
+import { Clock, MapPin, CheckCircle2, Play, Paperclip } from 'lucide-react';
 import { TASK_STATUS } from '../../constants';
 
 // A card component that displays task details, status, and management actions.
@@ -13,7 +13,7 @@ const TaskCard = ({
   return (
     <div
       onClick={onNavigate}
-      className="group glass-dark border border-white/5 rounded-3xl p-8 hover:border-primary/30 transition-all duration-500 flex flex-col gap-6 relative overflow-hidden cursor-pointer"
+      className="group glass-dark border border-white/5 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden cursor-pointer"
     >
       {/* Status Glow */}
       <div
@@ -35,16 +35,21 @@ const TaskCard = ({
                 {task.project?.name || 'General'}
               </span>
               <span className="mx-2 text-white/5">•</span>
-              <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${
-                task.priority === 'low' ? 'text-status-success' :
-                task.priority === 'high' ? 'text-status-warning' :
-                task.priority === 'urgent' ? 'text-status-error' :
-                'text-primary'
-              }`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest leading-none ${
+                  task.priority === 'low'
+                    ? 'text-status-success'
+                    : task.priority === 'high'
+                      ? 'text-status-warning'
+                      : task.priority === 'urgent'
+                        ? 'text-status-error'
+                        : 'text-primary'
+                }`}
+              >
                 {task.priority || 'Medium'}
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-primary transition-colors">
+            <h3 className="text-xl font-bold text-white tracking-tight">
               {task.title}
             </h3>
           </div>
@@ -64,9 +69,9 @@ const TaskCard = ({
               : task.status.replace('_', ' ')}
           </div>
         </div>
-        <p className="text-sm text-text-muted leading-relaxed line-clamp-3 font-medium">
+        {/* <p className="text-sm text-text-muted leading-relaxed line-clamp-3 font-medium">
           {task.description}
-        </p>
+        </p> */}
 
         {showAssignedUser && (
           <div className="flex items-center gap-2 mt-2">
@@ -98,13 +103,23 @@ const TaskCard = ({
               </span>
               {task.estimatedDuration > 0 && (
                 <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.15em]">
-                  Est: {task.estimatedDuration >= 60 
-                    ? `${Math.floor(task.estimatedDuration / 60)}h${task.estimatedDuration % 60 > 0 ? ` ${task.estimatedDuration % 60}m` : ''}` 
+                  Est:{' '}
+                  {task.estimatedDuration >= 60
+                    ? `${Math.floor(task.estimatedDuration / 60)}h${task.estimatedDuration % 60 > 0 ? ` ${task.estimatedDuration % 60}m` : ''}`
                     : `${task.estimatedDuration}m`}
                 </span>
               )}
             </div>
           </div>
+
+          {task.attachments?.length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-white/5 border-white/10 text-primary-light/60">
+              <Paperclip size={14} />
+              <span className="text-[10px] font-black">
+                {task.attachments.length}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

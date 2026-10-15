@@ -66,7 +66,7 @@ export const JOB_TITLES = [
     category: 'Quality Assurance (Testing Track)',
     roles: [
       {
-        title: 'QA Engineer / Software Tester',
+        title: 'QA Engineer',
         role: USER_ROLES.SOFTWARE_ENGINEER,
         description: 'Quality verification & testing',
       },
@@ -86,14 +86,13 @@ export const JOB_TITLES = [
     category: 'People / Operations',
     roles: [
       {
-        title: 'HR Manager / People Ops',
+        title: 'HR',
         role: USER_ROLES.WORKSPACE_MANAGER,
         description: 'Human resources & operations',
       },
     ],
   },
 ];
-
 
 // Lists all specific action permissions applicable within the application.
 export const PERMISSIONS = {
@@ -115,12 +114,12 @@ export const ROLE_PERMISSIONS = {
   [USER_ROLES.WORKSPACE_MANAGER]: [
     PERMISSIONS.INVITE_USERS,
     PERMISSIONS.VIEW_PORTFOLIO,
-    PERMISSIONS.CREATE_PROJECT,
     PERMISSIONS.EDIT_PROJECT,
     PERMISSIONS.ASSIGN_TASKS,
     PERMISSIONS.CREATE_TASKS,
     PERMISSIONS.VIEW_ANALYTICS,
     PERMISSIONS.USE_MAGIC_BAR,
+    PERMISSIONS.MANAGE_BILLING,
   ],
   [USER_ROLES.TECH_LEAD]: [
     PERMISSIONS.VIEW_PORTFOLIO,

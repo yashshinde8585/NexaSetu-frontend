@@ -17,15 +17,20 @@ const Input = ({
         type={type}
         id={id}
         placeholder={placeholder}
-        className={`w-full px-4 py-2.5 rounded-lg border focus:outline-none focus:ring-2 transition-all transition-duration-200 glass text-text placeholder:text-text-muted/50 ${
+        className={`w-full px-3 py-2 rounded border focus:outline-none transition-all text-[10px] font-black uppercase tracking-widest placeholder:text-white/20 ${
           isError
-            ? 'border-status-error focus:ring-status-error/30'
-            : 'border-white/10 focus:ring-primary/40 focus:border-primary/50'
+            ? 'border-status-error focus:border-status-error'
+            : 'border-white/20 focus:border-primary focus:bg-white/5'
         } ${className}`}
+        style={{
+          backgroundColor: 'var(--color-background, #000000)',
+          color: 'var(--color-text, #ffffff)',
+          borderColor: 'var(--color-border-subtle, rgba(255,255,255,0.2))',
+        }}
         {...props}
       />
       {isError && errorMsg && (
-        <span className="text-xs text-status-error/90 mt-1 block px-1 animate-in slide-in-from-top-1">
+        <span className="text-xs text-status-error/90 mt-1 block px-1 animate-[fadeIn_200ms_ease_forwards,slideInFromTop_200ms_ease_forwards]">
           {errorMsg}
         </span>
       )}

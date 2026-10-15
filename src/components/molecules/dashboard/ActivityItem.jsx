@@ -1,9 +1,15 @@
 import React from 'react';
 
+// Individual activity item component.
 const ActivityItem = ({ text, time }) => (
-  <div className="flex justify-between items-start text-[11px] border-l border-slate-800/60 pl-4 py-2 hover:bg-white/[0.02] transition-colors rounded-r-md group">
-    <p className="text-slate-400 group-hover:text-slate-300 transition-colors leading-normal">{text}</p>
-    <span className="text-[9px] text-slate-600 whitespace-nowrap ml-3 uppercase font-black tracking-tighter self-center">
+  <div className="flex justify-between items-center gap-4 py-2 border-b border-white/[0.03] last:border-b-0 group">
+    <div className="flex items-center gap-2">
+      <div className="w-1 h-1 bg-white/20 group-hover:bg-primary transition-colors" />
+      <p className="text-[9px] text-white/50 group-hover:text-white/80 transition-colors leading-tight font-black uppercase tracking-[0.2em] line-clamp-1">
+        {text}
+      </p>
+    </div>
+    <span className="text-[8px] text-white/20 whitespace-nowrap uppercase font-black tracking-widest bg-white/5 px-2 py-0.5 rounded-none border border-white/5">
       {time}
     </span>
   </div>

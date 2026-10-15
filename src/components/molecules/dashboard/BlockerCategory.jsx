@@ -1,18 +1,22 @@
 import React from 'react';
 
+// Blocker category chart component.
 const BlockerCategory = ({ label, items = [] }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="animate-in slide-in-from-left-2 duration-500">
-      <span className="text-[10px] font-black text-slate-600 uppercase mb-2 block tracking-tight">
-        {label}:
+    <div className="flex flex-col gap-3">
+      <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
+        {label}
       </span>
-      <ul className="space-y-1.5">
+      <ul className="flex flex-col gap-2">
         {items.map((item, i) => (
-          <li key={i} className="text-xs text-rose-400/90 flex items-start gap-2 bg-rose-500/5 border border-rose-500/10 p-2 rounded-lg">
-            <span className="text-rose-500 font-bold shrink-0 mt-0.5">•</span>
-            <span className="leading-tight">{item}</span>
+          <li
+            key={i}
+            className="text-[9px] text-status-error font-black uppercase tracking-widest flex items-start gap-2 bg-red-500/10 border border-red-500/20 p-2 rounded-none hover:border-red-500/40 transition-colors"
+          >
+            <span className="shrink-0 mt-1 w-1.5 h-1.5 bg-status-error" />
+            <span className="leading-snug">{item}</span>
           </li>
         ))}
       </ul>

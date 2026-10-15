@@ -1,68 +1,117 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || '';
 
-class SocketService {
-  constructor() {
-    this.socket = null;
+export let socket = null;
+
+let getToken = async () => localStorage.getItem('token');
+
+export const setTokenGetter = (fn) => {
+  getToken = fn;
+};
+
+export const connect = (explicitToken = null) => {
+  if (socket?.connected && !explicitToken) return;
+  if (socket) socket.disconnect();
+
+  socket = io(SOCKET_URL, {
+    auth: async (cb) => {
+      try {
+        const token = explicitToken || (await getToken());
+        cb({ token });
+      } catch (err) {
+        console.error('[SOCKET] Failed to fetch auth token:', err);
+        cb({ token: null });
+      }
+    },
+    withCredentials: true,
+    autoConnect: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 10000,
+    timeout: 20000,
+    transports: ['websocket', 'polling'], // Prioritize websocket but fall back to polling if blocked
+  });
+
+  socket.on('connect_error', (err) => {
+    console.error(`[REAL-TIME SYNC] Connection error: ${err.message}`);
+  });
+
+  socket.on('connect', () => {
+    console.log(`[REAL-TIME SYNC] Strategist terminal connected: ${socket.id}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`[REAL-TIME SYNC] Strategist terminal disconnected`);
+  });
+};
+
+export const joinMission = (taskId) => {
+  if (!taskId) return;
+  if (!socket) connect();
+  socket.emit('join_task', taskId.toString());
+  console.debug(`[SOCKET] Joined mission room: ${taskId}`);
+};
+
+export const leaveMission = (taskId) => {
+  if (!taskId || !socket) return;
+  socket.emit('leave_task', taskId.toString());
+  console.debug(`[SOCKET] Left mission room: ${taskId}`);
+};
+
+export const joinProject = (projectId) => {
+  if (!projectId) return;
+  if (!socket) connect();
+  socket.emit('join_project', projectId.toString());
+  console.debug(`[SOCKET] Joined project room: ${projectId}`);
+};
+
+export const leaveProject = (projectId) => {
+  if (!projectId || !socket) return;
+  socket.emit('leave_project', projectId.toString());
+  console.debug(`[SOCKET] Left project room: ${projectId}`);
+};
+
+export const onEvent = (event, callback) => {
+  if (!socket) connect();
+  socket.on(event, callback);
+};
+
+export const offEvent = (event, callback) => {
+  if (socket) {
+    socket.off(event, callback);
   }
+};
 
-  /**
-   * Initializes the mission frequency for real-time signaling.
-   * Ensures the terminal is ready for bidirectional telemetry.
-   */
-  connect() {
-    if (this.socket) return;
+export const onSignal = (callback) => {
+  onEvent('new_signal', callback);
+};
 
-    this.socket = io(SOCKET_URL, {
-      withCredentials: true,
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-    });
+export const offSignal = () => {
+  offEvent('new_signal');
+};
 
-    this.socket.on('connect', () => {
-      console.log(`[REAL-TIME SYNC] Strategist terminal connected: ${this.socket.id}`);
-    });
-
-    this.socket.on('disconnect', () => {
-      console.log(`[REAL-TIME SYNC] Strategist terminal disconnected`);
-    });
+export const disconnect = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
   }
+};
 
-  /**
-   * Joins a specific mission (task) room to receive localized tactical signals.
-   */
-  joinMission(taskId) {
-    if (!this.socket) this.connect();
-    this.socket.emit('join_task', taskId);
-  }
-
-  /**
-   * Listens for new incoming signals (comments) on the current mission frequency.
-   */
-  onSignal(callback) {
-    if (!this.socket) this.connect();
-    this.socket.on('new_signal', callback);
-  }
-
-  /**
-   * Cleans up signal listeners to prevent telemetry interference.
-   */
-  offSignal() {
-    if (this.socket) {
-      this.socket.off('new_signal');
-    }
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-    }
-  }
-}
-
-const socketService = new SocketService();
-export default socketService;
+export default {
+  get socket() {
+    return socket;
+  },
+  connect,
+  joinMission,
+  leaveMission,
+  joinProject,
+  leaveProject,
+  onEvent,
+  offEvent,
+  onSignal,
+  offSignal,
+  disconnect,
+  setTokenGetter,
+};

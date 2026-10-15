@@ -1,0 +1,13 @@
+services:
+  - type: static
+    name: nexasetu-frontend
+    env: static
+    buildCommand: npm run build
+    publishPath: dist
+    routes:
+      - source: /assets/*
+        type: rewrite
+        destination: /assets/*
+      - source: /*
+        type: rewrite
+        destination: /index.html

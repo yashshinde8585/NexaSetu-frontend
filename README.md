@@ -1,115 +1,144 @@
-# 🌌 NexaSetu — AI-Powered Project Orchestration
+# NexaSetu Frontend SPA — Role-Adaptive Sprint Management Interface
 
-[![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
-[![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+**🌐 Live Demo:** https://nexasetu-frontend.onrender.com/ <br>
+**⚙️ Backend Repository:** https://github.com/yashshinde8585/NexaSetu-Backend
 
-**NexaSetu** is a next-generation project management platform designed for high-velocity teams. It blends traditional project tracking with an autonomous AI Orchestrator, allowing you to manage complex ecosystems via natural language and real-time data insights.
-
----
-
-## 🔗 Ecosystem Links
-
-- **Backend Infrastructure:** [GitHub Repository](https://github.com/yashshinde88585/NexaSetu-Backend.git)
+This is the client-side Single Page Application (SPA) for **NexaSetu**. It is a developer-first interface designed to display GitHub activity, sprint metrics, and dependency graphs without administrative bloat.
 
 ---
 
-## ✨ Core Features
+## 🛠️ Tech Stack
 
-### 🪄 The Magic Bar (AI Orchestrator)
-Command your workspace through a powerful Natural Language Interface.
-- **Natural Language Execution:** Ask AI to "Show healthy projects", "Summarize weekly velocity", or "Reassign tasks".
-- **Intent Extraction:** Automatically translates unstructured text into system actions.
-- **Autonomous Staging:** AI stages complex actions for human approval before execution.
-
-### 📊 Precision Dashboard & Analytics
-Get a bird's-eye view of your entire organization's health.
-- **Live Velocity Tracking:** Real-time progress bars and project health labels.
-- **At-Risk Detection:** Automatically flags projects falling behind schedule.
-- **Unified Activity Stream:** A centralized feed for team updates, commits, and state changes.
-
-### 🛡️ Secure SaaS Infrastructure
-Built for production-grade security and scale.
-- **Stateful Auth:** Implementation of secure HttpOnly cookie-based sessions (XSS-resistant).
-- **Squad Provisioning:** Bulk onboard team members with pre-configured roles and project assignments.
-- **Instant Access:** Provisioned users can log in immediately using their email as a temporary password.
-
-### 🎨 Developer-Core Aesthetic
-A premium interface designed for focus and productivity.
-- **Glassmorphism Design:** Modern, sleek UI with backdrop blurs and subtle gradients.
-- **High-Performance Logic:** Built on React 19 and Tanstack Query for near-zero latency.
-- **Responsive Layout:** Fluid transitions across desktop, tablet, and mobile views.
+* **Framework:** React 19 (Hooks, Context, Memoization)
+* **Build Tool:** Vite (Hot Module Replacement, Code-splitting)
+* **Styling:** Tailwind CSS 4 (Modern variables, utility-first)
+* **State & Data Caching:** TanStack React Query v5 (Server-state synchronization)
+* **Client-Side Routing:** React Router 7 (Protected, metadata-driven routes)
+* **Real-Time Layer:** Socket.io-client (Bidirectional state synchronization)
+* **Data Visualizations:** ReactFlow (Interactive dependency graphs) & Recharts (Sprint analytics)
 
 ---
 
-## 🚀 Tech Stack
+## 🏗️ Frontend Architecture & State Flow
 
-- **Frontend:** [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) (Modern CSS Variables & Utilities)
-- **State & Data Fetching:** [TanStack React Query v5](https://tanstack.com/query/latest)
-- **Routing:** [React Router 7](https://reactrouter.com/)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Interactive Tours:** [React Joyride](https://react-joyride.com/)
-- **API Communication:** [Axios](https://axios-http.com/)
+NexaSetu organizes visual components and state hooks into a clean, maintainable structure:
 
----
+```mermaid
+graph TD
+    subgraph StateManagers [State Orchestrators]
+        Auth[AuthContext: Sessions / Roles]
+        Magic[MagicContext: Command Palette]
+        Cache[TanStack Query: Server Caching]
+    end
 
-## 🛠️ Installation & Setup
+    subgraph ComponentLayers [Atomic Component Architecture]
+        Atoms[Atoms: Primitives, Buttons, Badges]
+        Mols[Molecules: Item Cards, Search Outputs]
+        Orgs[Organisms: Command Bar, Interactive Charts]
+        Layouts[Layouts: Page Shells, Dashboards]
+    end
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18.x or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+    subgraph Views [Page Router]
+        Router[React Router 7]
+        Dashboards[35+ Role-Specific Dashboards]
+    end
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/nexasetu-frontend.git
-cd nexasetu-frontend
+    Router -->|Privilege Check| Auth
+    Auth -->|Mount Layout| Layouts
+    Layouts -->|Contains| Orgs
+    Orgs -->|Contains| Mols
+    Mols -->|Contains| Atoms
+    Orgs <-->|Query Data| Cache
+    Orgs <-->|Execute Commands| Magic
 ```
 
-### 2. Install Dependencies
+---
+
+## 📂 Project Organization
+
+```text
+src/
+├── api/                # Axios network configurations & route endpoints
+├── components/         # Atomic design system implementation
+│   ├── atoms/          # Primitive UI blocks (semantic buttons, inputs, status badges)
+│   ├── molecules/      # Combined components (sprint stats cards, workload items)
+│   ├── organisms/      # Complex modules (floating MagicBar command palette, ReactFlow pane)
+│   └── layouts/        # Page container shells (Global Navigation, Dashboard shells)
+├── context/            # Global React Context providers (AuthContext, MagicContext)
+├── hooks/              # Custom UI hooks (useTasks, useBilling, useAdminDashboard)
+├── pages/              # 35+ specialized dashboard pages based on team roles
+├── routes/             # Protected routing rules and privilege middleware
+├── services/           # Socket.io listeners and live message channels
+└── index.css           # Modern color variables, theme variables, and Tailwind directives
+```
+
+---
+
+## ⚡ Frontend Engineering Challenges Solved
+
+### 1. Unified State Across 35+ Role-Specific Dashboards
+
+Managing data consistency across numerous role views (e.g. CTO, Intern, Tech Lead) without duplicate API calls or stale caches is highly complex.
+
+* **Solution:** Designed shared custom hooks backed by **TanStack Query**. Custom query hooks share identical cache keys (`['sprints', projectId]`), allowing separate dashboard modules to utilize cached values concurrently.
+
+### 2. High-Density Graph Rendering Performance (ReactFlow)
+
+Rendering complex dependency trees with 100+ tasks can cause layout latency and stuttering frame rates.
+
+* **Solution:** Configured ReactFlow nodes to only re-render when their coordinate metrics change by utilizing shallow props comparisons. We also offload expensive layout math (calculating topological node placements) to a memoized computation step.
+
+### 3. Safe WebSocket State Synchronization
+
+Handling incoming live event streams (Socket.io) directly within React render lifecycles can lead to state memory leaks, race conditions, or duplicate event listeners.
+
+* **Solution:** Encapsulated WebSocket management within dedicated React `useEffect` cleanups:
+
+```javascript
+useEffect(() => {
+  socket.connect();
+  socket.on('task_updated', handleTaskUpdate);
+
+  return () => {
+    socket.off('task_updated', handleTaskUpdate);
+    socket.disconnect();
+  };
+}, [projectId]);
+```
+
+---
+
+## 📈 Performance Benchmarks
+
+* **Route-Level Code Splitting:** Dynamically bundles route views into chunk files, keeping the initial JS payload below `~66kB`.
+* **WebSocket Throttling:** Live feed streams buffer incoming events, refreshing the UI state in batch cycles every `250ms` rather than triggering individual component updates for every commit.
+* **Memoized Metrics Rendering:** Recharts and ReactFlow modules utilize custom memoization keys to eliminate calculations during background sidebar drawer updates.
+
+---
+
+## ⚙️ Local Setup
+
+1. Clone repository and navigate to frontend directory:
+
+```bash
+cd NexaSetu-frontend
+```
+
+2. Install project packages:
+
 ```bash
 npm install
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the root directory:
+3. Create a `.env` file in the root directory:
+
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_HF_TOKEN=your_huggingface_token
+VITE_SOCKET_URL=http://localhost:5000
 ```
 
-### 4. Run Development Server
+4. Start the Vite hot-reloading development server:
+
 ```bash
 npm run dev
 ```
-Navigate to `http://localhost:5173` to view the application.
-
----
-
-## 📁 Project Structure
-
-```text
-src/
-├── api/            # API services and axios instances
-├── components/     # Reusable UI components
-│   ├── dashboard/  # Dashboard-specific parts
-│   ├── project/    # Project-related elements
-│   ├── MagicBar.jsx# The AI Orchestrator UI
-│   └── AppTour.jsx # Onboarding logic
-├── context/        # Auth and global state providers
-├── hooks/          # Custom React hooks (useDashboard, etc.)
-├── pages/          # Full page views (Dashboard, Portfolio, Auth)
-├── utils/          # Helper functions and constants
-└── index.css       # Global styles and Tailwind directives
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request

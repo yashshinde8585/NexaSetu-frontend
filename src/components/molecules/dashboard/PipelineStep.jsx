@@ -1,16 +1,26 @@
 import React from 'react';
 
+// Stage progress indicator component.
 const PipelineStep = ({ label, value, progress, color, isWarning }) => (
-  <div className="relative group/step">
-    <div className="flex justify-between text-[11px] uppercase mb-1.5 font-bold tracking-tight">
-      <span className={isWarning ? 'text-amber-500 flex items-center gap-1' : 'text-slate-400'}>
-        {label} {isWarning && <span title="Potential bottleneck detected">⚠</span>}
+  <div className="flex flex-col gap-2 group/step">
+    <div className="flex justify-between items-center text-[9px] uppercase font-black tracking-[0.2em]">
+      <span
+        className={
+          isWarning
+            ? 'text-status-warning flex items-center gap-2'
+            : 'text-white/40 group-hover/step:text-white/60 transition-colors'
+        }
+      >
+        {label}
+        {isWarning && (
+          <span className="w-1.5 h-1.5 bg-status-warning animate-pulse" />
+        )}
       </span>
-      <span className="text-slate-200">{value}</span>
+      <span className="text-white">{value}</span>
     </div>
-    <div className="w-full bg-slate-800/50 h-1.5 rounded-full overflow-hidden border border-white/[0.02]">
-      <div 
-        className={`h-full ${color} transition-all duration-1000 ease-out`} 
+    <div className="w-full bg-white/5 h-1.5 rounded-none overflow-hidden border border-white/5">
+      <div
+        className={`h-full ${color} transition-all duration-500 ease-out rounded-none`}
         style={{ width: `${progress}%` }}
       ></div>
     </div>

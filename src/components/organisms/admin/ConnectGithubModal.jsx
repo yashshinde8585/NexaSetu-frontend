@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { X, GitBranch, Shield, Zap, Info, AlertCircle } from 'lucide-react';
 
-const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) => {
+const ConnectGithubModal = ({
+  isOpen,
+  onClose,
+  onConnect,
+  isLoading,
+  error,
+}) => {
   const [token, setToken] = useState('');
 
   if (!isOpen) return null;
@@ -13,13 +19,12 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div 
-        className="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity animate-in fade-in" 
-        onClick={handleClose} 
+      <div
+        className="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity animate-in fade-in"
+        onClick={handleClose}
       />
-      
+
       <div className="relative w-full max-w-md bg-slate-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center gap-3">
@@ -28,10 +33,12 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">Connect GitHub</h2>
-              <p className="text-[10px] text-white/40 uppercase tracking-widest">Connect to GitHub</p>
+              <p className="text-[10px] text-white/40 uppercase tracking-widest">
+                Connect to GitHub
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleClose}
             className="p-2 hover:bg-white/5 rounded-full text-white/30 hover:text-white transition-colors"
           >
@@ -51,7 +58,8 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
           <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex gap-4">
             <Info className="text-primary shrink-0" size={20} />
             <p className="text-[11px] text-white/70 leading-relaxed">
-              Link your workspace to GitHub to enable task tracking and activity metrics.
+              Link your workspace to GitHub to enable task tracking and activity
+              metrics.
             </p>
           </div>
 
@@ -60,8 +68,8 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
               <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">
                 Personal Access Token
               </label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-sm text-white focus:border-primary/50 transition-all outline-none"
@@ -74,12 +82,17 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
                 <Shield size={12} /> Required Scopes
               </h4>
               <ul className="grid grid-cols-2 gap-2">
-                {['repo', 'admin:repo_hook', 'user', 'read:org'].map(scope => (
-                  <li key={scope} className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-lg text-[9px] text-white/60 font-bold uppercase tracking-wider">
-                    <div className="w-1 h-1 rounded-full bg-primary" />
-                    {scope}
-                  </li>
-                ))}
+                {['repo', 'admin:repo_hook', 'user', 'read:org'].map(
+                  (scope) => (
+                    <li
+                      key={scope}
+                      className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-lg text-[9px] text-white/60 font-bold uppercase tracking-wider"
+                    >
+                      <div className="w-1 h-1 rounded-full bg-primary" />
+                      {scope}
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           </div>
@@ -106,7 +119,6 @@ const ConnectGithubModal = ({ isOpen, onClose, onConnect, isLoading, error }) =>
             {isLoading ? 'Connecting...' : 'Connect'}
           </button>
         </div>
-
       </div>
     </div>
   );

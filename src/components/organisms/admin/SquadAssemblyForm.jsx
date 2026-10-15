@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  Shield, 
-  Save, 
-  Layout, 
+import {
+  User,
+  Shield,
+  Save,
+  Layout,
   ChevronLeft,
   Users,
-  Zap
+  CheckCircle,
 } from 'lucide-react';
+import { BackButton } from '../../atoms';
 
-/**
- * SquadAssemblyForm - Centralized component for team creation and modification.
- * Implements the 3-column workforce curation UI.
- */
-const SquadAssemblyForm = ({ 
-  title, 
-  description, 
-  submitLabel, 
-  onSubmit, 
-  users = [], 
+const TeamBuilderForm = ({
+  title,
+  description,
+  submitLabel,
+  onSubmit,
+  users = [],
   initialData = {},
-  themeColor = 'primary' // 'primary' for create, 'secondary' for edit
+  themeColor = 'primary', // 'primary' for create, 'secondary' for edit
 }) => {
   const navigate = useNavigate();
   const [name, setName] = useState(initialData.name || '');
   const [mission, setMission] = useState(initialData.description || '');
   const [lead, setLead] = useState(initialData.lead || '');
-  const [selectedMembers, setSelectedMembers] = useState(initialData.members || []);
+  const [selectedMembers, setSelectedMembers] = useState(
+    initialData.members || []
+  );
 
   // Sync state if initialData changes (useful for async loads in Edit mode)
   useEffect(() => {
@@ -43,192 +42,229 @@ const SquadAssemblyForm = ({
       name,
       description: mission,
       lead,
-      members: selectedMembers
+      members: selectedMembers,
     });
   };
 
   const toggleMember = (userId) => {
-    setSelectedMembers(prev => 
-      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+    setSelectedMembers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
     );
   };
 
   const isPrimary = themeColor === 'primary';
   const colorClass = isPrimary ? 'text-primary' : 'text-secondary';
-  const bgColorClass = isPrimary ? 'bg-primary/10' : 'bg-secondary/10';
-  const borderColorClass = isPrimary ? 'border-primary/20' : 'border-secondary/20';
+  const bgColorClass = isPrimary ? 'bg-primary/5' : 'bg-secondary/5';
+  const borderColorClass = isPrimary
+    ? 'border-primary/20'
+    : 'border-secondary/20';
+  const glowClass = isPrimary
+    ? 'shadow-[0_0_40px_rgba(var(--primary-rgb),0.1)]'
+    : 'shadow-[0_0_40px_rgba(var(--secondary-rgb),0.1)]';
 
   return (
-    <div className="max-w-screen-xl mx-auto px-6 py-10 space-y-10 animate-in fade-in duration-500">
-      
-      {/* 🧭 Navigation & Breadcrumbs */}
-      <div className="flex items-center justify-between">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
-        >
-          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Back to Dashboard</span>
-        </button>
-        <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] font-black text-white/10">
-          <span>Governance</span>
+    <div className="h-[calc(100vh-64px)] max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 py-4 flex flex-col gap-4 overflow-hidden selection:bg-primary">
+      {/* Navigation & Breadcrumbs */}
+      <div className="flex items-center justify-between shrink-0">
+        <BackButton />
+        <div className="hidden sm:flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] font-black text-white/10">
+          <span>ADMINISTRATION</span>
           <span className="w-1 h-1 rounded-full bg-white/5" />
-          <span className={`${isPrimary ? 'text-primary/40' : 'text-secondary/40'}`}>
-            {isPrimary ? 'Squad Creation' : 'Squad Modification'}
+          <span
+            className={`${isPrimary ? 'text-primary/40' : 'text-secondary/40'}`}
+          >
+            {isPrimary ? 'CREATE TEAM' : 'EDIT TEAM'}
           </span>
         </div>
       </div>
 
-      {/* 🚀 Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-10">
-        <div>
-          <div className="flex items-center gap-4 mb-4">
-             <div className={`w-12 h-12 rounded-2xl ${bgColorClass} border ${borderColorClass} flex items-center justify-center ${colorClass}`}>
-                <Users size={28} />
-             </div>
-             <h1 className="text-4xl font-black tracking-tighter text-white">{title}</h1>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5 pb-4 shrink-0">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-8 h-8 rounded bg-white/5 border ${borderColorClass} flex items-center justify-center ${colorClass}`}
+            >
+              <Users size={16} />
+            </div>
+            <h1 className="text-xl font-black tracking-tight text-white uppercase leading-none">
+              {title}
+            </h1>
           </div>
-          <p className="text-white/30 max-w-lg">{description}</p>
+          <p className="text-white/20 max-w-xl text-[9px] font-black uppercase tracking-widest leading-relaxed">
+            {description}
+          </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-        
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch overflow-hidden min-h-0"
+      >
         {/* Column 1: Team Foundation */}
-        <div className="space-y-8">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-8 shadow-2xl h-full min-h-[400px] flex flex-col">
-            <div className="flex items-center gap-3">
-              <Layout className={colorClass} size={20} />
-              <h2 className="text-lg font-bold">Team Foundation</h2>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 gap-5 shadow-2xl flex flex-col h-full">
+            <div className="flex items-center gap-3 shrink-0">
+              <div className={`p-1 rounded bg-black ${colorClass}`}>
+                <Layout size={14} />
+              </div>
+              <h2 className="text-[10px] font-black text-white uppercase tracking-widest">
+                CONFIGURATION
+              </h2>
             </div>
 
-            <div className="space-y-6 flex-1">
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Team Identity</label>
-                <input 
+            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 block">
+                  TEAM IDENTITY
+                </label>
+                <input
                   required
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Core Protocols"
-                  className={`w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 text-lg font-bold text-white focus:border-${themeColor} placeholder:text-white/10 outline-none transition-all shadow-inner`}
+                  placeholder="E.G. CORE PLATFORM"
+                  className="w-full h-9 bg-black border border-white/10 rounded px-4 text-[11px] font-black text-white focus:border-primary/50 outline-none transition-all placeholder:text-white/5 uppercase tracking-tight"
                 />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1">Mission Strategy</label>
-                <textarea 
-                  rows={4}
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 block">
+                  TEAM DESCRIPTION
+                </label>
+                <textarea
+                  rows={3}
                   value={mission}
                   onChange={(e) => setMission(e.target.value)}
-                  placeholder="Define the primary focus..."
-                  className={`w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 text-sm text-white/70 focus:border-${themeColor} placeholder:text-white/10 outline-none transition-all resize-none shadow-inner`}
+                  placeholder="DEFINE PRIMARY TEAM GOALS..."
+                  className="w-full bg-black border border-white/10 rounded p-3 text-[10px] font-black text-white/60 focus:border-primary/50 outline-none transition-all resize-none placeholder:text-white/5 leading-relaxed uppercase"
                 />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold px-1 flex items-center justify-between">
-                  Strategic Lead 
-                  <Shield size={12} className="text-secondary" />
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase tracking-[0.2em] text-white/20 font-black px-1 flex items-center justify-between">
+                  TECHNICAL LEAD
+                  <Shield size={10} className="text-secondary/40" />
                 </label>
-                <div className="relative group">
-                  <select 
+                <div className="relative group/select">
+                  <select
                     required
                     value={lead}
                     onChange={(e) => setLead(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 text-sm text-white focus:border-secondary outline-none transition-all cursor-pointer appearance-none group-hover:bg-white/[0.02]"
+                    className="w-full h-9 bg-black border border-white/10 rounded px-4 text-[10px] font-black text-white focus:border-secondary/50 outline-none transition-all cursor-pointer appearance-none pr-10 uppercase"
                   >
-                    <option value="" disabled className="bg-slate-900">Appoint a leader...</option>
-                    {users.map(u => (
-                      <option key={u.id} value={u.id} className="bg-slate-900">{u.name} — {u.role.replace(/_/g, ' ')}</option>
+                    <option value="" disabled>
+                      SELECT LEADERSHIP...
+                    </option>
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} — {u.role.replace(/_/g, ' ')}
+                      </option>
                     ))}
                   </select>
-                  <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover:text-secondary transition-colors">
-                    <Shield size={18} />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover/select:text-secondary transition-colors">
+                    <Shield size={14} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 pt-6 mt-auto">
-              <button 
+            <div className="flex flex-col gap-2 pt-5 mt-auto border-t border-white/5 shrink-0">
+              <button
                 type="submit"
-                className={`w-full ${isPrimary ? 'bg-primary' : 'bg-secondary'} hover:brightness-110 text-black py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3`}
+                className={`w-full h-10 ${isPrimary ? 'bg-primary' : 'bg-secondary'} text-black rounded font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center gap-2`}
               >
-                <Save size={18} /> {submitLabel}
+                <Save size={14} /> {submitLabel}
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-full text-white/20 hover:text-white font-bold text-xs transition-colors py-2"
+                className="w-full text-white/10 hover:text-white font-black text-[9px] uppercase tracking-widest transition-colors py-1"
               >
-                Discard Process
+                DISCARD CHANGES
               </button>
             </div>
           </div>
         </div>
 
         {/* Column 2: Pool A (Available) */}
-        <div className="space-y-4 h-full">
-           <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl h-full flex flex-col">
-             <div className="px-6 py-4 border-b border-white/5 bg-status-success/5 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-status-success" />
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Available Talent</span>
-                </div>
-                <div className={`${bgColorClass} ${colorClass} text-[9px] font-black px-2 py-0.5 rounded-md border ${borderColorClass}`}>
-                   {users.filter(u => !u.teams || u.teams.length === 0).length} TOTAL
-                </div>
-             </div>
-             
-             <div className="p-2 flex-1 overflow-y-auto custom-scrollbar min-h-[300px] max-h-[450px]">
-                <div className="space-y-1">
-                   {users.filter(u => !u.teams || u.teams.length === 0).map(u => (
-                     <MemberItem 
-                        key={u.id} 
-                        user={u} 
-                        isActive={selectedMembers.includes(u.id)}
-                        onToggle={() => toggleMember(u.id)}
-                        themeColor={themeColor}
-                     />
-                   ))}
-                </div>
-             </div>
-           </div>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col h-full">
+            <div className="px-4 py-3 border-b border-white/5 bg-status-success/[0.03] flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-status-success" />
+                <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                  AVAILABLE MEMBERS
+                </span>
+              </div>
+              <div className="bg-status-success/10 text-status-success text-[8px] font-black px-2 py-0.5 rounded border border-status-success/20">
+                {users.filter((u) => !u.teams || u.teams.length === 0).length}
+              </div>
+            </div>
+
+            <div className="p-3 flex-1 overflow-y-auto custom-scrollbar bg-white/[0.01]">
+              <div className="space-y-2">
+                {users
+                  .filter((u) => !u.teams || u.teams.length === 0)
+                  .map((u) => (
+                    <MemberItem
+                      key={u.id}
+                      user={u}
+                      isActive={selectedMembers.includes(u.id)}
+                      onToggle={() => toggleMember(u.id)}
+                      themeColor={themeColor}
+                    />
+                  ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Column 3: Pool B (Current/Active) */}
-        <div className="space-y-4 h-full">
-           <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl h-full flex flex-col">
-             <div className={`px-6 py-4 border-b border-white/5 ${isPrimary ? 'bg-secondary/5' : 'bg-primary/5'} flex items-center justify-between shrink-0`}>
-                <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'}`} />
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
-                    {isPrimary ? 'Active Squad Members' : 'Cross-Team Allocation'}
-                  </span>
-                </div>
-                <div className={`${bgColorClass} ${colorClass} text-[9px] font-black px-2 py-0.5 rounded-full border ${borderColorClass}`}>
-                   {selectedMembers.filter(id => users.find(u => u.id === id)?.teams?.length > 0).length} SELECTED
-                </div>
-             </div>
-             
-             <div className="p-2 flex-1 overflow-y-auto custom-scrollbar min-h-[300px] max-h-[450px]">
-                <div className="space-y-1">
-                   {users.filter(u => u.teams && u.teams.length > 0).map(u => (
-                     <MemberItem 
-                        key={u.id} 
-                        user={u} 
-                        isActive={selectedMembers.includes(u.id)}
-                        onToggle={() => toggleMember(u.id)}
-                        themeColor={themeColor}
-                        showTeam
-                     />
-                   ))}
-                </div>
-             </div>
-           </div>
-        </div>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col h-full">
+            <div
+              className={`px-4 py-3 border-b border-white/5 ${isPrimary ? 'bg-secondary/[0.03]' : 'bg-primary/[0.03]'} flex items-center justify-between shrink-0`}
+            >
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-1 h-1 rounded-full ${isPrimary ? 'bg-secondary' : 'bg-primary'}`}
+                />
+                <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                  {isPrimary ? 'SELECTED MEMBERS' : 'ACTIVE MEMBERS'}
+                </span>
+              </div>
+              <div
+                className={`${bgColorClass} ${colorClass} text-[8px] font-black px-2 py-0.5 rounded border ${borderColorClass}`}
+              >
+                {
+                  selectedMembers.filter(
+                    (id) => users.find((u) => u.id === id)?.teams?.length > 0
+                  ).length
+                }
+              </div>
+            </div>
 
+            <div className="p-3 flex-1 overflow-y-auto custom-scrollbar bg-white/[0.01]">
+              <div className="space-y-2">
+                {users
+                  .filter((u) => u.teams && u.teams.length > 0)
+                  .map((u) => (
+                    <MemberItem
+                      key={u.id}
+                      user={u}
+                      isActive={selectedMembers.includes(u.id)}
+                      onToggle={() => toggleMember(u.id)}
+                      themeColor={themeColor}
+                      showTeam
+                    />
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );
@@ -236,36 +272,52 @@ const SquadAssemblyForm = ({
 
 /* Internal Helper for List Items */
 const MemberItem = ({ user, isActive, onToggle, showTeam, themeColor }) => (
-  <div 
+  <div
     onClick={onToggle}
-    className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group ${
+    className={`flex items-center justify-between p-3 rounded border transition-all cursor-pointer group/item ${
       isActive
-        ? `bg-${themeColor}/10 border-${themeColor}/30 text-white`
-        : 'bg-transparent border-transparent hover:bg-white/5 text-white/40'
+        ? `bg-primary/10 border-primary/40 text-white`
+        : 'bg-black border-white/5 hover:bg-white/5 hover:border-white/10 text-white/20'
     }`}
   >
-    <div className="flex items-center gap-4">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-        isActive ? `bg-${themeColor}/20 text-${themeColor}` : 'bg-white/5 text-white/20 group-hover:bg-white/10'
-      }`}>
-        <User size={18} />
+    <div className="flex items-center gap-3 min-w-0">
+      <div
+        className={`w-8 h-8 rounded flex items-center justify-center transition-all shrink-0 ${
+          isActive
+            ? `bg-primary/20 text-primary`
+            : 'bg-white/5 text-white/10 group-hover/item:text-white/30'
+        }`}
+      >
+        <User size={14} />
       </div>
-      <div className="flex flex-col">
-        <span className="text-xs font-bold leading-none mb-1 group-hover:text-white transition-colors">{user.name}</span>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[9px] uppercase tracking-tighter opacity-40">{user.role.replace(/_/g, ' ')}</span>
+      <div className="flex flex-col min-w-0">
+        <span
+          className={`text-[11px] font-black uppercase tracking-tight truncate ${isActive ? 'text-white' : 'group-hover/item:text-white'}`}
+        >
+          {user.name}
+        </span>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[8px] font-black uppercase tracking-widest opacity-20">
+            {user.role.replace(/_/g, ' ')}
+          </span>
           {showTeam && user.teams?.[0] && (
-            <span className="text-[8px] px-1.5 py-0.5 rounded-md bg-white/5 text-white/20 font-bold border border-white/5">
+            <span className="text-[7px] px-1.5 py-0.5 rounded-sm bg-white/5 text-white/20 font-black border border-white/10 uppercase tracking-tighter">
               {user.teams[0]}
             </span>
           )}
         </div>
       </div>
     </div>
-    {isActive && (
-      <div className={`w-2 h-2 rounded-full bg-${themeColor} animate-pulse shadow-[0_0_10px_rgba(var(--${themeColor}-rgb),0.5)]`} />
-    )}
+    <div
+      className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+        isActive
+          ? `border-primary bg-primary`
+          : 'border-white/10 bg-transparent'
+      }`}
+    >
+      {isActive && <CheckCircle size={10} className="text-black" />}
+    </div>
   </div>
 );
 
-export default SquadAssemblyForm;
+export default TeamBuilderForm;

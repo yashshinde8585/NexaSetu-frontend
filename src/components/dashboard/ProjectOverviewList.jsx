@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Users, Activity, ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Search,
+  Users,
+  Activity,
+  ShieldAlert,
+  FolderX,
+  ExternalLink,
+} from 'lucide-react';
+import EmptyState from '../atoms/EmptyState';
 
 // A searchable and filterable list that provides a high-level overview of all projects.
 const ProjectOverviewList = ({
@@ -8,6 +17,7 @@ const ProjectOverviewList = ({
   onProjectSelect,
   selectedProjectId,
 }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
@@ -75,20 +85,55 @@ const ProjectOverviewList = ({
       </div>
 
       {isLoading ? (
-        <div className="p-20 flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <div
+          className="p-5 flex flex-col gap-3 animate-pulse"
+          aria-label="Loading projects"
+        >
+          {/* Skeleton header row */}
+          <div className="hidden md:grid grid-cols-12 gap-6 px-3 py-2 border-b border-white/5">
+            {[4, 2, 2, 1, 1, 2].map((span, i) => (
+              <div
+                key={i}
+                className={`col-span-${span} h-2 bg-white/5 rounded`}
+              />
+            ))}
+          </div>
+          {/* 7 skeleton data rows — matches ITEMS_PER_PAGE in UserDirectoryTab */}
+          {[...Array(7)].map((_, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-12 gap-6 px-3 py-3 border-b border-white/[0.03] items-center"
+            >
+              <div className="col-span-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/5 shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-2.5 bg-white/5 rounded w-3/4" />
+                  <div className="h-1.5 bg-white/[0.03] rounded w-1/2" />
+                </div>
+              </div>
+              <div className="col-span-2 h-2 bg-white/5 rounded" />
+              <div className="col-span-2 h-2 bg-white/5 rounded w-4/5" />
+              <div className="col-span-1 h-2 bg-white/5 rounded" />
+              <div className="col-span-1 h-2 bg-white/5 rounded w-3/4" />
+              <div className="col-span-2 flex justify-end gap-1">
+                <div className="w-16 h-6 bg-white/5 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="p-12 sm:p-20 text-center flex flex-col items-center justify-center space-y-8 group">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl shadow-primary/20"></div>
-          <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              No matching projects found.
-            </h3>
-            <p className="text-text-muted font-bold text-xs sm:text-sm italic opacity-60">
-              Adjust your filters or create a new project.
-            </p>
-          </div>
+        <div className="p-8">
+          <EmptyState
+            icon={FolderX}
+            title={
+              searchQuery ? 'NO_MATCHING_PROJECTS' : 'NO_PROJECTS_DETECTED'
+            }
+            message={
+              searchQuery
+                ? `THE SEARCH FOR "${searchQuery}" RETURNED NULL RESULTS WITHIN THIS SECTOR.`
+                : 'THIS WORKSPACE IS CURRENTLY VOID OF ACTIVE PROJECTS. INITIALIZE ONE TO BEGIN.'
+            }
+          />
         </div>
       ) : (
         <div className="overflow-visible">
@@ -184,7 +229,7 @@ const ProjectOverviewList = ({
                 </div>
 
                 {/* Strategic Status */}
-                <div className="col-span-2 flex items-center justify-end">
+                <div className="col-span-2 flex items-center justify-end gap-3">
                   <span
                     className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm flex items-center gap-2 ${
                       project.riskLevel === 'Low'
@@ -197,6 +242,21 @@ const ProjectOverviewList = ({
                     {project.riskLevel === 'High' && <ShieldAlert size={10} />}
                     {project.riskLevel.toUpperCase()}
                   </span>
+
+                  {/* Navigation Trigger */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/project/${project._id}`);
+                    }}
+                    className="p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-primary hover:text-black transition-all group/nav"
+                    title="ENTER_PROJECT"
+                  >
+                    <ExternalLink
+                      size={12}
+                      className="group-hover/nav:scale-110 transition-transform"
+                    />
+                  </button>
                 </div>
               </div>
             ))}

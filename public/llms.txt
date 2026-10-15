@@ -1,0 +1,15 @@
+# NexaSetu
+> AI-powered project orchestration for engineering teams.
+
+NexaSetu turns GitHub activity into real-time execution intelligence. 
+It predicts risks, eliminates bottlenecks, and drives software delivery.
+
+## Key Features
+- Proactive risk analysis for sprints
+- Codebase sync with GitHub
+- Enterprise security with zero data loss
+- Velocity tracking and bottleneck detection
+
+## Contact
+- Website: https://nexasetu-frontend.onrender.com
+- LinkedIn: https://linkedin.com/in/yashshinde8585

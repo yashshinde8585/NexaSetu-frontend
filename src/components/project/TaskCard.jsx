@@ -1,105 +1,235 @@
 import React from 'react';
 import { TASK_STATUS, USER_ROLES } from '../../constants';
+import {
+  ChevronRight,
+  Clock,
+  ShieldCheck,
+  GitBranch,
+  Activity,
+  Calendar,
+} from 'lucide-react';
 
-// A compact task card component that displays essential task data and role-based status actions.
-const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick }) => {
+const TaskCard = ({
+  task,
+  user,
+  columns,
+  handleStatusChange,
+  onTaskClick,
+  cardLayout = 'standard',
+}) => {
+  const isCompact = cardLayout === 'compact';
+  const isMinimal = cardLayout === 'minimal';
+  const isList = cardLayout === 'list';
+
+  if (isList) {
+    return (
+      <div
+        key={task._id}
+        onClick={() => onTaskClick(task)}
+        className="bg-background-elevated hover:bg-background-elevated p-3 rounded-xl border-2 border-border-subtle relative overflow-hidden cursor-pointer group shadow-xl flex items-center gap-3 h-14 transition-all"
+      >
+        <div className="flex-1 min-w-0">
+          <h4 className="text-[11px] font-black text-text leading-none truncate uppercase tracking-tight">
+            {task.title}
+          </h4>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {task.assignedUser && (
+            <div className="w-5 h-5 rounded bg-background-elevated flex items-center justify-center text-[8px] font-black text-text border-2 border-border-subtle group-hover:border-primary transition-all">
+              {task.assignedUser.name[0].toUpperCase()}
+            </div>
+          )}
+
+          {task.status !== TASK_STATUS.DONE && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                let next;
+                if (task.status === TASK_STATUS.TODO)
+                  next = TASK_STATUS.IN_PROGRESS;
+                else if (task.status === TASK_STATUS.IN_PROGRESS)
+                  next = TASK_STATUS.IN_REVIEW;
+                else next = TASK_STATUS.DONE;
+                handleStatusChange(task._id, next);
+              }}
+              className={`text-[8px] px-2 py-1 rounded bg-background-elevated hover:bg-border-subtle text-text-subtle font-black uppercase tracking-widest border border-border-subtle transition-all active:scale-95 ${
+                user?.role === USER_ROLES.INTERN &&
+                task.status === TASK_STATUS.IN_REVIEW
+                  ? 'hidden'
+                  : ''
+              }`}
+            >
+              {task.status === TASK_STATUS.TODO
+                ? 'GO'
+                : task.status === TASK_STATUS.IN_PROGRESS
+                  ? 'REV'
+                  : 'DONE'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       key={task._id}
       onClick={() => onTaskClick(task)}
-      className="bg-background-light p-4 rounded-lg shadow border border-background-dark/20 hover:border-primary/30 transition-all duration-300 relative overflow-hidden cursor-pointer active:scale-[0.98]"
+      className={`bg-background-light p-5 border-2 border-border-subtle relative overflow-hidden cursor-pointer group transition-all duration-300 hover:border-primary hover:bg-background-elevated flex flex-col shadow-lg ${
+        isMinimal ? 'h-28' : isCompact ? 'h-40' : 'h-52'
+      }`}
     >
-      <div className="flex justify-between items-start mb-2 gap-4">
+      {/* Dynamic Status Glow */}
+      {['HIGH', 'URGENT'].includes(task.priority?.toUpperCase()) && (
+        <div className="absolute top-0 right-0 w-16 h-16 bg-status-error/5 blur-2xl" />
+      )}
+
+      <div
+        className={`flex justify-between items-start gap-4 ${isMinimal ? 'mb-1' : 'mb-4'}`}
+      >
         <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">
-              {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
-            </span>
-            <span className="text-[9px] font-bold text-text-muted/40 lowercase italic">
-              {task.createdFormatted}
-            </span>
-            {task.sprintInfo && (
-              <span className="text-[7px] font-black bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-text-muted/60 uppercase tracking-tighter">
-                {task.sprintInfo.name}
+          {!isMinimal && (
+            <div
+              className={`flex flex-wrap items-center gap-3 ${isCompact ? 'mb-2' : 'mb-3'}`}
+            >
+              <span className="text-[10px] font-black text-primary font-mono uppercase tracking-widest bg-primary/15 border-2 border-primary/40 px-2.5 py-1">
+                {task.projectKey || 'NEXA'}-{task.taskNumber || '0'}
               </span>
-            )}
-          </div>
-          <h4 className="font-semibold text-text leading-tight">
+              {!isCompact && (
+                <>
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
+                    {task.createdFormatted || 'NEW'}
+                  </span>
+                  <span
+                    className={`text-[8px] font-black uppercase tracking-[0.2em] border px-2 py-0.5 ${
+                      task.type === 'bug'
+                        ? 'border-status-error text-status-error bg-status-error/5'
+                        : task.type === 'epic'
+                          ? 'border-secondary text-secondary bg-secondary/5'
+                          : task.type === 'story'
+                            ? 'border-status-success text-status-success bg-status-success/5'
+                            : task.type === 'spike'
+                              ? 'border-primary text-primary bg-primary/5'
+                              : task.type === 'tech_debt'
+                                ? 'border-status-warning text-status-warning bg-status-warning/5'
+                                : 'border-border-subtle text-text-subtle'
+                    }`}
+                  >
+                    {task.type || 'TASK'}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+          <h4
+            className={`${isMinimal ? 'text-[11px]' : 'text-[13px]'} font-black text-text leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase`}
+          >
             {task.title}
           </h4>
         </div>
-        {task.delayStatus !== 'On Track' && (
-          <span
-            className={`shrink-0 text-[7px] font-black border px-1.5 py-0.5 rounded uppercase ${
-              task.delayStatus === 'Delayed'
-                ? 'bg-status-error/10 text-status-error border-status-error/20'
-                : 'bg-status-warning/10 text-status-warning border-status-warning/20'
-            }`}
-          >
-            {task.delayStatus}
-          </span>
+        {!isMinimal && task.delayStatus !== 'On Track' && (
+          <div className="flex flex-col items-end">
+            <span
+              className={`shrink-0 text-[7px] font-black border px-2 py-1 uppercase tracking-[0.2em] ${
+                task.delayStatus === 'Delayed'
+                  ? 'bg-status-error/10 text-status-error border-status-error/30'
+                  : 'bg-status-warning/10 text-status-warning border-status-warning/30'
+              }`}
+            >
+              {task.delayStatus}
+            </span>
+          </div>
         )}
       </div>
-      {task.description && (
-        <p className="text-sm text-text-muted line-clamp-2">
-          {task.description}
-        </p>
-      )}
-      {task.assignedUser && (
-        <div className="mt-2 flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] text-primary border border-primary/30">
-            {task.assignedUser.name[0].toUpperCase()}
-          </div>
-          <span className="text-[11px] text-text-muted">
-            {task.assignedUser.name}
-          </span>
-        </div>
-      )}
-      {task.status === TASK_STATUS.DONE && task.actualDuration !== null && (
-        <div className="mt-3 py-1.5 border-t border-white/5 text-[10px] text-status-success font-bold flex items-center gap-1 opacity-80 uppercase tracking-tighter">
-          Completed in {task.actualDuration} minutes
-        </div>
-      )}
-      {task.source === 'github' && (
-        <div
-          className="mt-2 text-[9px] font-bold text-primary flex items-center gap-1 opacity-70 border border-primary/20 bg-primary/5 w-fit px-2 py-0.5 rounded"
-          title="Auto-created from GitHub"
-        >
-          GitHub
-        </div>
-      )}
-      {task.timelineHistory?.length > 0 && (
-        <div className="mt-2 text-[9px] font-bold text-status-warning flex items-center gap-1 opacity-90 animate-pulse">
-          Rescheduled by AI Scheduler
-        </div>
-      )}
-      <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap justify-between items-center gap-3">
-        <div className="flex gap-1 items-center pb-1">
-          {columns.map((c) => {
-            const isRestrictedForIntern =
-              user?.role === USER_ROLES.INTERN && c.id === TASK_STATUS.DONE;
 
-            return (
-              c.id !== task.status &&
-              !isRestrictedForIntern && (
-                <button
-                  key={c.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStatusChange(task._id, c.id);
-                  }}
-                  className="text-[8px] px-1.5 py-0.5 rounded border border-white/5 hover:border-primary/40 text-text-muted hover:text-primary transition-all uppercase font-bold bg-background-dark/20"
-                  title={`Move to ${c.title}`}
-                >
-                  {c.id === TASK_STATUS.IN_PROGRESS
-                    ? 'Prog'
-                    : c.id === TASK_STATUS.IN_REVIEW
-                      ? 'Rev'
-                      : c.id}
-                </button>
-              )
-            );
-          })}
+      {!isMinimal &&
+        task.status === TASK_STATUS.DONE &&
+        task.actualDuration !== null && (
+          <div className="mt-2 pt-2 border-t border-border-subtler text-[9px] font-black text-status-success uppercase tracking-[0.3em] flex items-center gap-2">
+            <ShieldCheck size={12} strokeWidth={3} /> CYCLE:{' '}
+            {task.actualDuration}M
+          </div>
+        )}
+
+      {!isMinimal && task.timelineHistory?.length > 0 && (
+        <div className="mt-2 text-[9px] font-black text-secondary uppercase tracking-[0.2em] flex items-center gap-2 bg-secondary/5 border border-secondary/20 px-2 py-1 w-fit">
+          <Activity size={10} className="animate-pulse" strokeWidth={3} /> AI
+          OPTIMIZED
+        </div>
+      )}
+
+      {/* Due Date Indicator */}
+      {(task.dueDate ||
+        (task.estimatedDuration && task.status !== TASK_STATUS.DONE)) &&
+        !isMinimal && (
+          <div className="mt-3 flex items-center gap-2 px-1">
+            <Calendar
+              size={10}
+              className={
+                task.dueDate &&
+                new Date(task.dueDate) < new Date() &&
+                task.status !== TASK_STATUS.DONE
+                  ? 'text-status-error'
+                  : 'text-text-subtle'
+              }
+            />
+            <span
+              className={`text-[9px] font-black uppercase tracking-widest ${
+                task.dueDate &&
+                new Date(task.dueDate) < new Date() &&
+                task.status !== TASK_STATUS.DONE
+                  ? 'text-status-error'
+                  : task.dueDate
+                    ? 'text-text-subtle'
+                    : 'text-primary/80'
+              }`}
+            >
+              {task.dueDate
+                ? new Date(task.dueDate)
+                    .toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                    .toUpperCase()
+                : (() => {
+                    const mins = task.estimatedDuration || 0;
+                    const durationInMs = mins * 60 * 1000;
+                    const suggested = new Date(Date.now() + durationInMs);
+                    return `~ ${suggested.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}`;
+                  })()}
+            </span>
+          </div>
+        )}
+
+      {/* Footer Section */}
+      <div className="mt-auto pt-4 border-t border-border-subtler flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          {task.assignedUser && (
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`${isMinimal ? 'w-5 h-5 text-[8px]' : 'w-7 h-7 text-[10px]'} bg-background-elevated flex items-center justify-center font-black text-text-subtle border border-border-subtle group-hover:border-border-subtle transition-all`}
+              >
+                {task.assignedUser.name[0].toUpperCase()}
+              </div>
+              {!isMinimal && (
+                <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] group-hover:text-text/70 transition-colors">
+                  {task.assignedUser.name.split(' ')[0]}
+                </span>
+              )}
+            </div>
+          )}
+
+          {task.source === 'github' && !isMinimal && (
+            <div className="h-4 w-[1px] bg-background-elevated mx-1" />
+          )}
+          {task.source === 'github' && !isMinimal && (
+            <GitBranch
+              size={12}
+              strokeWidth={3}
+              className="text-text-subtler"
+            />
+          )}
         </div>
 
         {task.status !== TASK_STATUS.DONE && (
@@ -112,29 +242,29 @@ const TaskCard = ({ task, user, columns, handleStatusChange, onTaskClick }) => {
               else if (task.status === TASK_STATUS.IN_PROGRESS)
                 next = TASK_STATUS.IN_REVIEW;
               else next = TASK_STATUS.DONE;
-
               handleStatusChange(task._id, next);
             }}
-            className={`text-[10px] px-3 py-1.5 rounded font-bold shadow-lg transition-all active:scale-95 flex items-center gap-1.5 ${
+            className={`${isMinimal ? 'text-[7px] px-3 py-1' : 'text-[9px] px-4 py-2'} font-black uppercase tracking-[0.3em] transition-all active:scale-95 flex items-center gap-2 ${
               user?.role === USER_ROLES.INTERN &&
               task.status === TASK_STATUS.IN_REVIEW
                 ? 'hidden'
                 : ''
             } ${
               task.status === TASK_STATUS.TODO
-                ? 'bg-primary text-white hover:bg-primary-dark ring-1 ring-primary/20'
+                ? 'bg-primary text-background-dark hover:brightness-110'
                 : task.status === TASK_STATUS.IN_PROGRESS
-                  ? 'bg-status-warning text-white hover:bg-status-warning/80 ring-1 ring-status-warning/20'
-                  : 'bg-secondary text-white hover:bg-secondary-light ring-1 ring-secondary/20'
+                  ? 'bg-status-warning text-background-dark hover:brightness-110'
+                  : 'bg-secondary text-text hover:brightness-110'
             }`}
           >
-            <span>
-              {task.status === TASK_STATUS.TODO
-                ? 'Start'
-                : task.status === TASK_STATUS.IN_PROGRESS
-                  ? 'Review'
-                  : 'Complete'}
-            </span>
+            {task.status === TASK_STATUS.TODO
+              ? 'START'
+              : task.status === TASK_STATUS.IN_PROGRESS
+                ? 'REVIEW'
+                : 'DONE'}
+            {!isMinimal && (
+              <ChevronRight size={14} strokeWidth={4} className="opacity-40" />
+            )}
           </button>
         )}
       </div>

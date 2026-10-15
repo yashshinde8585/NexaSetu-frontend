@@ -1,83 +1,88 @@
 import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 
-// A kanban-style task board component that organizes tasks into status-based columns with pagination.
+// Kanban task board component.
 const TaskBoard = ({
   groupedTasks,
   user,
   columns,
   handleStatusChange,
   onTaskClick,
+  cardLayout,
+  currentPage = 1,
+  pageSize = 10,
 }) => {
-  const [pageState, setPageState] = useState({});
-  const ITEMS_PER_PAGE = 10;
-
-  // Updates the current page index for a specific column to handle task pagination.
-  const handlePageChange = (columnId, newPage) => {
-    setPageState((prev) => ({ ...prev, [columnId]: newPage }));
-  };
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
-      {columns.map((column) => {
-        const currentTasks = groupedTasks[column.id] || [];
-        const totalPages = Math.ceil(currentTasks.length / ITEMS_PER_PAGE) || 1;
-        const currentPage = Math.min(pageState[column.id] || 1, totalPages);
-        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        const paginatedTasks = currentTasks.slice(
-          startIndex,
-          startIndex + ITEMS_PER_PAGE
-        );
+    <div>
+      <div className="bg-background-light border-2 border-border-subtle overflow-hidden shadow-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x-2 divide-border-subtle items-stretch">
+          {columns.map((column) => {
+            const allColumnTasks = groupedTasks[column.id] || [];
+            const paginatedColumnTasks = allColumnTasks.slice(
+              startIndex,
+              endIndex
+            );
 
-        return (
-          <div
-            key={column.id}
-            className="bg-background-dark/50 rounded-2xl border border-white/5 flex flex-col min-h-[400px] overflow-hidden"
-          >
-            <div
-              className={`sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl pt-5 px-5 pb-3 border-b-2 flex justify-between items-end text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${column.color}`}
-            >
-              <span>{column.title}</span>
-              <span className="text-text-muted text-[10px] bg-white/5 border border-white/5 px-2 py-0.5 rounded-full">
-                {currentTasks.length}
-              </span>
-            </div>
-            <div className="p-4 space-y-3 flex-grow">
-              {paginatedTasks.map((task) => (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  user={user}
-                  columns={columns}
-                  handleStatusChange={handleStatusChange}
-                  onTaskClick={onTaskClick}
-                />
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <div className="mx-4 mb-4 mt-1 flex items-center justify-between pt-3 border-t border-white/5">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(column.id, currentPage - 1)}
-                  className="text-xs px-3 py-1 bg-background-light disabled:opacity-30 rounded hover:bg-white/10 transition-colors text-text-muted font-bold"
-                >
-                  Prev
-                </button>
-                <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(column.id, currentPage + 1)}
-                  className="text-xs px-3 py-1 bg-background-light disabled:opacity-30 rounded hover:bg-white/10 transition-colors text-text-muted font-bold"
-                >
-                  Next
-                </button>
+            return (
+              <div
+                key={column.id}
+                className="flex-1 min-w-[280px] flex flex-col h-full bg-background-light"
+              >
+                {/* Tactical Column Header */}
+                <div className="p-6 border-b-2 border-border-subtle flex items-center justify-between bg-background-elevated sticky top-0 z-20">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div
+                        className={`w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} `}
+                      />
+                      <div
+                        className={`absolute inset-0 w-3.5 h-3.5 ${column.color.replace('text-', 'bg-')} animate-ping opacity-30`}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-text leading-none">
+                        {column.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-[1px] bg-border-subtle" />
+                    <span className="px-2.5 py-1 bg-background-dark border-2 border-border-subtle text-[10px] font-black text-text font-mono">
+                      {allColumnTasks.length.toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="px-2 py-3 space-y-3 flex-grow min-h-[500px]">
+                  {paginatedColumnTasks.length > 0 ? (
+                    paginatedColumnTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        user={user}
+                        columns={columns}
+                        handleStatusChange={handleStatusChange}
+                        onTaskClick={onTaskClick}
+                        cardLayout={cardLayout}
+                      />
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center grayscale opacity-30 py-32 select-none pointer-events-none">
+                      <div className="w-20 h-1 bg-text-subtle mb-4" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-text">
+                        Sector Clear
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

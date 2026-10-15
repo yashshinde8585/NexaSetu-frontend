@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MagicService from '../../api/magicService';
+import MagicService from '../../api/magicApi';
 import { useAuth } from '../../context/AuthContext';
-import { useMagic } from '../../context/MagicContext';
+import { useMagicState, useMagicActions } from '../../context/MagicContext';
 import magicData from '../../data/magicCommands.json';
+import ErrorBoundary from '../atoms/ErrorBoundary';
 
-// A tactical command interface that processes natural language directives.
+// A command interface that processes natural language inputs.
 const MagicBar = () => {
   const { user } = useAuth();
-  const {
-    setGlobalResult,
-    pendingCommand,
-    setPendingCommand,
-    activeProjects,
-    dashboardContext,
-  } = useMagic();
+  const { setGlobalResult, setPendingCommand } = useMagicActions();
+  const { pendingCommand, activeProjects, dashboardContext } = useMagicState();
   const [query, setQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -208,7 +204,7 @@ const MagicBar = () => {
                 type="button"
                 onClick={startVoiceCommand}
                 className={`${isListening ? 'text-status-danger animate-pulse scale-110' : 'text-text-muted hover:text-white'} transition-all`}
-                title="Voice Directive"
+                title="Voice Command"
               >
                 <svg
                   className="w-4 h-4"
@@ -310,4 +306,10 @@ const MagicBar = () => {
   );
 };
 
-export default MagicBar;
+const SafeMagicBar = (props) => (
+  <ErrorBoundary>
+    <MagicBar {...props} />
+  </ErrorBoundary>
+);
+
+export default SafeMagicBar;

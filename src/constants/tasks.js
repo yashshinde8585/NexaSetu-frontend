@@ -6,10 +6,18 @@ export const TASK_STATUS = {
   DONE: 'done',
 };
 
-// Specifies the available priority levels for categorizing task urgency.
 export const TASK_PRIORITY = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
   URGENT: 'urgent',
+};
+
+export const TASK_TYPE = {
+  EPIC: 'epic',
+  STORY: 'story',
+  TASK: 'task',
+  BUG: 'bug',
+  SPIKE: 'spike',
+  TECH_DEBT: 'tech_debt',
 };

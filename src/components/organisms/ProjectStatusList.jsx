@@ -1,8 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Plus, ArrowRight, Zap, Target } from 'lucide-react';
+import {
+  Plus,
+  ArrowRight,
+  Zap,
+  Target,
+  Activity,
+  Layout,
+  Search,
+  ExternalLink,
+} from 'lucide-react';
 import { Button, Input } from '../atoms';
 
+// Project status listing component.
 const ProjectStatusList = ({
   projects,
   selectedSprintId,
@@ -15,71 +25,116 @@ const ProjectStatusList = ({
   handleLinkProject,
 }) => {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
-          <Zap size={14} className="text-secondary" />
-          Operation Registry
-        </h3>
-        <span className="text-[9px] font-bold text-text-muted/40 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">
-          {projects.length} Active Deployments
-        </span>
+    <div className="bg-card border border-border-subtle rounded-xl p-4 sm:p-5 shadow-sm space-y-6 relative overflow-hidden group">
+      {/* Header Context */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-border-subtle pb-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-secondary/15 border border-secondary/30 rounded flex items-center justify-center text-secondary shadow-xl">
+              <Layout size={18} />
+            </div>
+            <h3 className="text-xl font-black text-text tracking-tighter uppercase leading-none">
+              PROJECT <span className="text-secondary">INVENTORY</span>
+            </h3>
+          </div>
+          <p className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
+            STATUS OF ACTIVE PROJECTS
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] bg-background-elevated px-4 py-2 rounded border border-border-subtle shadow-sm">
+            {projects.length} ACTIVE PROJECTS
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      {/* Grid Manifest */}
+      <div className="grid grid-cols-1 gap-6">
         {projects.map((project) => {
-          const isAssigned = selectedSprintId && (project.sprint?._id || project.sprint)?.toString() === selectedSprintId?.toString();
+          const isAssigned =
+            selectedSprintId &&
+            (project.sprint?._id || project.sprint)?.toString() ===
+              selectedSprintId?.toString();
           const progress = project.percentage || 0;
-          const status = progress > 80 ? 'healthy' : progress > 40 ? 'warning' : 'critical';
+          const status =
+            progress > 80 ? 'healthy' : progress > 40 ? 'warning' : 'critical';
 
           return (
             <div
               key={project._id}
-              className="group bg-white/[0.015] border border-white/5 rounded-3xl p-6 hover:bg-white/[0.04] hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center gap-8 relative overflow-hidden"
+              className="bg-card border border-border-subtle rounded-xl p-4 sm:p-5 hover:border-primary/50 transition-all flex flex-col xl:flex-row xl:items-center gap-6 relative overflow-hidden group/item"
             >
-              <div className="flex items-center gap-5 min-w-[280px]">
-                <div className="flex flex-col min-w-0">
-                  <h4 className="text-lg font-black text-white truncate group-hover:text-primary transition-colors tracking-tight">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover/item:opacity-100 transition-opacity" />
+
+              <div className="flex items-center gap-4 min-w-0 xl:w-1/3">
+                <div className="w-12 h-12 bg-background-dark border border-border-subtle rounded flex items-center justify-center text-lg font-black text-text-subtle group-hover/item:text-primary transition-all uppercase shrink-0">
+                  {project.name.charAt(0)}
+                </div>
+                <div className="flex flex-col min-w-0 gap-1">
+                  <h4 className="text-lg font-black text-text truncate tracking-tight group-hover/item:text-primary transition-colors uppercase leading-tight">
                     {project.name}
                   </h4>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <span className="text-[9px] font-black text-text-muted/30 uppercase tracking-[0.2em] bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                      {project.key || 'NODE'}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] font-black text-text-subtler uppercase tracking-[0.1em]">
+                      PROJECT ID: {project._id?.slice(-8).toUpperCase()}
                     </span>
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
-                      <div className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-text-muted/20'}`} />
-                      <span className="text-[8px] font-bold uppercase text-text-muted/40 tracking-widest leading-none">
-                        {isAssigned ? 'SYNCED' : 'DETACHED'}
+                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-background-elevated border border-border-subtle">
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-status-success animate-pulse' : 'bg-border-subtle'}`}
+                      />
+                      <span className="text-[9px] font-black uppercase text-text-subtle tracking-widest">
+                        {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col gap-3 relative z-10">
-                <div className="flex justify-between items-end mb-1">
-                  <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-[0.3em]">Operational Track</span>
-                  <span className={`text-[10px] font-black tracking-widest ${
-                    status === 'healthy' ? 'text-status-success' : 
-                    status === 'warning' ? 'text-status-warning' : 
-                    'text-status-error'
-                  }`}>
-                    {progress}%
+              {/* Tactical Progress Trace */}
+              <div className="flex-1 flex flex-col gap-2.5 relative z-10 px-2 lg:px-6 border-l border-border-subtler lg:border-r">
+                <div className="flex justify-between items-end">
+                  <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
+                    PROJECT PROGRESS
                   </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-sm font-black tracking-tight ${
+                        status === 'healthy'
+                          ? 'text-status-success'
+                          : status === 'warning'
+                            ? 'text-status-warning'
+                            : 'text-status-error'
+                      }`}
+                    >
+                      {progress}%
+                    </span>
+                    <Activity
+                      size={12}
+                      className={
+                        status === 'healthy'
+                          ? 'text-status-success/40'
+                          : 'text-border-subtle'
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="w-full h-1.5 bg-white/[0.03] rounded-full overflow-hidden border border-white/5 shadow-inner">
-                   <div 
+                <div className="w-full h-1.5 bg-background-elevated border border-border-subtle rounded-full overflow-hidden">
+                  <div
                     className={`h-full transition-all duration-[1500ms] ease-out ${
-                      status === 'healthy' ? 'bg-status-success shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 
-                      status === 'warning' ? 'bg-status-warning shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 
-                      'bg-status-error shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                      status === 'healthy'
+                        ? 'bg-status-success'
+                        : status === 'warning'
+                          ? 'bg-status-warning'
+                          : 'bg-status-error'
                     }`}
                     style={{ width: `${progress}%` }}
-                   />
+                  />
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 shrink-0 relative z-10">
+              {/* Command Interaction Zone */}
+              <div className="flex items-center gap-4 shrink-0 relative z-10 xl:w-1/4 justify-end">
                 {isAssigned ? (
                   <div className="flex items-center gap-2">
                     {quickTicketProject === project._id ? (
@@ -88,62 +143,71 @@ const ProjectStatusList = ({
                           e.preventDefault();
                           createTicket(project._id, selectedSprintId);
                         }}
-                        className="flex items-center gap-2 animate-in fade-in slide-in-from-right-8 duration-300"
+                        className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300"
                       >
-                        <div className="relative">
-                          <Input
-                            placeholder="SET MISSION..."
-                            size="sm"
-                            value={quickTicketTitle}
-                            onChange={(e) => setQuickTicketTitle(e.target.value)}
-                            autoFocus
-                            className="h-10 w-56 text-[10px] font-bold bg-white/5 rounded-xl border-white/5 focus:border-primary/40 focus:bg-white/[0.08] transition-all tracking-widest uppercase"
-                          />
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black text-text-muted/20 tracking-tighter">CMD+ENT</div>
-                        </div>
-                        <Button 
-                          type="submit" 
-                          size="sm" 
-                          isLoading={createTicketLoading}
-                          className="h-10 px-6 rounded-xl text-[10px] uppercase font-black tracking-widest shadow-lg shadow-primary/10"
+                        <input
+                          placeholder="TASK TITLE..."
+                          value={quickTicketTitle}
+                          onChange={(e) => setQuickTicketTitle(e.target.value)}
+                          autoFocus
+                          className="h-9 w-full sm:w-48 bg-background-dark border border-primary/40 px-4 rounded text-text font-black text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-all"
+                        />
+                        <button
+                          type="submit"
+                          disabled={createTicketLoading}
+                          className="h-9 px-4 bg-primary text-black hover:bg-primary-dark rounded text-[9px] font-black uppercase tracking-[0.1em] transition-all disabled:opacity-50"
                         >
-                          DISPATCH
-                        </Button>
-                        <button 
+                          {createTicketLoading ? '...' : 'ADD TASK'}
+                        </button>
+                        <button
                           type="button"
                           onClick={() => setQuickTicketProject(null)}
-                          className="px-4 py-2 text-[10px] font-black text-text-muted/40 hover:text-white transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-text-subtler hover:text-text transition-colors shrink-0"
                         >
-                          CANCEL
+                          <Plus size={16} className="rotate-45" />
                         </button>
                       </form>
                     ) : (
                       <button
                         onClick={() => setQuickTicketProject(project._id)}
-                        className="flex items-center gap-3 px-8 py-2.5 bg-white/[0.03] hover:bg-primary/10 hover:border-primary/20 text-text-muted hover:text-white rounded-xl border border-white/5 transition-all shadow-sm"
+                        className="flex items-center gap-3 px-6 h-9 bg-background-elevated border border-border-subtle hover:border-primary/50 text-text-subtle hover:text-text rounded transition-all active:scale-95 group/btn"
                       >
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">+ QUICK TASK</span>
+                        <Plus
+                          size={14}
+                          className="text-primary group-hover/btn:rotate-90 transition-transform"
+                        />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+                          QUICK TASK
+                        </span>
                       </button>
                     )}
                   </div>
                 ) : (
-                  <Button
-                    onClick={() => handleLinkProject(project._id, selectedSprintId)}
-                    variant="secondary"
-                    size="sm"
-                    className="h-11 rounded-xl px-8 text-[10px] font-black uppercase tracking-[0.3em] hover:translate-x-1 shadow-2xl active:scale-95 transition-all bg-white/[0.05] border-white/10 hover:bg-primary hover:border-primary"
+                  <button
+                    onClick={() =>
+                      handleLinkProject(project._id, selectedSprintId)
+                    }
+                    className="h-9 px-6 bg-background-elevated border border-border-subtle text-text-subtle hover:bg-primary hover:text-background-dark hover:border-primary rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center gap-3"
                   >
-                    SYNC TO CYCLE
-                  </Button>
+                    <Target size={14} />
+                    ASSIGN TO SPRINT
+                  </button>
                 )}
               </div>
-              
-              {/* Background Decorator */}
-              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
           );
         })}
       </div>
+
+      {/* Empty State Manifest */}
+      {projects.length === 0 && (
+        <div className="py-20 text-center bg-background-elevated border border-dashed border-border-subtle rounded-xl space-y-4">
+          <Zap size={40} className="mx-auto text-text-subtler" />
+          <p className="text-[10px] font-black text-text-subtle uppercase tracking-[0.4em]">
+            No projects found
+          </p>
+        </div>
+      )}
     </div>
   );
 };

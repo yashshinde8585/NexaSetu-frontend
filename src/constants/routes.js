@@ -1,13 +1,13 @@
 // Defines the path strings and route generation functions for application navigation.
 export const ROUTES = {
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/',
   PROJECTS: '/projects',
   PROJECT_DETAIL: (id) => `/project/${id}`,
   MY_TASKS: '/my-tasks',
   TASK_DETAIL: (id) => `/task/${id}`,
   TEAMS: '/teams',
   SETTINGS: '/settings',
-  COMMAND_CENTER: '/command-center',
+  COMMAND_CENTER: '/cto-dashboard',
   EXECUTION_COMMANDER: '/execution-commander',
   TEAM_COMMAND_CENTER: '/team-command-center',
   SYSTEM_HEALTH_CONTROL: '/system-health-control',
@@ -18,8 +18,11 @@ export const ROUTES = {
   QUALITY_CONTROL: '/quality-control',
   QUALITY_STRATEGY: '/quality-strategy',
   QUALITY_COMMAND: '/quality-command',
-  PEOPLE_OPS: '/people-ops',
+  HR: '/hr',
   ADMIN_PANEL: '/admin/dashboard',
   LOGIN: '/login',
   REGISTER: '/register',
+  PROFILE: '/profile',
+  PRICING: '/pricing',
+  BILLING: '/admin/billing',
 };

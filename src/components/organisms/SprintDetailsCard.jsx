@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ChevronDown, ChevronRight, FileText, Target, Users, Clock, AlertCircle, Plus } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Users,
+  Clock,
+  AlertCircle,
+  Plus,
+  Activity,
+  Zap,
+} from 'lucide-react';
 import VelocityIndicator from '../molecules/VelocityIndicator';
 import ItemBreakdownHeader from '../molecules/ItemBreakdownHeader';
+import TacticalCustomSelect from '../molecules/TacticalCustomSelect';
 
+// Detailed sprint analytics card.
 const SprintDetailsCard = ({
   sprint,
   metrics,
@@ -12,189 +24,251 @@ const SprintDetailsCard = ({
   showWorkload,
   setShowWorkload,
   onDownload,
-  // Integrated controls
   sprints = [],
   onSprintChange,
   selectedSprintId,
   onAddSprint,
   onFinalize,
   finalizing,
-  canCreate
+  canCreate,
 }) => {
   if (!sprint) return null;
 
   return (
-    <div className="bg-[#1E1E2E]/80 backdrop-blur-3xl border border-white/10 rounded-none p-6 shadow-2xl relative group">
-      {/* Heavy Industrial Background Glow */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[150px] -mr-48 -mt-48 pointer-events-none" />
-      
-      {/* Header Overview - Integrated Selection */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-4 pb-4 border-b border-white/5 relative z-30">
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-             {/* Mission Selector replaces static Title */}
-             <div className="relative group/cycle z-50">
-              <div className="flex flex-col p-0.5 bg-white/[0.03] border border-white/5 rounded-none min-w-[280px] backdrop-blur-3xl">
-                <div className="flex items-center justify-between px-5 py-2 bg-primary/10 border border-primary/20 cursor-pointer">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">
-                      {sprint.name}
+    <div className="bg-card border border-border-subtle rounded-xl p-4 sm:p-5 relative overflow-hidden group">
+      {/* Dynamic Background Telemetry */}
+
+      {/* Header Overview - Tactical Orchestration */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 pb-6 border-b border-border-subtle relative z-20">
+        <div className="flex-1 min-w-0 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            {/* Dynamic Cycle Selector */}
+            <div className="relative z-50 w-full lg:w-auto">
+              <TacticalCustomSelect
+                value={sprint._id}
+                onChange={onSprintChange}
+                options={sprints.map((s) => ({
+                  label: s.name,
+                  value: s._id,
+                }))}
+                displayValue={
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-text uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Clock size={12} className="text-primary" />
+                      {sprint.name.toUpperCase()}
                     </span>
-                    <span className="text-[8px] text-primary/60 font-black uppercase mt-0.5">{sprint.derivedStatus} Status</span>
+                    <span className="text-[8px] text-text-subtle font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Activity size={10} className="text-status-success/60" />
+                      SPRINT STATUS: {sprint.status?.toUpperCase() || 'UNKNOWN'}
+                    </span>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-primary/40 group-hover/cycle:rotate-180 transition-transform duration-500" />
-                </div>
-                {/* Dropdown Menu */}
-                <div className="absolute top-full left-0 w-full bg-[#11111E] border border-white/10 opacity-0 invisible group-hover/cycle:opacity-100 group-hover/cycle:visible transition-all duration-300 z-50 shadow-2xl overflow-y-auto max-h-[200px] [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-thumb]:bg-white/20">
-                  {sprints.map(s => (
-                    <button 
-                      key={s._id} 
-                      onClick={() => onSprintChange(s._id)}
-                      className={`w-full text-left px-5 py-3 border-b border-white/[0.03] last:border-0 transition-colors ${selectedSprintId === s._id ? 'bg-primary/20 text-white' : 'text-text-muted/40 hover:bg-white/[0.03] hover:text-white'}`}
-                    >
-                      <span className="text-[9px] font-black uppercase tracking-widest">{s.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+                }
+              />
             </div>
 
-            {/* Quick Action Hub */}
+            {/* Tactical Control Suite */}
             {canCreate && (
-              <div className="flex items-center gap-3">
-                <button 
+              <div className="flex items-center gap-2">
+                <button
                   onClick={onAddSprint}
-                  className="w-10 h-10 flex items-center justify-center bg-white/[0.03] border border-white/5 hover:border-primary/40 text-white/20 hover:text-primary transition-all group/add"
-                  title="New Mission"
+                  className="w-9 h-9 flex items-center justify-center bg-background-elevated border border-border-subtle rounded hover:border-primary/50 text-text-subtle hover:text-primary transition-all active:scale-95"
+                  title="Create New Sprint"
                 >
-                  <Plus size={16} className="group-hover/add:rotate-90 transition-transform" />
+                  <Plus size={16} strokeWidth={3} />
                 </button>
                 {sprint.status !== 'completed' && (
                   <button
                     onClick={onFinalize}
                     disabled={finalizing}
-                    className="px-5 h-10 bg-secondary/80 hover:bg-secondary text-white text-[8px] font-black uppercase tracking-[0.3em] border border-white/10 transition-all active:scale-95 disabled:opacity-50"
+                    className="h-9 px-6 bg-background-elevated border border-status-success/30 text-status-success hover:bg-status-success hover:text-background-dark rounded text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 disabled:opacity-50"
                   >
-                    {finalizing ? '...' : 'FINALIZE CYCLE'}
+                    {finalizing ? 'PROCESSING...' : 'COMPLETE SPRINT'}
                   </button>
                 )}
               </div>
             )}
           </div>
-
-          <p className="text-[8px] text-text-muted font-bold uppercase tracking-widest mt-3 flex items-center gap-2 opacity-50">
-            <Target size={10} className="text-primary" />
-            {sprint.goal || "MISSION UNASSIGNED"}
-          </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 lg:border-l lg:border-white/5 lg:pl-6">
-          <div className="flex flex-col">
-            <span className="text-[11px] font-black text-white/90">
-              {new Date(sprint.startDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
+        {/* Temporal Metrics Row */}
+        <div className="flex flex-wrap items-center gap-6 lg:border-l lg:border-border-subtle lg:pl-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] text-text-subtle font-black uppercase tracking-[0.2em]">
+              START DATE
             </span>
-            <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-40">Start</span>
+            <span className="text-[11px] font-black text-text uppercase tracking-tight">
+              {new Date(sprint.startDate).toLocaleDateString(undefined, {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
           </div>
-          <div className="flex flex-col border-l border-white/5 pl-4">
-            <span className="text-[11px] font-black text-white/90">
-              {new Date(sprint.endDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
+          <div className="w-1 h-1 rounded-full bg-border-subtle" />
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] text-text-subtle font-black uppercase tracking-[0.2em]">
+              END DATE
             </span>
-            <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-40">End</span>
+            <span className="text-[11px] font-black text-text uppercase tracking-tight">
+              {new Date(sprint.endDate).toLocaleDateString(undefined, {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
           </div>
-          <div className="flex flex-col border-l border-white/5 pl-4">
-             <span className="text-[11px] font-black text-white/90 text-primary">
-              {Math.max(1, Math.ceil((new Date(sprint.endDate) - new Date(sprint.startDate)) / (1000 * 60 * 60 * 24)))}d
+          <div className="w-1 h-1 rounded-full bg-border-subtle" />
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] text-text-subtle font-black uppercase tracking-[0.2em]">
+              DURATION
             </span>
-            <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-40">Span</span>
+            <span className="text-[11px] font-black text-primary uppercase tracking-tight">
+              {Math.max(
+                1,
+                Math.ceil(
+                  (new Date(sprint.endDate) - new Date(sprint.startDate)) /
+                    (1000 * 60 * 60 * 24)
+                )
+              )}{' '}
+              DAYS
+            </span>
           </div>
           {canCreate && (
-            <div className="flex flex-col border-l border-white/5 pl-4 items-end">
-              <button
-                 onClick={onDownload}
-                 className="p-1.5 bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group/btn"
-                 title="Export Intelligence"
-              >
-                <FileText className="w-4 h-4 text-primary group-hover/btn:scale-110 transition-transform" />
-              </button>
-              <span className="text-[8px] text-text-muted font-black uppercase tracking-widest mt-0.5 opacity-40">Report</span>
-            </div>
+            <button
+              onClick={onDownload}
+              className="ml-auto w-9 h-9 bg-background-elevated border border-border-subtle rounded hover:border-primary/50 text-primary transition-all flex items-center justify-center active:scale-95"
+              title="Export Sprint Report"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
           )}
         </div>
       </div>
 
-      {/* Metrics Center */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch relative z-10">
-        <div className="lg:col-span-4 h-full">
-          <VelocityIndicator data={metrics.velocitySpark} statsLoading={statsLoading} />
+      {/* Intelligence Dashboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch relative z-10">
+        <div className="lg:col-span-4 bg-card border border-border-subtle rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
+          <VelocityIndicator
+            data={metrics.velocitySpark}
+            statsLoading={statsLoading}
+          />
         </div>
-        <div className="lg:col-span-8 flex flex-col gap-4">
+
+        <div className="lg:col-span-8 flex flex-col gap-6">
           <ItemBreakdownHeader metrics={metrics} statsLoading={statsLoading} />
-          
-          <div className="grid grid-cols-3 gap-3 h-full">
-             <div className="bg-white/[0.02] border border-white/5 rounded-none p-3 group hover:bg-white/[0.04] transition-all">
-                <div className="text-[8px] font-black text-text-muted/60 uppercase tracking-widest mb-1 opacity-60">Flow Efficiency</div>
-                <div className="flex items-center gap-2">
-                  <div className="text-lg font-black text-white">{metrics.flowEfficiency || '78.4'}<span className="text-[10px] text-text-muted/40 ml-0.5">%</span></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+            <div className="bg-card border border-border-subtle rounded-lg p-4 group hover:border-primary/50 transition-all">
+              <div className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                FLOW EFFICIENCY
+                <Zap size={10} className="text-secondary" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-text">
+                  {metrics.flowEfficiency || '0'}
+                  <span className="text-[10px] text-text-subtle ml-1">%</span>
                 </div>
-             </div>
-             <div className="bg-white/[0.02] border border-white/5 rounded-none p-3 group hover:bg-white/[0.04] transition-all">
-                <div className="text-[8px] font-black text-text-muted/60 uppercase tracking-widest mb-1 opacity-60">Strategic Debt</div>
-                <div className="flex items-center gap-2">
-                  <div className="text-lg font-black text-status-warning">{metrics.strategicDebt}</div>
-                  <Clock size={10} className="text-status-warning/40" />
+                <div className="flex-1 h-1 bg-border-subtle rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-secondary"
+                    style={{ width: `${metrics.flowEfficiency || 0}%` }}
+                  />
                 </div>
-             </div>
-             <div className="bg-white/[0.02] border border-white/5 rounded-none p-3 group hover:bg-white/[0.04] transition-all">
-                <div className="text-[8px] font-black text-text-muted/60 uppercase tracking-widest mb-1 opacity-60">Blocker Density</div>
-                <div className="flex items-center gap-2">
-                  <div className="text-lg font-black text-status-info">{metrics.blockerDensity}</div>
-                  <AlertCircle size={10} className="text-status-info/40" />
+              </div>
+            </div>
+
+            <div className="bg-card border border-border-subtle rounded-lg p-4 group hover:border-status-warning/50 transition-all">
+              <div className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                BACKLOG TASKS
+                <Clock size={10} className="text-status-warning" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-status-warning">
+                  {metrics.strategicDebt || 0}
                 </div>
-             </div>
+                <div className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
+                  TASKS
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card border border-border-subtle rounded-lg p-4 group hover:border-status-info/50 transition-all">
+              <div className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em] mb-2 flex items-center justify-between">
+                BLOCKED TASKS
+                <AlertCircle size={10} className="text-status-info" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-xl font-black text-status-info">
+                  {metrics.blockerDensity || 0}
+                </div>
+                <div className="text-[9px] font-black text-text-subtle uppercase tracking-[0.2em]">
+                  BLOCKED
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Workload Hub / Pulse */}
+      {/* Workforce Saturation (Pulse) */}
       {canCreate && (
-        <div className="mt-6 pt-4 border-t border-white/5 relative z-10">
-          <div 
+        <div className="mt-6 pt-6 border-t border-border-subtle relative z-10">
+          <button
             onClick={() => setShowWorkload(!showWorkload)}
-            className="flex justify-between items-center cursor-pointer hover:bg-white/5 -mx-2 px-2 py-1.5 rounded-none transition-all select-none"
+            className="flex justify-between items-center w-full px-4 py-2.5 bg-background-elevated border border-border-subtle rounded-lg hover:bg-background-elevated/80 transition-all select-none"
           >
-            <h4 className="text-[8px] font-black uppercase tracking-[0.2em] text-text-muted/60 flex items-center gap-3">
-               <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <Users size={12} className="opacity-60" />
-               </div>
-               Execution Pulse & Workload
-            </h4>
-            {showWorkload ? <ChevronDown size={14} className="text-text-muted" /> : <ChevronRight size={14} className="text-text-muted" />}
-          </div>
-
-          {showWorkload && metrics.workload?.length > 0 && (
-            <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {metrics.workload.map((wp, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white/[0.03] border border-white/10 rounded-none px-4 py-3 flex items-center gap-3 hover:bg-white/[0.08] transition-all"
-                  >
-                    <div className="w-8 h-8 rounded-none bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-[10px] font-black text-primary border border-primary/20 uppercase tracking-tighter shadow-inner">
-                      {wp.name.charAt(0)}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-white/90">
-                        {wp.name}
-                      </span>
-                      <span className="text-[8px] font-bold text-text-muted/40 uppercase tracking-widest">
-                        {wp.count} active
-                      </span>
-                    </div>
-                  </div>
-                ))}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <Users size={14} className="text-text-subtle" />
               </div>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-subtle">
+                TEAM WORKLOAD
+              </span>
+            </div>
+            {showWorkload ? (
+              <ChevronDown size={16} className="text-primary" />
+            ) : (
+              <ChevronRight size={16} className="text-text-subtler" />
+            )}
+          </button>
+
+          {showWorkload && (
+            <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              {metrics.workload?.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {metrics.workload.map((wp, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-card border border-border-subtle rounded-lg px-4 py-3 flex items-center gap-4 hover:border-primary/40 transition-all"
+                    >
+                      <div className="w-9 h-9 rounded bg-background-dark border border-border-subtle flex items-center justify-center text-[10px] font-black text-text transition-all uppercase">
+                        {wp.name.charAt(0)}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[10px] font-black text-text uppercase tracking-tight truncate">
+                          {wp.name}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] font-black text-text-subtle uppercase tracking-[0.1em]">
+                            {wp.count} ACTIVE
+                          </span>
+                          <div
+                            className={`w-1 h-1 rounded-full ${wp.count > 5 ? 'bg-status-error' : 'bg-status-success'}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-20 text-center bg-background-elevated border border-dashed border-border-subtle rounded-2xl flex flex-col items-center gap-4">
+                  <Users size={40} className="text-text-subtler" />
+                  <span className="text-[10px] font-black text-text-subtle uppercase tracking-[0.4em]">
+                    No members assigned to this sprint
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>

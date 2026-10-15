@@ -7,154 +7,532 @@ import {
   BadgeCheck,
   Clock,
   Lock,
-  Fingerprint,
-  Database,
-  Monitor,
-  Globe,
-  Bell,
+  ChevronRight,
+  Loader2,
+  X,
+  Eye,
+  EyeOff,
+  CheckCircle,
+  AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
-import TacticalInput from '../molecules/TacticalInput';
-import TacticalSelect from '../molecules/TacticalSelect';
-import SecurityActionRow from '../molecules/SecurityActionRow';
-import Card from '../atoms/Card';
-import Button from '../atoms/Button';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useAuth } from '../../context/AuthContext';
+import { changePassword } from '../../api/authApi';
 
-// A unified layout wrapper for settings sections that ensures consistent styling.
+// ─── Section wrapper ──────────────────────────────────────────────────────────
 const DeckWrapper = ({ title, children }) => (
-  <Card
-    variant="glass"
-    padding="lg"
-    className="shadow-2xl relative overflow-hidden sm:rounded-[32px]"
-    hover={false}
-  >
-    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-    <h2 className="text-lg sm:text-xl font-bold text-white uppercase tracking-tight mb-8 flex items-center gap-4">
-      <div className="h-4 w-1 bg-primary rounded-full"></div> {title}
-    </h2>
-    <div className="space-y-8 relative z-10">{children}</div>
-  </Card>
+  <div className="bg-white/5 border border-white/10 rounded p-3 sm:p-4 space-y-4">
+    <div className="flex items-center gap-2">
+      <div className="h-3.5 w-0.5 bg-primary rounded-full" />
+      <h2 className="text-[10px] font-black text-white uppercase tracking-widest">
+        {title}
+      </h2>
+    </div>
+    <div className="space-y-4">{children}</div>
+  </div>
 );
 
-// A section for managing user identity and profile information.
-export const IdentitySection = ({ user }) => (
-  <DeckWrapper title="Profile Identity">
-    <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-10 p-5 sm:p-6 bg-white/[0.02] rounded-2xl sm:rounded-3xl border border-white/5 group hover:bg-white/[0.04] transition-all duration-500">
-      <div className="relative">
-        <div className="w-28 h-28 rounded-full border-2 border-white/10 p-0.5 shadow-2xl">
-          <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center border border-white/5 overflow-hidden">
-            {user.avatar ? (
+// ─── Compact field label ──────────────────────────────────────────────────────
+const FieldLabel = ({ htmlFor, children }) => (
+  <label
+    htmlFor={htmlFor}
+    className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] block mb-1"
+  >
+    {children}
+  </label>
+);
+
+// ─── Read-only display field ──────────────────────────────────────────────────
+const ReadField = ({ icon: Icon, value }) => (
+  <div
+    className="flex items-center gap-2.5 h-9 px-3 rounded border text-[10px] font-black uppercase tracking-widest"
+    style={{
+      backgroundColor: 'var(--color-background)',
+      borderColor: 'var(--color-border-subtle)',
+      color: 'var(--color-text-subtle)',
+    }}
+  >
+    <Icon
+      size={12}
+      className="shrink-0"
+      style={{ color: 'var(--color-text-subtler)' }}
+    />
+    <span className="truncate">{value}</span>
+  </div>
+);
+
+// ─── Password input with show/hide ───────────────────────────────────────────
+const PasswordField = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  disabled,
+}) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="flex flex-col gap-1.5 w-full">
+      <label
+        htmlFor={id}
+        className="text-[9px] font-black uppercase tracking-[0.2em] ml-1"
+        style={{ color: 'var(--color-text-subtle)' }}
+      >
+        {label}
+      </label>
+      <div className="relative group">
+        <input
+          id={id}
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoComplete="off"
+          className="w-full px-3 py-2 pr-10 rounded border focus:outline-none transition-all text-[10px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-white/20"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderColor: 'var(--color-border-subtle)',
+            color: 'var(--color-text)',
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          disabled={disabled}
+          tabIndex={-1}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors disabled:opacity-40"
+          aria-label={show ? 'Hide password' : 'Show password'}
+        >
+          {show ? <EyeOff size={13} /> : <Eye size={13} />}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── Change Password Modal ────────────────────────────────────────────────────
+export const ChangePasswordModal = ({ onClose }) => {
+  const [form, setForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [status, setStatus] = useState('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  const set = (field) => (e) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
+      setErrorMsg('All fields are required.');
+      return;
+    }
+    if (form.newPassword.length < 8) {
+      setErrorMsg('New password must be at least 8 characters.');
+      return;
+    }
+    if (form.newPassword !== form.confirmPassword) {
+      setErrorMsg('New passwords do not match.');
+      return;
+    }
+
+    setStatus('loading');
+    try {
+      await changePassword(
+        form.currentPassword,
+        form.newPassword,
+        form.confirmPassword
+      );
+      setStatus('success');
+    } catch (err) {
+      setErrorMsg(
+        err?.response?.data?.message ||
+          'Something went wrong. Please try again.'
+      );
+      setStatus('error');
+    }
+  };
+
+  const isLoading = status === 'loading';
+  const strength = Math.min(4, Math.floor(form.newPassword.length / 3));
+  const strengthColor =
+    strength <= 1
+      ? 'bg-red-500'
+      : strength <= 2
+        ? 'bg-yellow-400'
+        : 'bg-green-400';
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="max-w-sm w-full border rounded shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
+        style={{
+          backgroundColor: 'var(--color-background-elevated)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
+      >
+        {/* Header */}
+        <div
+          className="flex justify-between items-start px-6 pt-6 pb-3 border-b"
+          style={{ borderColor: 'var(--color-border-subtle)' }}
+        >
+          <div>
+            <h2
+              className="text-[12px] font-black uppercase tracking-widest animate-in fade-in duration-300"
+              style={{ color: 'var(--color-text)' }}
+            >
+              Change Password
+            </h2>
+            <p
+              className="text-[8px] font-black uppercase tracking-[0.2em] mt-1"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
+              Keep your account secure with a strong password.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 border hover:bg-white/5 rounded transition-colors"
+            style={{
+              borderColor: 'var(--color-border-subtle)',
+              color: 'var(--color-text-subtle)',
+            }}
+            aria-label="Close"
+          >
+            <X size={12} />
+          </button>
+        </div>
+
+        {/* Body */}
+        {status === 'success' ? (
+          <div className="p-6 text-center animate-in zoom-in-95 duration-500 space-y-4">
+            <div className="w-12 h-12 bg-status-success/10 text-status-success rounded flex items-center justify-center mx-auto mb-2 border border-status-success/20">
+              <CheckCircle size={24} />
+            </div>
+            <h3
+              className="text-[11px] font-black uppercase tracking-widest"
+              style={{ color: 'var(--color-text)' }}
+            >
+              Password Updated
+            </h3>
+            <p
+              className="text-[8px] font-black uppercase tracking-[0.2em]"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
+              Your credentials have been changed successfully.
+            </p>
+            <button
+              onClick={onClose}
+              className="w-full h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+              style={{
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-background)',
+                border: '1px solid var(--color-primary)',
+              }}
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col">
+            <div className="px-6 py-4 space-y-4">
+              <PasswordField
+                id="cp-current"
+                label="Current Password"
+                value={form.currentPassword}
+                onChange={set('currentPassword')}
+                placeholder="Enter your current password"
+                disabled={isLoading}
+              />
+              <PasswordField
+                id="cp-new"
+                label="New Password"
+                value={form.newPassword}
+                onChange={set('newPassword')}
+                placeholder="At least 8 characters"
+                disabled={isLoading}
+              />
+
+              {/* Strength bar */}
+              {form.newPassword.length > 0 && (
+                <div className="flex gap-1 px-0.5">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${i < strength ? strengthColor : 'bg-white/10'}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              <PasswordField
+                id="cp-confirm"
+                label="Confirm New Password"
+                value={form.confirmPassword}
+                onChange={set('confirmPassword')}
+                placeholder="Repeat your new password"
+                disabled={isLoading}
+              />
+
+              {/* Error */}
+              {(status === 'error' || errorMsg) && (
+                <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded flex items-center gap-2 text-red-400 text-[8px] font-black uppercase tracking-widest animate-in fade-in zoom-in-95">
+                  <AlertCircle size={10} className="shrink-0" />
+                  {errorMsg}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div
+              className="px-6 py-4 border-t flex items-center justify-between"
+              style={{ borderColor: 'var(--color-border-subtle)' }}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-9 px-4 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+                style={{
+                  border:
+                    '1px solid var(--color-border-subtle, rgba(255,255,255,0.1))',
+                  color: 'var(--color-text-subtle, rgba(255,255,255,0.6))',
+                  backgroundColor: 'transparent',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="h-9 px-7 rounded transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest flex items-center gap-2"
+                style={{
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'var(--color-background)',
+                  border: '1px solid var(--color-primary)',
+                }}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={12} /> Updating…
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck size={12} /> Update Password
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+// ─── Profile identity section ─────────────────────────────────────────────────
+export const IdentitySection = ({ user }) => {
+  const { updateAvatar } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size exceeds the 2 MB limit.');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try {
+      setIsUploading(true);
+      await updateAvatar(formData);
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const displayName =
+    user.name || user.fullName || user.firstName || user.username || 'User';
+  const displayEmail =
+    user.email ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    '';
+  const displayAvatar = user.profilePicture || user.imageUrl;
+  const displayTitle =
+    user.jobTitle ||
+    (user.role && user.role.replace('_', ' ')) ||
+    (user.publicMetadata?.role &&
+      String(user.publicMetadata.role).replace('_', ' ')) ||
+    'Team Member';
+
+  return (
+    <DeckWrapper title="User Profile">
+      {/* Avatar + info row */}
+      <div className="flex items-center gap-4 p-3 bg-black border border-white/10 rounded">
+        {/* Avatar */}
+        <div className="relative shrink-0">
+          <button
+            onClick={handleAvatarClick}
+            className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative group focus:outline-none"
+          >
+            {displayAvatar ? (
               <img
-                src={user.avatar}
-                className="w-full h-full object-cover"
-                alt={user.name}
+                src={displayAvatar}
+                className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                alt={displayName}
               />
             ) : (
-              <span className="text-4xl font-extrabold text-white">
-                {user.name.charAt(0)}
+              <span className="text-lg font-black text-white/50">
+                {displayName.charAt(0)}
               </span>
             )}
+            {/* Overlay on hover */}
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera size={12} className="text-white" />
+            </div>
+            {isUploading && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                <Loader2 className="animate-spin text-primary" size={14} />
+              </div>
+            )}
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+        </div>
+
+        {/* User info */}
+        <div className="flex-1 min-w-0">
+          <div className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em]">
+            Active User
+          </div>
+          <div className="text-[12px] font-black text-white uppercase tracking-wider truncate">
+            {displayName}
+          </div>
+          <div className="text-[9px] text-white/50 truncate">
+            {displayEmail}
           </div>
         </div>
-        <Button
-          variant="primary"
-          size="icon"
-          className="absolute bottom-0 right-0 w-10 h-10 rounded-xl border border-[#0B0F1A] shadow-xl"
+
+        {/* Upload hint */}
+        <button
+          onClick={handleAvatarClick}
+          className="shrink-0 text-[8px] font-black uppercase tracking-widest text-primary/70 hover:text-primary transition-colors hidden sm:block"
         >
-          <Camera size={18} />
-        </Button>
+          Change
+        </button>
       </div>
-      <div className="flex-1 space-y-2 text-center md:text-left">
-        <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
-          Full Name
+
+      {/* Fields grid — 2 columns on sm+ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <FieldLabel>Full Name</FieldLabel>
+          <ReadField icon={UserCircle} value={displayName} />
         </div>
-        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight">
-          {user.name}
-        </h3>
-        <p className="text-xs text-text-muted opacity-60">
-          Upload a profile picture to help your team members identify you.
+        <div>
+          <FieldLabel>Email Address</FieldLabel>
+          <ReadField icon={AtSign} value={displayEmail} />
+        </div>
+        <div>
+          <FieldLabel>Current Role</FieldLabel>
+          <ReadField icon={BadgeCheck} value={displayTitle} />
+        </div>
+        <div>
+          <FieldLabel>Member Since</FieldLabel>
+          <ReadField
+            icon={Clock}
+            value={
+              user.createdAt
+                ? new Date(user.createdAt).toLocaleDateString()
+                : 'N/A'
+            }
+          />
+        </div>
+      </div>
+    </DeckWrapper>
+  );
+};
+
+// ─── Account security section ─────────────────────────────────────────────────
+export const SecuritySection = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      <DeckWrapper title="Account Security">
+        <div className="grid grid-cols-1 gap-2">
+          <SecurityRow
+            icon={<Lock size={13} />}
+            title="Change Password"
+            desc="Regularly update your credentials."
+            onClick={() => setShowModal(true)}
+          />
+        </div>
+      </DeckWrapper>
+      {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
+    </>
+  );
+};
+
+// ─── Security row ─────────────────────────────────────────────────────────────
+const SecurityRow = ({ icon, title, desc, badge, onClick }) => (
+  <button
+    onClick={onClick}
+    className="w-full p-2.5 bg-black border border-white/10 hover:border-white/20 rounded flex items-center justify-between group transition-all text-left"
+  >
+    <div className="flex items-center gap-2.5">
+      <div className="w-7 h-7 rounded bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors shrink-0">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <h4 className="text-[9px] font-black uppercase tracking-widest text-white">
+            {title}
+          </h4>
+          {badge && (
+            <span className="text-[7px] font-black bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">
+              {badge}
+            </span>
+          )}
+        </div>
+        <p className="text-[8px] text-white/40 uppercase tracking-[0.15em]">
+          {desc}
         </p>
       </div>
     </div>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-      <TacticalInput
-        icon={<UserCircle />}
-        label="Full Name"
-        value={user.name}
-        placeholder="John Doe"
-      />
-      <TacticalInput
-        icon={<AtSign />}
-        label="Email Address"
-        value={user.email}
-        placeholder="john@nexus.app"
-      />
-      <TacticalInput
-        icon={<BadgeCheck />}
-        label="Account Role"
-        value={user.jobTitle || 'Team Member'}
-        disabled
-      />
-      <TacticalInput
-        icon={<Clock />}
-        label="Member Since"
-        value={`Joined ${new Date(user.createdAt).toLocaleDateString()}`}
-        disabled
-      />
-    </div>
-  </DeckWrapper>
-);
-
-// A section for configuring account security and authentication settings.
-export const SecuritySection = () => (
-  <DeckWrapper title="Account Security">
-    <div className="space-y-6">
-      <SecurityActionRow
-        icon={<Lock size={20} />}
-        title="Password Change"
-        desc="Last updated 24 days ago. Regular updates recommended."
-        action="Change Password"
-      />
-      <SecurityActionRow
-        icon={<Fingerprint size={20} />}
-        title="Two-Factor Authentication"
-        desc="Enhance account security with two-factor authentication."
-        action="Enable 2FA"
-      />
-      <SecurityActionRow
-        icon={<Database size={20} />}
-        title="Profile Privacy"
-        desc="Manage your visibility across workspace projects."
-        action="Edit Settings"
-      />
-    </div>
-  </DeckWrapper>
-);
-
-// A section for customizing general system preferences like themes and timezones.
-export const PreferencesSection = () => (
-  <DeckWrapper title="System Preferences">
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-      <TacticalSelect
-        icon={<Monitor />}
-        label="Theme"
-        options={['Dark Mode', 'Amber Theme', 'Light Mode']}
-        value="Dark Mode"
-      />
-      <TacticalSelect
-        icon={<Globe />}
-        label="Timezone"
-        options={['Asia/Kolkata (IST)', 'UTC (GMT)', 'US/New York (EST)']}
-        value="Asia/Kolkata (IST)"
-      />
-      <TacticalSelect
-        icon={<Bell />}
-        label="Notifications"
-        options={['All Notifications', 'Critical Alerts', 'Silent Mode']}
-        value="All Notifications"
-      />
-    </div>
-  </DeckWrapper>
+    <ChevronRight
+      size={12}
+      className="text-white/20 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0"
+    />
+  </button>
 );
 
 IdentitySection.propTypes = { user: PropTypes.object.isRequired };

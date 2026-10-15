@@ -1,30 +1,45 @@
 import React from 'react';
 
-/**
- * Functional unit summary card for strategic dashboards.
- * @param {string} title - Card title
- * @param {Array} metrics - Array of {label, value, color} objects
- * @param {string} focus - Focus area description
- * @param {string} id - Component ID
- * @param {function} onClick - Click handler
- */
+// Functional grid card component.
 const FunctionalCard = ({ title, metrics, focus, id, onClick }) => (
-  <div id={id} onClick={onClick} className="bg-slate-900 border border-slate-800 p-5 rounded-lg hover:border-slate-700 transition-all shadow-lg group cursor-pointer">
-    <h3 className="text-sm font-bold mb-4 flex justify-between items-center text-slate-100 italic">
-      {title}
-      <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 px-2 py-0.5 rounded uppercase text-slate-500 tracking-widest cursor-pointer">Drill Down ↗</span>
-    </h3>
-    <div className="grid grid-cols-2 gap-y-3">
+  <div
+    id={id}
+    onClick={onClick}
+    className="bg-white/5 border border-white/10 p-4 rounded-none hover:bg-white/10 transition-colors group cursor-pointer flex flex-col gap-3"
+  >
+    <header className="flex justify-between items-center">
+      <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors">
+        {title}
+      </h3>
+      <span className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-white/10 px-2 py-0.5 rounded-none text-white/40 tracking-[0.2em]">
+        VIEW_DETAILS
+      </span>
+    </header>
+
+    <div className="grid grid-cols-2 gap-3">
       {metrics.map((m, i) => (
-        <div key={i} className="flex flex-col">
-          <span className="text-[10px] text-slate-500 uppercase">{m.label}</span>
-          <span className={`text-lg font-bold ${m.color || 'text-slate-300'}`}>{m.value}</span>
+        <div
+          key={i}
+          className="flex flex-col gap-1 border-l border-white/10 pl-3 first:border-l-0 first:pl-0"
+        >
+          <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] truncate">
+            {m.label}
+          </span>
+          <span
+            className={`text-[12px] font-black uppercase tracking-[0.2em] ${m.color || 'text-white'}`}
+          >
+            {m.value}
+          </span>
         </div>
       ))}
     </div>
-    <div className="mt-4 pt-3 border-t border-slate-800/50">
-      <span className="text-[10px] text-slate-600 uppercase font-bold tracking-widest">Focus: {focus}</span>
-    </div>
+
+    <footer className="mt-auto pt-3 border-t border-white/10 flex items-center gap-2">
+      <div className="w-1.5 h-1.5 rounded-none bg-primary/40" />
+      <span className="text-[7px] text-white/40 uppercase font-black tracking-[0.2em] truncate">
+        FOCUS: <span className="text-white/60">{focus}</span>
+      </span>
+    </footer>
   </div>
 );
 

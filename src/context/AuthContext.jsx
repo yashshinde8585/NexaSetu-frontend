@@ -6,58 +6,207 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import AuthService from '../api/authService';
+import {
+  useUser,
+  useSignIn,
+  useSignUp,
+  useClerk,
+  useAuth as useClerkAuth,
+} from '@clerk/clerk-react';
+import AuthService from '../api/authApi';
+import { setTokenGetter } from '../api/axios';
+import socketService from '../services/socketService';
+import { queryClient } from '../queryClient';
+import { useQuery } from '@tanstack/react-query';
+import { API_ENDPOINTS } from '../constants';
+import apiClient from '../api/apiClient';
 
-const AuthContext = createContext();
+const AuthStateContext = createContext();
+const AuthActionsContext = createContext();
 
-// Manages global authentication state, sessions, and user connectivity methods.
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { isLoaded: isClerkLoaded, user: clerkUser, isSignedIn } = useUser();
+  const { signOut } = useClerk();
+  const { getToken } = useClerkAuth();
+
+  const useClerkAuthFlag = import.meta.env.VITE_USE_CLERK_AUTH === 'true';
+
+  // State for manual auth fallback (Native JWT)
+  const [localUser, setLocalUser] = useState(null);
+  const [localAuthState, setLocalAuthState] = useState('initializing');
+
+  // Internal counter to force image refreshes when we know an update happened
+  const [avatarRefreshCounter, setAvatarRefreshCounter] = useState(0);
+
+  // Backend profile query - only runs when Clerk is signed in
+  const {
+    data: backendUser,
+    isLoading: profileLoading,
+    isError: profileError,
+    refetch: refetchProfile,
+  } = useQuery({
+    queryKey: ['auth', 'profile'],
+    queryFn: async () => {
+      const res = await AuthService.getCurrentUser();
+      return res?.data?.user || res?.user;
+    },
+    enabled: useClerkAuthFlag ? isClerkLoaded && isSignedIn : false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // 401 is handled by interceptor
+  });
+
+  // Register token getter with API and Socket layers
+  useEffect(() => {
+    if (useClerkAuthFlag) {
+      setTokenGetter(getToken);
+      socketService.setTokenGetter(getToken);
+    } else {
+      socketService.setTokenGetter(async () => localStorage.getItem('token'));
+    }
+  }, [useClerkAuthFlag, getToken]);
+
+  // Initialize local auth state from localStorage token on mount (Native JWT fallback)
+  useEffect(() => {
+    if (!useClerkAuthFlag) {
+      const initializeLocalAuth = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            console.log(
+              '[AUTH] Restoring local session from stored credentials...'
+            );
+            const res = await AuthService.getCurrentUser();
+            const userData = res?.data?.user || res?.user || null;
+            if (userData) {
+              setLocalUser(userData);
+              setLocalAuthState('authenticated');
+              console.log('[AUTH] Local session successfully restored.');
+            } else {
+              setLocalAuthState('unauthenticated');
+            }
+          } catch (err) {
+            console.error('[AUTH] Failed to restore local session:', err);
+            localStorage.removeItem('token');
+            setLocalAuthState('unauthenticated');
+          }
+        } else {
+          setLocalAuthState('unauthenticated');
+        }
+      };
+      initializeLocalAuth();
+    }
+  }, [useClerkAuthFlag]);
+
+  // Derived state
+  const authState = useMemo(() => {
+    if (useClerkAuthFlag) {
+      if (!isClerkLoaded) return 'initializing';
+      if (!isSignedIn) return 'unauthenticated';
+      if (profileLoading) return 'syncing';
+      if (profileError) return 'failed';
+      return 'authenticated';
+    }
+    return localAuthState;
+  }, [
+    useClerkAuthFlag,
+    isClerkLoaded,
+    isSignedIn,
+    profileLoading,
+    profileError,
+    localAuthState,
+  ]);
+
+  const user = useMemo(() => {
+    if (useClerkAuthFlag) {
+      if (!isSignedIn) return null;
+      // Merge Clerk user with backend user data (role, etc.)
+      const merged = backendUser ? { ...clerkUser, ...backendUser } : clerkUser;
+
+      // Force image refresh if profilePicture exists
+      if (merged?.profilePicture) {
+        // Use a combination of backend timestamp and our local refresh counter
+        const timestamp = backendUser?.updatedAt
+          ? new Date(backendUser.updatedAt).getTime()
+          : '';
+        const version = `${timestamp}_${avatarRefreshCounter}`;
+        const separator = merged.profilePicture.includes('?') ? '&' : '?';
+        merged.profilePicture = `${merged.profilePicture}${separator}v=${version}`;
+      }
+
+      return merged;
+    }
+    return localUser;
+  }, [
+    useClerkAuthFlag,
+    clerkUser,
+    backendUser,
+    localUser,
+    isSignedIn,
+    avatarRefreshCounter,
+  ]);
 
   const logout = useCallback(async () => {
+    console.log('[AUTH] Initiating global logout...');
     try {
-      await AuthService.logout();
+      if (useClerkAuthFlag) {
+        await signOut();
+      } else {
+        await AuthService.logout();
+        setLocalAuthState('unauthenticated');
+        setLocalUser(null);
+      }
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error('[AUTH] Logout error:', err);
     } finally {
       localStorage.removeItem('token');
-      setUser(null);
+      // Clear all query caches on logout to prevent data leakage/stale states
+      queryClient.clear();
+      window.dispatchEvent(new CustomEvent('auth:logout_complete'));
     }
-  }, []);
+  }, [useClerkAuthFlag, signOut]);
 
+  // Handle global logout events (from API interceptor)
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await AuthService.getCurrentUser();
-        setUser(res.data.user);
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-
-    // Binds a listener for global logout events triggered by API interceptors.
-    const handleGlobalLogout = () => {
-      localStorage.removeItem('token');
-      setUser(null);
+    const handleGlobalLogout = () => logout();
+    const handleLogoutComplete = () => {
+      queryClient.clear();
+      socketService.disconnect();
     };
 
     window.addEventListener('auth:logout', handleGlobalLogout);
-    return () => window.removeEventListener('auth:logout', handleGlobalLogout);
-  }, []);
+    window.addEventListener('auth:logout_complete', handleLogoutComplete);
 
-  const login = useCallback(async (email, password) => {
+    return () => {
+      window.removeEventListener('auth:logout', handleGlobalLogout);
+      window.removeEventListener('auth:logout_complete', handleLogoutComplete);
+    };
+  }, [logout]);
+
+  // Socket management - purely reactive
+  useEffect(() => {
+    if (authState === 'authenticated') {
+      const initSocket = async () => {
+        const token = useClerkAuthFlag
+          ? await getToken()
+          : localStorage.getItem('token');
+        if (token) socketService.connect(token);
+      };
+      initSocket();
+    } else {
+      socketService.disconnect();
+    }
+  }, [authState, useClerkAuthFlag, getToken]);
+
+  const login = useCallback(async (email, password, config = {}) => {
     try {
-      const res = await AuthService.login(email, password);
+      const res = await AuthService.login(email, password, config);
       if (res.token) localStorage.setItem('token', res.token);
-      setUser(res.data.user);
+      const userData = res?.data?.user || res?.user || null;
+      setLocalUser(userData);
+      if (userData) setLocalAuthState('authenticated');
       return res;
     } catch (err) {
-      setUser(null);
+      setLocalAuthState('unauthenticated');
       throw err;
     }
   }, []);
@@ -67,21 +216,31 @@ export const AuthProvider = ({ children }) => {
       name,
       email,
       password,
-      role = null,
-      assignedProjectId = null,
-      workspaceName = null,
-      plan = 'free'
+      role,
+      assignedProjectId,
+      workspaceName,
+      plan,
+      admin,
+      clerkUserId = null,
+      config = {}
     ) => {
       try {
-        const payload = { name, email, password };
-        if (role) payload.role = role;
-        if (assignedProjectId) payload.assignedProjectId = assignedProjectId;
-        if (workspaceName) payload.workspaceName = workspaceName;
-        if (plan) payload.plan = plan;
-
-        const res = await AuthService.register(payload);
+        const payload = {
+          name,
+          email,
+          password,
+          role,
+          assignedProjectId,
+          workspaceName,
+          plan,
+          admin,
+          clerkUserId,
+        };
+        const res = await AuthService.register(payload, config);
         if (res.token) localStorage.setItem('token', res.token);
-        setUser(res.data.user);
+        const userData = res?.data?.user || res?.user || null;
+        setLocalUser(userData);
+        if (userData) setLocalAuthState('authenticated');
         return res;
       } catch (err) {
         throw err;
@@ -94,43 +253,74 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await AuthService.activateInvite(token, name, password);
       if (res.token) localStorage.setItem('token', res.token);
-      setUser(res.data.user);
+      const userData = res?.data?.user || res?.user || null;
+      setLocalUser(userData);
+      if (userData) setLocalAuthState('authenticated');
       return res;
     } catch (err) {
       throw err;
     }
   }, []);
 
-  const completeOnboarding = useCallback(async () => {
+  const updateAvatar = useCallback(async (formData) => {
     try {
-      const res = await AuthService.completeOnboarding();
-      setUser(res.data.user);
+      const res = await AuthService.updateAvatar(formData);
+      // Increment local counter to force immediate image reload
+      setAvatarRefreshCounter((prev) => prev + 1);
+      // Invalidate and refetch to ensure all components see the new data
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
       return res;
     } catch (err) {
-      console.error('Onboarding update failed:', err);
       throw err;
     }
   }, []);
 
-  const value = useMemo(
+  const stateValue = useMemo(
     () => ({
       user,
-      loading,
+      clerkUser: useClerkAuthFlag ? clerkUser : null,
+      authState,
+      loading: authState === 'initializing' || authState === 'syncing',
+      authReady: authState !== 'initializing' && authState !== 'syncing',
+      loadingMessage:
+        authState === 'initializing'
+          ? 'Initializing security protocols...'
+          : 'Synchronizing workspace identity...',
+      isAuthenticated: authState === 'authenticated' || authState === 'syncing',
+      isClerk: useClerkAuthFlag,
+    }),
+    [user, clerkUser, authState, useClerkAuthFlag]
+  );
+
+  const actionsValue = useMemo(
+    () => ({
       login,
       register,
       activateInvite,
+      updateAvatar,
       logout,
-      completeOnboarding,
     }),
-    [user, loading, login, register, activateInvite, logout, completeOnboarding]
+    [login, register, activateInvite, updateAvatar, logout]
   );
 
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
+    <AuthStateContext.Provider value={stateValue}>
+      <AuthActionsContext.Provider value={actionsValue}>
+        {children}
+      </AuthActionsContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
-// Provides access to the current authentication context and user session details.
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const state = useContext(AuthStateContext);
+  const actions = useContext(AuthActionsContext);
+  if (!state || !actions) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return { ...state, ...actions };
+};
+
+// Targeted hooks for optimized consumption
+export const useAuthState = () => useContext(AuthStateContext);
+export const useAuthActions = () => useContext(AuthActionsContext);

@@ -1,104 +1,447 @@
 import React from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import {
+  Clock,
+  Minus,
+  Plus,
+  Paperclip,
+  X,
+  FileIcon,
+  Loader2,
+} from 'lucide-react';
+import StorageService from '../../services/storageService';
+import { useAuth } from '../../context/AuthContext';
+
+import { TASK_TYPE } from '../../constants';
 
 // A form component for manually creating new tasks with specific titles, sprints, and descriptions.
 const TaskForm = ({ newTask, setNewTask, handleCreateTask, sprints = [] }) => {
+  const { user } = useAuth();
+  const [uploading, setUploading] = React.useState(false);
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const uploadPromises = files.map((file) =>
+        StorageService.uploadAttachment(
+          file,
+          user.workspaceId,
+          newTask.project || 'global',
+          'new'
+        )
+      );
+
+      const results = await Promise.all(uploadPromises);
+      setNewTask((prev) => ({
+        ...prev,
+        attachments: [...(prev.attachments || []), ...results],
+      }));
+    } catch (err) {
+      alert('Failed to upload one or more files. Please try again.');
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const removeAttachment = async (index) => {
+    const attachment = newTask.attachments[index];
+    try {
+      setNewTask((prev) => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, i) => i !== index),
+      }));
+    } catch (err) {
+      console.error('Failed to remove attachment:', err);
+    }
+  };
+
   return (
-    <div className="bg-background-light p-6 rounded-lg mb-8 shadow-md border border-background-dark/30 animate-in fade-in zoom-in-95 duration-200">
+    <div className="bg-background-dark p-5 sm:p-6 rounded-none mb-8 border border-border-subtle animate-in fade-in zoom-in-95 duration-200 shadow-2xl relative overflow-hidden">
+      {/* Tactical Header Overlay */}
+      <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleCreateTask(newTask);
         }}
-        className="space-y-4"
+        className="space-y-6"
       >
-        <div>
-          <label className="block text-sm font-medium mb-1 tracking-tight">
-            Task Title
-          </label>
-          <input
-            type="text"
-            className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"
-            value={newTask.title}
-            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-            required
-            autoFocus
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 tracking-tight">
-            Mission Cycle / Sprint (Optional)
-          </label>
-          <select
-            className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer"
-            value={newTask.sprint || ''}
-            onChange={(e) => setNewTask({ ...newTask, sprint: e.target.value })}
-          >
-            <option value="">No Active Cycle</option>
-            {(sprints || []).map((sprint) => (
-              <option key={sprint._id} value={sprint._id}>
-                {sprint.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 tracking-tight">
-            Description (Optional)
-          </label>
-          <textarea
-            className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"
-            rows="2"
-            value={newTask.description}
-            onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
-            }
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 tracking-tight">
-              Priority
-            </label>
-            <select
-              className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer"
-              value={newTask.priority || 'medium'}
-              onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 tracking-tight">
-              Time
-            </label>
-            <div className="flex gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column: Core Identity */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                Mission Title
+              </label>
               <input
-                type="number"
-                className="w-full bg-background-dark border border-background-dark text-white px-4 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all"
-                value={newTask.estimatedDuration || 30}
-                onChange={(e) => setNewTask({ ...newTask, estimatedDuration: parseInt(e.target.value) || 0 })}
+                type="text"
+                className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-black text-xs uppercase tracking-tight placeholder:text-text-subtler"
+                placeholder="E.G. CORE_SYSTEM_UPDATE"
+                value={newTask.title}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, title: e.target.value })
+                }
+                required
+                autoFocus
               />
-              <select
-                className="bg-background-dark border border-background-dark text-white px-2 py-2 rounded focus:ring-primary focus:ring-1 focus:outline-none transition-all cursor-pointer text-xs"
-                value={newTask.durationUnit || 'min'}
-                onChange={(e) => setNewTask({ ...newTask, durationUnit: e.target.value })}
-              >
-                <option value="min">Min</option>
-                <option value="hours">Hrs</option>
-                <option value="days">Days</option>
-              </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                Deployment Sprint
+              </label>
+              <div className="relative">
+                <select
+                  className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
+                  value={newTask.sprint || ''}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, sprint: e.target.value })
+                  }
+                >
+                  <option value="" className="bg-background-dark">
+                    No sprint selected
+                  </option>
+                  {(sprints || []).map((sprint) => (
+                    <option
+                      key={sprint._id}
+                      value={sprint._id}
+                      className="bg-background-dark"
+                    >
+                      {sprint.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
+                  <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                Operational Brief
+              </label>
+              <textarea
+                className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all font-bold text-xs uppercase tracking-tight placeholder:text-text-subtler resize-none"
+                rows="3"
+                placeholder="DESCRIBE MISSION PARAMETERS..."
+                value={newTask.description}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, description: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Parameters */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                  Mission Type
+                </label>
+                <div className="relative">
+                  <select
+                    className="w-full bg-background-elevated border border-border-subtle text-text px-4 py-3 rounded-none focus:border-primary focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none"
+                    value={newTask.type || TASK_TYPE.TASK}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, type: e.target.value })
+                    }
+                  >
+                    <option
+                      value={TASK_TYPE.EPIC}
+                      className="bg-background-dark"
+                    >
+                      Epic
+                    </option>
+                    <option
+                      value={TASK_TYPE.STORY}
+                      className="bg-background-dark"
+                    >
+                      Story
+                    </option>
+                    <option
+                      value={TASK_TYPE.TASK}
+                      className="bg-background-dark"
+                    >
+                      Task
+                    </option>
+                    <option
+                      value={TASK_TYPE.BUG}
+                      className="bg-background-dark"
+                    >
+                      Bug
+                    </option>
+                    <option
+                      value={TASK_TYPE.SPIKE}
+                      className="bg-background-dark"
+                    >
+                      Spike
+                    </option>
+                    <option
+                      value={TASK_TYPE.TECH_DEBT}
+                      className="bg-background-dark"
+                    >
+                      Tech Debt
+                    </option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
+                    <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                  Priority Level
+                </label>
+                <div className="relative">
+                  <select
+                    className={`w-full bg-background-elevated border border-border-subtle px-4 py-3 rounded-none focus:outline-none transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest appearance-none ${
+                      newTask.priority === 'urgent'
+                        ? 'text-status-error'
+                        : newTask.priority === 'high'
+                          ? 'text-status-warning'
+                          : newTask.priority === 'low'
+                            ? 'text-status-success'
+                            : 'text-primary'
+                    }`}
+                    value={newTask.priority || 'medium'}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, priority: e.target.value })
+                    }
+                  >
+                    <option
+                      value="low"
+                      className="bg-background-dark text-status-success"
+                    >
+                      Low
+                    </option>
+                    <option
+                      value="medium"
+                      className="bg-background-dark text-primary"
+                    >
+                      Medium
+                    </option>
+                    <option
+                      value="high"
+                      className="bg-background-dark text-status-warning"
+                    >
+                      High
+                    </option>
+                    <option
+                      value="urgent"
+                      className="bg-background-dark text-status-error"
+                    >
+                      Urgent
+                    </option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-subtler">
+                    <div className="w-1.5 h-1.5 border-r border-b border-current rotate-45" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                  Projected Deadline
+                </label>
+                <div className="bg-background-elevated border border-border-subtle px-4 py-3 font-black text-[10px] text-primary uppercase tracking-widest flex items-center justify-between group transition-all hover:bg-white/[0.05]">
+                  <span>
+                    {(() => {
+                      let mins = newTask.estimatedDuration || 0;
+                      if (newTask.durationUnit === 'hours') mins *= 60;
+                      if (newTask.durationUnit === 'days') mins *= 1440;
+                      const start = newTask.startDate
+                        ? new Date(newTask.startDate)
+                        : new Date();
+                      const deadline = new Date(
+                        start.getTime() + mins * 60 * 1000
+                      );
+                      return deadline.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      });
+                    })()}
+                  </span>
+                  <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <Clock size={10} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-background-elevated border border-border-subtle p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <Clock size={12} className="text-primary" />
+                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-text-subtle">
+                  Estimated Duration
+                </label>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center bg-background-dark border border-border-subtle p-0.5">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: Math.max(
+                          0,
+                          (newTask.estimatedDuration || 0) - 5
+                        ),
+                      })
+                    }
+                    className="w-8 h-8 flex items-center justify-center text-text-subtle hover:text-text hover:bg-background-elevated transition-all"
+                  >
+                    <Minus size={12} />
+                  </button>
+
+                  <input
+                    type="number"
+                    className="bg-transparent text-[11px] font-black text-text text-center w-12 focus:outline-none uppercase"
+                    value={newTask.estimatedDuration || 30}
+                    onChange={(e) =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: parseInt(e.target.value) || 0,
+                      })
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setNewTask({
+                        ...newTask,
+                        estimatedDuration: (newTask.estimatedDuration || 0) + 5,
+                      })
+                    }
+                    className="w-8 h-8 flex items-center justify-center text-text-subtle hover:text-text hover:bg-background-elevated transition-all"
+                  >
+                    <Plus size={12} />
+                  </button>
+                </div>
+
+                <div className="flex gap-px bg-background-elevated border border-border-subtle">
+                  {['minutes', 'hours', 'days'].map((unit) => (
+                    <button
+                      key={unit}
+                      type="button"
+                      onClick={() =>
+                        setNewTask({ ...newTask, durationUnit: unit })
+                      }
+                      className={`px-3 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${
+                        (newTask.durationUnit || 'minutes') === unit
+                          ? 'bg-primary text-background-dark'
+                          : 'bg-background-dark text-text-subtle hover:text-text hover:bg-background-elevated'
+                      }`}
+                    >
+                      {unit === 'minutes' ? 'MINS' : unit.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-1 items-center overflow-x-auto no-scrollbar">
+                {[15, 60, 480].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => {
+                      if (v === 15)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 15,
+                          durationUnit: 'minutes',
+                        });
+                      if (v === 60)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 1,
+                          durationUnit: 'hours',
+                        });
+                      if (v === 480)
+                        setNewTask({
+                          ...newTask,
+                          estimatedDuration: 1,
+                          durationUnit: 'days',
+                        });
+                    }}
+                    className="text-[8px] font-black text-text-subtler hover:text-primary transition-all uppercase tracking-[0.2em] border-b border-transparent hover:border-primary pb-0.5"
+                  >
+                    {v === 15
+                      ? 'Quick Fix (15M)'
+                      : v === 60
+                        ? 'Standard (1H)'
+                        : 'Full Day (1D)'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Asset Uplink */}
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-text-subtle mb-2 ml-1">
+                Mission Assets
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                {newTask.attachments?.map((file, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 bg-background-elevated border border-border-subtle px-3 py-2 group transition-all hover:bg-background-elevated"
+                  >
+                    <FileIcon size={12} className="text-primary" />
+                    <span className="text-[9px] font-black text-text-muted truncate max-w-[100px] uppercase tracking-tighter">
+                      {file.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(idx)}
+                      className="text-text-subtler hover:text-status-error transition-colors"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+
+                <label
+                  className={`flex items-center gap-2 px-4 py-2 border border-dashed border-border-subtle hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer ${uploading ? 'opacity-50 cursor-wait' : ''}`}
+                >
+                  {uploading ? (
+                    <Loader2 size={14} className="text-primary animate-spin" />
+                  ) : (
+                    <Paperclip size={14} className="text-text-subtle" />
+                  )}
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-subtle">
+                    {uploading ? 'UPLOADING...' : 'ATTACH_ASSETS'}
+                  </span>
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
             </div>
           </div>
         </div>
+
         <button
           type="submit"
-          className="bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded w-full transition duration-200 shadow-xl shadow-primary/20"
+          className="bg-primary hover:bg-primary/90 text-background-dark font-black py-4 px-6 rounded-none w-full transition-all duration-300 shadow-2xl shadow-primary/20 text-[11px] uppercase tracking-[0.4em] active:scale-[0.98]"
         >
-          Create Task
+          Initialize Mission_
         </button>
       </form>
     </div>
