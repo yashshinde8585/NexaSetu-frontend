@@ -159,54 +159,69 @@ const Home = () => {
 
   const SIMULATED_EVENTS = [
     {
-      text: 'commit: sarah_dev pushed "feat: add oauth2 flow" to master',
-      type: 'commit',
+      text: 'Alex Miller moved NX-104 (OAuth2 Flow) to In Review',
+      type: 'task',
       val: 68,
     },
     {
-      text: 'NexaSetu: auto-mapped commit to Sprint 3 (Task #45)',
-      type: 'sync',
+      text: 'GitHub PR #114 merged: linked to ticket NX-104',
+      type: 'pr',
     },
     {
-      text: 'NexaSetu: Sprint progress updated to 68% (+3%)',
+      text: 'Sprint 3 progress updated to 68% (28/42 tasks completed)',
       type: 'progress',
       val: 68,
     },
     {
-      text: 'PR opened: alex_dev opened PR #114 "refactor: db indexing"',
-      type: 'pr',
+      text: 'Sarah Chen completed ticket NX-42: "DB Indexing & Query Tuning"',
+      type: 'completed',
+      val: 71,
     },
     {
-      text: 'NexaSetu: Blocker alert resolved for Task #42',
+      text: 'Blocker alert resolved on NX-42 following code review approval',
       type: 'blocker',
     },
     {
-      text: 'NexaSetu: Sprint progress updated to 74% (+6%)',
+      text: 'Sprint 3 progress updated to 74% (+6%)',
       type: 'progress',
       val: 74,
     },
     {
-      text: 'commit: john_dev pushed "fix: cookie redirect" to master',
-      type: 'commit',
-      val: 80,
+      text: 'John Davis moved NX-12 (Cookie Redirect) to In Progress',
+      type: 'task',
+      val: 74,
     },
     {
-      text: 'NexaSetu: auto-mapped commit to Sprint 3 (Task #12)',
-      type: 'sync',
+      text: 'GitHub PR #118 opened: "fix: cookie redirect" linked to NX-12',
+      type: 'pr',
     },
     {
-      text: 'NexaSetu: Sprint progress updated to 80% (+6%)',
+      text: 'Sprint 3 progress updated to 80% (34/42 tasks completed)',
       type: 'progress',
       val: 80,
     },
-    { text: 'NexaSetu: Sprint 3 summary compiled from 14 commits', type: 'ai' },
+    {
+      text: 'Sprint 3 summary compiled: 34 tasks completed, 1 blocker cleared',
+      type: 'sprint',
+    },
   ];
 
   const [logs, setLogs] = useState([
-    { text: 'System: Synced 14 commits from GitHub...', type: 'system' },
     {
-      text: 'System: Active webhooks tracking 3 repositories...',
-      type: 'system',
+      text: 'Sprint 3 initialized: 42 tasks planned across 3 repositories',
+      type: 'sprint',
+    },
+    {
+      text: 'Sarah Chen completed ticket NX-38: "API Authentication Middleware"',
+      type: 'completed',
+    },
+    {
+      text: 'GitHub PR #112 merged: linked to ticket NX-38',
+      type: 'pr',
+    },
+    {
+      text: 'Sprint 3 progress updated to 65% (27/42 tasks completed)',
+      type: 'progress',
     },
   ]);
   const [currentProgress, setCurrentProgress] = useState(65);
@@ -330,7 +345,7 @@ const Home = () => {
               }}
               className={`flex-1 text-center py-1 text-[8px] font-black rounded uppercase transition-colors cursor-pointer ${
                 activeFeatureRole === r
-                  ? 'bg-primary text-background'
+                  ? 'bg-primary text-white'
                   : 'text-text-subtle hover:text-text'
               }`}
             >
@@ -408,7 +423,7 @@ const Home = () => {
               className="flex-1 bg-primary/20 hover:bg-primary border border-primary/10 rounded-sm transition-all duration-300 relative group"
               style={{ height: `${val}%` }}
             >
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-text text-background text-[7px] font-black px-1 rounded">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-card border border-border-subtle text-text text-[7px] font-black px-1.5 py-0.5 rounded shadow-md">
                 {val}%
               </div>
             </div>
@@ -517,7 +532,7 @@ const Home = () => {
                 handleBalanceWorkload();
               }}
               disabled={isBalancing}
-              className="w-full text-center py-1.5 bg-text text-background font-black uppercase text-[8px] tracking-wider rounded hover:opacity-90 transition-colors cursor-pointer"
+              className="w-full text-center py-1.5 bg-primary text-white font-black uppercase text-[8px] tracking-wider rounded hover:bg-primary-dark transition-colors cursor-pointer"
             >
               {isBalancing ? 'Balancing...' : 'Balance Capacity'}
             </button>
@@ -528,7 +543,7 @@ const Home = () => {
                 e.stopPropagation();
                 handleResetWorkload();
               }}
-              className="w-full text-center py-1.5 border border-border-subtle text-text font-black uppercase text-[8px] tracking-wider rounded hover:bg-text/10 transition-colors cursor-pointer"
+              className="w-full text-center py-1.5 border border-border-subtle bg-card text-text font-black uppercase text-[8px] tracking-wider rounded hover:bg-background-elevated transition-colors cursor-pointer"
             >
               Reset View
             </button>
@@ -538,100 +553,284 @@ const Home = () => {
     );
   };
 
-  const renderOverviewTab = () => (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card border border-border-subtle p-4 rounded-xl shadow-sm">
-          <span className="text-[9px] font-bold text-text-subtle uppercase tracking-widest block mb-1">
-            Repositories Linked
-          </span>
-          <span className="text-xl font-black text-text">3</span>
-          <span className="text-[8px] text-status-success font-bold block mt-1 uppercase">
-            Synced
-          </span>
-        </div>
-        <div className="bg-card border border-border-subtle p-4 rounded-xl shadow-sm">
-          <span className="text-[9px] font-bold text-text-subtle uppercase tracking-widest block mb-1">
-            Team Members
-          </span>
-          <span className="text-xl font-black text-text">12</span>
-          <span className="text-[8px] text-text-subtle font-bold block mt-1 uppercase">
-            Active
-          </span>
-        </div>
-        <div className="bg-card border border-border-subtle p-4 rounded-xl shadow-sm">
-          <span className="text-[9px] font-bold text-text-subtle uppercase tracking-widest block mb-1">
-            Webhooks Status
-          </span>
-          <span className="text-xl font-black text-status-success">100%</span>
-          <span className="text-[8px] text-status-success font-bold block mt-1 uppercase">
-            Connected
-          </span>
-        </div>
-      </div>
+  const renderOverviewTab = () => {
+    const completedTasks = Math.round(42 * (currentProgress / 100));
 
-      <div className="bg-card border border-border-subtle p-5 rounded-xl flex flex-col justify-between shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-[10px] font-bold text-text-subtle uppercase tracking-widest">
-            Sprint Velocity (30d)
-          </span>
-          <span className="text-[10px] text-status-success font-bold uppercase tracking-widest">
-            +12% Flow Speed
-          </span>
+    return (
+      <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="bg-card border border-border-subtle p-2.5 sm:p-4 rounded-xl shadow-sm text-center sm:text-left">
+            <span className="text-[8px] sm:text-[9px] font-bold text-text-subtle uppercase tracking-wider sm:tracking-widest block mb-1 truncate">
+              Total Tasks
+            </span>
+            <span className="text-lg sm:text-xl font-black text-text">42</span>
+            <span className="text-[7.5px] sm:text-[8px] text-text-subtle font-bold block mt-1 uppercase truncate">
+              Sprint 3 Scope
+            </span>
+          </div>
+          <div className="bg-card border border-border-subtle p-2.5 sm:p-4 rounded-xl shadow-sm text-center sm:text-left">
+            <span className="text-[8px] sm:text-[9px] font-bold text-text-subtle uppercase tracking-wider sm:tracking-widest block mb-1 truncate">
+              In Progress
+            </span>
+            <span className="text-lg sm:text-xl font-black text-text">14</span>
+            <span className="text-[7.5px] sm:text-[8px] text-status-warning font-bold block mt-1 uppercase truncate">
+              4 In Review
+            </span>
+          </div>
+          <div className="bg-card border border-border-subtle p-2.5 sm:p-4 rounded-xl shadow-sm text-center sm:text-left">
+            <span className="text-[8px] sm:text-[9px] font-bold text-text-subtle uppercase tracking-wider sm:tracking-widest block mb-1 truncate">
+              Completed
+            </span>
+            <span className="text-lg sm:text-xl font-black text-status-success">
+              {completedTasks}
+            </span>
+            <span className="text-[7.5px] sm:text-[8px] text-status-success font-bold block mt-1 uppercase truncate">
+              {currentProgress}% On Track
+            </span>
+          </div>
         </div>
-        <div className="h-24 w-full opacity-70">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 300 80"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0%"
-                  stopColor="var(--color-primary)"
-                  stopOpacity="0.2"
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--color-primary)"
-                  stopOpacity="0"
-                />
-              </linearGradient>
-            </defs>
-            <path
-              d="M 0 60 Q 30 45, 60 55 T 120 30 T 180 40 T 240 15 T 300 10 L 300 80 L 0 80 Z"
-              fill="url(#chartGrad)"
-            />
-            <path
-              d="M 0 60 Q 30 45, 60 55 T 120 30 T 180 40 T 240 15 T 300 10"
-              fill="none"
-              stroke="var(--color-primary)"
-              strokeWidth="2"
-            />
-          </svg>
+
+        <div className="bg-card border border-border-subtle p-3.5 sm:p-5 rounded-xl flex flex-col justify-between shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <span className="text-[9px] sm:text-[10px] font-bold text-text-subtle uppercase tracking-wider sm:tracking-widest block">
+                Sprint 3 Task Completion & Burnup
+              </span>
+              <span className="text-[8px] sm:text-[9px] text-text-muted font-mono mt-0.5 block">
+                {completedTasks} of 42 tasks finished ({currentProgress}%) • Day 10 of 14
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] sm:text-[9px] text-status-success font-bold uppercase tracking-wider bg-status-success/10 border border-status-success/20 px-2 py-0.5 rounded">
+                +6% Ahead of Target
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full h-32 sm:h-36 pt-2">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 500 130"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="completionGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-status-success)"
+                    stopOpacity="0.25"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-status-success)"
+                    stopOpacity="0"
+                  />
+                </linearGradient>
+              </defs>
+
+              <line x1="40" y1="20" x2="480" y2="20" stroke="var(--color-border-subtler)" strokeDasharray="3 3" />
+              <line x1="40" y1="55" x2="480" y2="55" stroke="var(--color-border-subtler)" strokeDasharray="3 3" />
+              <line x1="40" y1="90" x2="480" y2="90" stroke="var(--color-border-subtler)" strokeDasharray="3 3" />
+
+              <text x="32" y="23" textAnchor="end" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">42</text>
+              <text x="32" y="58" textAnchor="end" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">28</text>
+              <text x="32" y="93" textAnchor="end" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">14</text>
+
+              <line
+                x1="40"
+                y1="115"
+                x2="480"
+                y2="20"
+                stroke="var(--color-text-subtle)"
+                strokeOpacity="0.35"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+              />
+
+              <path
+                d="M 40 115 L 100 100 L 160 84 L 230 68 L 300 56 L 360 48 L 360 115 Z"
+                fill="url(#completionGrad)"
+              />
+
+              <path
+                d="M 40 115 L 100 100 L 160 84 L 230 68 L 300 56 L 360 48"
+                fill="none"
+                stroke="var(--color-status-success)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              <circle cx="360" cy="48" r="4" fill="var(--color-status-success)" />
+              <circle cx="360" cy="48" r="7.5" fill="var(--color-status-success)" fillOpacity="0.25" className="animate-pulse" />
+
+              <rect x="330" y="24" width="60" height="15" rx="3" fill="var(--color-background-elevated)" stroke="var(--color-border)" />
+              <text x="360" y="34.5" textAnchor="middle" fill="var(--color-text)" fontSize="7" fontWeight="bold" fontFamily="monospace">
+                DAY 10: {completedTasks} DONE
+              </text>
+
+              <line x1="40" y1="115" x2="480" y2="115" stroke="var(--color-border-subtle)" />
+              <text x="40" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 1</text>
+              <text x="120" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 3</text>
+              <text x="200" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 6</text>
+              <text x="280" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 8</text>
+              <text x="360" y="126" textAnchor="middle" fill="var(--color-status-success)" fontSize="8" fontWeight="bold" fontFamily="monospace">Day 10</text>
+              <text x="440" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 12</text>
+              <text x="480" y="126" textAnchor="middle" fill="var(--color-text-subtle)" fontSize="8" fontFamily="monospace">Day 14</text>
+            </svg>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-border-subtle pt-3 mt-3 text-[8px] font-mono text-text-subtle gap-2">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-0.5 bg-status-success inline-block rounded" />
+                Actual ({completedTasks} tasks)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-0.5 border-b border-dashed border-text-subtle inline-block" />
+                Target (25 tasks)
+              </span>
+            </div>
+            <span className="text-status-success font-bold uppercase">
+              Target: 42 Tasks by Day 14
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const renderMyTasksTab = () => {
+    const myTasks = [
+      {
+        key: 'NX-104',
+        title: 'Implement OAuth2 token refresh & session revocation',
+        type: 'Story',
+        priority: 'High',
+        status: 'In Review',
+        assignee: 'Alex Miller',
+        initials: 'AM',
+        pr: '#114',
+      },
+      {
+        key: 'NX-98',
+        title: 'Migrate workspace permissions schema to RBAC',
+        type: 'Task',
+        priority: 'Medium',
+        status: 'In Progress',
+        assignee: 'Sarah Chen',
+        initials: 'SC',
+        pr: '#118',
+      },
+      {
+        key: 'NX-42',
+        title: 'Refactor database indexing & resolve task query blocker',
+        type: 'Bug',
+        priority: 'High',
+        status: 'Done',
+        assignee: 'Sarah Chen',
+        initials: 'SC',
+        pr: '#109',
+      },
+      {
+        key: 'NX-12',
+        title: 'Fix cookie redirect issue on authentication callback',
+        type: 'Bug',
+        priority: 'Medium',
+        status: 'In Progress',
+        assignee: 'John Davis',
+        initials: 'JD',
+        pr: '#125',
+      },
+      {
+        key: 'NX-76',
+        title: 'Add real-time websocket heartbeat for sprint boards',
+        type: 'Story',
+        priority: 'Low',
+        status: 'Done',
+        assignee: 'Alex Miller',
+        initials: 'AM',
+        pr: '#92',
+      },
+    ];
+
+    return (
+      <div className="space-y-4 animate-in fade-in duration-300">
+        <div className="flex justify-between items-center px-1">
+          <span className="text-[9px] sm:text-[10px] font-bold text-text-subtle uppercase tracking-wider sm:tracking-widest truncate">
+            Sprint 3 Assigned Tickets ({myTasks.length})
+          </span>
+          <span className="text-[7.5px] sm:text-[8px] font-mono text-status-success uppercase font-bold shrink-0 ml-2">
+            2 Done • 2 In Progress
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          {myTasks.map((task) => (
+            <div
+              key={task.key}
+              className="bg-card border border-border-subtle hover:border-border p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-2 sm:gap-3 shadow-sm transition-colors"
+            >
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                <span className="text-[8px] sm:text-[9px] font-mono font-bold text-primary px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 shrink-0">
+                  {task.key}
+                </span>
+                <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-background-elevated border border-border-subtle text-text-subtle shrink-0 hidden sm:inline-block">
+                  {task.type}
+                </span>
+                <span className="text-[10px] sm:text-[11px] font-medium text-text truncate">
+                  {task.title}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                {task.pr && (
+                  <span className="text-[8px] font-mono text-text-subtle border border-border-subtle px-1.5 py-0.5 rounded hidden md:inline-block">
+                    PR {task.pr}
+                  </span>
+                )}
+                <span
+                  className={`text-[7.5px] sm:text-[8px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded border ${
+                    task.status === 'Done'
+                      ? 'bg-status-success/10 text-status-success border-status-success/20'
+                      : task.status === 'In Review'
+                        ? 'bg-primary/10 text-primary-light border-primary/20'
+                        : 'bg-status-warning/10 text-status-warning border-status-warning/20'
+                  }`}
+                >
+                  {task.status}
+                </span>
+                <div
+                  title={task.assignee}
+                  className="w-5 h-5 rounded-full bg-background-elevated border border-border-subtle flex items-center justify-center text-[7px] font-bold text-text-muted"
+                >
+                  {task.initials}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const renderSprintsTab = () => (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="flex justify-between items-center bg-card border border-border-subtle p-4 rounded-xl shadow-sm">
+    <div className="space-y-5 animate-in fade-in duration-300">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center bg-card border border-border-subtle p-4 rounded-xl shadow-sm gap-2">
         <div>
           <span className="text-[8px] font-bold text-text-subtle uppercase tracking-[0.2em] block mb-1">
             Active Cycle
           </span>
           <span className="text-sm font-black text-text uppercase tracking-wider">
-            Sprint 3
+            Sprint 3 — Core Platform & Git Sync
           </span>
         </div>
-        <div className="text-right">
+        <div className="text-left sm:text-right">
           <span className="text-[8px] font-bold text-text-subtle uppercase tracking-[0.2em] block mb-1">
-            Status
+            Timeline
           </span>
-          <span className="text-[10px] text-status-success font-bold uppercase tracking-widest bg-status-success/10 px-2 py-0.5 border border-status-success/10">
-            Active
+          <span className="text-[10px] text-status-success font-bold uppercase tracking-widest bg-status-success/10 px-2 py-0.5 rounded border border-status-success/20">
+            Day 10 of 14 • 4 Days Left
           </span>
         </div>
       </div>
@@ -640,160 +839,147 @@ const Home = () => {
         <div>
           <div className="flex justify-between items-center mb-2">
             <span className="text-[9px] font-bold text-text-subtle uppercase tracking-widest">
-              Sprint 3 Progress
+              Sprint 3 Progress & Work Distribution
             </span>
-            <span className="text-[11px] font-black text-primary">
-              {currentProgress}%
+            <span className="text-[11px] font-black text-status-success">
+              {currentProgress}% Completed
             </span>
           </div>
-          <div className="w-full bg-background-elevated h-2 rounded-full overflow-hidden border border-border-subtle">
+
+          <div className="w-full bg-background-elevated h-2.5 rounded-full overflow-hidden border border-border-subtle flex">
+            <div
+              className="bg-status-success h-full transition-all duration-500 ease-out"
+              style={{ width: `${currentProgress}%` }}
+              title={`Done: ${Math.round(42 * (currentProgress / 100))} tasks`}
+            />
             <div
               className="bg-primary h-full transition-all duration-500 ease-out"
-              style={{ width: `${currentProgress}%` }}
+              style={{ width: '14%' }}
+              title="In Review: 6 tasks"
             />
+            <div
+              className="bg-status-warning h-full transition-all duration-500 ease-out"
+              style={{ width: '10%' }}
+              title="In Progress: 4 tasks"
+            />
+            <div
+              className="bg-text-subtle/30 h-full"
+              style={{ width: `${Math.max(0, 100 - currentProgress - 24)}%` }}
+              title="To Do"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between text-[8px] font-mono text-text-subtle pt-2 gap-2">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-status-success" />
+              Done: {Math.round(42 * (currentProgress / 100))}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              In Review: 6
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-status-warning" />
+              In Progress: 4
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-text-subtle/40" />
+              To Do: {Math.max(0, 42 - Math.round(42 * (currentProgress / 100)) - 10)}
+            </span>
           </div>
         </div>
 
         <div className="pt-4 border-t border-border-subtle space-y-2.5">
           <span className="text-[9px] font-bold text-text-subtle uppercase tracking-[0.2em] block">
-            Sprint Summary
+            Sprint Goal & Summary
           </span>
           <p className="text-[11px] text-text leading-relaxed bg-background-elevated border border-border-subtle p-3 rounded-lg uppercase tracking-wide font-medium">
-            VELOCITY STABLE AT 48 POINTS. DATABASE REFACTORING MERGED. RESOLVED
-            BLOCKER ON TASK #42 (DATABASE INDEXING) FOLLOWING CODE REVIEW
-            APPROVAL.
+            DELIVER AUTOMATED PR LINKING, TASK BOARD SYNCHRONIZATION, AND
+            REAL-TIME SPRINT HEALTH METRICS. VELOCITY STABLE AT 48 STORY POINTS
+            WITH 1 BLOCKER RESOLVED ON TICKET NX-42.
           </p>
         </div>
-      </div>
-    </div>
-  );
-
-  const renderWorkloadTab = () => (
-    <div className="space-y-5 animate-in fade-in duration-300">
-      <span className="text-[10px] font-bold text-text-subtle uppercase tracking-widest block px-1">
-        Developer Workload Distribution
-      </span>
-      <div className="space-y-3.5">
-        {[
-          {
-            name: 'Sarah Chen',
-            role: 'Lead Developer',
-            tasks: 3,
-            pct: 30,
-            color: 'bg-status-success',
-          },
-          {
-            name: 'Alex Miller',
-            role: 'Senior Engineer',
-            tasks: 5,
-            pct: 75,
-            color: 'bg-status-warning',
-          },
-          {
-            name: 'John Davis',
-            role: 'Junior Developer',
-            tasks: 2,
-            pct: 20,
-            color: 'bg-status-success',
-          },
-        ].map((member) => (
-          <div
-            key={member.name}
-            className="bg-card border border-border-subtle p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-sm"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-7 h-7 rounded bg-background border border-border-subtle flex items-center justify-center text-[9px] font-bold text-text">
-                {member.name.charAt(0)}
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-text block uppercase tracking-tight">
-                  {member.name}
-                </span>
-                <span className="text-[8px] text-text-subtle uppercase font-semibold">
-                  {member.role}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 w-full sm:w-1/2">
-              <div className="flex-1 space-y-1">
-                <div className="flex justify-between text-[8px] font-bold text-text-subtle uppercase">
-                  <span>Capacity</span>
-                  <span>{member.tasks} Tasks</span>
-                </div>
-                <div className="w-full bg-background-elevated h-1.5 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${member.color}`}
-                    style={{ width: `${member.pct}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background text-text font-sans selection:bg-text selection:text-background antialiased overflow-x-hidden nexa-grid">
+    <div className="home-page-theme min-h-screen bg-background text-text font-sans selection:bg-primary selection:text-white antialiased overflow-x-hidden nexa-grid">
       <Navbar />
 
-      <header className="relative min-h-[60vh] md:min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
-        <div className="max-w-[1440px] w-full flex flex-col items-center justify-center">
-          <h1 className="text-[9vw] sm:text-[7vw] md:text-[5vw] lg:text-[5.5vw] font-bold leading-[0.95] tracking-[-0.05em] uppercase mb-8 max-w-[20ch] mx-auto">
-            NexaSetu Connect GitHub repositories and turn commits into sprint
-            updates
+      <header className="relative min-h-[auto] sm:min-h-screen sm:min-h-[100dvh] flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8 pt-24 sm:pt-20 pb-14 sm:pb-16 overflow-hidden">
+        {/* Soft Ambient Radial Glow */}
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[540px] md:w-[700px] h-[240px] sm:h-[320px] md:h-[380px] bg-primary/15 blur-[100px] sm:blur-[140px] rounded-full pointer-events-none -z-10"
+        />
+
+        <div className="max-w-[1440px] w-full flex flex-col items-center justify-center relative z-10">
+          {/* Pill Badge */}
+          <div className="inline-flex items-center justify-center px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full bg-card/80 backdrop-blur-sm mb-6 sm:mb-7 max-w-full">
+            <span className="text-[10px] sm:text-xs font-medium tracking-wider text-text-muted uppercase text-center">
+              PROJECT MANAGEMENT FOR DEVELOPMENT TEAMS
+            </span>
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-text mb-4 sm:mb-5 max-w-4xl mx-auto leading-[1.15] sm:leading-[1.12]">
+            Plan Projects. Track Progress. Ship Better.
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-text-muted max-w-2xl mx-auto mb-10 font-normal tracking-tight leading-relaxed">
-            Link repositories in two clicks. NexaSetu listens to webhook events
-            to automatically update task boards, map commits to open issues, and
-            generate sprint summaries.
+
+          {/* Description */}
+          <p className="text-sm sm:text-base md:text-lg text-text-muted max-w-xl md:max-w-2xl mx-auto mb-8 sm:mb-9 font-normal leading-relaxed px-2 sm:px-0">
+            Bring tasks, sprints, and team workflows together in one workspace.
+            Keep projects organized, follow progress, and spend less time managing
+            updates.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto px-10 md:px-12 py-5 bg-text text-background text-[10px] font-bold uppercase tracking-[0.4em] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all flex items-center justify-center gap-4"
-            >
-              Connect GitHub <Icons.ArrowRight />
-            </Link>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto">
             <Link
               to="/login"
-              className="w-full sm:w-auto px-10 md:px-12 py-5 border border-border-subtle text-text text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-text hover:text-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all"
+              className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary-dark text-white font-medium text-sm sm:text-base rounded-lg shadow-sm hover:shadow-primary/25 transition-all flex items-center justify-center active:scale-[0.98]"
             >
-              Try Demo
+              Explore Demo
             </Link>
+            <a
+              href="#matrix"
+              className="w-full sm:w-auto px-6 py-3 bg-card hover:bg-background-elevated border border-border-subtle hover:border-border text-text font-medium text-sm sm:text-base rounded-lg transition-all flex items-center justify-center active:scale-[0.98]"
+            >
+              Explore Features
+            </a>
           </div>
         </div>
       </header>
 
       {/* Platform Preview Section */}
-      <section className="max-w-[1440px] mx-auto px-6 pb-20 md:pb-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 pb-16 md:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
           {/* Left: Interactive Dashboard Preview */}
-          <div className="lg:col-span-8 bg-background border border-border-subtle rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xl">
+          <div className="lg:col-span-8 bg-card border border-border-subtle rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xl">
             {/* Header / Tabs */}
-            <div className="px-6 py-4 bg-background-elevated border-b border-border-subtle flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-background-elevated border-b border-border-subtle flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-status-error" />
                 <span className="w-2.5 h-2.5 rounded-full bg-status-warning" />
                 <span className="w-2.5 h-2.5 rounded-full bg-status-success" />
                 <span className="text-[9px] font-black text-text-subtle uppercase tracking-widest ml-3">
-                  Workspace Telemetry
+                  Project Workspace
                 </span>
               </div>
               <div className="flex bg-background border border-border-subtle p-0.5 rounded-lg w-full sm:w-auto">
                 {[
                   { id: 'overview', label: 'Overview' },
+                  { id: 'tasks', label: 'My Tasks' },
                   { id: 'sprints', label: 'Sprints' },
-                  { id: 'workload', label: 'Workload' },
                 ].map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
                     className={`flex-1 sm:flex-none px-3.5 py-1.5 text-[8px] font-black uppercase tracking-widest transition-all rounded-md cursor-pointer ${
                       activeTab === t.id
-                        ? 'bg-text text-background'
-                        : 'text-text-subtle hover:text-text'
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'text-text-muted hover:text-text'
                     }`}
                   >
                     {t.label}
@@ -803,162 +989,175 @@ const Home = () => {
             </div>
 
             {/* Dashboard Panel View */}
-            <div className="p-6 md:p-8 flex-1 min-h-[350px] flex flex-col justify-center">
+            <div className="p-4 sm:p-6 md:p-8 flex-1 min-h-[300px] sm:min-h-[350px] flex flex-col justify-center">
               {activeTab === 'overview' && renderOverviewTab()}
+              {activeTab === 'tasks' && renderMyTasksTab()}
               {activeTab === 'sprints' && renderSprintsTab()}
-              {activeTab === 'workload' && renderWorkloadTab()}
             </div>
           </div>
 
-          {/* Right: Live Telemetry Event stream */}
-          <div className="lg:col-span-4 bg-background-dark border border-border-subtle rounded-2xl p-6 flex flex-col justify-between shadow-2xl font-mono">
+          {/* Right: Recent Activity stream */}
+          <div className="lg:col-span-4 bg-card border border-border-subtle rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-2xl font-mono">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-border-subtle mb-4">
                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                  Active Sync Stream
+                  <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-ping" />
+                  Recent Activity
                 </span>
-                <span className="text-[8px] text-text-subtle uppercase font-black">
+                <span className="text-[8px] text-status-success font-black uppercase tracking-wider bg-status-success/10 px-1.5 py-0.5 rounded border border-status-success/20">
                   Real-time
                 </span>
               </div>
-              <div className="space-y-4 text-[9px] leading-relaxed break-all">
+              <div className="space-y-3.5 text-[9px] leading-relaxed break-words">
                 {logs.map((log, idx) => {
                   let colorClass = 'text-text-subtle';
-                  if (log.type === 'commit') colorClass = 'text-status-success';
-                  if (log.type === 'sync') colorClass = 'text-primary-light';
-                  if (log.type === 'progress') colorClass = 'text-secondary';
-                  if (log.type === 'blocker') colorClass = 'text-status-error';
-                  if (log.type === 'ai') colorClass = 'text-status-warning';
+                  let badge = 'EVENT';
+                  let badgeClass = 'text-text-subtle bg-background-elevated border-border-subtle';
+
+                  if (log.type === 'completed') {
+                    colorClass = 'text-status-success';
+                    badge = 'DONE';
+                    badgeClass = 'text-status-success bg-status-success/10 border-status-success/20';
+                  } else if (log.type === 'task') {
+                    colorClass = 'text-text';
+                    badge = 'TASK';
+                    badgeClass = 'text-primary-light bg-primary/10 border-primary/20';
+                  } else if (log.type === 'pr') {
+                    colorClass = 'text-primary-light';
+                    badge = 'GITHUB';
+                    badgeClass = 'text-primary bg-primary/10 border-primary/20';
+                  } else if (log.type === 'progress') {
+                    colorClass = 'text-status-success font-medium';
+                    badge = 'SPRINT';
+                    badgeClass = 'text-status-success bg-status-success/10 border-status-success/20';
+                  } else if (log.type === 'blocker') {
+                    colorClass = 'text-status-warning';
+                    badge = 'ALERT';
+                    badgeClass = 'text-status-warning bg-status-warning/10 border-status-warning/20';
+                  } else if (log.type === 'sprint') {
+                    colorClass = 'text-text';
+                    badge = 'CYCLE';
+                    badgeClass = 'text-text-subtle bg-background-elevated border-border-subtle';
+                  }
 
                   return (
-                    <div key={idx} className={`${colorClass} animate-fade-in`}>
-                      {log.text}
+                    <div key={idx} className="flex items-start gap-2 animate-fade-in">
+                      <span className={`text-[7px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${badgeClass}`}>
+                        {badge}
+                      </span>
+                      <span className={colorClass}>{log.text}</span>
                     </div>
                   );
                 })}
               </div>
             </div>
             <div className="border-t border-border-subtle pt-4 mt-6 flex justify-between items-center text-[8px] text-text-subtle font-black uppercase tracking-widest">
-              <span>Websocket Connected</span>
-              <span className="animate-pulse text-status-success">Online</span>
+              <span>Project Activity Feed</span>
+              <span className="flex items-center gap-1.5 text-status-success">
+                <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
+                Live Sync
+              </span>
             </div>
           </div>
         </div>
       </section>
 
       {/* "How It Works" Section */}
-      <section className="max-w-[1440px] mx-auto px-6 pb-20 md:pb-28 border-t border-border-subtle pt-20 md:pt-28">
-        <div className="mb-16 text-center">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 pb-16 md:pb-24 border-t border-border-subtle pt-16 md:pt-24">
+        <div className="mb-10 sm:mb-16 text-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            Git Integration
+            HOW NEXASETU WORKS
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            From commit webhook to task status update
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase mt-3 sm:mt-4">
+            FROM TASK PLANNING TO PROJECT DELIVERY
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 bg-border-subtle gap-[1px] border border-border-subtle rounded-xl overflow-hidden shadow-sm">
-          <div className="bg-card p-8 sm:p-12 flex flex-col justify-between min-h-[260px] group hover:bg-background-elevated transition-colors">
+          <div className="bg-card p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-between min-h-0 sm:min-h-[260px] group hover:bg-background-elevated transition-colors">
             <div className="flex items-start justify-between">
               <span className="text-3xl font-black text-text/10 group-hover:text-primary transition-all">
                 01
               </span>
               <span className="text-[9px] font-bold uppercase tracking-widest text-primary">
-                CONNECT
+                PLAN
               </span>
             </div>
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <h3 className="text-xl font-bold uppercase tracking-tight mb-3">
-                Connect GitHub
+                ORGANIZE YOUR WORK
               </h3>
               <p className="text-text-muted text-xs font-normal leading-relaxed">
-                Link your repositories in two clicks. NexaSetu registers
-                webhooks to sync codebase activity automatically.
+                Create projects, break work into manageable tasks, assign
+                owners, and set priorities. Give your team a clear view of what
+                needs to get done.
               </p>
             </div>
           </div>
 
-          <div className="bg-card p-8 sm:p-12 flex flex-col justify-between min-h-[260px] group hover:bg-background-elevated transition-colors">
+          <div className="bg-card p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-between min-h-0 sm:min-h-[260px] group hover:bg-background-elevated transition-colors">
             <div className="flex items-start justify-between">
               <span className="text-3xl font-black text-text/10 group-hover:text-secondary transition-all">
                 02
               </span>
               <span className="text-[9px] font-bold uppercase tracking-widest text-secondary">
-                TRACK
+                COLLABORATE
               </span>
             </div>
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <h3 className="text-xl font-bold uppercase tracking-tight mb-3">
-                Track Development
+                KEEP WORK MOVING
               </h3>
               <p className="text-text-muted text-xs font-normal leading-relaxed">
-                Write code and push commits. NexaSetu reads commit details and
-                pull request events to link them to open issues.
+                Track task statuses, manage sprint progress, and connect GitHub
+                activity to development work. Everyone can see where things
+                stand without chasing updates.
               </p>
             </div>
           </div>
 
-          <div className="bg-card p-8 sm:p-12 flex flex-col justify-between min-h-[260px] group hover:bg-background-elevated transition-colors">
+          <div className="bg-card p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-between min-h-0 sm:min-h-[260px] group hover:bg-background-elevated transition-colors">
             <div className="flex items-start justify-between">
               <span className="text-3xl font-black text-text/10 group-hover:text-status-success transition-all">
                 03
               </span>
               <span className="text-[9px] font-bold uppercase tracking-widest text-status-success">
-                REPORT
+                DELIVER
               </span>
             </div>
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <h3 className="text-xl font-bold uppercase tracking-tight mb-3">
-                Generate Sprint Reports
+                SEE YOUR PROJECT PROGRESS
               </h3>
               <p className="text-text-muted text-xs font-normal leading-relaxed">
-                Compile commit lists, pull request cycles, and velocity trends
-                into sprint summaries without manual status logs.
+                Review sprint progress, follow completed work, and use project
+                insights to understand how your team is moving toward its
+                goals.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- TRUST BANNER MARQUEE --- */}
-      <div className="w-full border-y border-border-subtle py-12 bg-background-dark overflow-hidden relative">
-        <div className="flex whitespace-nowrap gap-24 items-center animate-marquee">
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-24 text-[11px] font-black uppercase tracking-[0.6em] text-text-subtle/30"
-            >
-              <span>SSO & Role Control</span>
-              <span className="w-1.5 h-1.5 bg-text-subtle/30 rotate-45" />
-              <span>Zero Code Storage</span>
-              <span className="w-1.5 h-1.5 bg-text-subtle/30 rotate-45" />
-              <span>Predictive Sprint Health</span>
-              <span className="w-1.5 h-1.5 bg-text-subtle/30 rotate-45" />
-              <span>Real-time Webhook Sync</span>
-              <span className="w-1.5 h-1.5 bg-text-subtle/30 rotate-45" />
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* --- PLATFORM FEATURES SECTION --- */}
       <section
         id="matrix"
-        className="max-w-[1440px] mx-auto px-6 py-20 md:py-28"
+        className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-24"
       >
-        <div className="mb-16 text-center">
+        <div className="mb-10 sm:mb-16 text-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            Features
+            FEATURES
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Ship code, not status updates
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase mt-3 sm:mt-4">
+            EVERYTHING YOUR TEAM NEEDS TO KEEP WORK MOVING
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 bg-border-subtle gap-[1px] border border-border-subtle overflow-hidden rounded-xl shadow-sm">
           {/* Feature 1: Access Control */}
-          <div className="md:col-span-4 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px]">
+          <div className="md:col-span-4 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
@@ -970,11 +1169,12 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Role-Based Visibility
+                  01. ROLE-BASED ACCESS
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed">
-                  Control team visibility and read/write repository access with
-                  role-based workspace permissions.
+                  Give team members access to the projects, tasks, and actions
+                  relevant to their roles. Keep permissions organized across your
+                  workspace.
                 </p>
               </div>
             </div>
@@ -982,7 +1182,7 @@ const Home = () => {
           </div>
 
           {/* Feature 2: Codebase Sync */}
-          <div className="md:col-span-8 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px] border-t md:border-t-0 md:border-l border-border-subtle">
+          <div className="md:col-span-8 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
@@ -994,11 +1194,12 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Native Repository Sync
+                  02. GITHUB INTEGRATION
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed max-w-md">
-                  Sync repositories in real time. Track pull request statuses,
-                  commits, and deployment events as they occur.
+                  Connect repositories to your projects and link commits and
+                  pull requests to development tasks. Keep code activity
+                  connected to the work behind it.
                 </p>
               </div>
             </div>
@@ -1006,7 +1207,7 @@ const Home = () => {
           </div>
 
           {/* Feature 3: Health Metrics */}
-          <div className="md:col-span-8 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px] border-t border-border-subtle">
+          <div className="md:col-span-8 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
@@ -1018,11 +1219,12 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Sprint Velocity Tracking
+                  03. SPRINT ANALYTICS
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed max-w-md">
-                  Analyze commit velocity and cycle times to identify blockers
-                  and forecast sprint completion dates.
+                  Follow sprint progress, review completed work, and spot
+                  potential blockers. Use development insights to understand how
+                  work is progressing.
                 </p>
               </div>
             </div>
@@ -1030,23 +1232,24 @@ const Home = () => {
           </div>
 
           {/* Feature 4: Command Bar */}
-          <div className="md:col-span-4 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px] border-t md:border-t-0 md:border-l border-border-subtle md:border-t border-border-subtle">
+          <div className="md:col-span-4 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
                   <Icons.Terminal />
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-widest text-text-subtle">
-                  Control
+                  Navigation
                 </span>
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Command Bar Interface
+                  04. COMMAND BAR
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed">
-                  Manage tasks, assign issues, and compile reports directly from
-                  a keyboard-friendly command interface.
+                  Find tasks, move between projects, and run common actions
+                  without navigating through multiple screens. Keep everyday
+                  work moving with keyboard-friendly controls.
                 </p>
               </div>
             </div>
@@ -1054,7 +1257,7 @@ const Home = () => {
           </div>
 
           {/* Feature 5: Environments */}
-          <div className="md:col-span-6 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px] border-t border-border-subtle">
+          <div className="md:col-span-6 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
@@ -1066,11 +1269,12 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Multi-Project Workspaces
+                  05. MULTI-PROJECT WORKSPACES
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed">
-                  Separate client work, internal products, and open-source
-                  repositories without switching user accounts.
+                  Manage multiple projects from one workspace. Keep tasks,
+                  teams, and repository connections organized without switching
+                  between separate accounts.
                 </p>
               </div>
             </div>
@@ -1078,23 +1282,24 @@ const Home = () => {
           </div>
 
           {/* Feature 6: Optimization */}
-          <div className="md:col-span-6 bg-card p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-[300px] border-t md:border-t-1 md:border-l border-border-subtle">
+          <div className="md:col-span-6 bg-card p-6 sm:p-8 flex flex-col justify-between group hover:bg-background-elevated transition-colors min-h-0 sm:min-h-[300px]">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="p-3 border border-border-subtle rounded-lg group-hover:border-primary/30 group-hover:text-primary transition-colors text-text-subtle">
                   <Icons.PieChart />
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-widest text-text-subtle">
-                  Capacity
+                  Workload
                 </span>
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-tight mb-2 text-text">
-                  Capacity Balancer
+                  06. TEAM WORKLOAD
                 </h3>
                 <p className="text-text-muted text-xs font-normal leading-relaxed">
-                  Monitor developer capacity from commit frequency to prevent
-                  burnout and reassign tasks in one click.
+                  Get a clearer view of task assignments and team capacity.
+                  Identify uneven workloads and make informed decisions when
+                  priorities change.
                 </p>
               </div>
             </div>
@@ -1103,183 +1308,63 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- WHY TEAMS CHOOSE NEXASETU (COMPARISON SECTION) --- */}
-      <section className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-border-subtle">
-        <div className="mb-16 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            Why NexaSetu
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Why Teams Choose NexaSetu
-          </h2>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-border-subtle text-left text-xs font-mono">
-            <thead>
-              <tr className="bg-background-elevated border-b border-border-subtle">
-                <th className="p-4 uppercase tracking-widest text-text-subtle font-bold">
-                  Feature
-                </th>
-                <th className="p-4 uppercase tracking-widest text-primary font-black">
-                  NexaSetu
-                </th>
-                <th className="p-4 uppercase tracking-widest text-text-muted font-bold">
-                  Jira
-                </th>
-                <th className="p-4 uppercase tracking-widest text-text-muted font-bold">
-                  Trello
-                </th>
-                <th className="p-4 uppercase tracking-widest text-text-muted font-bold">
-                  ClickUp
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle bg-background-dark/20">
-              <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-4 font-bold text-text uppercase tracking-wider">
-                  Native GitHub Integration
-                </td>
-                <td className="p-4 text-status-success font-bold uppercase">
-                  Native webhook integration (2-way sync)
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires installing marketplace integrations
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Manual link attachment per card
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires third-party sync integrations
-                </td>
-              </tr>
-              <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-4 font-bold text-text uppercase tracking-wider">
-                  Sprint Summarization
-                </td>
-                <td className="p-4 text-status-success font-bold uppercase">
-                  Generated from commit diffs & PR descriptions
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Manual report generation and configuration
-                </td>
-                <td className="p-4 text-text-muted uppercase">Not available</td>
-                <td className="p-4 text-text-muted uppercase">
-                  AI summaries written from manual inputs
-                </td>
-              </tr>
-              <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-4 font-bold text-text uppercase tracking-wider">
-                  Real-Time Collaboration
-                </td>
-                <td className="p-4 text-status-success font-bold uppercase">
-                  Instantly syncs updates using WebSockets
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires page reload or delayed sync
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires manual board refresh
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Standard socket-based updates
-                </td>
-              </tr>
-              <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-4 font-bold text-text uppercase tracking-wider">
-                  Automated Workflows
-                </td>
-                <td className="p-4 text-status-success font-bold uppercase">
-                  Code merges trigger status updates natively
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires complex workflow editor setups
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires setting up manual automation rules
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires configuring custom automation steps
-                </td>
-              </tr>
-              <tr className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-4 font-bold text-text uppercase tracking-wider">
-                  Developer Friction
-                </td>
-                <td className="p-4 text-status-success font-bold uppercase">
-                  Zero administrative work; runs in background
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires manual ticket keys in commit messages
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires manual card movement and updates
-                </td>
-                <td className="p-4 text-text-muted uppercase">
-                  Requires manual status changes in complex UI
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
 
       {/* --- BUILT FOR EVERY ROLE SECTION (TABBED PREVIEW) --- */}
       <section
         id="verticals"
-        className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-border-subtle"
+        className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-24 border-t border-border-subtle"
       >
-        <div className="mb-16 text-center">
+        <div className="mb-10 sm:mb-16 text-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            Roles
+            BUILT FOR YOUR TEAM
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Tailored for your entire engineering stack
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase mt-3 sm:mt-4">
+            ONE WORKSPACE. DIFFERENT WAYS TO WORK.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
           {/* Left: Role Selection Tabs */}
-          <div className="lg:col-span-4 flex flex-row lg:flex-col gap-2.5 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0">
+          <div className="lg:col-span-4 grid grid-cols-2 lg:flex lg:flex-col gap-2 sm:gap-2.5">
             {[
               {
                 id: 'executive',
-                label: 'CTOs & VPs',
-                desc: 'Portfolio Metrics',
+                label: 'CTOs & Leaders',
+                desc: 'Project Visibility',
               },
               {
                 id: 'delivery',
                 label: 'Product Managers',
-                desc: 'Sprint Delivery',
+                desc: 'Sprint Planning',
               },
               {
                 id: 'engineering',
                 label: 'Developers',
-                desc: 'Zero Admin Work',
+                desc: 'Less Admin Work',
               },
               {
                 id: 'devops',
                 label: 'Platform Leads',
-                desc: 'Workspace Security',
+                desc: 'Access & Permissions',
               },
             ].map((role) => (
               <button
                 key={role.id}
                 onClick={() => setActiveRole(role.id)}
-                className={`w-full text-left p-5 rounded-xl border transition-all flex flex-col justify-center min-w-[200px] lg:min-w-0 cursor-pointer ${
+                className={`w-full text-left p-3.5 sm:p-4 lg:p-5 rounded-xl border transition-all flex flex-col justify-center cursor-pointer ${
                   activeRole === role.id
-                    ? 'bg-text border-text text-background'
+                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
                     : 'bg-card border-border-subtle text-text hover:bg-background-elevated'
                 }`}
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider block mb-1">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider block mb-1">
                   {role.label}
                 </span>
                 <span
-                  className={`text-[8px] uppercase tracking-widest ${
+                  className={`text-[8px] sm:text-[9px] uppercase tracking-widest ${
                     activeRole === role.id
-                      ? 'text-background/80'
-                      : 'text-text-subtle'
+                      ? 'text-white/80'
+                      : 'text-text-muted'
                   }`}
                 >
                   {role.desc}
@@ -1289,24 +1374,24 @@ const Home = () => {
           </div>
 
           {/* Right: Role Details and Preview Box */}
-          <div className="lg:col-span-8 bg-background border border-border-subtle rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row gap-8 items-center justify-between shadow-2xl">
+          <div className="lg:col-span-8 bg-card border border-border-subtle rounded-2xl p-5 sm:p-8 lg:p-10 flex flex-col md:flex-row gap-6 md:gap-8 items-stretch md:items-center justify-between shadow-2xl">
             <div className="flex-1 space-y-6 text-left">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">
-                  {activeRole === 'executive' && 'CTOs & VPs'}
+                  {activeRole === 'executive' && 'CTOs & Engineering Leaders'}
                   {activeRole === 'delivery' && 'Product Managers'}
                   {activeRole === 'engineering' && 'Developers'}
                   {activeRole === 'devops' && 'Platform Leads'}
                 </span>
                 <h3 className="text-2xl font-bold uppercase tracking-tight text-text mt-1">
                   {activeRole === 'executive' &&
-                    'Real-time repository roadmap sync'}
+                    'See how development is progressing'}
                   {activeRole === 'delivery' &&
-                    'Sprint status tracking from git events'}
+                    'Keep sprint work on track'}
                   {activeRole === 'engineering' &&
-                    'Zero manual task board updates'}
+                    'Spend more time building'}
                   {activeRole === 'devops' &&
-                    'Compliance auditing and role visibility'}
+                    'Keep project access under control'}
                 </h3>
               </div>
               <div className="space-y-4">
@@ -1316,13 +1401,13 @@ const Home = () => {
                   </span>
                   <p className="text-text-muted text-xs leading-relaxed font-normal">
                     {activeRole === 'executive' &&
-                      'Engineering leaders lack direct visibility into active code changes, requiring status meetings to confirm roadmap progress.'}
+                      'Keeping track of multiple projects is difficult when progress updates depend on meetings and manual reports.'}
                     {activeRole === 'delivery' &&
-                      'Product managers spend hours requesting status updates, only to discover blocker patterns late in the sprint.'}
+                      'Product managers need to know which tasks are moving forward, where work is blocked, and what might miss the deadline.'}
                     {activeRole === 'engineering' &&
-                      'Developers lose focus updating task cards, writing daily reports, and context switching out of the IDE.'}
+                      'Updating task boards and reporting progress can interrupt development and pull attention away from writing code.'}
                     {activeRole === 'devops' &&
-                      'Security administrators need compliance logs and access management that aligns with repository permission structures.'}
+                      'Managing access across teams and repositories becomes harder as projects grow and responsibilities change.'}
                   </p>
                 </div>
                 <div>
@@ -1331,28 +1416,30 @@ const Home = () => {
                   </span>
                   <p className="text-text text-xs leading-relaxed font-normal">
                     {activeRole === 'executive' &&
-                      'NexaSetu reads commit webhooks to compile roadmap progress dashboards directly from repository branches.'}
+                      'Bring project progress and GitHub activity together to give engineering leaders a clearer view of ongoing work.'}
                     {activeRole === 'delivery' &&
-                      'NexaSetu tracks branch merges and flags open pull requests to alert you about delayed deliverables.'}
+                      'Track task statuses, review sprint progress, and connect development activity to the work planned for each sprint.'}
                     {activeRole === 'engineering' &&
-                      'Work in the terminal. Pushing commits and merging pull requests updates task boards and maps issues automatically.'}
+                      'Connect GitHub activity with project tasks to make development progress easier to follow without relying entirely on manual updates.'}
                     {activeRole === 'devops' &&
-                      'Audit workspace events, enforce role permissions, and sync repository access controls automatically.'}
+                      'Use workspace roles and permissions to manage who can view and work with project resources.'}
                   </p>
                 </div>
               </div>
               <div className="pt-4 border-t border-border-subtle flex gap-8">
                 <div>
                   <span className="text-[8px] font-bold text-text-subtle uppercase tracking-widest block mb-1">
-                    Outcome Metric
+                    Outcome
                   </span>
                   <span className="text-sm font-bold text-status-success uppercase tracking-wide">
-                    {activeRole === 'executive' && '92% fewer status meetings'}
-                    {activeRole === 'delivery' && '3.4x faster cycle time'}
+                    {activeRole === 'executive' &&
+                      'Better visibility across projects'}
+                    {activeRole === 'delivery' &&
+                      'Clearer sprint progress'}
                     {activeRole === 'engineering' &&
-                      '100% automated progress tracking'}
+                      'Less time spent on status updates'}
                     {activeRole === 'devops' &&
-                      'Zero-touch compliance auditing'}
+                      'Clearer access management'}
                   </span>
                 </div>
               </div>
@@ -1480,15 +1567,20 @@ const Home = () => {
       {/* --- PRICING PLANS SECTION --- */}
       <section
         id="tiers"
-        className="max-w-[1440px] mx-auto px-6 py-12 md:py-16 border-t border-border-subtle"
+        className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-24 border-t border-border-subtle"
       >
-        <div className="mb-8 text-center space-y-3">
+        <div className="mb-8 sm:mb-10 text-center space-y-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            Pricing Plans
+            PRICING PLANS
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-2">
-            Flexible plans for teams of all sizes
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase mt-2">
+            THE RIGHT PLAN FOR YOUR TEAM
           </h2>
+          <p className="text-text-muted text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-normal">
+            Choose a plan that fits your workflow, whether you&apos;re managing
+            projects on your own or coordinating work across an engineering
+            team.
+          </p>
 
           {/* Billing Cycle & Currency Toggles */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-2">
@@ -1581,20 +1673,21 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 bg-border-subtle gap-[1px] border border-border-subtle rounded-xl shadow-2xl overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-[1px] md:bg-border-subtle md:border md:border-border-subtle rounded-xl md:shadow-2xl mt-8 sm:mt-10">
           {[
             {
               plan: 'FREE',
               price: currency === 'inr' ? '₹0' : '$0',
-              desc: 'For solo developers and small open-source projects.',
+              tagline: 'Free forever',
+              desc: 'Get started with project management and GitHub integration at no cost.',
               features: [
-                'Unlimited repositories',
+                'GitHub repository integration',
                 'Up to 3 workspace members',
-                '100 webhook runs / mo',
+                '100 webhook runs per month',
                 'Basic sprint reports',
-                'Native GitHub webhook sync',
+                'Task and status tracking',
               ],
-              cta: 'CONNECT GITHUB',
+              cta: 'Get Started Free',
             },
             {
               plan: 'PRO',
@@ -1607,16 +1700,17 @@ const Home = () => {
                     ? '$10'
                     : '$8',
               priceAnnualNum: currency === 'inr' ? 639 : 8,
-              desc: 'For fast-moving startup teams automating their sprints.',
+              tagline: 'For growing development teams',
+              desc: "Bring your team's projects, sprint tracking, and development activity together in one workspace.",
               features: [
                 'Unlimited repositories',
                 'Up to 15 workspace members',
-                '10,000 webhook runs / mo',
-                'Detailed sprint summaries',
-                'Sprint velocity tracking',
-                'Automated capacity balancing',
+                '10,000 webhook runs per month',
+                'Detailed sprint reports',
+                'Sprint progress analytics',
+                'Team workload management',
               ],
-              cta: 'CREATE YOUR WORKSPACE',
+              cta: 'Start with Pro',
               recommended: true,
             },
             {
@@ -1630,32 +1724,33 @@ const Home = () => {
                     ? '$36'
                     : '$29',
               priceAnnualNum: currency === 'inr' ? 2399 : 29,
-              desc: 'For organizations requiring advanced compliance and support.',
+              tagline: 'For larger teams managing multiple projects',
+              desc: 'Manage projects across your organization with expanded access controls and integration options.',
               features: [
                 'Unlimited repositories',
                 'Unlimited workspace members',
                 'Unlimited webhook runs',
                 'Custom webhook integrations',
-                'SAML SSO & compliance logs',
-                'Priority SLA support',
+                'Advanced access controls',
+                'Priority support',
               ],
-              cta: 'CONNECT GITHUB',
+              cta: 'Choose Enterprise',
             },
           ].map((p, i) => (
             <div
               key={i}
-              className={`bg-card p-6 sm:p-8 flex flex-col text-left justify-between ${
+              className={`bg-card p-6 sm:p-8 flex flex-col text-left justify-between rounded-xl md:rounded-none ${
                 p.recommended
-                  ? 'relative bg-card border border-primary/20 shadow-md z-10'
-                  : ''
+                  ? 'relative border border-primary/40 shadow-lg shadow-primary/10 z-10'
+                  : 'relative border border-border-subtle md:border-0'
               } ${
-                i === 0 ? 'rounded-t-xl md:rounded-l-xl md:rounded-tr-none' : ''
+                i === 0 ? 'md:rounded-l-xl' : ''
               } ${
-                i === 2 ? 'rounded-b-xl md:rounded-r-xl md:rounded-bl-none' : ''
+                i === 2 ? 'md:rounded-r-xl' : ''
               }`}
             >
               {p.recommended && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-text text-background text-[9px] font-black uppercase tracking-widest rounded-sm border border-text">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-full border border-primary shadow-lg z-20 whitespace-nowrap">
                   Most Recommended
                 </div>
               )}
@@ -1667,23 +1762,20 @@ const Home = () => {
                   <span className="text-4xl font-black tracking-tighter text-text">
                     {p.price}
                   </span>
-                  <span className="text-[10px] font-bold text-text-subtle uppercase">
-                    / MO
+                  <span className="text-[10px] font-bold text-text-subtle">
+                    / month
                   </span>
                 </div>
-                <span
-                  className={`text-[10px] font-bold block mb-4 ${
-                    billingCycle === 'annual' && p.plan !== 'FREE'
-                      ? 'text-status-success'
-                      : 'text-text-subtle'
-                  }`}
-                >
-                  {p.plan === 'FREE'
-                    ? 'Free forever'
-                    : billingCycle === 'monthly'
-                      ? 'Billed monthly'
-                      : `Billed annually: ${currency === 'inr' ? '₹' : '$'}${((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr`}
+                <span className="text-[10px] font-bold text-text-subtle block mb-1">
+                  {p.tagline}
                 </span>
+                {billingCycle === 'annual' && p.plan !== 'FREE' ? (
+                  <span className="text-[9px] font-bold text-status-success block mb-3">
+                    Billed annually: {currency === 'inr' ? '₹' : '$'}{((p.priceAnnualNum || 0) * 12).toLocaleString()}/yr
+                  </span>
+                ) : (
+                  <div className="mb-3" />
+                )}
                 <p className="text-text-muted text-[10px] font-normal leading-relaxed mb-6 min-h-[2.5rem]">
                   {p.desc}
                 </p>
@@ -1692,8 +1784,8 @@ const Home = () => {
                   to="/register"
                   className={`w-full py-3 text-[10px] font-bold uppercase tracking-widest transition-all text-center mb-6 rounded cursor-pointer block ${
                     p.recommended
-                      ? 'bg-text text-background hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
-                      : 'border border-border-subtle text-text hover:bg-text hover:text-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                      ? 'bg-primary text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                      : 'border border-border-subtle text-text hover:bg-background-elevated focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
                   }`}
                 >
                   {p.cta}
@@ -1728,97 +1820,75 @@ const Home = () => {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-border-subtle text-center">
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase mb-6 text-text">
-          Ready to Automate Your Sprint Tracking?
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-24 border-t border-border-subtle text-center">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase mb-4 text-text">
+          READY TO BRING YOUR PROJECTS TOGETHER?
         </h2>
-        <p className="text-text-muted text-xs sm:text-sm max-w-xl mx-auto mb-10 leading-relaxed font-normal">
-          Connect your GitHub repository and let NexaSetu update your task
-          boards from commit logs. Setup takes less than 2 minutes.
+        <p className="text-text-muted text-xs sm:text-sm max-w-xl mx-auto mb-8 leading-relaxed font-normal">
+          Manage tasks, keep sprints on track, and bring your team&apos;s development workflow into one place with NexaSetu.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto">
           <Link
             to="/register"
-            className="w-full sm:w-auto px-10 md:px-12 py-5 bg-text text-background text-[10px] font-bold uppercase tracking-[0.4em] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all flex items-center justify-center gap-4 animate-bounce-subtle"
+            className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all flex items-center justify-center shadow-md shadow-primary/25"
           >
-            Connect GitHub
+            GET STARTED
           </Link>
           <Link
-            to="/register"
-            className="w-full sm:w-auto px-10 md:px-12 py-5 border border-border-subtle text-text text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-text hover:text-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all"
+            to="/login"
+            className="w-full sm:w-auto px-8 py-3.5 border border-border-subtle bg-card text-text text-xs sm:text-sm font-bold uppercase tracking-wider rounded-lg hover:bg-background-elevated focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all flex items-center justify-center"
           >
-            Create Workspace
+            EXPLORE DEMO
           </Link>
         </div>
       </section>
 
-      {/* --- ABOUT SECTION --- */}
-      <section className="max-w-[1440px] mx-auto px-6 py-20 md:py-28 border-t border-border-subtle">
-        <div className="mb-16 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-text-subtle">
-            About NexaSetu
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mt-4">
-            Unified Git-to-Sprint Orchestration
-          </h2>
-        </div>
-        <div className="max-w-4xl mx-auto space-y-6 text-text-muted text-xs sm:text-sm font-normal leading-relaxed text-center">
-          <p>
-            NexaSetu synchronizes project management boards directly with
-            codebase commits, pull requests, and merges to eliminate
-            administrative status reporting.
-          </p>
-          <ul className="inline-block text-left space-y-2 max-w-md mx-auto">
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="text-text-muted">
-                Zero-retention model: We never store your repository source
-                code.
-              </span>
-            </li>
-          </ul>
-        </div>
-      </section>
 
       {/* --- FOOTER --- */}
-      <footer className="border-t border-border-subtle py-16 md:py-24 px-6 bg-background-dark/40">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-16 md:gap-24">
-          <div className="max-w-md">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6 text-text">
-              NexaSetu
-            </h2>
-            <p className="text-text-subtle text-[10px] md:text-xs font-normal leading-relaxed tracking-wider uppercase">
-              Automating sprint tracking directly from GitHub commits.
-              Zero-admin project management.
-            </p>
+      <footer className="border-t border-border-subtle py-12 md:py-16 px-4 sm:px-6 md:px-8 bg-background">
+        <div className="max-w-[1440px] mx-auto">
+          {/* Top Section */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-8 md:gap-12 pb-8 border-b border-border-subtle">
+            <div className="max-w-md">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight uppercase mb-3 text-text">
+                NexaSetu
+              </h2>
+              <p className="text-text-muted text-xs sm:text-sm font-normal leading-relaxed">
+                Project management for development teams. Organize tasks, track
+                sprints, and keep your team&apos;s work moving.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 text-left md:text-right w-full md:w-auto">
+              <div className="flex flex-wrap items-center gap-6 text-xs font-bold uppercase tracking-wider text-text-muted justify-start md:justify-end">
+                <a
+                  href="https://github.com/yashshinde8585"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Yash Shinde on GitHub"
+                  className="hover:text-text transition-colors flex items-center gap-1"
+                >
+                  GITHUB ↗
+                </a>
+                <a
+                  href="https://linkedin.com/in/yashshinde8585"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Yash Shinde on LinkedIn"
+                  className="hover:text-text transition-colors flex items-center gap-1"
+                >
+                  LINKEDIN ↗
+                </a>
+              </div>
+              <div className="text-xs text-text-subtle">
+                &copy; 2026 NexaSetu. All rights reserved.
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col gap-8 text-left md:text-right w-full md:w-auto">
-            <div className="flex flex-wrap gap-8 md:gap-12 text-[10px] font-bold uppercase tracking-[0.4em] text-text-subtle justify-start md:justify-end">
-              <a
-                href="https://github.com/yashshinde8585"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Yash Shinde on GitHub"
-                className="hover:text-text transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://linkedin.com/in/yashshinde8585"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Yash Shinde on LinkedIn"
-                className="hover:text-text transition-colors"
-              >
-                LinkedIn
-              </a>
-            </div>
-            <div className="text-[9px] font-bold uppercase tracking-[0.5em] text-text-subtle not-italic">
-              © 2026 NEXASETU INC. ALL RIGHTS RESERVED.
-            </div>
-            <div className="text-[8px] font-medium uppercase tracking-[0.2em] text-text-subtle not-italic mt-2">
-              NexaSetu Systems • Pune, Maharashtra, IN • Tel: +91-9325741775
-            </div>
+
+          {/* Bottom Section */}
+          <div className="pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 text-xs text-text-subtle">
+            <span>Built for teams that build software.</span>
+            <span>Pune, Maharashtra, India</span>
           </div>
         </div>
       </footer>

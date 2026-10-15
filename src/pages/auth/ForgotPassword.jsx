@@ -48,15 +48,15 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-text">
+    <div className="auth-page-theme min-h-screen flex flex-col bg-background text-text">
       <Navbar hideLinks={true} />
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-black border border-white/10 rounded p-8">
+        <div className="w-full max-w-md bg-card border border-border-subtle rounded-xl p-8 shadow-2xl">
           <div className="mb-8 text-center">
-            <h2 className="text-[14px] font-black text-white mb-2">
+            <h2 className="text-xl font-bold text-text mb-2 tracking-tight">
               Recover identity
             </h2>
-            <p className="text-white/40 text-[9px] font-black">
+            <p className="text-text-muted text-xs font-normal">
               Reset your access credentials.
             </p>
           </div>
@@ -65,18 +65,18 @@ const ForgotPassword = () => {
             <div className="text-center space-y-6">
               <div className="flex justify-center">
                 <CheckCircle2
-                  className="text-green-500"
+                  className="text-status-success"
                   size={48}
-                  strokeWidth={1}
+                  strokeWidth={1.5}
                 />
               </div>
-              <p className="text-white/60 text-xs font-medium tracking-tight">
+              <p className="text-text-muted text-xs font-medium tracking-tight">
                 A recovery link has been dispatched to your email. Please check
                 your inbox (and spam folder).
               </p>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 text-white text-[9px] font-black hover:underline decoration-white/30"
+                className="inline-flex items-center gap-2 text-primary text-xs font-semibold hover:underline"
               >
                 Return to login <ArrowRight size={12} />
               </Link>
@@ -84,18 +84,18 @@ const ForgotPassword = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/40 block">
+                <label className="text-xs font-semibold text-text-muted block">
                   Email Address
                 </label>
                 <div className="relative group">
                   <Mail
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors"
-                    size={14}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted/50 group-focus-within:text-text transition-colors"
+                    size={16}
                   />
                   <input
                     type="email"
                     required
-                    className="w-full h-11 bg-white/5 border border-white/10 focus:border-white text-white rounded pl-10 pr-4 outline-none transition-all placeholder:text-white/20 text-[11px] font-medium tracking-tight"
+                    className="w-full h-11 bg-background border border-border-subtle focus:border-primary focus:ring-1 focus:ring-primary text-text rounded-lg pl-10 pr-4 outline-none transition-all placeholder:text-text-muted/40 text-sm font-medium"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -104,7 +104,7 @@ const ForgotPassword = () => {
               </div>
 
               {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black text-center">
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs font-semibold text-center">
                   {error}
                 </div>
               )}
@@ -112,24 +112,24 @@ const ForgotPassword = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-white text-black text-[10px] font-black transition-all hover:bg-white/90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-11 bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-all rounded-lg shadow-md shadow-primary/25 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin" size={14} />
+                    <Loader2 className="animate-spin text-white" size={16} />
                     Initiating...
                   </>
                 ) : (
                   <>
-                    Send recovery link <ArrowRight size={14} />
+                    Send recovery link <ArrowRight size={16} className="text-white" />
                   </>
                 )}
               </button>
 
-              <div className="pt-4 border-t border-white/5 text-center">
+              <div className="pt-4 border-t border-border-subtle text-center">
                 <Link
                   to="/login"
-                  className="text-white/40 text-[9px] font-black hover:text-white transition-colors"
+                  className="text-text-muted text-xs font-semibold hover:text-text transition-colors"
                 >
                   Remembered? Log in
                 </Link>
